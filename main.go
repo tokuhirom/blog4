@@ -2,25 +2,19 @@ package main
 
 import (
 	"database/sql"
-	"embed"
 	"github.com/tokuhirom/blog3/db/mariadb"
 	"github.com/tokuhirom/blog3/middleware"
-	"html/template"
+	"github.com/tokuhirom/blog3/server"
 	"log"
-	"log/slog"
 	"net"
 	"net/http"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/caarlos0/env/v11"
 	"github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 )
-
-//go:embed templates/*
-var templateFS embed.FS
 
 type config struct {
 	Port       int    `env:"BLOG3_PORT" envDefault:"9191"`
@@ -31,97 +25,6 @@ type config struct {
 	DBName     string `env:"DATABASE_DB"   envDefault:"blog3"`
 	// 9*60*60=32400 is JST
 	TimeZoneOffset int `env:"TIMEZONE_OFFSET" envDefault:"32400"`
-}
-
-type EntryViewData struct {
-	Path        string
-	Title       string
-	PublishedAt string
-}
-
-func renderTopPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Queries) {
-	// Parse and execute the template
-	tmpl, err := template.ParseFS(templateFS, "templates/index.html")
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	entries, err := queries.SearchEntries(r.Context(), 0)
-	if err != nil {
-		slog.Info("failed to search entries: %v", err)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	// Prepare data for the template
-	var viewData []EntryViewData
-	for _, entry := range entries {
-		// Format the PublishedAt date
-		var formattedDate string
-		if entry.PublishedAt.Valid {
-			formattedDate = entry.PublishedAt.Time.Format("2006-01-02(Mon)")
-		} else {
-			log.Printf("published_at is invalid: path=%s, published_at=%v", entry.Path, entry.PublishedAt)
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-
-		viewData = append(viewData, EntryViewData{
-			Path:        entry.Path,
-			Title:       entry.Title,
-			PublishedAt: formattedDate,
-		})
-	}
-
-	w.WriteHeader(http.StatusOK)
-	err = tmpl.Execute(w, viewData)
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-	}
-}
-
-func renderEntryPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Queries) {
-	extractedPath := strings.TrimPrefix(r.URL.Path, "/entry/")
-
-	log.Printf("path: %s", extractedPath)
-	entry, err := queries.GetEntryByPath(r.Context(), extractedPath)
-	if err != nil {
-		slog.Info("failed to get entry by path", err)
-		http.NotFound(w, r)
-		return
-	}
-
-	// Data to pass to the template
-	var formattedDate string
-	if entry.PublishedAt.Valid {
-		formattedDate = entry.PublishedAt.Time.Format("2006-01-01(Mon) 15:04")
-	} else {
-		log.Printf("published_at is invalid: path=%s, published_at=%v", entry.Path, entry.PublishedAt)
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-	data := struct {
-		Title       string
-		Body        string
-		PublishedAt string
-	}{
-		Title:       entry.Title,
-		Body:        entry.Body,
-		PublishedAt: formattedDate,
-	}
-
-	// Parse and execute the template
-	tmpl, err := template.ParseFS(templateFS, "templates/entry.html")
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
-
-	err = tmpl.Execute(w, data)
-	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-	}
 }
 
 func main() {
@@ -157,12 +60,10 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
-		log.Println("top page")
-		renderTopPage(writer, request, queries)
+		server.RenderTopPage(writer, request, queries)
 	})
 	mux.HandleFunc("/entry/", func(writer http.ResponseWriter, request *http.Request) {
-		log.Println("entry page")
-		renderEntryPage(writer, request, queries)
+		server.RenderEntryPage(writer, request, queries)
 	})
 
 	loggedMux := middleware.LoggingMiddleware(mux)
