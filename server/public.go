@@ -8,6 +8,8 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
+
+	"github.com/tokuhirom/blog3/utils"
 )
 
 //go:embed templates/*
@@ -64,6 +66,8 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Quer
 func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Queries) {
 	extractedPath := strings.TrimPrefix(r.URL.Path, "/entry/")
 
+	md := utils.NewMarkdown()
+
 	log.Printf("path: %s", extractedPath)
 	entry, err := queries.GetEntryByPath(r.Context(), extractedPath)
 	if err != nil {
@@ -81,13 +85,21 @@ func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Qu
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
+
+	body, err := md.Render(entry.Body)
+	if err != nil {
+		slog.Info("failed to render markdown", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
 	data := struct {
 		Title       string
-		Body        string
+		Body        template.HTML
 		PublishedAt string
 	}{
 		Title:       entry.Title,
-		Body:        entry.Body,
+		Body:        body,
 		PublishedAt: formattedDate,
 	}
 
