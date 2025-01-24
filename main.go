@@ -3,12 +3,15 @@ package main
 import (
 	"database/sql"
 	"embed"
+	"github.com/tokuhirom/blog3/db/mariadb"
 	"html/template"
 	"log"
+	"log/slog"
 	"net"
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/caarlos0/env/v11"
 	"github.com/go-sql-driver/mysql"
@@ -25,6 +28,8 @@ type config struct {
 	DBHostname string `env:"DATABASE_HOST"`
 	DBPort     int    `env:"DATABASE_PORT" envDefault:"3306"`
 	DBName     string `env:"DATABASE_DB"   envDefault:"blog3"`
+	// 9*60*60=32400 is JST
+	TimeZoneOffset int `env:"TIMEZONE_OFFSET" envDefault:"32400"`
 }
 
 // Entry represents a blog article.
@@ -38,7 +43,7 @@ var articles = map[string]Entry{
 	"example/path": {Title: "Example Title", Content: "This is an example article content."},
 }
 
-func renderTopPage(w http.ResponseWriter, r *http.Request) {
+func renderTopPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Queries) {
 	// Parse and execute the template
 	tmpl, err := template.ParseFS(templateFS, "templates/index.html")
 	if err != nil {
@@ -46,27 +51,48 @@ func renderTopPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	entries, err := queries.SearchEntries(r.Context(), 0)
+	if err != nil {
+		slog.Info("failed to search entries: %v", err)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
 	w.WriteHeader(http.StatusOK)
-	err = tmpl.Execute(w, articles)
+	err = tmpl.Execute(w, entries)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
 }
 
-// Render the article page
-func renderArticlePage(w http.ResponseWriter, r *http.Request) {
-	// Extract the PATH from the URL
-	path := strings.TrimPrefix(r.URL.Path, "/entry/")
-	if path == "" {
+func renderEntryPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Queries) {
+	extractedPath := strings.TrimPrefix(r.URL.Path, "/entry/")
+
+	log.Printf("path: %s", extractedPath)
+	entry, err := queries.GetEntryByPath(r.Context(), extractedPath)
+	if err != nil {
+		slog.Info("failed to get entry by path", err)
 		http.NotFound(w, r)
 		return
 	}
 
-	// Retrieve the article from the database or dummy data
-	article, exists := articles[path]
-	if !exists {
-		http.NotFound(w, r)
+	// Data to pass to the template
+	var formattedDate string
+	if entry.PublishedAt.Valid {
+		formattedDate = entry.PublishedAt.Time.Format("2006-01-01(Mon) 15:04")
+	} else {
+		log.Printf("published_at is invalid: path=%s, published_at=%v", entry.Path, entry.PublishedAt)
+		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
+	}
+	data := struct {
+		Title       string
+		Body        string
+		PublishedAt string
+	}{
+		Title:       entry.Title,
+		Body:        entry.Body,
+		PublishedAt: formattedDate,
 	}
 
 	// Parse and execute the template
@@ -76,7 +102,7 @@ func renderArticlePage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = tmpl.Execute(w, article)
+	err = tmpl.Execute(w, data)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
@@ -100,6 +126,8 @@ func main() {
 		Addr:                 net.JoinHostPort(cfg.DBHostname, strconv.Itoa(cfg.DBPort)),
 		DBName:               cfg.DBName,
 		AllowNativePasswords: true,
+		ParseTime:            true,
+		Loc:                  time.FixedZone("Asia/Tokyo", cfg.TimeZoneOffset), // Set time zone to JST
 	}
 	sqlDB, err := sql.Open("mysql", mysqlConfig.FormatDSN())
 	if err != nil {
@@ -109,8 +137,16 @@ func main() {
 		log.Fatalf("failed to ping DB: %v", err)
 	}
 
-	http.HandleFunc("/", renderTopPage)
-	http.HandleFunc("/entry/", renderArticlePage)
+	queries := mariadb.New(sqlDB)
+
+	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+		log.Println("top page")
+		renderTopPage(writer, request, queries)
+	})
+	http.HandleFunc("/entry/", func(writer http.ResponseWriter, request *http.Request) {
+		log.Println("entry page")
+		renderEntryPage(writer, request, queries)
+	})
 
 	// Start the server
 	log.Println("Starting server on http://localhost:8181/")

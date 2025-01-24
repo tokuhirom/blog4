@@ -2,10 +2,70 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
     <title>{{.Title}}</title>
+    <style>
+        body {
+            background-color: #0d0d0d; /* Dark background */
+            color: #00ff00; /* Green text, like a terminal */
+            font-family: 'Courier New', Courier, monospace; /* Monospace font */
+            margin: 0;
+            padding: 0;
+        }
+
+        nav {
+            background-color: #1a1a1a;
+            padding: 10px;
+            text-align: center;
+        }
+
+        nav a {
+            color: #00ff00;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.5em;
+        }
+
+        h1 {
+            color: #00ff00;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        p {
+            margin: 20px;
+            line-height: 1.6;
+        }
+
+        .content {
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #1a1a1a;
+            color: #00ff00;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-<h1>{{.Title}}</h1>
-<p>{{.Content}}</p>
+<nav>
+    <a href="/">tokuhirom's blog</a>
+</nav>
+<div class="content">
+    <h1>{{.Title}}</h1>
+    <p>{{.Body}}</p>
+    <p>Published: {{.PublishedAt}}</p>
+</div>
+<div class="footer">
+    &copy; tokuhirom
+</div>
 </body>
 </html>

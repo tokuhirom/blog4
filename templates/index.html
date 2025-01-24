@@ -2,14 +2,76 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
     <title>Top Page</title>
+    <style>
+        body {
+            background-color: #0d0d0d; /* Dark background */
+            color: #00ff00; /* Green text */
+            font-family: 'Courier New', Courier, monospace; /* Monospace font */
+            margin: 0;
+            padding: 0;
+        }
+        nav {
+            background-color: #1a1a1a;
+            padding: 10px;
+            text-align: center;
+        }
+        nav a {
+            color: #00ff00;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.5em;
+        }
+        h1 {
+            color: #00ff00;
+            text-align: center;
+            margin-top: 20px;
+        }
+        ul {
+            list-style-type: none; /* Remove default list style */
+            padding: 0;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        li {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #1a1a1a;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        li:hover {
+            background-color: #333;
+        }
+        a {
+            color: #00ff00;
+            text-decoration: none;
+            font-size: 1.2em;
+        }
+        .footer {
+            text-align: center;
+            padding: 10px;
+            background-color: #1a1a1a;
+            color: #00ff00;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-<h1>Top Page</h1>
+<nav>
+    <a href="/">tokuhirom's blog</a>
+</nav>
 <ul>
-    {{range $path, $article := .}}
-    <li><a href="/entry/{{$path}}">{{$article.Title}}</a></li>
+    {{range $path, $entry := .}}
+    <li><a href="/entry/{{$entry.Path}}">{{$entry.Title}}</a> {{$entry.PublishedAt}}</li>
     {{end}}
 </ul>
+<div class="footer">
+    &copy; tokuhirom
+</div>
 </body>
 </html>

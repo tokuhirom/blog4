@@ -1,4 +1,4 @@
-module blog4
+module github.com/tokuhirom/blog3
 
 go 1.23
 
