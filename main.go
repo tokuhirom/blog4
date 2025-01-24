@@ -32,15 +32,10 @@ type config struct {
 	TimeZoneOffset int `env:"TIMEZONE_OFFSET" envDefault:"32400"`
 }
 
-// Entry represents a blog article.
-type Entry struct {
-	Title   string
-	Content string
-}
-
-// Dummy data for demonstration. In real use, retrieve from a database.
-var articles = map[string]Entry{
-	"example/path": {Title: "Example Title", Content: "This is an example article content."},
+type EntryViewData struct {
+	Path        string
+	Title       string
+	PublishedAt string
 }
 
 func renderTopPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Queries) {
@@ -58,8 +53,28 @@ func renderTopPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Quer
 		return
 	}
 
+	// Prepare data for the template
+	var viewData []EntryViewData
+	for _, entry := range entries {
+		// Format the PublishedAt date
+		var formattedDate string
+		if entry.PublishedAt.Valid {
+			formattedDate = entry.PublishedAt.Time.Format("2006-01-02(Mon)")
+		} else {
+			log.Printf("published_at is invalid: path=%s, published_at=%v", entry.Path, entry.PublishedAt)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+
+		viewData = append(viewData, EntryViewData{
+			Path:        entry.Path,
+			Title:       entry.Title,
+			PublishedAt: formattedDate,
+		})
+	}
+
 	w.WriteHeader(http.StatusOK)
-	err = tmpl.Execute(w, entries)
+	err = tmpl.Execute(w, viewData)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}

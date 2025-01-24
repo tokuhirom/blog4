@@ -13,43 +13,69 @@
             margin: 0;
             padding: 0;
         }
+
         nav {
             background-color: #1a1a1a;
             padding: 10px;
             text-align: center;
         }
+
         nav a {
             color: #00ff00;
             text-decoration: none;
             font-weight: bold;
             font-size: 1.5em;
         }
+
         h1 {
             color: #00ff00;
             text-align: center;
             margin-top: 20px;
         }
+
         ul {
             list-style-type: none; /* Remove default list style */
             padding: 0;
             max-width: 800px;
             margin: 20px auto;
         }
+
         li {
+            display: flex;
+            justify-content: space-between; /* Align items to the ends */
+            align-items: center;
             margin: 10px 0;
             padding: 10px;
             background-color: #1a1a1a;
             border-radius: 5px;
             transition: background-color 0.3s;
         }
+
         li:hover {
             background-color: #333;
         }
+
         a {
             color: #00ff00;
             text-decoration: none;
             font-size: 1.2em;
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
         }
+
+        .title {
+            font-size: 1.2em;
+            word-break: break-all;
+            max-width: 80%;
+        }
+        .published-date {
+            font-size: 0.7em;
+            color: #00ff00;
+            text-align: right;
+            word-break: keep-all;
+        }
+
         .footer {
             text-align: center;
             padding: 10px;
@@ -67,7 +93,12 @@
 </nav>
 <ul>
     {{range $path, $entry := .}}
-    <li><a href="/entry/{{$entry.Path}}">{{$entry.Title}}</a> {{$entry.PublishedAt}}</li>
+    <li>
+        <a href="/entry/{{$entry.Path}}">
+            <span class="title">{{$entry.Title}}</span>
+            <span class="published-date">{{$entry.PublishedAt}}</span>
+        </a>
+    </li>
     {{end}}
 </ul>
 <div class="footer">
