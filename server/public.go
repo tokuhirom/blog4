@@ -66,7 +66,7 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Quer
 func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Queries) {
 	extractedPath := strings.TrimPrefix(r.URL.Path, "/entry/")
 
-	md := utils.NewMarkdown()
+	md := utils.NewMarkdown(r.Context(), queries)
 
 	log.Printf("path: %s", extractedPath)
 	entry, err := queries.GetEntryByPath(r.Context(), extractedPath)
