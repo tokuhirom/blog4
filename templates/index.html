@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Top Page</title>
+</head>
+<body>
+<h1>Top Page</h1>
+<ul>
+    {{range $path, $article := .}}
+    <li><a href="/entry/{{$path}}">{{$article.Title}}</a></li>
+    {{end}}
+</ul>
+</body>
+</html>
