@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"embed"
 	"github.com/tokuhirom/blog3/db/mariadb"
+	"github.com/tokuhirom/blog3/middleware"
 	"html/template"
 	"log"
 	"log/slog"
@@ -154,18 +155,21 @@ func main() {
 
 	queries := mariadb.New(sqlDB)
 
-	http.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		log.Println("top page")
 		renderTopPage(writer, request, queries)
 	})
-	http.HandleFunc("/entry/", func(writer http.ResponseWriter, request *http.Request) {
+	mux.HandleFunc("/entry/", func(writer http.ResponseWriter, request *http.Request) {
 		log.Println("entry page")
 		renderEntryPage(writer, request, queries)
 	})
 
+	loggedMux := middleware.LoggingMiddleware(mux)
+
 	// Start the server
 	log.Println("Starting server on http://localhost:8181/")
-	err = http.ListenAndServe(":8181", nil)
+	err = http.ListenAndServe(":8181", loggedMux)
 	if err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
