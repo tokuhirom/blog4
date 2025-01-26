@@ -8,7 +8,9 @@ import (
 	"log/slog"
 	"net/http"
 	"strings"
+	"time"
 
+	"github.com/gorilla/feeds"
 	"github.com/tokuhirom/blog3/utils"
 )
 
@@ -113,5 +115,56 @@ func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Qu
 	err = tmpl.Execute(w, data)
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	}
+}
+
+func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *mariadb.Queries) {
+	entries, err := queries.SearchEntries(request.Context(), 0)
+	if err != nil {
+		slog.Info("failed to search entries: %v", err)
+		http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	now := time.Now()
+	feed := &feeds.Feed{
+		Title:       "tokuhirom's blog",
+		Link:        &feeds.Link{Href: "https://blog.64p.org/"},
+		Description: "tokuhirom's thoughts",
+		Author:      &feeds.Author{Name: "Tokuhiro Matsuno", Email: "tokuhirom+blog-gmail.com"},
+		Created:     now,
+	}
+	md := utils.NewMarkdown(request.Context(), queries)
+	for _, entry := range entries {
+		render, err := md.Render(entry.Body)
+		if err != nil {
+			slog.Info("failed to render markdown", err, entry.Path)
+			// skip this entry
+			continue
+		}
+
+		feed.Items = append(feed.Items, &feeds.Item{
+			Title:       entry.Title,
+			Link:        &feeds.Link{Href: "https://blog.64p.org/entry/" + entry.Path},
+			Description: entry.Body,
+			Content:     string(render),
+			Created:     entry.PublishedAt.Time,
+		})
+	}
+
+	rss, err := feed.ToRss()
+	if err != nil {
+		slog.Info("failed to generate RSS", err)
+		http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
+		return
+	}
+
+	writer.Header().Set("Content-Type", "application/rss+xml; charset=utf-8")
+	writer.WriteHeader(http.StatusOK)
+	_, err = writer.Write([]byte(rss))
+	if err != nil {
+		slog.Info("failed to write response", err)
+		http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
+		return
 	}
 }

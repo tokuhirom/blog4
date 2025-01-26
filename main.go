@@ -62,6 +62,9 @@ func main() {
 	mux.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
 		server.RenderTopPage(writer, request, queries)
 	})
+	mux.HandleFunc("/feed", func(writer http.ResponseWriter, request *http.Request) {
+		server.RenderFeed(writer, request, queries)
+	})
 	mux.HandleFunc("/entry/", func(writer http.ResponseWriter, request *http.Request) {
 		server.RenderEntryPage(writer, request, queries)
 	})
