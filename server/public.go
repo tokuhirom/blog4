@@ -7,6 +7,7 @@ import (
 	"log"
 	"log/slog"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -16,6 +17,15 @@ import (
 
 //go:embed templates/*
 var templateFS embed.FS
+
+type TopPageData struct {
+	Page    int
+	Entries []EntryViewData
+	HasPrev bool
+	HasNext bool
+	Prev    int
+	Next    int
+}
 
 type EntryViewData struct {
 	Path        string
@@ -31,11 +41,35 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Quer
 		return
 	}
 
-	entries, err := queries.SearchEntries(r.Context(), 0)
+	// get query parameter 'page'
+	page := 1
+	if pageStr := r.URL.Query().Get("page"); pageStr != "" {
+		page, err = strconv.Atoi(pageStr)
+		if err != nil {
+			slog.Info("failed to parse page number: %v", err)
+			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			return
+		}
+	}
+
+	entriesPerPage := 60
+	offset := (page - 1) * entriesPerPage
+
+	entries, err := queries.SearchEntries(r.Context(), mariadb.SearchEntriesParams{
+		Limit:  int32(entriesPerPage + 1),
+		Offset: int32(offset),
+	})
 	if err != nil {
 		slog.Info("failed to search entries: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
+	}
+
+	// remove last entry if there are more entries
+	var hasNext = false
+	if len(entries) > entriesPerPage {
+		entries = entries[:entriesPerPage]
+		hasNext = true
 	}
 
 	// Prepare data for the template
@@ -59,7 +93,14 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Quer
 	}
 
 	w.WriteHeader(http.StatusOK)
-	err = tmpl.Execute(w, viewData)
+	err = tmpl.Execute(w, TopPageData{
+		Page:    page,
+		Prev:    page - 1,
+		Next:    page + 1,
+		HasPrev: page > 1,
+		HasNext: hasNext,
+		Entries: viewData,
+	})
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
@@ -119,7 +160,10 @@ func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Qu
 }
 
 func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *mariadb.Queries) {
-	entries, err := queries.SearchEntries(request.Context(), 0)
+	entries, err := queries.SearchEntries(request.Context(), mariadb.SearchEntriesParams{
+		Limit:  10,
+		Offset: 0,
+	})
 	if err != nil {
 		slog.Info("failed to search entries: %v", err)
 		http.Error(writer, "Internal Server Error", http.StatusInternalServerError)

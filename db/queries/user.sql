@@ -3,7 +3,7 @@ SELECT *
 FROM entry
 WHERE visibility = 'public'
 ORDER BY published_at DESC
-LIMIT 60 OFFSET ?;
+LIMIT ? OFFSET ?;
 
 -- name: GetEntryByPath :one
 SELECT *

@@ -79,6 +79,21 @@
             word-break: keep-all;
         }
 
+        .pager {
+            display: flex;
+            justify-content: space-between;
+            max-width: 800px;
+            margin: 20px auto;
+        }
+        .pager a {
+            color: #00ff00;
+            text-decoration: none;
+            font-size: 1.2em;
+            background-color: lightslategray;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+
         .footer {
             text-align: center;
             padding: 10px;
@@ -104,7 +119,7 @@
     <a href="/">tokuhirom's blog</a>
 </nav>
 <ul>
-    {{range $path, $entry := .}}
+    {{range $path, $entry := .Entries}}
     <li>
         <a href="/entry/{{$entry.Path}}">
             <span class="title">{{$entry.Title}}</span>
@@ -114,7 +129,20 @@
     {{end}}
 </ul>
 <div class="pager">
-
+    <div class="prev">
+        {{if .HasPrev}}
+        <a href="/?page={{.Prev}}">Prev</a>
+        {{else}}
+        Prev
+        {{end}}
+    </div>
+    <div class="next">
+        {{if .HasNext}}
+        <a href="/?page={{.Next}}">Next</a>
+        {{else}}
+        Next
+        {{end}}
+    </div>
 </div>
 <div class="footer">
     &copy; tokuhirom
