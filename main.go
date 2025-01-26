@@ -60,13 +60,7 @@ func main() {
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
-		server.RenderTopPage(writer, request, queries)
-	})
-	mux.HandleFunc("/feed", func(writer http.ResponseWriter, request *http.Request) {
-		server.RenderFeed(writer, request, queries)
-	})
-	mux.HandleFunc("/entry/", func(writer http.ResponseWriter, request *http.Request) {
-		server.RenderEntryPage(writer, request, queries)
+		server.Handle(writer, request, queries)
 	})
 
 	loggedMux := middleware.LoggingMiddleware(mux)

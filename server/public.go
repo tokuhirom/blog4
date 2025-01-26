@@ -168,3 +168,15 @@ func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *mari
 		return
 	}
 }
+
+func Handle(writer http.ResponseWriter, request *http.Request, queries *mariadb.Queries) {
+	if request.URL.Path == "/" {
+		RenderTopPage(writer, request, queries)
+	} else if request.URL.Path == "/feed" {
+		RenderFeed(writer, request, queries)
+	} else if strings.HasPrefix(request.URL.Path, "/entry/") {
+		RenderEntryPage(writer, request, queries)
+	} else {
+		http.NotFound(writer, request)
+	}
+}
