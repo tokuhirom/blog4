@@ -11,7 +11,7 @@ import (
 	"time"
 
 	"github.com/gorilla/feeds"
-	"github.com/tokuhirom/blog3/utils"
+	"github.com/tokuhirom/blog3/markdown"
 )
 
 //go:embed templates/*
@@ -68,7 +68,7 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Quer
 func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Queries) {
 	extractedPath := strings.TrimPrefix(r.URL.Path, "/entry/")
 
-	md := utils.NewMarkdown(r.Context(), queries)
+	md := markdown.NewMarkdown(r.Context(), queries)
 
 	log.Printf("path: %s", extractedPath)
 	entry, err := queries.GetEntryByPath(r.Context(), extractedPath)
@@ -134,7 +134,7 @@ func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *mari
 		Author:      &feeds.Author{Name: "Tokuhiro Matsuno", Email: "tokuhirom+blog-gmail.com"},
 		Created:     now,
 	}
-	md := utils.NewMarkdown(request.Context(), queries)
+	md := markdown.NewMarkdown(request.Context(), queries)
 	for _, entry := range entries {
 		render, err := md.Render(entry.Body)
 		if err != nil {

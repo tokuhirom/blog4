@@ -14,3 +14,8 @@ WHERE path = ? AND visibility = 'public';
 SELECT *
 FROM entry
 WHERE title = ? AND visibility = 'public';
+
+-- name: GetAsin :one
+SELECT *
+FROM amazon_cache
+WHERE asin = ?;

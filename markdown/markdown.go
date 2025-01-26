@@ -1,4 +1,4 @@
-package utils
+package markdown
 
 import (
 	"bytes"
@@ -36,6 +36,10 @@ func NewMarkdown(ctx context.Context, queries *mariadb.Queries) *Markdown {
 		goldmark.WithExtensions(
 			extension.GFM,     // Enable GitHub Flavored Markdown
 			extension.Linkify, // Enable auto-linking
+			&AsinLink{
+				Context: ctx,
+				Queries: queries,
+			},
 			&wikilink.Extender{
 				Resolver: &WikiLinkResolver{
 					ctx: ctx,

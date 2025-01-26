@@ -1,0 +1,164 @@
+package markdown
+
+import (
+	"bytes"
+	"context"
+	"fmt"
+	"github.com/tokuhirom/blog3/db/mariadb"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/ast"
+	"github.com/yuin/goldmark/parser"
+	"github.com/yuin/goldmark/renderer"
+	"github.com/yuin/goldmark/text"
+	"github.com/yuin/goldmark/util"
+)
+
+type AsinLink struct {
+	Context context.Context
+	Queries *mariadb.Queries
+}
+
+func (a AsinLink) Extend(markdown goldmark.Markdown) {
+	markdown.Parser().AddOptions(
+		parser.WithInlineParsers(
+			util.Prioritized(&AsinParser{
+				Context: a.Context,
+			}, 100),
+		),
+	)
+	markdown.Renderer().AddOptions(
+		renderer.WithNodeRenderers(
+			util.Prioritized(&AsinRenderer{
+				Context: a.Context,
+				Queries: a.Queries,
+			}, 199),
+		),
+	)
+}
+
+type AsinParser struct {
+	Context context.Context
+}
+
+func (p *AsinParser) Trigger() []byte {
+	return []byte{'['}
+}
+
+var (
+	_open  = []byte("[asin:")
+	_close = []byte(":detail]")
+)
+
+type AsinNode struct {
+	ast.BaseInline
+
+	Target []byte
+	Embed  bool
+}
+
+var Kind = ast.NewNodeKind("AsinLink")
+
+func (a *AsinNode) Kind() ast.NodeKind {
+	return Kind
+}
+
+func (a *AsinNode) Dump(src []byte, level int) {
+	ast.DumpHelper(a, src, level, map[string]string{
+		"Target": string(a.Target),
+	}, nil)
+}
+
+// [asin:B0BC73K2BW:detail]
+func (p *AsinParser) Parse(_ ast.Node, block text.Reader, _ parser.Context) ast.Node {
+	line, seg := block.PeekLine()
+	stop := bytes.Index(line, _close)
+	if stop < 0 {
+		return nil // must close on the same line
+	}
+
+	var embed bool
+
+	switch {
+	case bytes.HasPrefix(line, _open):
+		seg = text.NewSegment(seg.Start+len(_open), seg.Start+stop)
+	default:
+		return nil
+	}
+
+	n := &AsinNode{
+		Target: block.Value(seg),
+		Embed:  embed,
+	}
+	if len(n.Target) == 0 || seg.Len() == 0 {
+		return nil // target and label must not be empty
+	}
+	println("AsinParser.Parse", string(n.Target))
+
+	block.Advance(stop + 8)
+	return n
+}
+
+type AsinRenderer struct {
+	Resolver any
+	Queries  *mariadb.Queries
+	Context  context.Context
+}
+
+func (r *AsinRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
+	reg.Register(Kind, r.Render)
+}
+
+func (r *AsinRenderer) Render(writer util.BufWriter, source []byte, node ast.Node, entering bool) (ast.WalkStatus, error) {
+	n, ok := node.(*AsinNode)
+	if !ok {
+		return ast.WalkStop, fmt.Errorf("unexpected node %T, expected *AsinNode", node)
+	}
+
+	if entering {
+		return r.enter(writer, n, source)
+	}
+
+	r.exit(writer, n)
+	return ast.WalkContinue, nil
+}
+func (r *AsinRenderer) enter(w util.BufWriter, n *AsinNode, src []byte) (ast.WalkStatus, error) {
+	//img := resolveAsImage(n)
+	//if !img {
+	//r.hasDest.Store(n, struct{}{})
+	//w.WriteString(`<a href="`)
+	//w.Write(util.URLEscape(dest, true /* resolve references */))
+	//w.WriteString(`">`)
+	//return ast.WalkContinue, nil
+	//}
+
+	asin, err := r.Queries.GetAsin(r.Context, string(n.Target))
+	if err != nil {
+		return 0, err
+	}
+	w.WriteString("<div style='display: flex;' class='asin'>")
+	w.WriteString("<p>")
+	w.WriteString("<a href=\"")
+	w.WriteString(asin.Link)
+	w.WriteString("\">")
+	w.WriteString("<img src=\"")
+	w.WriteString(asin.ImageMediumUrl.String)
+	w.WriteString("\" style='max-width: 100px;max-height: 100px;border-radius: 4px;'>")
+	w.WriteString("</a>")
+	w.WriteString("</p>")
+	w.WriteString("<p>")
+	w.WriteString("<a href=\"")
+	w.WriteString(asin.Link)
+	w.WriteString("\">")
+	w.WriteString(asin.Title.String)
+	w.WriteString("</a>")
+	w.WriteString("</p>")
+	w.WriteString("</div>")
+
+	return ast.WalkSkipChildren, nil
+}
+
+func (r *AsinRenderer) exit(w util.BufWriter, n *AsinNode) {
+	//if _, ok := r.hasDest.LoadAndDelete(n); ok {
+	//	w.WriteString("</a>")
+	//}
+}
