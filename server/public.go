@@ -310,6 +310,10 @@ func Handle(writer http.ResponseWriter, request *http.Request, queries *mariadb.
 		// if ./server/static/main.css is available, serve it.
 		// hot reload.
 		if _, err := os.Stat("server/static/main.css"); err == nil {
+			writer.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+			writer.Header().Set("Pragma", "no-cache")
+			writer.Header().Set("Expires", "0")
+
 			http.ServeFile(writer, request, "server/static/main.css")
 			return
 		}

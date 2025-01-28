@@ -1,6 +1,6 @@
 body {
-    background-color: #0d0d0d; /* Dark background */
-    color: #00ff00; /* Green text, like a terminal */
+    background-color: #0d0d0d;
+    color: #aaffaa;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
     'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
     'Noto Color Emoji';
@@ -16,7 +16,7 @@ nav {
 }
 
 nav a {
-    color: #00ff00;
+    color: #99ff99;
     text-decoration: none;
     font-weight: bold;
     font-size: 1.5em;
@@ -53,7 +53,7 @@ ul.card-container {
 
         .published-date {
             font-size: 0.7em;
-            color: #333333;
+            color: #666;
             word-break: keep-all;
             margin-top: auto;
             text-align: right;
@@ -75,12 +75,12 @@ ul.card-container {
         }
 
         &:hover {
-            background-color: #333;
+            background-color: #444;
         }
     }
 
     a {
-        color: #00ff00;
+        color: #99ff99;
         text-decoration: none;
         font-size: 1.2em;
         width: 100%;
@@ -95,10 +95,10 @@ ul.card-container {
     clear: both;
 
     a {
-        color: #00ff00;
+        color: #99ff99;
         text-decoration: none;
         font-size: 1.2em;
-        background-color: lightslategray;
+        background-color: #555;
         padding: 5px 10px;
         border-radius: 4px;
     }
@@ -110,7 +110,7 @@ ul.card-container {
     padding: 20px;
 
     h1 {
-        color: #00ff00;
+        color: #99ff99;
         text-align: center;
         margin-top: 20px;
     }
@@ -121,19 +121,33 @@ ul.card-container {
     }
 
     a {
-        color: #00ff00;
+        color: #99ff99;
         text-decoration: none;
     }
 
     .asin {
-        background-color: lightslategray;
+        background-color: #555;
         border-radius: 4px;
     }
 
     .published {
         text-align: right;
         font-size: 0.8em;
-        color: #333333;
+        color: #666;
+    }
+
+    blockquote {
+        background-color: #1a1a1a; /* 背景色を少し明るくする */
+        border-left: 4px solid #66ff66; /* 左側にアクセントのボーダーを追加 */
+        color: #aaffaa; /* 文字色を少し落ち着いた緑に */
+        margin: 20px 0; /* 上下のマージンを追加 */
+        padding: 10px 20px; /* 内側のパディングを追加 */
+        font-style: italic; /* 斜体で引用を強調 */
+        border-radius: 5px; /* 角を丸くする */
+    }
+
+    blockquote p {
+        margin: 0; /* 内部の段落のマージンをリセット */
     }
 
     img {
@@ -143,7 +157,8 @@ ul.card-container {
     pre {
         padding: 8px;
         border-radius: 8px;
-        color: #0d0d0d;
+        background-color: #f4f4f4;
+        color: #333;
     }
 }
 
@@ -151,6 +166,6 @@ footer {
     text-align: center;
     padding: 10px;
     background-color: #1a1a1a;
-    color: #00ff00;
+    color: #99ff99;
     width: 100%;
 }
