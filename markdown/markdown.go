@@ -7,9 +7,7 @@ import (
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/renderer/html"
-	"go.abhg.dev/goldmark/wikilink"
 	"html/template"
-	"log"
 )
 
 type Markdown struct {
@@ -21,16 +19,6 @@ type WikiLinkResolver struct {
 	db  *mariadb.Queries
 }
 
-func (w *WikiLinkResolver) ResolveWikilink(n *wikilink.Node) ([]byte, error) {
-	entry, err := w.db.GetEntryByTitle(w.ctx, string(n.Target))
-	if err != nil {
-		log.Printf("failed to get entry by title: %v", err)
-		return []byte(""), nil
-	} else {
-		return []byte(entry.Path), nil
-	}
-}
-
 func NewMarkdown(ctx context.Context, queries *mariadb.Queries) *Markdown {
 	md := goldmark.New(
 		goldmark.WithExtensions(
@@ -40,11 +28,8 @@ func NewMarkdown(ctx context.Context, queries *mariadb.Queries) *Markdown {
 				Context: ctx,
 				Queries: queries,
 			},
-			&wikilink.Extender{
-				Resolver: &WikiLinkResolver{
-					ctx: ctx,
-					db:  queries,
-				},
+			&WikiLink{
+				Context: ctx,
 			},
 		),
 		goldmark.WithRendererOptions(

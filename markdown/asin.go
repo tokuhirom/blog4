@@ -45,8 +45,8 @@ func (p *AsinParser) Trigger() []byte {
 }
 
 var (
-	_open  = []byte("[asin:")
-	_close = []byte(":detail]")
+	asinOpen = []byte("[asin:")
+	asnClose = []byte(":detail]")
 )
 
 type AsinNode struct {
@@ -56,10 +56,10 @@ type AsinNode struct {
 	Embed  bool
 }
 
-var Kind = ast.NewNodeKind("AsinLink")
+var AsinKind = ast.NewNodeKind("AsinLink")
 
 func (a *AsinNode) Kind() ast.NodeKind {
-	return Kind
+	return AsinKind
 }
 
 func (a *AsinNode) Dump(src []byte, level int) {
@@ -71,7 +71,7 @@ func (a *AsinNode) Dump(src []byte, level int) {
 // [asin:B0BC73K2BW:detail]
 func (p *AsinParser) Parse(_ ast.Node, block text.Reader, _ parser.Context) ast.Node {
 	line, seg := block.PeekLine()
-	stop := bytes.Index(line, _close)
+	stop := bytes.Index(line, asnClose)
 	if stop < 0 {
 		return nil // must close on the same line
 	}
@@ -79,8 +79,8 @@ func (p *AsinParser) Parse(_ ast.Node, block text.Reader, _ parser.Context) ast.
 	var embed bool
 
 	switch {
-	case bytes.HasPrefix(line, _open):
-		seg = text.NewSegment(seg.Start+len(_open), seg.Start+stop)
+	case bytes.HasPrefix(line, asinOpen):
+		seg = text.NewSegment(seg.Start+len(asinOpen), seg.Start+stop)
 	default:
 		return nil
 	}
@@ -92,7 +92,6 @@ func (p *AsinParser) Parse(_ ast.Node, block text.Reader, _ parser.Context) ast.
 	if len(n.Target) == 0 || seg.Len() == 0 {
 		return nil // target and label must not be empty
 	}
-	println("AsinParser.Parse", string(n.Target))
 
 	block.Advance(stop + 8)
 	return n
@@ -105,7 +104,7 @@ type AsinRenderer struct {
 }
 
 func (r *AsinRenderer) RegisterFuncs(reg renderer.NodeRendererFuncRegisterer) {
-	reg.Register(Kind, r.Render)
+	reg.Register(AsinKind, r.Render)
 }
 
 func (r *AsinRenderer) Render(writer util.BufWriter, source []byte, node ast.Node, entering bool) (ast.WalkStatus, error) {
