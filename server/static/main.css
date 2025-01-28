@@ -1,0 +1,150 @@
+body {
+    background-color: #0d0d0d; /* Dark background */
+    color: #00ff00; /* Green text, like a terminal */
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+    'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+    'Noto Color Emoji';
+    font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+nav {
+    background-color: #1a1a1a;
+    padding: 10px;
+    text-align: center;
+}
+
+nav a {
+    color: #00ff00;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+ul.card-container {
+    list-style-type: none; /* Remove default list style */
+    padding: 0;
+    max-width: 1000px;
+    margin: 20px auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: flex-start;
+
+    li {
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        background-color: #1a1a1a;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        width: 150px;
+        max-height: 200px;
+        margin-right: 8px;
+        margin-bottom: 8px;
+        overflow: hidden;
+
+        .entry-title {
+            font-size: 0.9em;
+            word-break: break-all;
+            display: block;
+        }
+
+        .published-date {
+            font-size: 0.7em;
+            color: #333333;
+            word-break: keep-all;
+            margin-top: auto;
+            text-align: right;
+        }
+
+        .entry-head {
+            justify-content: space-between; /* Align items to the ends */
+            align-items: center;
+        }
+
+        .entry-image {
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 5px;
+        }
+
+        .entry-text-preview {
+            font-size: 60%;
+        }
+
+        &:hover {
+            background-color: #333;
+        }
+    }
+
+    a {
+        color: #00ff00;
+        text-decoration: none;
+        font-size: 1.2em;
+        width: 100%;
+    }
+}
+
+.pager {
+    display: flex;
+    justify-content: space-between;
+    max-width: 800px;
+    margin: 20px auto;
+    clear: both;
+
+    a {
+        color: #00ff00;
+        text-decoration: none;
+        font-size: 1.2em;
+        background-color: lightslategray;
+        padding: 5px 10px;
+        border-radius: 4px;
+    }
+}
+
+.entry-content-detail {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+
+    h1 {
+        color: #00ff00;
+        text-align: center;
+        margin-top: 20px;
+    }
+
+    p {
+        margin: 20px;
+        line-height: 1.6;
+    }
+
+    a {
+        color: #00ff00;
+        text-decoration: none;
+    }
+
+    .asin {
+        background-color: lightslategray;
+        border-radius: 4px;
+    }
+
+    .published {
+        text-align: right;
+        font-size: 0.8em;
+        color: #333333;
+    }
+
+    img {
+        max-width: 100%;
+    }
+}
+
+footer {
+    text-align: center;
+    padding: 10px;
+    background-color: #1a1a1a;
+    color: #00ff00;
+    width: 100%;
+}

@@ -1,6 +1,7 @@
 -- name: SearchEntries :many
-SELECT *
+SELECT entry.*, entry_image.url image_url
 FROM entry
+    LEFT JOIN entry_image ON (entry.path = entry_image.path)
 WHERE visibility = 'public'
 ORDER BY published_at DESC
 LIMIT ? OFFSET ?;
@@ -31,7 +32,7 @@ WHERE entry_link.src_path = ? AND dst_entry.visibility = 'public';
 /* 現在表示しているページにリンクしているページ */
 SELECT src_entry.*
 FROM entry src_entry
-         INNER JOIN entry_link ON (src_entry.title = entry_link.src_path)
+         INNER JOIN entry_link ON (src_entry.path = entry_link.src_path)
 WHERE entry_link.dst_title = ? AND src_entry.visibility = 'public';
 
 -- name: GetRelatedEntries3 :many
