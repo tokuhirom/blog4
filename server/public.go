@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"embed"
 	"github.com/tokuhirom/blog3/db/mariadb"
 	"html/template"
@@ -136,14 +137,21 @@ func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Qu
 		return
 	}
 
+	relatedEntries, err := getRelatedEntries(r.Context(), queries, entry)
+	if err != nil {
+		slog.Info("failed to get related entries", err)
+	}
+
 	data := struct {
-		Title       string
-		Body        template.HTML
-		PublishedAt string
+		Title          string
+		Body           template.HTML
+		PublishedAt    string
+		RelatedEntries []mariadb.Entry
 	}{
-		Title:       entry.Title,
-		Body:        body,
-		PublishedAt: formattedDate,
+		Title:          entry.Title,
+		Body:           body,
+		PublishedAt:    formattedDate,
+		RelatedEntries: relatedEntries,
 	}
 
 	// Parse and execute the template
@@ -157,6 +165,50 @@ func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Qu
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 	}
+}
+
+func getRelatedEntries(context context.Context, queries *mariadb.Queries, entry mariadb.Entry) ([]mariadb.Entry, error) {
+	entries1, err := queries.GetRelatedEntries1(context, entry.Path)
+	if err != nil {
+		return []mariadb.Entry{}, err
+	}
+	entries2, err := queries.GetRelatedEntries2(context, entry.Title)
+	if err != nil {
+		return []mariadb.Entry{}, err
+	}
+	entries3, err := queries.GetRelatedEntries3(context, entry.Title)
+	if err != nil {
+		return []mariadb.Entry{}, err
+	}
+
+	// Use a map to track unique paths
+	uniqueEntriesMap := make(map[string]mariadb.Entry)
+
+	// Helper function to add entries to the map
+	addUniqueEntries := func(entries []mariadb.Entry) {
+		for _, e := range entries {
+			if _, exists := uniqueEntriesMap[e.Path]; !exists {
+				uniqueEntriesMap[e.Path] = e
+			}
+		}
+	}
+
+	// Add entries from each slice
+	addUniqueEntries(entries1)
+	addUniqueEntries(entries2)
+	addUniqueEntries(entries3)
+
+	// Convert map values to a slice
+	uniqueEntries := make([]mariadb.Entry, 0, len(uniqueEntriesMap))
+	for _, entry := range uniqueEntriesMap {
+		if entry.Visibility != "public" {
+			// 保険的にvisibilityがpublicでないエントリは除外
+			log.Fatalf("visibility is not public: %v", entry)
+		}
+		uniqueEntries = append(uniqueEntries, entry)
+	}
+
+	return uniqueEntries, nil
 }
 
 func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *mariadb.Queries) {

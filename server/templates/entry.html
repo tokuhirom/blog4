@@ -69,8 +69,6 @@
             padding: 10px;
             background-color: #1a1a1a;
             color: #00ff00;
-            position: fixed;
-            bottom: 0;
             width: 100%;
         }
     </style>
@@ -93,6 +91,13 @@
     <h1>{{.Title}}</h1>
     <p>{{.Body}}</p>
     <p class="published">Published: {{.PublishedAt}}</p>
+    <div class="related-entries">
+        <ul>
+            {{range .RelatedEntries}}
+            <li><a href="/entry/{{.Path}}">{{.Title}}</a></li>
+            {{end}}
+        </ul>
+    </div>
 </div>
 <div class="footer">
     &copy; tokuhirom

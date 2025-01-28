@@ -118,19 +118,9 @@ func (r *AsinRenderer) Render(writer util.BufWriter, source []byte, node ast.Nod
 		return r.enter(writer, n, source)
 	}
 
-	r.exit(writer, n)
 	return ast.WalkContinue, nil
 }
 func (r *AsinRenderer) enter(w util.BufWriter, n *AsinNode, src []byte) (ast.WalkStatus, error) {
-	//img := resolveAsImage(n)
-	//if !img {
-	//r.hasDest.Store(n, struct{}{})
-	//w.WriteString(`<a href="`)
-	//w.Write(util.URLEscape(dest, true /* resolve references */))
-	//w.WriteString(`">`)
-	//return ast.WalkContinue, nil
-	//}
-
 	asin, err := r.Queries.GetAsin(r.Context, string(n.Target))
 	if err != nil {
 		return 0, err
@@ -155,10 +145,4 @@ func (r *AsinRenderer) enter(w util.BufWriter, n *AsinNode, src []byte) (ast.Wal
 	w.WriteString("</div>")
 
 	return ast.WalkSkipChildren, nil
-}
-
-func (r *AsinRenderer) exit(w util.BufWriter, n *AsinNode) {
-	//if _, ok := r.hasDest.LoadAndDelete(n); ok {
-	//	w.WriteString("</a>")
-	//}
 }
