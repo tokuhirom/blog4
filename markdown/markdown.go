@@ -5,6 +5,7 @@ import (
 	"context"
 	"github.com/tokuhirom/blog3/db/mariadb"
 	"github.com/yuin/goldmark"
+	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/renderer/html"
 	"html/template"
@@ -24,6 +25,9 @@ func NewMarkdown(ctx context.Context, queries *mariadb.Queries) *Markdown {
 		goldmark.WithExtensions(
 			extension.GFM,     // Enable GitHub Flavored Markdown
 			extension.Linkify, // Enable auto-linking
+			highlighting.NewHighlighting(
+				highlighting.WithStyle("monokai"),
+			),
 			&AsinLink{
 				Context: ctx,
 				Queries: queries,

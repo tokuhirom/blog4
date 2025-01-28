@@ -139,6 +139,12 @@ ul.card-container {
     img {
         max-width: 100%;
     }
+
+    pre {
+        padding: 8px;
+        border-radius: 8px;
+        color: #0d0d0d;
+    }
 }
 
 footer {
