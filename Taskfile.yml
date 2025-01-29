@@ -1,9 +1,35 @@
 version: '3'
 
 tasks:
-  gen:
+  frontend:
+    cmds:
+      - npm run dev
+    dir: ./server/admin/frontend
+    desc: "Run the Node.js development server"
+
+  frontend-build:
+    cmds:
+      - npm run build
+    dir: ./server/admin/frontend
+    sources:
+      - ./server/admin/frontend/package.json
+      - ./server/admin/frontend/package-lock.json
+      - ./server/admin/frontend/tsconfig.json
+      - ./server/admin/frontend/src/**/*
+    desc: "Build the frontend"
+
+  sqlc:
     cmds:
       - sqlc generate -f ./db/sqlc.yml
     sources:
       - ./db/sqlc.yml
       - ./db/queries/**/*.sql
+    generates:
+      - ./db/mariadb/db.go
+      - ./db/mariadb/models.go
+      - ./db/mariadb/user.sql.go
+    desc: "Generate SQLC code"
+
+  dev:
+    deps: [sqlc, frontend, frontend-build]
+    desc: "Run both SQLC generation and Node.js dev server"

@@ -6,6 +6,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/tokuhirom/blog3/db/mariadb"
 	"github.com/tokuhirom/blog3/server"
+	"github.com/tokuhirom/blog3/server/admin"
 	"log"
 	"net"
 	"net/http"
@@ -17,26 +18,15 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type config struct {
-	Port       int    `env:"BLOG3_PORT" envDefault:"9191"`
-	DBUser     string `env:"DATABASE_USER"`
-	DBPassword string `env:"DATABASE_PASSWORD"`
-	DBHostname string `env:"DATABASE_HOST"`
-	DBPort     int    `env:"DATABASE_PORT" envDefault:"3306"`
-	DBName     string `env:"DATABASE_DB"   envDefault:"blog3"`
-	// 9*60*60=32400 is JST
-	TimeZoneOffset int `env:"TIMEZONE_OFFSET" envDefault:"32400"`
-}
-
 func main() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("failed to load .env: %v", err)
 	}
 
-	cfg, err := env.ParseAs[config]()
+	cfg, err := env.ParseAs[server.Config]()
 	if err != nil {
-		log.Fatalf("failed to parse config: %v", err)
+		log.Fatalf("failed to parse Config: %v", err)
 	}
 
 	mysqlConfig := mysql.Config{
@@ -62,6 +52,7 @@ func main() {
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Mount("/", server.Router(queries))
+	r.Mount("/admin", admin.Router(cfg))
 
 	// Start the server
 	log.Println("Starting server on http://localhost:8181/")

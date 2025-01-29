@@ -1,2 +1,3 @@
 .env
 /db/mariadb/
+/.task/checksum/
