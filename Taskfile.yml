@@ -1,0 +1,9 @@
+version: '3'
+
+tasks:
+  gen:
+    cmds:
+      - sqlc generate -f ./db/sqlc.yml
+    sources:
+      - ./db/sqlc.yml
+      - ./db/queries/**/*.sql
