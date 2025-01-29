@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"embed"
+	"github.com/go-chi/chi/v5"
 	"github.com/tokuhirom/blog3/db/mariadb"
 	"html/template"
 	"log"
@@ -12,7 +13,6 @@ import (
 	"os"
 	"regexp"
 	"strconv"
-	"strings"
 	"time"
 	"unicode/utf8"
 
@@ -138,7 +138,7 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Quer
 }
 
 func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Queries) {
-	extractedPath := strings.TrimPrefix(r.URL.Path, "/entry/")
+	extractedPath := chi.URLParam(r, "*")
 
 	md := markdown.NewMarkdown(r.Context(), queries)
 
@@ -299,32 +299,37 @@ func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *mari
 	}
 }
 
-func Handle(writer http.ResponseWriter, request *http.Request, queries *mariadb.Queries) {
-	if request.URL.Path == "/" {
-		RenderTopPage(writer, request, queries)
-	} else if request.URL.Path == "/feed" {
-		RenderFeed(writer, request, queries)
-	} else if strings.HasPrefix(request.URL.Path, "/entry/") {
-		RenderEntryPage(writer, request, queries)
-	} else if request.URL.Path == "/static/main.css" {
-		// if ./server/static/main.css is available, serve it.
-		// hot reload.
-		if _, err := os.Stat("server/static/main.css"); err == nil {
-			writer.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-			writer.Header().Set("Pragma", "no-cache")
-			writer.Header().Set("Expires", "0")
+func RenderStaticMainCss(writer http.ResponseWriter, request *http.Request) {
+	// if ./server/static/main.css is available, serve it.
+	// hot reload.
+	if _, err := os.Stat("server/static/main.css"); err == nil {
+		writer.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
+		writer.Header().Set("Pragma", "no-cache")
+		writer.Header().Set("Expires", "0")
 
-			http.ServeFile(writer, request, "server/static/main.css")
-			return
-		}
-
-		writer.Header().Set("Content-Type", "text/css")
-		file, err := staticFS.ReadFile("static/main.css")
-		if err != nil {
-			return
-		}
-		http.ServeContent(writer, request, "main.css", time.Time{}, bytes.NewReader(file))
-	} else {
-		http.NotFound(writer, request)
+		http.ServeFile(writer, request, "server/static/main.css")
+		return
 	}
+
+	writer.Header().Set("Content-Type", "text/css")
+	file, err := staticFS.ReadFile("static/main.css")
+	if err != nil {
+		return
+	}
+	http.ServeContent(writer, request, "main.css", time.Time{}, bytes.NewReader(file))
+}
+
+func Router(queries *mariadb.Queries) *chi.Mux {
+	r := chi.NewRouter()
+	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		RenderTopPage(w, r, queries)
+	})
+	r.Get("/feed", func(w http.ResponseWriter, r *http.Request) {
+		RenderFeed(w, r, queries)
+	})
+	r.Get("/entry/*", func(w http.ResponseWriter, r *http.Request) {
+		RenderEntryPage(w, r, queries)
+	})
+	r.Get("/static/main.css", RenderStaticMainCss)
+	return r
 }

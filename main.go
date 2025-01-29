@@ -2,8 +2,9 @@ package main
 
 import (
 	"database/sql"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/tokuhirom/blog3/db/mariadb"
-	"github.com/tokuhirom/blog3/middleware"
 	"github.com/tokuhirom/blog3/server"
 	"log"
 	"net"
@@ -58,16 +59,13 @@ func main() {
 
 	queries := mariadb.New(sqlDB)
 
-	mux := http.NewServeMux()
-	mux.HandleFunc("/", func(writer http.ResponseWriter, request *http.Request) {
-		server.Handle(writer, request, queries)
-	})
-
-	loggedMux := middleware.LoggingMiddleware(mux)
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Mount("/", server.Router(queries))
 
 	// Start the server
 	log.Println("Starting server on http://localhost:8181/")
-	err = http.ListenAndServe(":8181", loggedMux)
+	err = http.ListenAndServe(":8181", r)
 	if err != nil {
 		log.Fatalf("Server failed to start: %v", err)
 	}
