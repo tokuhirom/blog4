@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/tokuhirom/blog3/db/mariadb"
+	"github.com/tokuhirom/blog3/db/public/publicdb"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/parser"
@@ -98,7 +98,7 @@ func (p *WikiParser) Parse(_ ast.Node, block text.Reader, _ parser.Context) ast.
 
 type WikiRenderer struct {
 	Resolver any
-	Queries  *mariadb.Queries
+	Queries  *publicdb.Queries
 	Context  context.Context
 }
 

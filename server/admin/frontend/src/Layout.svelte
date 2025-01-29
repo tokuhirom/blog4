@@ -5,7 +5,6 @@ import {Link} from "svelte-routing";
 <div>
     <header>
         <h1>tokuhirom's blog admin</h1>
-        <!-- You can add navigation links here -->
         <nav>
             <a href="/">Home</a> | <Link to="/admin/help">Help</Link>
         </nav>
@@ -24,6 +23,7 @@ import {Link} from "svelte-routing";
         padding: 1rem;
         text-align: center;
     }
+
     main {
         padding: 2rem;
         margin-bottom: 4rem; /* to avoid overlap with footer */

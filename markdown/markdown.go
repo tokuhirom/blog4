@@ -3,7 +3,7 @@ package markdown
 import (
 	"bytes"
 	"context"
-	"github.com/tokuhirom/blog3/db/mariadb"
+	"github.com/tokuhirom/blog3/db/public/publicdb"
 	"github.com/yuin/goldmark"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/extension"
@@ -17,10 +17,10 @@ type Markdown struct {
 
 type WikiLinkResolver struct {
 	ctx context.Context
-	db  *mariadb.Queries
+	db  *publicdb.Queries
 }
 
-func NewMarkdown(ctx context.Context, queries *mariadb.Queries) *Markdown {
+func NewMarkdown(ctx context.Context, queries *publicdb.Queries) *Markdown {
 	md := goldmark.New(
 		goldmark.WithExtensions(
 			extension.GFM,     // Enable GitHub Flavored Markdown

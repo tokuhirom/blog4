@@ -2,8 +2,8 @@ version: "2"
 sql:
   - engine: "mysql"
     queries: "./queries/"
-    schema: "./schema.sql"
+    schema: "../schema.sql"
     gen:
       go:
-        package: "mariadb"
-        out: "mariadb"
+        package: "admindb"
+        out: "admindb"

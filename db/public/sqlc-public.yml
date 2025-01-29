@@ -1,0 +1,9 @@
+version: "2"
+sql:
+  - engine: "mysql"
+    queries: "./queries/"
+    schema: "../schema.sql"
+    gen:
+      go:
+        package: "publicdb"
+        out: "publicdb"

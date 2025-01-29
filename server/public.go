@@ -5,7 +5,7 @@ import (
 	"context"
 	"embed"
 	"github.com/go-chi/chi/v5"
-	"github.com/tokuhirom/blog3/db/mariadb"
+	"github.com/tokuhirom/blog3/db/public/publicdb"
 	"html/template"
 	"log"
 	"log/slog"
@@ -46,11 +46,11 @@ type EntryViewData struct {
 // summarizeEntry takes a string and returns a processed summary.
 func summarizeEntry(body string, length int) string {
 	// Remove URLs
-	reURL := regexp.MustCompile(`https?://[^\s]+`)
+	reURL := regexp.MustCompile(`https?://\S+`)
 	body = reURL.ReplaceAllString(body, "")
 
 	// Replace [[foobar]] with foobar
-	reBrackets := regexp.MustCompile(`\[\[(.*?)\]\]`)
+	reBrackets := regexp.MustCompile(`\[\[(.*?)]]`)
 	body = reBrackets.ReplaceAllString(body, "$1")
 
 	// Trim to the specified length without cutting multibyte characters
@@ -62,7 +62,7 @@ func summarizeEntry(body string, length int) string {
 	return body
 }
 
-func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Queries) {
+func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Queries) {
 	// Parse and execute the template
 	tmpl, err := template.ParseFS(templateFS, "templates/index.html")
 	if err != nil {
@@ -84,7 +84,7 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Quer
 	entriesPerPage := 60
 	offset := (page - 1) * entriesPerPage
 
-	entries, err := queries.SearchEntries(r.Context(), mariadb.SearchEntriesParams{
+	entries, err := queries.SearchEntries(r.Context(), publicdb.SearchEntriesParams{
 		Limit:  int32(entriesPerPage + 1),
 		Offset: int32(offset),
 	})
@@ -137,7 +137,7 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Quer
 	}
 }
 
-func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Queries) {
+func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Queries) {
 	extractedPath := chi.URLParam(r, "*")
 
 	md := markdown.NewMarkdown(r.Context(), queries)
@@ -177,7 +177,7 @@ func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Qu
 		Body              template.HTML
 		PublishedAt       string
 		HasRelatedEntries bool
-		RelatedEntries    []mariadb.Entry
+		RelatedEntries    []publicdb.Entry
 	}{
 		Title:             entry.Title,
 		Body:              body,
@@ -199,27 +199,27 @@ func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *mariadb.Qu
 	}
 }
 
-func getRelatedEntries(context context.Context, queries *mariadb.Queries, entry mariadb.Entry) ([]mariadb.Entry, error) {
+func getRelatedEntries(context context.Context, queries *publicdb.Queries, entry publicdb.Entry) ([]publicdb.Entry, error) {
 	// 現在表示しているエントリがリンクしているページ
 	entries1, err := queries.GetRelatedEntries1(context, entry.Path)
 	if err != nil {
-		return []mariadb.Entry{}, err
+		return []publicdb.Entry{}, err
 	}
 	// 現在表示しているページにリンクしているページ
 	entries2, err := queries.GetRelatedEntries2(context, entry.Title)
 	if err != nil {
-		return []mariadb.Entry{}, err
+		return []publicdb.Entry{}, err
 	}
 	entries3, err := queries.GetRelatedEntries3(context, entry.Title)
 	if err != nil {
-		return []mariadb.Entry{}, err
+		return []publicdb.Entry{}, err
 	}
 
 	// Use a map to track unique paths
-	uniqueEntriesMap := make(map[string]mariadb.Entry)
+	uniqueEntriesMap := make(map[string]publicdb.Entry)
 
 	// Helper function to add entries to the map
-	addUniqueEntries := func(entries []mariadb.Entry) {
+	addUniqueEntries := func(entries []publicdb.Entry) {
 		for _, e := range entries {
 			if _, exists := uniqueEntriesMap[e.Path]; !exists {
 				uniqueEntriesMap[e.Path] = e
@@ -233,7 +233,7 @@ func getRelatedEntries(context context.Context, queries *mariadb.Queries, entry 
 	addUniqueEntries(entries3)
 
 	// Convert map values to a slice
-	uniqueEntries := make([]mariadb.Entry, 0, len(uniqueEntriesMap))
+	uniqueEntries := make([]publicdb.Entry, 0, len(uniqueEntriesMap))
 	for _, entry := range uniqueEntriesMap {
 		if entry.Visibility != "public" {
 			// 保険的にvisibilityがpublicでないエントリは除外
@@ -245,8 +245,8 @@ func getRelatedEntries(context context.Context, queries *mariadb.Queries, entry 
 	return uniqueEntries, nil
 }
 
-func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *mariadb.Queries) {
-	entries, err := queries.SearchEntries(request.Context(), mariadb.SearchEntriesParams{
+func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *publicdb.Queries) {
+	entries, err := queries.SearchEntries(request.Context(), publicdb.SearchEntriesParams{
 		Limit:  10,
 		Offset: 0,
 	})
@@ -319,7 +319,7 @@ func RenderStaticMainCss(writer http.ResponseWriter, request *http.Request) {
 	http.ServeContent(writer, request, "main.css", time.Time{}, bytes.NewReader(file))
 }
 
-func Router(queries *mariadb.Queries) *chi.Mux {
+func Router(queries *publicdb.Queries) *chi.Mux {
 	r := chi.NewRouter()
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		RenderTopPage(w, r, queries)

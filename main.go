@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/tokuhirom/blog3/db/mariadb"
+	"github.com/tokuhirom/blog3/db/public/publicdb"
 	"github.com/tokuhirom/blog3/server"
 	"github.com/tokuhirom/blog3/server/admin"
 	"log"
@@ -47,7 +47,7 @@ func main() {
 		log.Fatalf("failed to ping DB: %v", err)
 	}
 
-	queries := mariadb.New(sqlDB)
+	queries := publicdb.New(sqlDB)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
