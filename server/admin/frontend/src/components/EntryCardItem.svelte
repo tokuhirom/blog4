@@ -17,8 +17,8 @@
 	function simplifyMarkdown(text: string): string {
 		return text
 			.replaceAll(/\n/g, ' ')
-			.replaceAll(/\[(.*?)\]\(.*?\)/g, '$1')
-			.replace(/\[\[(.*?)\]\]/g, '$1')
+			.replaceAll(/\[(.*?)]\(.*?\)/g, '$1')
+			.replace(/\[\[(.*?)]]/g, '$1')
 			.replace(/`.*?`/g, '')
 			.replace(/#+/g, '')
 			.replace(/\s+/g, ' ')
