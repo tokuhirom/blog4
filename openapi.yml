@@ -1,0 +1,68 @@
+openapi: 3.0.0
+info:
+  title: Entries API
+  version: 1.0.0
+
+paths:
+  /entries:
+    get:
+      summary: Get latest entries
+      operationId: getLatestEntries
+      responses:
+        '200':
+          description: A list of latest entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/GetLatestEntriesRow'
+        default:
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    GetLatestEntriesRow:
+      type: object
+      properties:
+        Path:
+          type: string
+        Title:
+          type: string
+        Body:
+          type: string
+        Visibility:
+          type: string
+        Format:
+          type: string
+        PublishedAt:
+          type: string
+          format: date-time
+          nullable: true
+        LastEditedAt:
+          type: string
+          format: date-time
+          nullable: true
+        CreatedAt:
+          type: string
+          format: date-time
+          nullable: true
+        UpdatedAt:
+          type: string
+          format: date-time
+          nullable: true
+        ImageUrl:
+          type: string
+          nullable: true
+
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        error:
+          type: string

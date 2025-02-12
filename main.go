@@ -19,6 +19,8 @@ import (
 	"github.com/joho/godotenv"
 )
 
+//go:generate go run github.com/ogen-go/ogen/cmd/ogen@latest --target ./server/admin/openapi -package openapi --clean openapi.yml
+
 func main() {
 	err := godotenv.Load()
 	if err != nil {

@@ -2,12 +2,12 @@ package admin
 
 import (
 	"bytes"
-	"database/sql"
 	"embed"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server"
+	"github.com/tokuhirom/blog4/server/admin/openapi"
 	"log"
 	"net/http"
 	"time"
@@ -57,27 +57,16 @@ func Router(cfg server.Config, queries *admindb.Queries) *chi.Mux {
 		}
 		http.ServeContent(w, r, "index.html", time.Time{}, bytes.NewReader(file))
 	})
-	r.Get("/api/entries", func(w http.ResponseWriter, r *http.Request) {
-		r.URL.Query().Get("")
-		_, err := queries.GetLatestEntries(r.Context(), admindb.GetLatestEntriesParams{
-			Column1: nil,
-			LastEditedAt: sql.NullTime{
-				Time:  time.Now(),
-				Valid: true,
-			},
-			Limit: 100,
-		})
-		if err != nil {
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.WriteHeader(http.StatusOK)
-		_, err = w.Write([]byte("{\"hello\": \"world\"}"))
-		if err != nil {
-			log.Printf("Failed to write response: %v", err)
-		}
-	})
 	r.Get("/assets/*", handleAssets)
+
+	apiService := adminApiService{
+		queries: queries,
+	}
+	adminApiHandler, err := openapi.NewServer(&apiService, openapi.WithPathPrefix("/admin/api"))
+	if err != nil {
+		return nil
+	}
+	r.Mount("/api/", adminApiHandler)
+
 	return r
 }
