@@ -43,76 +43,22 @@ func (q *Queries) DeleteEntryLink(ctx context.Context, srcPath string) (int64, e
 	return result.RowsAffected()
 }
 
-const getEntriesOlderThan = `-- name: GetEntriesOlderThan :many
-SELECT entry.path, entry.title, entry.body, entry.visibility, entry.format, entry.published_at, entry.last_edited_at, entry.created_at, entry.updated_at, entry_image.url AS image_url
-FROM entry
-         LEFT JOIN entry_image ON (entry.path = entry_image.path)
-WHERE last_edited_at <= ?
-ORDER BY last_edited_at DESC, path DESC
-LIMIT ?
-`
-
-type GetEntriesOlderThanParams struct {
-	LastEditedAt sql.NullTime
-	Limit        int32
-}
-
-type GetEntriesOlderThanRow struct {
-	Path         string
-	Title        string
-	Body         string
-	Visibility   EntryVisibility
-	Format       EntryFormat
-	PublishedAt  sql.NullTime
-	LastEditedAt sql.NullTime
-	CreatedAt    sql.NullTime
-	UpdatedAt    sql.NullTime
-	ImageUrl     sql.NullString
-}
-
-func (q *Queries) GetEntriesOlderThan(ctx context.Context, arg GetEntriesOlderThanParams) ([]GetEntriesOlderThanRow, error) {
-	rows, err := q.db.QueryContext(ctx, getEntriesOlderThan, arg.LastEditedAt, arg.Limit)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetEntriesOlderThanRow
-	for rows.Next() {
-		var i GetEntriesOlderThanRow
-		if err := rows.Scan(
-			&i.Path,
-			&i.Title,
-			&i.Body,
-			&i.Visibility,
-			&i.Format,
-			&i.PublishedAt,
-			&i.LastEditedAt,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.ImageUrl,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const getLatestEntries = `-- name: GetLatestEntries :many
 SELECT entry.path, entry.title, entry.body, entry.visibility, entry.format, entry.published_at, entry.last_edited_at, entry.created_at, entry.updated_at, entry_image.url AS image_url
 FROM entry
     LEFT JOIN entry_image ON (entry.path = entry_image.path)
+WHERE (? IS NULL OR last_edited_at <= ?)
 ORDER BY
     last_edited_at DESC
     , path DESC
-LIMIT 100
+LIMIT ?
 `
+
+type GetLatestEntriesParams struct {
+	Column1      interface{}
+	LastEditedAt sql.NullTime
+	Limit        int32
+}
 
 type GetLatestEntriesRow struct {
 	Path         string
@@ -127,8 +73,8 @@ type GetLatestEntriesRow struct {
 	ImageUrl     sql.NullString
 }
 
-func (q *Queries) GetLatestEntries(ctx context.Context) ([]GetLatestEntriesRow, error) {
-	rows, err := q.db.QueryContext(ctx, getLatestEntries)
+func (q *Queries) GetLatestEntries(ctx context.Context, arg GetLatestEntriesParams) ([]GetLatestEntriesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getLatestEntries, arg.Column1, arg.LastEditedAt, arg.Limit)
 	if err != nil {
 		return nil, err
 	}

@@ -4,9 +4,10 @@ import (
 	"database/sql"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/tokuhirom/blog3/db/public/publicdb"
-	"github.com/tokuhirom/blog3/server"
-	"github.com/tokuhirom/blog3/server/admin"
+	"github.com/tokuhirom/blog4/db/admin/admindb"
+	"github.com/tokuhirom/blog4/db/public/publicdb"
+	"github.com/tokuhirom/blog4/server"
+	"github.com/tokuhirom/blog4/server/admin"
 	"log"
 	"net"
 	"net/http"
@@ -47,12 +48,13 @@ func main() {
 		log.Fatalf("failed to ping DB: %v", err)
 	}
 
-	queries := publicdb.New(sqlDB)
+	publicQueries := publicdb.New(sqlDB)
+	adminQueries := admindb.New(sqlDB)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Mount("/", server.Router(queries))
-	r.Mount("/admin", admin.Router(cfg))
+	r.Mount("/", server.Router(publicQueries))
+	r.Mount("/admin", admin.Router(cfg, adminQueries))
 
 	// Start the server
 	log.Println("Starting server on http://localhost:8181/")

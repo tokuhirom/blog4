@@ -3,7 +3,7 @@ package markdown
 import (
 	"bytes"
 	"context"
-	"github.com/tokuhirom/blog3/db/public/publicdb"
+	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/yuin/goldmark"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/extension"

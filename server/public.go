@@ -5,7 +5,7 @@ import (
 	"context"
 	"embed"
 	"github.com/go-chi/chi/v5"
-	"github.com/tokuhirom/blog3/db/public/publicdb"
+	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"html/template"
 	"log"
 	"log/slog"
@@ -17,7 +17,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/gorilla/feeds"
-	"github.com/tokuhirom/blog3/markdown"
+	"github.com/tokuhirom/blog4/markdown"
 )
 
 //go:embed templates/*

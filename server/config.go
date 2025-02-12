@@ -1,6 +1,8 @@
 package server
 
 type Config struct {
+	LocalDev bool `env:"LOCAL_DEV" envDefault:"false"`
+
 	Port int `env:"BLOG_PORT" envDefault:"9191"`
 
 	DBUser     string `env:"DATABASE_USER"`

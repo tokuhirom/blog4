@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"github.com/tokuhirom/blog3/db/public/publicdb"
+	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/parser"

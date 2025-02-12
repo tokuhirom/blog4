@@ -2,17 +2,10 @@
 SELECT entry.*, entry_image.url AS image_url
 FROM entry
     LEFT JOIN entry_image ON (entry.path = entry_image.path)
+WHERE (? IS NULL OR last_edited_at <= ?)
 ORDER BY
     last_edited_at DESC
     , path DESC
-LIMIT 100;
-
--- name: GetEntriesOlderThan :many
-SELECT entry.*, entry_image.url AS image_url
-FROM entry
-         LEFT JOIN entry_image ON (entry.path = entry_image.path)
-WHERE last_edited_at <= ?
-ORDER BY last_edited_at DESC, path DESC
 LIMIT ?;
 
 -- name: AdminGetEntryByPath :one
