@@ -8,8 +8,6 @@
 <Router>
     <Layout>
         <Route path="/admin/">
-            top...
-            {import.meta.env.VITE_API_BASE_URL}
             <Link to="/admin/help">Posts</Link>
             <TopPage />
         </Route>
