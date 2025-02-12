@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { type Entry, type EntryImageAware } from '../entity';
-	import CardItem from './CardItem.svelte';
+    import CardItem from './CardItem.svelte';
+    import type {GetLatestEntriesRow} from "../generated-client";
 
 	let {
 		entry,
@@ -8,7 +8,7 @@
 		color = '#0f0f0f',
 		onClick
 	}: {
-		entry: Entry & EntryImageAware;
+		entry: GetLatestEntriesRow;
 		backgroundColor: string;
 		color: string;
 		onClick: (event: MouseEvent) => void;
@@ -28,7 +28,7 @@
 
 	let title = entry.title;
 	let content = entry.body ? simplifyMarkdown(entry.body).slice(0, 100) + '...' : '';
-	let imgSrc = entry.image_url;
+	let imgSrc = entry.imageUrl;
 </script>
 
 <CardItem {onClick} {backgroundColor} {color} {title} {content} {imgSrc} />

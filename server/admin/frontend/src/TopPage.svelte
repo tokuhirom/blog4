@@ -1,6 +1,5 @@
 <script lang="ts">
     import SearchBox from './SearchBox.svelte';
-    import {type Entry, type EntryImageAware} from './entity';
     import {onDestroy, onMount} from 'svelte';
     import AdminEntryCardItem from './AdminEntryCardItem.svelte';
     import {type GetLatestEntriesRow} from "./generated-client";

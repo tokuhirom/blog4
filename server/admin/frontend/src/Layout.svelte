@@ -6,7 +6,7 @@ import {Link} from "svelte-routing";
     <header>
         <h1>tokuhirom's blog admin</h1>
         <nav>
-            <a href="/">Home</a> | <Link to="/admin/help">Help</Link>
+            <a href="/">Home</a> | <Link to="/admin/help">New entry</Link>
         </nav>
     </header>
 

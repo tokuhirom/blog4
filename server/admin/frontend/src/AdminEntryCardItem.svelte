@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { type Entry, type EntryImageAware } from './entity';
-	import EntryCardItem from './components/EntryCardItem.svelte';
+    import EntryCardItem from './components/EntryCardItem.svelte';
+    import type {GetLatestEntriesRow} from "./generated-client";
 
 	let {
 		entry,
@@ -16,7 +16,7 @@
 			}
 		}
 	}: {
-		entry: Entry & EntryImageAware;
+		entry: GetLatestEntriesRow;
 		backgroundColor?: string;
 		color?: string;
 		onClick?: (event: MouseEvent) => void;
