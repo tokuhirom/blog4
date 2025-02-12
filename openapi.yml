@@ -8,6 +8,14 @@ paths:
     get:
       summary: Get latest entries
       operationId: getLatestEntries
+      parameters:
+        - name: last_last_edited_at
+          in: query
+          description: Filter entries by the last edited date
+          required: false
+          schema:
+            type: string
+            format: date-time
       responses:
         '200':
           description: A list of latest entries

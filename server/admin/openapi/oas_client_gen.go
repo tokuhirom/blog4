@@ -15,6 +15,7 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
 	"go.opentelemetry.io/otel/trace"
 
+	"github.com/ogen-go/ogen/conv"
 	ht "github.com/ogen-go/ogen/http"
 	"github.com/ogen-go/ogen/otelogen"
 	"github.com/ogen-go/ogen/uri"
@@ -32,7 +33,7 @@ type Invoker interface {
 	// Get latest entries.
 	//
 	// GET /entries
-	GetLatestEntries(ctx context.Context) ([]GetLatestEntriesRow, error)
+	GetLatestEntries(ctx context.Context, params GetLatestEntriesParams) ([]GetLatestEntriesRow, error)
 }
 
 // Client implements OAS client.
@@ -87,12 +88,12 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 // Get latest entries.
 //
 // GET /entries
-func (c *Client) GetLatestEntries(ctx context.Context) ([]GetLatestEntriesRow, error) {
-	res, err := c.sendGetLatestEntries(ctx)
+func (c *Client) GetLatestEntries(ctx context.Context, params GetLatestEntriesParams) ([]GetLatestEntriesRow, error) {
+	res, err := c.sendGetLatestEntries(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendGetLatestEntries(ctx context.Context) (res []GetLatestEntriesRow, err error) {
+func (c *Client) sendGetLatestEntries(ctx context.Context, params GetLatestEntriesParams) (res []GetLatestEntriesRow, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getLatestEntries"),
 		semconv.HTTPRequestMethodKey.String("GET"),
@@ -131,6 +132,27 @@ func (c *Client) sendGetLatestEntries(ctx context.Context) (res []GetLatestEntri
 	var pathParts [1]string
 	pathParts[0] = "/entries"
 	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeQueryParams"
+	q := uri.NewQueryEncoder()
+	{
+		// Encode "last_last_edited_at" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "last_last_edited_at",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.LastLastEditedAt.Get(); ok {
+				return e.EncodeValue(conv.DateTimeToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	u.RawQuery = q.Values().Encode()
 
 	stage = "EncodeRequest"
 	r, err := ht.NewRequest(ctx, "GET", u)

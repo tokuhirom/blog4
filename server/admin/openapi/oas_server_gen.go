@@ -13,7 +13,7 @@ type Handler interface {
 	// Get latest entries.
 	//
 	// GET /entries
-	GetLatestEntries(ctx context.Context) ([]GetLatestEntriesRow, error)
+	GetLatestEntries(ctx context.Context, params GetLatestEntriesParams) ([]GetLatestEntriesRow, error)
 	// NewError creates *ErrorResponseStatusCode from error returned by handler.
 	//
 	// Used for common default response.

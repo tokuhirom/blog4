@@ -18,7 +18,7 @@ var _ Handler = UnimplementedHandler{}
 // Get latest entries.
 //
 // GET /entries
-func (UnimplementedHandler) GetLatestEntries(ctx context.Context) (r []GetLatestEntriesRow, _ error) {
+func (UnimplementedHandler) GetLatestEntries(ctx context.Context, params GetLatestEntriesParams) (r []GetLatestEntriesRow, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

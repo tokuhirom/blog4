@@ -7,21 +7,29 @@ import (
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server/admin/openapi"
 	"log"
-	"time"
 )
 
 type adminApiService struct {
 	queries *admindb.Queries
 }
 
-func (p *adminApiService) GetLatestEntries(ctx context.Context) ([]openapi.GetLatestEntriesRow, error) {
-	entries, err := p.queries.GetLatestEntries(ctx, admindb.GetLatestEntriesParams{
-		Column1: nil,
-		LastEditedAt: sql.NullTime{
-			Time:  time.Now(),
+func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.GetLatestEntriesParams) ([]openapi.GetLatestEntriesRow, error) {
+	var lastEditedAt sql.NullTime
+	if params.LastLastEditedAt.IsSet() {
+		lastEditedAt = sql.NullTime{
+			Time:  params.LastLastEditedAt.Value,
 			Valid: true,
-		},
-		Limit: 100,
+		}
+	} else {
+		lastEditedAt = sql.NullTime{
+			Valid: false,
+		}
+	}
+	log.Printf("GetLatestEntries %v", lastEditedAt)
+	entries, err := p.queries.GetLatestEntries(ctx, admindb.GetLatestEntriesParams{
+		Column1:      lastEditedAt,
+		LastEditedAt: lastEditedAt,
+		Limit:        100,
 	})
 	if err != nil {
 		return nil, err

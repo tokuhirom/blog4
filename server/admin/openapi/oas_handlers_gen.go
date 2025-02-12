@@ -16,6 +16,7 @@ import (
 
 	ht "github.com/ogen-go/ogen/http"
 	"github.com/ogen-go/ogen/middleware"
+	"github.com/ogen-go/ogen/ogenerrors"
 	"github.com/ogen-go/ogen/otelogen"
 )
 
@@ -97,8 +98,22 @@ func (s *Server) handleGetLatestEntriesRequest(args [0]string, argsEscaped bool,
 
 			s.errors.Add(ctx, 1, metric.WithAttributes(attrs...))
 		}
-		err error
+		err          error
+		opErrContext = ogenerrors.OperationContext{
+			Name: GetLatestEntriesOperation,
+			ID:   "getLatestEntries",
+		}
 	)
+	params, err := decodeGetLatestEntriesParams(args, argsEscaped, r)
+	if err != nil {
+		err = &ogenerrors.DecodeParamsError{
+			OperationContext: opErrContext,
+			Err:              err,
+		}
+		defer recordError("DecodeParams", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
 
 	var response []GetLatestEntriesRow
 	if m := s.cfg.Middleware; m != nil {
@@ -108,13 +123,18 @@ func (s *Server) handleGetLatestEntriesRequest(args [0]string, argsEscaped bool,
 			OperationSummary: "Get latest entries",
 			OperationID:      "getLatestEntries",
 			Body:             nil,
-			Params:           middleware.Parameters{},
-			Raw:              r,
+			Params: middleware.Parameters{
+				{
+					Name: "last_last_edited_at",
+					In:   "query",
+				}: params.LastLastEditedAt,
+			},
+			Raw: r,
 		}
 
 		type (
 			Request  = struct{}
-			Params   = struct{}
+			Params   = GetLatestEntriesParams
 			Response = []GetLatestEntriesRow
 		)
 		response, err = middleware.HookMiddleware[
@@ -124,14 +144,14 @@ func (s *Server) handleGetLatestEntriesRequest(args [0]string, argsEscaped bool,
 		](
 			m,
 			mreq,
-			nil,
+			unpackGetLatestEntriesParams,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.GetLatestEntries(ctx)
+				response, err = s.h.GetLatestEntries(ctx, params)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.GetLatestEntries(ctx)
+		response, err = s.h.GetLatestEntries(ctx, params)
 	}
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorResponseStatusCode](err); ok {
