@@ -49,5 +49,13 @@ tasks:
     desc: "Run SQLC generation for both admin and public databases"
 
   dev:
-    deps: [sqlc, frontend, frontend-build]
+    deps: [sqlc, frontend, frontend-build, ogen]
     desc: "Run both SQLC generation and Node.js dev server"
+
+  ogen:
+    cmds:
+      - go generate main.go
+    sources:
+      - oepnapi.yml
+      - main.go
+    desc: "Generate OpenAPI server code"
