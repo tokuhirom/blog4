@@ -13,6 +13,15 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
+// GetEntryByDynamicPath implements getEntryByDynamicPath operation.
+//
+// Get entry by dynamic path.
+//
+// GET /entries/{path}
+func (UnimplementedHandler) GetEntryByDynamicPath(ctx context.Context, params GetEntryByDynamicPathParams) (r *GetLatestEntriesRow, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetLatestEntries implements getLatestEntries operation.
 //
 // Get latest entries.

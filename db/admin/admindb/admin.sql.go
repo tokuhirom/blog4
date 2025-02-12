@@ -11,12 +11,28 @@ import (
 )
 
 const adminGetEntryByPath = `-- name: AdminGetEntryByPath :one
-SELECT path, title, body, visibility, format, published_at, last_edited_at, created_at, updated_at FROM entry WHERE path = ?
+SELECT entry.path, entry.title, entry.body, entry.visibility, entry.format, entry.published_at, entry.last_edited_at, entry.created_at, entry.updated_at, entry_image.url AS image_url
+FROM entry
+    LEFT JOIN entry_image ON (entry.path = entry_image.path)
+WHERE entry.path = ?
 `
 
-func (q *Queries) AdminGetEntryByPath(ctx context.Context, path string) (Entry, error) {
+type AdminGetEntryByPathRow struct {
+	Path         string
+	Title        string
+	Body         string
+	Visibility   EntryVisibility
+	Format       EntryFormat
+	PublishedAt  sql.NullTime
+	LastEditedAt sql.NullTime
+	CreatedAt    sql.NullTime
+	UpdatedAt    sql.NullTime
+	ImageUrl     sql.NullString
+}
+
+func (q *Queries) AdminGetEntryByPath(ctx context.Context, path string) (AdminGetEntryByPathRow, error) {
 	row := q.db.QueryRowContext(ctx, adminGetEntryByPath, path)
-	var i Entry
+	var i AdminGetEntryByPathRow
 	err := row.Scan(
 		&i.Path,
 		&i.Title,
@@ -27,6 +43,7 @@ func (q *Queries) AdminGetEntryByPath(ctx context.Context, path string) (Entry, 
 		&i.LastEditedAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ImageUrl,
 	)
 	return i, err
 }

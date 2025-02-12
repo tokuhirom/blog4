@@ -25,6 +25,10 @@ import {
     GetLatestEntriesRowToJSON,
 } from '../models/index';
 
+export interface GetEntryByDynamicPathRequest {
+    path: string;
+}
+
 export interface GetLatestEntriesRequest {
     lastLastEditedAt?: Date;
 }
@@ -33,6 +37,39 @@ export interface GetLatestEntriesRequest {
  * 
  */
 export class DefaultApi extends runtime.BaseAPI {
+
+    /**
+     * Get entry by dynamic path
+     */
+    async getEntryByDynamicPathRaw(requestParameters: GetEntryByDynamicPathRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetLatestEntriesRow>> {
+        if (requestParameters['path'] == null) {
+            throw new runtime.RequiredError(
+                'path',
+                'Required parameter "path" was null or undefined when calling getEntryByDynamicPath().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/entries/{path}`.replace(`{${"path"}}`, encodeURIComponent(String(requestParameters['path']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => GetLatestEntriesRowFromJSON(jsonValue));
+    }
+
+    /**
+     * Get entry by dynamic path
+     */
+    async getEntryByDynamicPath(requestParameters: GetEntryByDynamicPathRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<GetLatestEntriesRow> {
+        const response = await this.getEntryByDynamicPathRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Get latest entries

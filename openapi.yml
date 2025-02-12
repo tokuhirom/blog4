@@ -32,6 +32,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /entries/{path}:
+    get:
+      summary: Get entry by dynamic path
+      operationId: getEntryByDynamicPath
+      parameters:
+        - name: path
+          in: path
+          required: true
+          description: The path of the entry
+          schema:
+            type: string
+      responses:
+        '200':
+          description: An entry object
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetLatestEntriesRow'
+        default:
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     GetLatestEntriesRow:

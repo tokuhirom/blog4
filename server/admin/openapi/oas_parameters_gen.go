@@ -4,13 +4,83 @@ package openapi
 
 import (
 	"net/http"
+	"net/url"
 	"time"
+
+	"github.com/go-faster/errors"
 
 	"github.com/ogen-go/ogen/conv"
 	"github.com/ogen-go/ogen/middleware"
 	"github.com/ogen-go/ogen/ogenerrors"
 	"github.com/ogen-go/ogen/uri"
+	"github.com/ogen-go/ogen/validate"
 )
+
+// GetEntryByDynamicPathParams is parameters of getEntryByDynamicPath operation.
+type GetEntryByDynamicPathParams struct {
+	// The path of the entry.
+	Path string
+}
+
+func unpackGetEntryByDynamicPathParams(packed middleware.Parameters) (params GetEntryByDynamicPathParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "path",
+			In:   "path",
+		}
+		params.Path = packed[key].(string)
+	}
+	return params
+}
+
+func decodeGetEntryByDynamicPathParams(args [1]string, argsEscaped bool, r *http.Request) (params GetEntryByDynamicPathParams, _ error) {
+	// Decode path: path.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "path",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Path = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "path",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
 
 // GetLatestEntriesParams is parameters of getLatestEntries operation.
 type GetLatestEntriesParams struct {

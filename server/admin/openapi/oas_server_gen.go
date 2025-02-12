@@ -8,6 +8,12 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// GetEntryByDynamicPath implements getEntryByDynamicPath operation.
+	//
+	// Get entry by dynamic path.
+	//
+	// GET /entries/{path}
+	GetEntryByDynamicPath(ctx context.Context, params GetEntryByDynamicPathParams) (*GetLatestEntriesRow, error)
 	// GetLatestEntries implements getLatestEntries operation.
 	//
 	// Get latest entries.

@@ -9,7 +9,10 @@ ORDER BY
 LIMIT ?;
 
 -- name: AdminGetEntryByPath :one
-SELECT * FROM entry WHERE path = ?;
+SELECT entry.*, entry_image.url AS image_url
+FROM entry
+    LEFT JOIN entry_image ON (entry.path = entry_image.path)
+WHERE entry.path = ?;
 
 -- name: GetVisibility :one
 SELECT visibility FROM entry WHERE path = ?;

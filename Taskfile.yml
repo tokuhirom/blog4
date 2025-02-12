@@ -19,11 +19,12 @@ tasks:
     desc: "Build the frontend"
 
   sqlc-admin:
+    watch: true
     cmds:
       - sqlc generate -f ./db/admin/sqlc-admin.yml
     sources:
       - ./db/admin/sqlc-admin.yml
-      - ./db/admin/queries/**/*.sql
+      - ./db/admin/queries/admin.sql
       - ./db/schema.sql
     generates:
       - ./db/admin/admindb/db.go
@@ -32,6 +33,7 @@ tasks:
     desc: "Generate SQLC code for admin database"
 
   sqlc-public:
+    watch: true
     cmds:
       - sqlc generate -f ./db/public/sqlc-public.yml
     sources:

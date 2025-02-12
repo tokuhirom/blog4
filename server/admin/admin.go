@@ -13,6 +13,10 @@ import (
 	"time"
 )
 
+//go:embed frontend/dist/index.html
+var frontendFS embed.FS
+
+/*
 //go:embed frontend/*
 var frontendFS embed.FS
 
@@ -25,6 +29,7 @@ func handleAssets(writer http.ResponseWriter, request *http.Request) {
 	}
 	http.ServeContent(writer, request, path, time.Time{}, bytes.NewReader(file))
 }
+*/
 
 // TODO auth
 func Router(cfg server.Config, queries *admindb.Queries) *chi.Mux {
@@ -57,7 +62,7 @@ func Router(cfg server.Config, queries *admindb.Queries) *chi.Mux {
 		}
 		http.ServeContent(w, r, "index.html", time.Time{}, bytes.NewReader(file))
 	})
-	r.Get("/assets/*", handleAssets)
+	//r.Get("/assets/*", handleAssets)
 
 	apiService := adminApiService{
 		queries: queries,

@@ -53,6 +53,26 @@ func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.G
 	return result, nil
 }
 
+func (p *adminApiService) GetEntryByDynamicPath(ctx context.Context, params openapi.GetEntryByDynamicPathParams) (*openapi.GetLatestEntriesRow, error) {
+	entry, err := p.queries.AdminGetEntryByPath(ctx, params.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	return &openapi.GetLatestEntriesRow{
+		Path:         openapi.NewOptString(entry.Path),
+		Title:        openapi.NewOptString(entry.Title),
+		Body:         openapi.NewOptString(entry.Body),
+		Visibility:   openapi.NewOptString(string(entry.Visibility)),
+		Format:       openapi.NewOptString(string(entry.Format)),
+		PublishedAt:  openapi.NewOptNilDateTime(entry.PublishedAt.Time),
+		LastEditedAt: openapi.NewOptNilDateTime(entry.LastEditedAt.Time),
+		CreatedAt:    openapi.NewOptNilDateTime(entry.CreatedAt.Time),
+		UpdatedAt:    openapi.NewOptNilDateTime(entry.UpdatedAt.Time),
+		ImageUrl:     openapi.NewOptNilString(entry.ImageUrl.String),
+	}, nil
+}
+
 func (p *adminApiService) NewError(_ context.Context, err error) *openapi.ErrorResponseStatusCode {
 	log.Printf("NewError %v", err)
 	return &openapi.ErrorResponseStatusCode{
