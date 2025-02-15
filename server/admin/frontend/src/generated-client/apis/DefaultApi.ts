@@ -17,12 +17,15 @@ import * as runtime from '../runtime';
 import type {
   ErrorResponse,
   GetLatestEntriesRow,
+  UpdateEntryBodyRequest,
 } from '../models/index';
 import {
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
     GetLatestEntriesRowFromJSON,
     GetLatestEntriesRowToJSON,
+    UpdateEntryBodyRequestFromJSON,
+    UpdateEntryBodyRequestToJSON,
 } from '../models/index';
 
 export interface GetEntryByDynamicPathRequest {
@@ -35,6 +38,11 @@ export interface GetLatestEntriesRequest {
 
 export interface GetLinkedEntryPathsRequest {
     path: string;
+}
+
+export interface UpdateEntryBodyOperationRequest {
+    path: string;
+    updateEntryBodyRequest: UpdateEntryBodyRequest;
 }
 
 /**
@@ -135,6 +143,49 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async getLinkedEntryPaths(requestParameters: GetLinkedEntryPathsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<{ [key: string]: string | null; }> {
         const response = await this.getLinkedEntryPathsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Update entry body
+     */
+    async updateEntryBodyRaw(requestParameters: UpdateEntryBodyOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        if (requestParameters['path'] == null) {
+            throw new runtime.RequiredError(
+                'path',
+                'Required parameter "path" was null or undefined when calling updateEntryBody().'
+            );
+        }
+
+        if (requestParameters['updateEntryBodyRequest'] == null) {
+            throw new runtime.RequiredError(
+                'updateEntryBodyRequest',
+                'Required parameter "updateEntryBodyRequest" was null or undefined when calling updateEntryBody().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/entries/{path}/body`.replace(`{${"path"}}`, encodeURIComponent(String(requestParameters['path']))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UpdateEntryBodyRequestToJSON(requestParameters['updateEntryBodyRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * Update entry body
+     */
+    async updateEntryBody(requestParameters: UpdateEntryBodyOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.updateEntryBodyRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

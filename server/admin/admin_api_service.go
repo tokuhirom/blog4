@@ -90,6 +90,17 @@ func (p *adminApiService) GetLinkedEntryPaths(ctx context.Context, params openap
 	return links, nil
 }
 
+func (p *adminApiService) UpdateEntryBody(ctx context.Context, req *openapi.UpdateEntryBodyRequest, params openapi.UpdateEntryBodyParams) (openapi.UpdateEntryBodyRes, error) {
+	_, err := p.queries.UpdateEntryBody(ctx, admindb.UpdateEntryBodyParams{
+		Path: params.Path,
+		Body: req.Body,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &openapi.EmptyResponse{}, nil
+}
+
 func (p *adminApiService) NewError(_ context.Context, err error) *openapi.ErrorResponseStatusCode {
 	log.Printf("NewError %v", err)
 	return &openapi.ErrorResponseStatusCode{

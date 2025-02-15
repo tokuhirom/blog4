@@ -114,34 +114,15 @@
         clearMessage();
 
         try {
-            const request = {
-                body
-            };
-            const response = await fetch('/admin/api/entry/' + entry.path + '/body', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(request)
-            });
-            if (response.ok) {
-                showUpdatedMessage('Updated');
-                isDirty = false; // Reset dirty flag on successful update
-            } else {
-                let errorDetails = 'Unknown error';
-                try {
-                    const errorData = await response.json();
-                    if (errorData && errorData.error) {
-                        errorDetails = errorData.error;
-                    }
-                } catch (e) {
-                    console.error('Failed to parse error response', e);
+            await api.updateEntryBody({
+                path: path,
+                updateEntryBodyRequest: {
+                    body: body,
                 }
-                showMessage(
-                    'error',
-                    `Failed to update entry body: ${response.statusText} (${response.status}) - ${errorDetails}`
-                );
-            }
+            })
+
+            showUpdatedMessage('Updated');
+            isDirty = false; // Reset dirty flag on successful update
         } catch (e) {
             showMessage('error', 'Failed to update entry body');
             console.error('Failed to update entry body:', e);

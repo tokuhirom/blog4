@@ -82,6 +82,43 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /entries/{path}/body:
+    put:
+      summary: Update entry body
+      operationId: updateEntryBody
+      parameters:
+        - name: path
+          in: path
+          required: true
+          description: The path of the entry to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEntryBodyRequest'
+      responses:
+        '200':
+          description: Entry content updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        '404':
+          description: Entry not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     GetLatestEntriesRow:
@@ -131,3 +168,16 @@ components:
         type: string
         nullable: true
       description: Object where keys are lowercase destination entry titles and values are their paths (null if entry doesn't exist)
+
+    UpdateEntryBodyRequest:
+      type: object
+      required:
+        - body
+      properties:
+        body:
+          type: string
+          description: The new content of the entry
+
+    EmptyResponse:
+      type: object
+      properties: {}
