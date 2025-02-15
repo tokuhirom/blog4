@@ -31,6 +31,15 @@ func (UnimplementedHandler) GetLatestEntries(ctx context.Context, params GetLate
 	return r, ht.ErrNotImplemented
 }
 
+// GetLinkedEntryPaths implements getLinkedEntryPaths operation.
+//
+// Get linked entry paths.
+//
+// GET /entries/{path}/links
+func (UnimplementedHandler) GetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (r LinkedEntriesResponse, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // NewError creates *ErrorResponseStatusCode from error returned by handler.
 //
 // Used for common default response.

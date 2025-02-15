@@ -8,4 +8,5 @@ type OperationName = string
 const (
 	GetEntryByDynamicPathOperation OperationName = "GetEntryByDynamicPath"
 	GetLatestEntriesOperation      OperationName = "GetLatestEntries"
+	GetLinkedEntryPathsOperation   OperationName = "GetLinkedEntryPaths"
 )

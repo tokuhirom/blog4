@@ -33,6 +33,10 @@ export interface GetLatestEntriesRequest {
     lastLastEditedAt?: Date;
 }
 
+export interface GetLinkedEntryPathsRequest {
+    path: string;
+}
+
 /**
  * 
  */
@@ -98,6 +102,39 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async getLatestEntries(requestParameters: GetLatestEntriesRequest = {}, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<GetLatestEntriesRow>> {
         const response = await this.getLatestEntriesRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get linked entry paths
+     */
+    async getLinkedEntryPathsRaw(requestParameters: GetLinkedEntryPathsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<{ [key: string]: string | null; }>> {
+        if (requestParameters['path'] == null) {
+            throw new runtime.RequiredError(
+                'path',
+                'Required parameter "path" was null or undefined when calling getLinkedEntryPaths().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/entries/{path}/links`.replace(`{${"path"}}`, encodeURIComponent(String(requestParameters['path']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * Get linked entry paths
+     */
+    async getLinkedEntryPaths(requestParameters: GetLinkedEntryPathsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<{ [key: string]: string | null; }> {
+        const response = await this.getLinkedEntryPathsRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

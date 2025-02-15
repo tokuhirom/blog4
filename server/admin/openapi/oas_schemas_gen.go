@@ -177,6 +177,65 @@ func (s *GetLatestEntriesRow) SetImageUrl(val OptNilString) {
 	s.ImageUrl = val
 }
 
+// Object where keys are lowercase destination entry titles and values are their paths (null if entry
+// doesn't exist).
+// Ref: #/components/schemas/LinkedEntriesResponse
+type LinkedEntriesResponse map[string]NilString
+
+func (s *LinkedEntriesResponse) init() LinkedEntriesResponse {
+	m := *s
+	if m == nil {
+		m = map[string]NilString{}
+		*s = m
+	}
+	return m
+}
+
+// NewNilString returns new NilString with value set to v.
+func NewNilString(v string) NilString {
+	return NilString{
+		Value: v,
+	}
+}
+
+// NilString is nullable string.
+type NilString struct {
+	Value string
+	Null  bool
+}
+
+// SetTo sets value to v.
+func (o *NilString) SetTo(v string) {
+	o.Null = false
+	o.Value = v
+}
+
+// IsSet returns true if value is Null.
+func (o NilString) IsNull() bool { return o.Null }
+
+// SetNull sets value to null.
+func (o *NilString) SetToNull() {
+	o.Null = true
+	var v string
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o NilString) Get() (v string, ok bool) {
+	if o.Null {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o NilString) Or(d string) string {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptDateTime returns new OptDateTime with value set to v.
 func NewOptDateTime(v time.Time) OptDateTime {
 	return OptDateTime{

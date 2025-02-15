@@ -20,6 +20,12 @@ type Handler interface {
 	//
 	// GET /entries
 	GetLatestEntries(ctx context.Context, params GetLatestEntriesParams) ([]GetLatestEntriesRow, error)
+	// GetLinkedEntryPaths implements getLinkedEntryPaths operation.
+	//
+	// Get linked entry paths.
+	//
+	// GET /entries/{path}/links
+	GetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (LinkedEntriesResponse, error)
 	// NewError creates *ErrorResponseStatusCode from error returned by handler.
 	//
 	// Used for common default response.

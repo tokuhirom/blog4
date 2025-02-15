@@ -146,3 +146,69 @@ func decodeGetLatestEntriesParams(args [0]string, argsEscaped bool, r *http.Requ
 	}
 	return params, nil
 }
+
+// GetLinkedEntryPathsParams is parameters of getLinkedEntryPaths operation.
+type GetLinkedEntryPathsParams struct {
+	// The source entry path.
+	Path string
+}
+
+func unpackGetLinkedEntryPathsParams(packed middleware.Parameters) (params GetLinkedEntryPathsParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "path",
+			In:   "path",
+		}
+		params.Path = packed[key].(string)
+	}
+	return params
+}
+
+func decodeGetLinkedEntryPathsParams(args [1]string, argsEscaped bool, r *http.Request) (params GetLinkedEntryPathsParams, _ error) {
+	// Decode path: path.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "path",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Path = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "path",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}

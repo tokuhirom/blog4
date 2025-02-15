@@ -124,6 +124,68 @@ func (q *Queries) GetLatestEntries(ctx context.Context, arg GetLatestEntriesPara
 	return items, nil
 }
 
+const getLinkedEntries = `-- name: GetLinkedEntries :many
+SELECT DISTINCT
+    entry_link.dst_title AS dst_title,
+    dest_entry.title title,
+    dest_entry.path path,
+    dest_entry.body,
+    dest_entry.visibility,
+    dest_entry.format,
+    dest_entry.created_at,
+    dest_entry.updated_at,
+    entry_image.url AS image_url
+FROM entry_link
+    LEFT JOIN entry dest_entry ON (dest_entry.title = entry_link.dst_title)
+    LEFT JOIN entry_image ON (dest_entry.path = entry_image.path)
+WHERE entry_link.src_path = ?
+`
+
+type GetLinkedEntriesRow struct {
+	DstTitle   string
+	Title      sql.NullString
+	Path       sql.NullString
+	Body       sql.NullString
+	Visibility NullEntryVisibility
+	Format     NullEntryFormat
+	CreatedAt  sql.NullTime
+	UpdatedAt  sql.NullTime
+	ImageUrl   sql.NullString
+}
+
+func (q *Queries) GetLinkedEntries(ctx context.Context, srcPath string) ([]GetLinkedEntriesRow, error) {
+	rows, err := q.db.QueryContext(ctx, getLinkedEntries, srcPath)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetLinkedEntriesRow
+	for rows.Next() {
+		var i GetLinkedEntriesRow
+		if err := rows.Scan(
+			&i.DstTitle,
+			&i.Title,
+			&i.Path,
+			&i.Body,
+			&i.Visibility,
+			&i.Format,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ImageUrl,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getVisibility = `-- name: GetVisibility :one
 SELECT visibility FROM entry WHERE path = ?
 `

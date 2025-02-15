@@ -57,6 +57,31 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /entries/{path}/links:
+    get:
+      summary: Get linked entry paths
+      operationId: getLinkedEntryPaths
+      parameters:
+        - name: path
+          in: path
+          required: true
+          description: The source entry path
+          schema:
+            type: string
+      responses:
+        '200':
+          description: A map of linked entry titles to their paths
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LinkedEntriesResponse'
+        default:
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     GetLatestEntriesRow:
@@ -99,3 +124,10 @@ components:
           type: string
         error:
           type: string
+
+    LinkedEntriesResponse:
+      type: object
+      additionalProperties:
+        type: string
+        nullable: true
+      description: Object where keys are lowercase destination entry titles and values are their paths (null if entry doesn't exist)

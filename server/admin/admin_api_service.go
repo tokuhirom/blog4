@@ -7,6 +7,7 @@ import (
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server/admin/openapi"
 	"log"
+	"strings"
 )
 
 type adminApiService struct {
@@ -71,6 +72,22 @@ func (p *adminApiService) GetEntryByDynamicPath(ctx context.Context, params open
 		UpdatedAt:    openapi.NewOptNilDateTime(entry.UpdatedAt.Time),
 		ImageUrl:     openapi.NewOptNilString(entry.ImageUrl.String),
 	}, nil
+}
+
+func (p *adminApiService) GetLinkedEntryPaths(ctx context.Context, params openapi.GetLinkedEntryPathsParams) (openapi.LinkedEntriesResponse, error) {
+	entries, err := p.queries.GetLinkedEntries(ctx, params.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	links := make(map[string]openapi.NilString)
+	for _, entry := range entries {
+		links[strings.ToLower(entry.DstTitle)] = openapi.NilString{
+			Value: entry.Path.String,
+			Null:  !entry.Path.Valid,
+		}
+	}
+	return links, nil
 }
 
 func (p *adminApiService) NewError(_ context.Context, err error) *openapi.ErrorResponseStatusCode {
