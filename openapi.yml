@@ -32,6 +32,35 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+    post:
+      summary: Create a new entry
+      operationId: createEntry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateEntryRequest'
+      responses:
+        '201':
+          description: Entry created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateEntryResponse'
+        '409':
+          description: Entry with the same title already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /entries/{path}:
     get:
       summary: Get entry by dynamic path
@@ -253,6 +282,24 @@ components:
       items:
         type: string
       description: Array of all entry titles
+
+    CreateEntryRequest:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          description: The title of the new entry
+
+    CreateEntryResponse:
+      type: object
+      required:
+        - path
+      properties:
+        path:
+          type: string
+          description: The path of the created entry
 
     EmptyResponse:
       type: object

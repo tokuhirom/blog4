@@ -15,12 +15,18 @@
 
 import * as runtime from '../runtime';
 import type {
+  CreateEntryRequest,
+  CreateEntryResponse,
   ErrorResponse,
   GetLatestEntriesRow,
   UpdateEntryBodyRequest,
   UpdateEntryTitleRequest,
 } from '../models/index';
 import {
+    CreateEntryRequestFromJSON,
+    CreateEntryRequestToJSON,
+    CreateEntryResponseFromJSON,
+    CreateEntryResponseToJSON,
     ErrorResponseFromJSON,
     ErrorResponseToJSON,
     GetLatestEntriesRowFromJSON,
@@ -30,6 +36,10 @@ import {
     UpdateEntryTitleRequestFromJSON,
     UpdateEntryTitleRequestToJSON,
 } from '../models/index';
+
+export interface CreateEntryOperationRequest {
+    createEntryRequest: CreateEntryRequest;
+}
 
 export interface GetEntryByDynamicPathRequest {
     path: string;
@@ -57,6 +67,42 @@ export interface UpdateEntryTitleOperationRequest {
  * 
  */
 export class DefaultApi extends runtime.BaseAPI {
+
+    /**
+     * Create a new entry
+     */
+    async createEntryRaw(requestParameters: CreateEntryOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<CreateEntryResponse>> {
+        if (requestParameters['createEntryRequest'] == null) {
+            throw new runtime.RequiredError(
+                'createEntryRequest',
+                'Required parameter "createEntryRequest" was null or undefined when calling createEntry().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/entries`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: CreateEntryRequestToJSON(requestParameters['createEntryRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => CreateEntryResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Create a new entry
+     */
+    async createEntry(requestParameters: CreateEntryOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateEntryResponse> {
+        const response = await this.createEntryRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
 
     /**
      * Get all entry titles

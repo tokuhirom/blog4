@@ -13,6 +13,15 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
+// CreateEntry implements createEntry operation.
+//
+// Create a new entry.
+//
+// POST /entries
+func (UnimplementedHandler) CreateEntry(ctx context.Context, req *CreateEntryRequest) (r CreateEntryRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetAllEntryTitles implements getAllEntryTitles operation.
 //
 // Get all entry titles.

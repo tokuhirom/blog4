@@ -161,19 +161,12 @@
         clearMessage();
 
         try {
-            const response = await fetch('/admin/api/entry', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({title})
+            const data = await api.createEntry({
+                createEntryRequest: {
+                    title
+                }
             });
-            if (response.ok) {
-                const data = await response.json();
-                location.href = '/admin/entry/' + data.path;
-            } else {
-                showMessage('error', 'Failed to create new entry');
-            }
+            location.href = '/admin/entry/' + data.path;
         } catch (error) {
             console.error('Failed to create new entry:', error);
             showMessage(

@@ -61,8 +61,10 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				switch r.Method {
 				case "GET":
 					s.handleGetLatestEntriesRequest([0]string{}, elemIsEscaped, w, r)
+				case "POST":
+					s.handleCreateEntryRequest([0]string{}, elemIsEscaped, w, r)
 				default:
-					s.notAllowed(w, r, "GET")
+					s.notAllowed(w, r, "GET,POST")
 				}
 
 				return
@@ -308,6 +310,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					r.name = GetLatestEntriesOperation
 					r.summary = "Get latest entries"
 					r.operationID = "getLatestEntries"
+					r.pathPattern = "/entries"
+					r.args = args
+					r.count = 0
+					return r, true
+				case "POST":
+					r.name = CreateEntryOperation
+					r.summary = "Create a new entry"
+					r.operationID = "createEntry"
 					r.pathPattern = "/entries"
 					r.args = args
 					r.count = 0

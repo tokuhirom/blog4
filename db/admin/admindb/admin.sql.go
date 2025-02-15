@@ -48,6 +48,25 @@ func (q *Queries) AdminGetEntryByPath(ctx context.Context, path string) (AdminGe
 	return i, err
 }
 
+const createEmptyEntry = `-- name: CreateEmptyEntry :execrows
+INSERT INTO entry
+           (path, title, body, visibility)
+    VALUES (?,        ?, '',    'private')
+`
+
+type CreateEmptyEntryParams struct {
+	Path  string
+	Title string
+}
+
+func (q *Queries) CreateEmptyEntry(ctx context.Context, arg CreateEmptyEntryParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, createEmptyEntry, arg.Path, arg.Title)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
 const deleteEntryLink = `-- name: DeleteEntryLink :execrows
 DELETE FROM entry_link WHERE src_path = ?
 `

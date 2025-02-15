@@ -11,6 +11,40 @@ func (s *ErrorResponseStatusCode) Error() string {
 	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
 }
 
+// Ref: #/components/schemas/CreateEntryRequest
+type CreateEntryRequest struct {
+	// The title of the new entry.
+	Title string `json:"title"`
+}
+
+// GetTitle returns the value of Title.
+func (s *CreateEntryRequest) GetTitle() string {
+	return s.Title
+}
+
+// SetTitle sets the value of Title.
+func (s *CreateEntryRequest) SetTitle(val string) {
+	s.Title = val
+}
+
+// Ref: #/components/schemas/CreateEntryResponse
+type CreateEntryResponse struct {
+	// The path of the created entry.
+	Path string `json:"path"`
+}
+
+// GetPath returns the value of Path.
+func (s *CreateEntryResponse) GetPath() string {
+	return s.Path
+}
+
+// SetPath sets the value of Path.
+func (s *CreateEntryResponse) SetPath(val string) {
+	s.Path = val
+}
+
+func (*CreateEntryResponse) createEntryRes() {}
+
 // Ref: #/components/schemas/EmptyResponse
 type EmptyResponse struct{}
 
@@ -45,6 +79,7 @@ func (s *ErrorResponse) SetError(val OptString) {
 	s.Error = val
 }
 
+func (*ErrorResponse) createEntryRes()     {}
 func (*ErrorResponse) updateEntryBodyRes() {}
 
 // ErrorResponseStatusCode wraps ErrorResponse with StatusCode.

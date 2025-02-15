@@ -1,6 +1,8 @@
 apis/DefaultApi.ts
 apis/index.ts
 index.ts
+models/CreateEntryRequest.ts
+models/CreateEntryResponse.ts
 models/ErrorResponse.ts
 models/GetLatestEntriesRow.ts
 models/UpdateEntryBodyRequest.ts

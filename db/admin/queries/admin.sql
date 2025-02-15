@@ -61,3 +61,8 @@ WHERE entry_link.src_path = ?;
 SELECT title
 FROM entry
 ORDER BY title ASC;
+
+-- name: CreateEmptyEntry :execrows
+INSERT INTO entry
+           (path, title, body, visibility)
+    VALUES (?,        ?, '',    'private');
