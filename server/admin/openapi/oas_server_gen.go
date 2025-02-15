@@ -32,6 +32,12 @@ type Handler interface {
 	//
 	// PUT /entries/{path}/body
 	UpdateEntryBody(ctx context.Context, req *UpdateEntryBodyRequest, params UpdateEntryBodyParams) (UpdateEntryBodyRes, error)
+	// UpdateEntryTitle implements updateEntryTitle operation.
+	//
+	// Update entry title.
+	//
+	// PUT /entries/{path}/title
+	UpdateEntryTitle(ctx context.Context, req *UpdateEntryTitleRequest, params UpdateEntryTitleParams) (UpdateEntryTitleRes, error)
 	// NewError creates *ErrorResponseStatusCode from error returned by handler.
 	//
 	// Used for common default response.

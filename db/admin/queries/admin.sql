@@ -61,3 +61,8 @@ WHERE entry_link.src_path = ?;
 UPDATE entry
 SET body = ?, last_edited_at = NOW()
 WHERE path = ?;
+
+-- name: UpdateEntryTitle :execrows
+UPDATE entry
+SET title = ?, last_edited_at = NOW()
+WHERE path = ?;

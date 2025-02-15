@@ -49,6 +49,15 @@ func (UnimplementedHandler) UpdateEntryBody(ctx context.Context, req *UpdateEntr
 	return r, ht.ErrNotImplemented
 }
 
+// UpdateEntryTitle implements updateEntryTitle operation.
+//
+// Update entry title.
+//
+// PUT /entries/{path}/title
+func (UnimplementedHandler) UpdateEntryTitle(ctx context.Context, req *UpdateEntryTitleRequest, params UpdateEntryTitleParams) (r UpdateEntryTitleRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // NewError creates *ErrorResponseStatusCode from error returned by handler.
 //
 // Used for common default response.

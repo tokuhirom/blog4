@@ -4,5 +4,6 @@ index.ts
 models/ErrorResponse.ts
 models/GetLatestEntriesRow.ts
 models/UpdateEntryBodyRequest.ts
+models/UpdateEntryTitleRequest.ts
 models/index.ts
 runtime.ts

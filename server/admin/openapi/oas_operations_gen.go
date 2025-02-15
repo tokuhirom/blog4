@@ -10,4 +10,5 @@ const (
 	GetLatestEntriesOperation      OperationName = "GetLatestEntries"
 	GetLinkedEntryPathsOperation   OperationName = "GetLinkedEntryPaths"
 	UpdateEntryBodyOperation       OperationName = "UpdateEntryBody"
+	UpdateEntryTitleOperation      OperationName = "UpdateEntryTitle"
 )

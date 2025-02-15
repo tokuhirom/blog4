@@ -101,6 +101,17 @@ func (p *adminApiService) UpdateEntryBody(ctx context.Context, req *openapi.Upda
 	return &openapi.EmptyResponse{}, nil
 }
 
+func (p *adminApiService) UpdateEntryTitle(ctx context.Context, req *openapi.UpdateEntryTitleRequest, params openapi.UpdateEntryTitleParams) (openapi.UpdateEntryTitleRes, error) {
+	_, err := p.queries.UpdateEntryTitle(ctx, admindb.UpdateEntryTitleParams{
+		Path:  params.Path,
+		Title: req.Title,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &openapi.EmptyResponse{}, nil
+}
+
 func (p *adminApiService) NewError(_ context.Context, err error) *openapi.ErrorResponseStatusCode {
 	log.Printf("NewError %v", err)
 	return &openapi.ErrorResponseStatusCode{

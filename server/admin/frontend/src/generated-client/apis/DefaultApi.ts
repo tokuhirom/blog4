@@ -18,6 +18,7 @@ import type {
   ErrorResponse,
   GetLatestEntriesRow,
   UpdateEntryBodyRequest,
+  UpdateEntryTitleRequest,
 } from '../models/index';
 import {
     ErrorResponseFromJSON,
@@ -26,6 +27,8 @@ import {
     GetLatestEntriesRowToJSON,
     UpdateEntryBodyRequestFromJSON,
     UpdateEntryBodyRequestToJSON,
+    UpdateEntryTitleRequestFromJSON,
+    UpdateEntryTitleRequestToJSON,
 } from '../models/index';
 
 export interface GetEntryByDynamicPathRequest {
@@ -43,6 +46,11 @@ export interface GetLinkedEntryPathsRequest {
 export interface UpdateEntryBodyOperationRequest {
     path: string;
     updateEntryBodyRequest: UpdateEntryBodyRequest;
+}
+
+export interface UpdateEntryTitleOperationRequest {
+    path: string;
+    updateEntryTitleRequest: UpdateEntryTitleRequest;
 }
 
 /**
@@ -186,6 +194,49 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async updateEntryBody(requestParameters: UpdateEntryBodyOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
         const response = await this.updateEntryBodyRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Update entry title
+     */
+    async updateEntryTitleRaw(requestParameters: UpdateEntryTitleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        if (requestParameters['path'] == null) {
+            throw new runtime.RequiredError(
+                'path',
+                'Required parameter "path" was null or undefined when calling updateEntryTitle().'
+            );
+        }
+
+        if (requestParameters['updateEntryTitleRequest'] == null) {
+            throw new runtime.RequiredError(
+                'updateEntryTitleRequest',
+                'Required parameter "updateEntryTitleRequest" was null or undefined when calling updateEntryTitle().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/entries/{path}/title`.replace(`{${"path"}}`, encodeURIComponent(String(requestParameters['path']))),
+            method: 'PUT',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UpdateEntryTitleRequestToJSON(requestParameters['updateEntryTitleRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * Update entry title
+     */
+    async updateEntryTitle(requestParameters: UpdateEntryTitleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.updateEntryTitleRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

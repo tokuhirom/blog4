@@ -119,6 +119,49 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /entries/{path}/title:
+    put:
+      summary: Update entry title
+      operationId: updateEntryTitle
+      parameters:
+        - name: path
+          in: path
+          required: true
+          description: The path of the entry to update
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateEntryTitleRequest'
+      responses:
+        '200':
+          description: Entry title updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        '404':
+          description: Entry not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Entry with the same title already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     GetLatestEntriesRow:
@@ -177,6 +220,15 @@ components:
         body:
           type: string
           description: The new content of the entry
+
+    UpdateEntryTitleRequest:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          description: The new title for the entry
 
     EmptyResponse:
       type: object

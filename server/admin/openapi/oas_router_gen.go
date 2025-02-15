@@ -156,6 +156,29 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 
 						elem = origElem
+					case 't': // Prefix: "title"
+						origElem := elem
+						if l := len("title"); len(elem) >= l && elem[0:l] == "title" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "PUT":
+								s.handleUpdateEntryTitleRequest([1]string{
+									args[0],
+								}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "PUT")
+							}
+
+							return
+						}
+
+						elem = origElem
 					}
 
 					elem = origElem
@@ -353,6 +376,31 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.summary = "Get linked entry paths"
 								r.operationID = "getLinkedEntryPaths"
 								r.pathPattern = "/entries/{path}/links"
+								r.args = args
+								r.count = 1
+								return r, true
+							default:
+								return
+							}
+						}
+
+						elem = origElem
+					case 't': // Prefix: "title"
+						origElem := elem
+						if l := len("title"); len(elem) >= l && elem[0:l] == "title" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch method {
+							case "PUT":
+								r.name = UpdateEntryTitleOperation
+								r.summary = "Update entry title"
+								r.operationID = "updateEntryTitle"
+								r.pathPattern = "/entries/{path}/title"
 								r.args = args
 								r.count = 1
 								return r, true

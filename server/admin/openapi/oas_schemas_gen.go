@@ -14,7 +14,8 @@ func (s *ErrorResponseStatusCode) Error() string {
 // Ref: #/components/schemas/EmptyResponse
 type EmptyResponse struct{}
 
-func (*EmptyResponse) updateEntryBodyRes() {}
+func (*EmptyResponse) updateEntryBodyRes()  {}
+func (*EmptyResponse) updateEntryTitleRes() {}
 
 // Ref: #/components/schemas/ErrorResponse
 type ErrorResponse struct {
@@ -475,4 +476,28 @@ func (s *UpdateEntryBodyRequest) GetBody() string {
 // SetBody sets the value of Body.
 func (s *UpdateEntryBodyRequest) SetBody(val string) {
 	s.Body = val
+}
+
+type UpdateEntryTitleConflict ErrorResponse
+
+func (*UpdateEntryTitleConflict) updateEntryTitleRes() {}
+
+type UpdateEntryTitleNotFound ErrorResponse
+
+func (*UpdateEntryTitleNotFound) updateEntryTitleRes() {}
+
+// Ref: #/components/schemas/UpdateEntryTitleRequest
+type UpdateEntryTitleRequest struct {
+	// The new title for the entry.
+	Title string `json:"title"`
+}
+
+// GetTitle returns the value of Title.
+func (s *UpdateEntryTitleRequest) GetTitle() string {
+	return s.Title
+}
+
+// SetTitle sets the value of Title.
+func (s *UpdateEntryTitleRequest) SetTitle(val string) {
+	s.Title = val
 }

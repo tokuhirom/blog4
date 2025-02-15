@@ -4,3 +4,7 @@ package openapi
 type UpdateEntryBodyRes interface {
 	updateEntryBodyRes()
 }
+
+type UpdateEntryTitleRes interface {
+	updateEntryTitleRes()
+}
