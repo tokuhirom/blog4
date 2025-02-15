@@ -13,6 +13,15 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
+// GetAllEntryTitles implements getAllEntryTitles operation.
+//
+// Get all entry titles.
+//
+// GET /entries/titles
+func (UnimplementedHandler) GetAllEntryTitles(ctx context.Context) (r EntryTitlesResponse, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetEntryByDynamicPath implements getEntryByDynamicPath operation.
 //
 // Get entry by dynamic path.

@@ -76,6 +76,32 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					break
 				}
 
+				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case 't': // Prefix: "titles"
+					origElem := elem
+					if l := len("titles"); len(elem) >= l && elem[0:l] == "titles" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "GET":
+							s.handleGetAllEntryTitlesRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "GET")
+						}
+
+						return
+					}
+
+					elem = origElem
+				}
 				// Param: "path"
 				// Match until "/"
 				idx := strings.IndexByte(elem, '/')
@@ -299,6 +325,36 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					break
 				}
 
+				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case 't': // Prefix: "titles"
+					origElem := elem
+					if l := len("titles"); len(elem) >= l && elem[0:l] == "titles" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch method {
+						case "GET":
+							r.name = GetAllEntryTitlesOperation
+							r.summary = "Get all entry titles"
+							r.operationID = "getAllEntryTitles"
+							r.pathPattern = "/entries/titles"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
+					elem = origElem
+				}
 				// Param: "path"
 				// Match until "/"
 				idx := strings.IndexByte(elem, '/')

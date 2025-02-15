@@ -17,6 +17,8 @@ type EmptyResponse struct{}
 func (*EmptyResponse) updateEntryBodyRes()  {}
 func (*EmptyResponse) updateEntryTitleRes() {}
 
+type EntryTitlesResponse []string
+
 // Ref: #/components/schemas/ErrorResponse
 type ErrorResponse struct {
 	Message OptString `json:"message"`

@@ -60,6 +60,35 @@ func (q *Queries) DeleteEntryLink(ctx context.Context, srcPath string) (int64, e
 	return result.RowsAffected()
 }
 
+const getAllEntryTitles = `-- name: GetAllEntryTitles :many
+SELECT title
+FROM entry
+ORDER BY title ASC
+`
+
+func (q *Queries) GetAllEntryTitles(ctx context.Context) ([]string, error) {
+	rows, err := q.db.QueryContext(ctx, getAllEntryTitles)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []string
+	for rows.Next() {
+		var title string
+		if err := rows.Scan(&title); err != nil {
+			return nil, err
+		}
+		items = append(items, title)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getLatestEntries = `-- name: GetLatestEntries :many
 SELECT entry.path, entry.title, entry.body, entry.visibility, entry.format, entry.published_at, entry.last_edited_at, entry.created_at, entry.updated_at, entry_image.url AS image_url
 FROM entry

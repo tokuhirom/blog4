@@ -59,6 +59,32 @@ export interface UpdateEntryTitleOperationRequest {
 export class DefaultApi extends runtime.BaseAPI {
 
     /**
+     * Get all entry titles
+     */
+    async getAllEntryTitlesRaw(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Array<string>>> {
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/entries/titles`,
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * Get all entry titles
+     */
+    async getAllEntryTitles(initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Array<string>> {
+        const response = await this.getAllEntryTitlesRaw(initOverrides);
+        return await response.value();
+    }
+
+    /**
      * Get entry by dynamic path
      */
     async getEntryByDynamicPathRaw(requestParameters: GetEntryByDynamicPathRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<GetLatestEntriesRow>> {

@@ -6,6 +6,7 @@ package openapi
 type OperationName = string
 
 const (
+	GetAllEntryTitlesOperation     OperationName = "GetAllEntryTitles"
 	GetEntryByDynamicPathOperation OperationName = "GetEntryByDynamicPath"
 	GetLatestEntriesOperation      OperationName = "GetLatestEntries"
 	GetLinkedEntryPathsOperation   OperationName = "GetLinkedEntryPaths"

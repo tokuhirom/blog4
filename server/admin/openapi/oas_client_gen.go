@@ -28,6 +28,12 @@ func trimTrailingSlashes(u *url.URL) {
 
 // Invoker invokes operations described by OpenAPI v3 specification.
 type Invoker interface {
+	// GetAllEntryTitles invokes getAllEntryTitles operation.
+	//
+	// Get all entry titles.
+	//
+	// GET /entries/titles
+	GetAllEntryTitles(ctx context.Context) (EntryTitlesResponse, error)
 	// GetEntryByDynamicPath invokes getEntryByDynamicPath operation.
 	//
 	// Get entry by dynamic path.
@@ -105,6 +111,78 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 		return c.serverURL
 	}
 	return u
+}
+
+// GetAllEntryTitles invokes getAllEntryTitles operation.
+//
+// Get all entry titles.
+//
+// GET /entries/titles
+func (c *Client) GetAllEntryTitles(ctx context.Context) (EntryTitlesResponse, error) {
+	res, err := c.sendGetAllEntryTitles(ctx)
+	return res, err
+}
+
+func (c *Client) sendGetAllEntryTitles(ctx context.Context) (res EntryTitlesResponse, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("getAllEntryTitles"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/entries/titles"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, GetAllEntryTitlesOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/entries/titles"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetAllEntryTitlesResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
 }
 
 // GetEntryByDynamicPath invokes getEntryByDynamicPath operation.

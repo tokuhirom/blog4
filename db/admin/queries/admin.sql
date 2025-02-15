@@ -57,12 +57,7 @@ FROM entry_link
     LEFT JOIN entry_image ON (dest_entry.path = entry_image.path)
 WHERE entry_link.src_path = ?;
 
--- UpdateEntryBody :execrows
-UPDATE entry
-SET body = ?, last_edited_at = NOW()
-WHERE path = ?;
-
--- name: UpdateEntryTitle :execrows
-UPDATE entry
-SET title = ?, last_edited_at = NOW()
-WHERE path = ?;
+-- name: GetAllEntryTitles :many
+SELECT title
+FROM entry
+ORDER BY title ASC;

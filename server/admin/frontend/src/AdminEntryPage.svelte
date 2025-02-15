@@ -113,6 +113,11 @@
     async function handleUpdateBody() {
         clearMessage();
 
+        if (body === '') {
+            showMessage('error', 'Body cannot be empty');
+            return;
+        }
+
         try {
             await api.updateEntryBody({
                 path: path,
@@ -131,6 +136,10 @@
 
     async function handleUpdateTitle() {
         clearMessage()
+        if (title === '') {
+            showMessage('error', 'Title cannot be empty');
+            return;
+        }
 
         try {
             await api.updateEntryTitle({
@@ -261,14 +270,6 @@
         return dp[a.length][b.length];
     }
 
-    async function getPageTitles(): Promise<string[]> {
-        const resp = await fetch(`/admin/api/entry/title`, {
-            method: 'GET'
-        });
-        const dat = await resp.json();
-        return dat.titles;
-    }
-
     // 定期的に本文情報を再取得する。
     // 他のユーザーが大幅に変更していた場合は警告を表示し、リロードを促す。
     // TODO: 編集不可状態とする。
@@ -306,7 +307,7 @@
 
     onMount(() => {
         // get page titles
-        setTimeout(async () => (pageTitles = await getPageTitles()), 0);
+        setTimeout(async () => (pageTitles = await api.getAllEntryTitles()), 0);
 
         document.addEventListener('visibilitychange', () => {
             checkOtherUsersUpdate();

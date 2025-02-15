@@ -8,6 +8,12 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// GetAllEntryTitles implements getAllEntryTitles operation.
+	//
+	// Get all entry titles.
+	//
+	// GET /entries/titles
+	GetAllEntryTitles(ctx context.Context) (EntryTitlesResponse, error)
 	// GetEntryByDynamicPath implements getEntryByDynamicPath operation.
 	//
 	// Get entry by dynamic path.

@@ -162,6 +162,24 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /entries/titles:
+    get:
+      summary: Get all entry titles
+      operationId: getAllEntryTitles
+      responses:
+        '200':
+          description: A list of all entry titles
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EntryTitlesResponse'
+        default:
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     GetLatestEntriesRow:
@@ -229,6 +247,12 @@ components:
         title:
           type: string
           description: The new title for the entry
+
+    EntryTitlesResponse:
+      type: array
+      items:
+        type: string
+      description: Array of all entry titles
 
     EmptyResponse:
       type: object

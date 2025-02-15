@@ -112,6 +112,15 @@ func (p *adminApiService) UpdateEntryTitle(ctx context.Context, req *openapi.Upd
 	return &openapi.EmptyResponse{}, nil
 }
 
+func (p *adminApiService) GetAllEntryTitles(ctx context.Context) (openapi.EntryTitlesResponse, error) {
+	titles, err := p.queries.GetAllEntryTitles(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	return titles, nil
+}
+
 func (p *adminApiService) NewError(_ context.Context, err error) *openapi.ErrorResponseStatusCode {
 	log.Printf("NewError %v", err)
 	return &openapi.ErrorResponseStatusCode{
