@@ -53,8 +53,8 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Mount("/", server.Router(publicQueries))
 	r.Mount("/admin", admin.Router(cfg, sqlDB))
+	r.Mount("/", server.Router(publicQueries))
 
 	// Start the server
 	log.Println("Starting server on http://localhost:8181/")

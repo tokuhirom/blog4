@@ -160,6 +160,67 @@ func (p *adminApiService) DeleteEntry(ctx context.Context, params openapi.Delete
 	return &openapi.EmptyResponse{}, nil
 }
 
+func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openapi.UpdateVisibilityRequest, params openapi.UpdateEntryVisibilityParams) (openapi.UpdateEntryVisibilityRes, error) {
+	// トランザクションがうまく動かないので一旦コメントアウト
+
+	tx, err := p.db.Begin()
+	if err != nil {
+		log.Printf("failed to begin transaction: %v", err)
+		return nil, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+
+	defer func() {
+		err := tx.Rollback()
+		if err != nil && !errors.Is(err, sql.ErrTxDone) {
+			log.Printf("failed to rollback transaction: %v", err)
+		}
+	}()
+
+	// クエリの準備
+	qtx := p.queries.WithTx(tx)
+
+	// 現在の可視性と公開日時を取得
+	entry, err := qtx.GetEntryVisibility(ctx, params.Path)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, fmt.Errorf("entry not found")
+		}
+		return nil, fmt.Errorf("failed to query entry: %w", err)
+	}
+
+	// 可視性の更新
+	if err := qtx.UpdateVisibility(ctx, admindb.UpdateVisibilityParams{
+		Visibility: admindb.EntryVisibility(req.Visibility),
+		Path:       params.Path,
+	}); err != nil {
+		return nil, fmt.Errorf("failed to update visibility: %w", err)
+	}
+
+	// 可視性がprivateからpublicに変わり、published_atがnullの場合、published_atを現在時刻に設定
+	if entry.Visibility == "private" && req.Visibility == "public" && !entry.PublishedAt.Valid {
+		if err := qtx.UpdatePublishedAt(ctx, params.Path); err != nil {
+			return nil, fmt.Errorf("failed to update published_at: %w", err)
+		}
+	}
+
+	// トランザクションのコミット
+	if err = tx.Commit(); err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
+	// TODO ここで blog ping を送るとベターだが後でやる。
+	/*
+		for (const hubUrl of HUB_URLS) {
+			console.log(`Notify Hub: ${hubUrl}`);
+			await notifyHub(hubUrl, `https://blog.64p.org/feed`);
+		}
+	*/
+
+	return &openapi.UpdateVisibilityResponse{
+		Visibility: req.Visibility,
+	}, nil
+}
+
 func (p *adminApiService) NewError(_ context.Context, err error) *openapi.ErrorResponseStatusCode {
 	log.Printf("NewError %v", err)
 	if errors.Is(err, sql.ErrNoRows) {

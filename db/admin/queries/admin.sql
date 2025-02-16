@@ -14,15 +14,6 @@ FROM entry
     LEFT JOIN entry_image ON (entry.path = entry_image.path)
 WHERE entry.path = ?;
 
--- name: GetVisibility :one
-SELECT visibility FROM entry WHERE path = ?;
-
--- name: UpdateVisibility :execrows
-UPDATE entry SET visibility = ? WHERE path = ?;
-
--- name: UpdatePublishedAt :execrows
-UPDATE entry SET published_at = ? WHERE path = ?;
-
 -- name: UpdateEntryTitle :execrows
 UPDATE entry
 SET title = ?, last_edited_at = NOW()

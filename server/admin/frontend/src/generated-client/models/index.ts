@@ -10,3 +10,5 @@ export * from './LinkPalletData';
 export * from './TwoHopLink';
 export * from './UpdateEntryBodyRequest';
 export * from './UpdateEntryTitleRequest';
+export * from './UpdateVisibilityRequest';
+export * from './UpdateVisibilityResponse';

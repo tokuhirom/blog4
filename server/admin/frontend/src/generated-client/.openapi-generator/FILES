@@ -11,5 +11,7 @@ models/LinkPalletData.ts
 models/TwoHopLink.ts
 models/UpdateEntryBodyRequest.ts
 models/UpdateEntryTitleRequest.ts
+models/UpdateVisibilityRequest.ts
+models/UpdateVisibilityResponse.ts
 models/index.ts
 runtime.ts

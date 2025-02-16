@@ -232,10 +232,11 @@ func (s *ErrorResponse) SetError(val OptString) {
 	s.Error = val
 }
 
-func (*ErrorResponse) createEntryRes()         {}
-func (*ErrorResponse) deleteEntryRes()         {}
-func (*ErrorResponse) getLinkedEntryPathsRes() {}
-func (*ErrorResponse) updateEntryBodyRes()     {}
+func (*ErrorResponse) createEntryRes()           {}
+func (*ErrorResponse) deleteEntryRes()           {}
+func (*ErrorResponse) getLinkedEntryPathsRes()   {}
+func (*ErrorResponse) updateEntryBodyRes()       {}
+func (*ErrorResponse) updateEntryVisibilityRes() {}
 
 // ErrorResponseStatusCode wraps ErrorResponse with StatusCode.
 type ErrorResponseStatusCode struct {
@@ -418,7 +419,7 @@ func (s *LinkPalletData) SetTwohops(val []TwoHopLink) {
 }
 
 // Object where keys are lowercase destination entry titles and values are their paths (null if entry
-// doesn't exist).
+// doesn't exist)..
 // Ref: #/components/schemas/LinkedEntryPathsResponse
 type LinkedEntryPathsResponse map[string]string
 
@@ -716,3 +717,37 @@ func (s *UpdateEntryTitleRequest) GetTitle() string {
 func (s *UpdateEntryTitleRequest) SetTitle(val string) {
 	s.Title = val
 }
+
+// Ref: #/components/schemas/UpdateVisibilityRequest
+type UpdateVisibilityRequest struct {
+	// The new visibility status for the entry.
+	Visibility string `json:"visibility"`
+}
+
+// GetVisibility returns the value of Visibility.
+func (s *UpdateVisibilityRequest) GetVisibility() string {
+	return s.Visibility
+}
+
+// SetVisibility sets the value of Visibility.
+func (s *UpdateVisibilityRequest) SetVisibility(val string) {
+	s.Visibility = val
+}
+
+// Ref: #/components/schemas/UpdateVisibilityResponse
+type UpdateVisibilityResponse struct {
+	// The new visibility status for the entry.
+	Visibility string `json:"visibility"`
+}
+
+// GetVisibility returns the value of Visibility.
+func (s *UpdateVisibilityResponse) GetVisibility() string {
+	return s.Visibility
+}
+
+// SetVisibility sets the value of Visibility.
+func (s *UpdateVisibilityResponse) SetVisibility(val string) {
+	s.Visibility = val
+}
+
+func (*UpdateVisibilityResponse) updateEntryVisibilityRes() {}

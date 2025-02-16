@@ -16,7 +16,7 @@
 
     let title: string = $state('');
     let body: string = $state('');
-    let visibility = $state('');
+    let visibility = $state('private');
     let currentLinks: string[] = $state([]);
 
     let linkPallet: LinkPalletData = $state({
@@ -201,29 +201,26 @@
         }
     }
 
-    function toggleVisibility() {
+    function toggleVisibility(event: Event) {
+        event.preventDefault();
+        event.stopPropagation();
+
         const newVisibility = visibility === 'private' ? 'public' : 'private';
 
         if (!confirm(`Are you sure you want to change the visibility of this entry?`)) {
             return;
         }
 
-        fetch(`/admin/api/entry/${entry.path}/visibility`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({visibility: newVisibility})
+        console.log('Updating visibility to', newVisibility);
+
+        api.updateEntryVisibility({
+            path: entry.path!!,
+            updateVisibilityRequest: {
+                visibility: newVisibility
+            }
         })
-            .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Failed to update visibility');
-                }
-            })
             .then((data) => {
-                visibility = data.visibility;
+                visibility = data.visibility!;
             })
             .catch((error) => {
                 console.error('Failed to update visibility:', error);
@@ -317,7 +314,7 @@
                             oninput={handleTitleInput}
                             required
                     />
-                    <button class="visibility-icon" onclick={toggleVisibility}
+                    <button class="visibility-icon" onclick={(event) => toggleVisibility(event)}
                     >{visibility === 'private' ? '🔒️' : '🌍'}</button
                     >
                 </div>

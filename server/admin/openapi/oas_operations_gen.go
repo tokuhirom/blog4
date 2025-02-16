@@ -15,4 +15,5 @@ const (
 	GetLinkedEntryPathsOperation   OperationName = "GetLinkedEntryPaths"
 	UpdateEntryBodyOperation       OperationName = "UpdateEntryBody"
 	UpdateEntryTitleOperation      OperationName = "UpdateEntryTitle"
+	UpdateEntryVisibilityOperation OperationName = "UpdateEntryVisibility"
 )

@@ -172,6 +172,43 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /admin/api/entry/{path}/visibility:
+    post:
+      summary: Update entry visibility
+      operationId: updateEntryVisibility
+      parameters:
+        - name: path
+          in: path
+          required: true
+          description: The path of the entry to update visibility
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateVisibilityRequest'
+      responses:
+        '200':
+          description: Visibility updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateVisibilityResponse'
+        '404':
+          description: Entry not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /entries/{path}/body:
     put:
       summary: Update entry body
@@ -429,6 +466,23 @@ components:
         type: string
         nullable: false
       description: Object where keys are lowercase destination entry titles and values are their paths (null if entry doesn't exist)..
+
+    UpdateVisibilityRequest:
+      type: object
+      required:
+        - visibility
+      properties:
+        visibility:
+          type: string
+          description: The new visibility status for the entry
+
+    UpdateVisibilityResponse:
+      type: object
+      required: ['visibility']
+      properties:
+        visibility:
+          type: string
+          description: The new visibility status for the entry
 
     EmptyResponse:
       type: object

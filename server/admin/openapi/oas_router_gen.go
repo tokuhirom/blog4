@@ -49,61 +49,26 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/entries"
+		case '/': // Prefix: "/"
 			origElem := elem
-			if l := len("/entries"); len(elem) >= l && elem[0:l] == "/entries" {
+			if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 				elem = elem[l:]
 			} else {
 				break
 			}
 
 			if len(elem) == 0 {
-				switch r.Method {
-				case "GET":
-					s.handleGetLatestEntriesRequest([0]string{}, elemIsEscaped, w, r)
-				case "POST":
-					s.handleCreateEntryRequest([0]string{}, elemIsEscaped, w, r)
-				default:
-					s.notAllowed(w, r, "GET,POST")
-				}
-
-				return
+				break
 			}
 			switch elem[0] {
-			case '/': // Prefix: "/"
+			case 'a': // Prefix: "admin/api/entry/"
 				origElem := elem
-				if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+				if l := len("admin/api/entry/"); len(elem) >= l && elem[0:l] == "admin/api/entry/" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
-				if len(elem) == 0 {
-					break
-				}
-				switch elem[0] {
-				case 't': // Prefix: "titles"
-					origElem := elem
-					if l := len("titles"); len(elem) >= l && elem[0:l] == "titles" {
-						elem = elem[l:]
-					} else {
-						break
-					}
-
-					if len(elem) == 0 {
-						// Leaf node.
-						switch r.Method {
-						case "GET":
-							s.handleGetAllEntryTitlesRequest([0]string{}, elemIsEscaped, w, r)
-						default:
-							s.notAllowed(w, r, "GET")
-						}
-
-						return
-					}
-
-					elem = origElem
-				}
 				// Param: "path"
 				// Match until "/"
 				idx := strings.IndexByte(elem, '/')
@@ -114,17 +79,51 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				elem = elem[idx:]
 
 				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/visibility"
+					origElem := elem
+					if l := len("/visibility"); len(elem) >= l && elem[0:l] == "/visibility" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "POST":
+							s.handleUpdateEntryVisibilityRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "POST")
+						}
+
+						return
+					}
+
+					elem = origElem
+				}
+
+				elem = origElem
+			case 'e': // Prefix: "entries"
+				origElem := elem
+				if l := len("entries"); len(elem) >= l && elem[0:l] == "entries" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
 					switch r.Method {
-					case "DELETE":
-						s.handleDeleteEntryRequest([1]string{
-							args[0],
-						}, elemIsEscaped, w, r)
 					case "GET":
-						s.handleGetEntryByDynamicPathRequest([1]string{
-							args[0],
-						}, elemIsEscaped, w, r)
+						s.handleGetLatestEntriesRequest([0]string{}, elemIsEscaped, w, r)
+					case "POST":
+						s.handleCreateEntryRequest([0]string{}, elemIsEscaped, w, r)
 					default:
-						s.notAllowed(w, r, "DELETE,GET")
+						s.notAllowed(w, r, "GET,POST")
 					}
 
 					return
@@ -142,9 +141,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						break
 					}
 					switch elem[0] {
-					case 'b': // Prefix: "body"
+					case 't': // Prefix: "titles"
 						origElem := elem
-						if l := len("body"); len(elem) >= l && elem[0:l] == "body" {
+						if l := len("titles"); len(elem) >= l && elem[0:l] == "titles" {
 							elem = elem[l:]
 						} else {
 							break
@@ -153,21 +152,46 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						if len(elem) == 0 {
 							// Leaf node.
 							switch r.Method {
-							case "PUT":
-								s.handleUpdateEntryBodyRequest([1]string{
-									args[0],
-								}, elemIsEscaped, w, r)
+							case "GET":
+								s.handleGetAllEntryTitlesRequest([0]string{}, elemIsEscaped, w, r)
 							default:
-								s.notAllowed(w, r, "PUT")
+								s.notAllowed(w, r, "GET")
 							}
 
 							return
 						}
 
 						elem = origElem
-					case 'l': // Prefix: "link"
+					}
+					// Param: "path"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						switch r.Method {
+						case "DELETE":
+							s.handleDeleteEntryRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						case "GET":
+							s.handleGetEntryByDynamicPathRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "DELETE,GET")
+						}
+
+						return
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/"
 						origElem := elem
-						if l := len("link"); len(elem) >= l && elem[0:l] == "link" {
+						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
 							break
@@ -177,9 +201,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							break
 						}
 						switch elem[0] {
-						case '-': // Prefix: "-pallet"
+						case 'b': // Prefix: "body"
 							origElem := elem
-							if l := len("-pallet"); len(elem) >= l && elem[0:l] == "-pallet" {
+							if l := len("body"); len(elem) >= l && elem[0:l] == "body" {
 								elem = elem[l:]
 							} else {
 								break
@@ -188,21 +212,82 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							if len(elem) == 0 {
 								// Leaf node.
 								switch r.Method {
-								case "GET":
-									s.handleGetLinkPalletRequest([1]string{
+								case "PUT":
+									s.handleUpdateEntryBodyRequest([1]string{
 										args[0],
 									}, elemIsEscaped, w, r)
 								default:
-									s.notAllowed(w, r, "GET")
+									s.notAllowed(w, r, "PUT")
 								}
 
 								return
 							}
 
 							elem = origElem
-						case 'e': // Prefix: "ed-paths"
+						case 'l': // Prefix: "link"
 							origElem := elem
-							if l := len("ed-paths"); len(elem) >= l && elem[0:l] == "ed-paths" {
+							if l := len("link"); len(elem) >= l && elem[0:l] == "link" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							if len(elem) == 0 {
+								break
+							}
+							switch elem[0] {
+							case '-': // Prefix: "-pallet"
+								origElem := elem
+								if l := len("-pallet"); len(elem) >= l && elem[0:l] == "-pallet" {
+									elem = elem[l:]
+								} else {
+									break
+								}
+
+								if len(elem) == 0 {
+									// Leaf node.
+									switch r.Method {
+									case "GET":
+										s.handleGetLinkPalletRequest([1]string{
+											args[0],
+										}, elemIsEscaped, w, r)
+									default:
+										s.notAllowed(w, r, "GET")
+									}
+
+									return
+								}
+
+								elem = origElem
+							case 'e': // Prefix: "ed-paths"
+								origElem := elem
+								if l := len("ed-paths"); len(elem) >= l && elem[0:l] == "ed-paths" {
+									elem = elem[l:]
+								} else {
+									break
+								}
+
+								if len(elem) == 0 {
+									// Leaf node.
+									switch r.Method {
+									case "GET":
+										s.handleGetLinkedEntryPathsRequest([1]string{
+											args[0],
+										}, elemIsEscaped, w, r)
+									default:
+										s.notAllowed(w, r, "GET")
+									}
+
+									return
+								}
+
+								elem = origElem
+							}
+
+							elem = origElem
+						case 't': // Prefix: "title"
+							origElem := elem
+							if l := len("title"); len(elem) >= l && elem[0:l] == "title" {
 								elem = elem[l:]
 							} else {
 								break
@@ -211,41 +296,18 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							if len(elem) == 0 {
 								// Leaf node.
 								switch r.Method {
-								case "GET":
-									s.handleGetLinkedEntryPathsRequest([1]string{
+								case "PUT":
+									s.handleUpdateEntryTitleRequest([1]string{
 										args[0],
 									}, elemIsEscaped, w, r)
 								default:
-									s.notAllowed(w, r, "GET")
+									s.notAllowed(w, r, "PUT")
 								}
 
 								return
 							}
 
 							elem = origElem
-						}
-
-						elem = origElem
-					case 't': // Prefix: "title"
-						origElem := elem
-						if l := len("title"); len(elem) >= l && elem[0:l] == "title" {
-							elem = elem[l:]
-						} else {
-							break
-						}
-
-						if len(elem) == 0 {
-							// Leaf node.
-							switch r.Method {
-							case "PUT":
-								s.handleUpdateEntryTitleRequest([1]string{
-									args[0],
-								}, elemIsEscaped, w, r)
-							default:
-								s.notAllowed(w, r, "PUT")
-							}
-
-							return
 						}
 
 						elem = origElem
@@ -338,75 +400,26 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 			break
 		}
 		switch elem[0] {
-		case '/': // Prefix: "/entries"
+		case '/': // Prefix: "/"
 			origElem := elem
-			if l := len("/entries"); len(elem) >= l && elem[0:l] == "/entries" {
+			if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 				elem = elem[l:]
 			} else {
 				break
 			}
 
 			if len(elem) == 0 {
-				switch method {
-				case "GET":
-					r.name = GetLatestEntriesOperation
-					r.summary = "Get latest entries"
-					r.operationID = "getLatestEntries"
-					r.pathPattern = "/entries"
-					r.args = args
-					r.count = 0
-					return r, true
-				case "POST":
-					r.name = CreateEntryOperation
-					r.summary = "Create a new entry"
-					r.operationID = "createEntry"
-					r.pathPattern = "/entries"
-					r.args = args
-					r.count = 0
-					return r, true
-				default:
-					return
-				}
+				break
 			}
 			switch elem[0] {
-			case '/': // Prefix: "/"
+			case 'a': // Prefix: "admin/api/entry/"
 				origElem := elem
-				if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
+				if l := len("admin/api/entry/"); len(elem) >= l && elem[0:l] == "admin/api/entry/" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
-				if len(elem) == 0 {
-					break
-				}
-				switch elem[0] {
-				case 't': // Prefix: "titles"
-					origElem := elem
-					if l := len("titles"); len(elem) >= l && elem[0:l] == "titles" {
-						elem = elem[l:]
-					} else {
-						break
-					}
-
-					if len(elem) == 0 {
-						// Leaf node.
-						switch method {
-						case "GET":
-							r.name = GetAllEntryTitlesOperation
-							r.summary = "Get all entry titles"
-							r.operationID = "getAllEntryTitles"
-							r.pathPattern = "/entries/titles"
-							r.args = args
-							r.count = 0
-							return r, true
-						default:
-							return
-						}
-					}
-
-					elem = origElem
-				}
 				// Param: "path"
 				// Match until "/"
 				idx := strings.IndexByte(elem, '/')
@@ -417,22 +430,62 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				elem = elem[idx:]
 
 				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/visibility"
+					origElem := elem
+					if l := len("/visibility"); len(elem) >= l && elem[0:l] == "/visibility" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch method {
+						case "POST":
+							r.name = UpdateEntryVisibilityOperation
+							r.summary = "Update entry visibility"
+							r.operationID = "updateEntryVisibility"
+							r.pathPattern = "/admin/api/entry/{path}/visibility"
+							r.args = args
+							r.count = 1
+							return r, true
+						default:
+							return
+						}
+					}
+
+					elem = origElem
+				}
+
+				elem = origElem
+			case 'e': // Prefix: "entries"
+				origElem := elem
+				if l := len("entries"); len(elem) >= l && elem[0:l] == "entries" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
 					switch method {
-					case "DELETE":
-						r.name = DeleteEntryOperation
-						r.summary = "Delete an entry"
-						r.operationID = "deleteEntry"
-						r.pathPattern = "/entries/{path}"
-						r.args = args
-						r.count = 1
-						return r, true
 					case "GET":
-						r.name = GetEntryByDynamicPathOperation
-						r.summary = "Get entry by dynamic path"
-						r.operationID = "getEntryByDynamicPath"
-						r.pathPattern = "/entries/{path}"
+						r.name = GetLatestEntriesOperation
+						r.summary = "Get latest entries"
+						r.operationID = "getLatestEntries"
+						r.pathPattern = "/entries"
 						r.args = args
-						r.count = 1
+						r.count = 0
+						return r, true
+					case "POST":
+						r.name = CreateEntryOperation
+						r.summary = "Create a new entry"
+						r.operationID = "createEntry"
+						r.pathPattern = "/entries"
+						r.args = args
+						r.count = 0
 						return r, true
 					default:
 						return
@@ -451,9 +504,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						break
 					}
 					switch elem[0] {
-					case 'b': // Prefix: "body"
+					case 't': // Prefix: "titles"
 						origElem := elem
-						if l := len("body"); len(elem) >= l && elem[0:l] == "body" {
+						if l := len("titles"); len(elem) >= l && elem[0:l] == "titles" {
 							elem = elem[l:]
 						} else {
 							break
@@ -462,13 +515,13 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						if len(elem) == 0 {
 							// Leaf node.
 							switch method {
-							case "PUT":
-								r.name = UpdateEntryBodyOperation
-								r.summary = "Update entry body"
-								r.operationID = "updateEntryBody"
-								r.pathPattern = "/entries/{path}/body"
+							case "GET":
+								r.name = GetAllEntryTitlesOperation
+								r.summary = "Get all entry titles"
+								r.operationID = "getAllEntryTitles"
+								r.pathPattern = "/entries/titles"
 								r.args = args
-								r.count = 1
+								r.count = 0
 								return r, true
 							default:
 								return
@@ -476,9 +529,42 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 
 						elem = origElem
-					case 'l': // Prefix: "link"
+					}
+					// Param: "path"
+					// Match until "/"
+					idx := strings.IndexByte(elem, '/')
+					if idx < 0 {
+						idx = len(elem)
+					}
+					args[0] = elem[:idx]
+					elem = elem[idx:]
+
+					if len(elem) == 0 {
+						switch method {
+						case "DELETE":
+							r.name = DeleteEntryOperation
+							r.summary = "Delete an entry"
+							r.operationID = "deleteEntry"
+							r.pathPattern = "/entries/{path}"
+							r.args = args
+							r.count = 1
+							return r, true
+						case "GET":
+							r.name = GetEntryByDynamicPathOperation
+							r.summary = "Get entry by dynamic path"
+							r.operationID = "getEntryByDynamicPath"
+							r.pathPattern = "/entries/{path}"
+							r.args = args
+							r.count = 1
+							return r, true
+						default:
+							return
+						}
+					}
+					switch elem[0] {
+					case '/': // Prefix: "/"
 						origElem := elem
-						if l := len("link"); len(elem) >= l && elem[0:l] == "link" {
+						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
 							break
@@ -488,9 +574,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							break
 						}
 						switch elem[0] {
-						case '-': // Prefix: "-pallet"
+						case 'b': // Prefix: "body"
 							origElem := elem
-							if l := len("-pallet"); len(elem) >= l && elem[0:l] == "-pallet" {
+							if l := len("body"); len(elem) >= l && elem[0:l] == "body" {
 								elem = elem[l:]
 							} else {
 								break
@@ -499,11 +585,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							if len(elem) == 0 {
 								// Leaf node.
 								switch method {
-								case "GET":
-									r.name = GetLinkPalletOperation
-									r.summary = "Get linked entry paths"
-									r.operationID = "getLinkPallet"
-									r.pathPattern = "/entries/{path}/link-pallet"
+								case "PUT":
+									r.name = UpdateEntryBodyOperation
+									r.summary = "Update entry body"
+									r.operationID = "updateEntryBody"
+									r.pathPattern = "/entries/{path}/body"
 									r.args = args
 									r.count = 1
 									return r, true
@@ -513,9 +599,74 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 
 							elem = origElem
-						case 'e': // Prefix: "ed-paths"
+						case 'l': // Prefix: "link"
 							origElem := elem
-							if l := len("ed-paths"); len(elem) >= l && elem[0:l] == "ed-paths" {
+							if l := len("link"); len(elem) >= l && elem[0:l] == "link" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							if len(elem) == 0 {
+								break
+							}
+							switch elem[0] {
+							case '-': // Prefix: "-pallet"
+								origElem := elem
+								if l := len("-pallet"); len(elem) >= l && elem[0:l] == "-pallet" {
+									elem = elem[l:]
+								} else {
+									break
+								}
+
+								if len(elem) == 0 {
+									// Leaf node.
+									switch method {
+									case "GET":
+										r.name = GetLinkPalletOperation
+										r.summary = "Get linked entry paths"
+										r.operationID = "getLinkPallet"
+										r.pathPattern = "/entries/{path}/link-pallet"
+										r.args = args
+										r.count = 1
+										return r, true
+									default:
+										return
+									}
+								}
+
+								elem = origElem
+							case 'e': // Prefix: "ed-paths"
+								origElem := elem
+								if l := len("ed-paths"); len(elem) >= l && elem[0:l] == "ed-paths" {
+									elem = elem[l:]
+								} else {
+									break
+								}
+
+								if len(elem) == 0 {
+									// Leaf node.
+									switch method {
+									case "GET":
+										r.name = GetLinkedEntryPathsOperation
+										r.summary = "Get linked entry paths"
+										r.operationID = "getLinkedEntryPaths"
+										r.pathPattern = "/entries/{path}/linked-paths"
+										r.args = args
+										r.count = 1
+										return r, true
+									default:
+										return
+									}
+								}
+
+								elem = origElem
+							}
+
+							elem = origElem
+						case 't': // Prefix: "title"
+							origElem := elem
+							if l := len("title"); len(elem) >= l && elem[0:l] == "title" {
 								elem = elem[l:]
 							} else {
 								break
@@ -524,11 +675,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							if len(elem) == 0 {
 								// Leaf node.
 								switch method {
-								case "GET":
-									r.name = GetLinkedEntryPathsOperation
-									r.summary = "Get linked entry paths"
-									r.operationID = "getLinkedEntryPaths"
-									r.pathPattern = "/entries/{path}/linked-paths"
+								case "PUT":
+									r.name = UpdateEntryTitleOperation
+									r.summary = "Update entry title"
+									r.operationID = "updateEntryTitle"
+									r.pathPattern = "/entries/{path}/title"
 									r.args = args
 									r.count = 1
 									return r, true
@@ -538,31 +689,6 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 
 							elem = origElem
-						}
-
-						elem = origElem
-					case 't': // Prefix: "title"
-						origElem := elem
-						if l := len("title"); len(elem) >= l && elem[0:l] == "title" {
-							elem = elem[l:]
-						} else {
-							break
-						}
-
-						if len(elem) == 0 {
-							// Leaf node.
-							switch method {
-							case "PUT":
-								r.name = UpdateEntryTitleOperation
-								r.summary = "Update entry title"
-								r.operationID = "updateEntryTitle"
-								r.pathPattern = "/entries/{path}/title"
-								r.args = args
-								r.count = 1
-								return r, true
-							default:
-								return
-							}
 						}
 
 						elem = origElem

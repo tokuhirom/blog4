@@ -94,6 +94,15 @@ func (UnimplementedHandler) UpdateEntryTitle(ctx context.Context, req *UpdateEnt
 	return r, ht.ErrNotImplemented
 }
 
+// UpdateEntryVisibility implements updateEntryVisibility operation.
+//
+// Update entry visibility.
+//
+// POST /admin/api/entry/{path}/visibility
+func (UnimplementedHandler) UpdateEntryVisibility(ctx context.Context, req *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (r UpdateEntryVisibilityRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // NewError creates *ErrorResponseStatusCode from error returned by handler.
 //
 // Used for common default response.

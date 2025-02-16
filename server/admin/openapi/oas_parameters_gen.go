@@ -476,3 +476,69 @@ func decodeUpdateEntryTitleParams(args [1]string, argsEscaped bool, r *http.Requ
 	}
 	return params, nil
 }
+
+// UpdateEntryVisibilityParams is parameters of updateEntryVisibility operation.
+type UpdateEntryVisibilityParams struct {
+	// The path of the entry to update visibility.
+	Path string
+}
+
+func unpackUpdateEntryVisibilityParams(packed middleware.Parameters) (params UpdateEntryVisibilityParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "path",
+			In:   "path",
+		}
+		params.Path = packed[key].(string)
+	}
+	return params
+}
+
+func decodeUpdateEntryVisibilityParams(args [1]string, argsEscaped bool, r *http.Request) (params UpdateEntryVisibilityParams, _ error) {
+	// Decode path: path.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "path",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Path = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "path",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}

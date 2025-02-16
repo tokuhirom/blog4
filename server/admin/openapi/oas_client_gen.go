@@ -82,6 +82,12 @@ type Invoker interface {
 	//
 	// PUT /entries/{path}/title
 	UpdateEntryTitle(ctx context.Context, request *UpdateEntryTitleRequest, params UpdateEntryTitleParams) (UpdateEntryTitleRes, error)
+	// UpdateEntryVisibility invokes updateEntryVisibility operation.
+	//
+	// Update entry visibility.
+	//
+	// POST /admin/api/entry/{path}/visibility
+	UpdateEntryVisibility(ctx context.Context, request *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (UpdateEntryVisibilityRes, error)
 }
 
 // Client implements OAS client.
@@ -914,6 +920,100 @@ func (c *Client) sendUpdateEntryTitle(ctx context.Context, request *UpdateEntryT
 
 	stage = "DecodeResponse"
 	result, err := decodeUpdateEntryTitleResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// UpdateEntryVisibility invokes updateEntryVisibility operation.
+//
+// Update entry visibility.
+//
+// POST /admin/api/entry/{path}/visibility
+func (c *Client) UpdateEntryVisibility(ctx context.Context, request *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (UpdateEntryVisibilityRes, error) {
+	res, err := c.sendUpdateEntryVisibility(ctx, request, params)
+	return res, err
+}
+
+func (c *Client) sendUpdateEntryVisibility(ctx context.Context, request *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (res UpdateEntryVisibilityRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("updateEntryVisibility"),
+		semconv.HTTPRequestMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/admin/api/entry/{path}/visibility"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, UpdateEntryVisibilityOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [3]string
+	pathParts[0] = "/admin/api/entry/"
+	{
+		// Encode "path" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "path",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.StringToString(params.Path))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	pathParts[2] = "/visibility"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeUpdateEntryVisibilityRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeUpdateEntryVisibilityResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

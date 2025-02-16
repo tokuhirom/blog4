@@ -28,6 +28,7 @@ tasks:
     sources:
       - ./db/admin/sqlc-admin.yml
       - ./db/admin/queries/admin.sql
+      - ./db/admin/queries/visibility.sql
       - ./db/schema.sql
     generates:
       - ./db/admin/admindb/db.go

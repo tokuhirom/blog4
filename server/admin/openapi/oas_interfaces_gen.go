@@ -20,3 +20,7 @@ type UpdateEntryBodyRes interface {
 type UpdateEntryTitleRes interface {
 	updateEntryTitleRes()
 }
+
+type UpdateEntryVisibilityRes interface {
+	updateEntryVisibilityRes()
+}

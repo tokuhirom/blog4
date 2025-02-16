@@ -62,6 +62,12 @@ type Handler interface {
 	//
 	// PUT /entries/{path}/title
 	UpdateEntryTitle(ctx context.Context, req *UpdateEntryTitleRequest, params UpdateEntryTitleParams) (UpdateEntryTitleRes, error)
+	// UpdateEntryVisibility implements updateEntryVisibility operation.
+	//
+	// Update entry visibility.
+	//
+	// POST /admin/api/entry/{path}/visibility
+	UpdateEntryVisibility(ctx context.Context, req *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (UpdateEntryVisibilityRes, error)
 	// NewError creates *ErrorResponseStatusCode from error returned by handler.
 	//
 	// Used for common default response.

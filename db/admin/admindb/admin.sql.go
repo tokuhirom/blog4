@@ -286,17 +286,6 @@ func (q *Queries) GetLinkedEntries(ctx context.Context, srcPath string) ([]GetLi
 	return items, nil
 }
 
-const getVisibility = `-- name: GetVisibility :one
-SELECT visibility FROM entry WHERE path = ?
-`
-
-func (q *Queries) GetVisibility(ctx context.Context, path string) (EntryVisibility, error) {
-	row := q.db.QueryRowContext(ctx, getVisibility, path)
-	var visibility EntryVisibility
-	err := row.Scan(&visibility)
-	return visibility, err
-}
-
 const insertEntryLink = `-- name: InsertEntryLink :execrows
 INSERT INTO entry_link (src_path, dst_title)
 VALUES (?, ?)
@@ -348,40 +337,6 @@ type UpdateEntryTitleParams struct {
 
 func (q *Queries) UpdateEntryTitle(ctx context.Context, arg UpdateEntryTitleParams) (int64, error) {
 	result, err := q.db.ExecContext(ctx, updateEntryTitle, arg.Title, arg.Path)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
-}
-
-const updatePublishedAt = `-- name: UpdatePublishedAt :execrows
-UPDATE entry SET published_at = ? WHERE path = ?
-`
-
-type UpdatePublishedAtParams struct {
-	PublishedAt sql.NullTime
-	Path        string
-}
-
-func (q *Queries) UpdatePublishedAt(ctx context.Context, arg UpdatePublishedAtParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, updatePublishedAt, arg.PublishedAt, arg.Path)
-	if err != nil {
-		return 0, err
-	}
-	return result.RowsAffected()
-}
-
-const updateVisibility = `-- name: UpdateVisibility :execrows
-UPDATE entry SET visibility = ? WHERE path = ?
-`
-
-type UpdateVisibilityParams struct {
-	Visibility EntryVisibility
-	Path       string
-}
-
-func (q *Queries) UpdateVisibility(ctx context.Context, arg UpdateVisibilityParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, updateVisibility, arg.Visibility, arg.Path)
 	if err != nil {
 		return 0, err
 	}

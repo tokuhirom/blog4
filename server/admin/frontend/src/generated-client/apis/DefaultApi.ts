@@ -22,6 +22,8 @@ import type {
   LinkPalletData,
   UpdateEntryBodyRequest,
   UpdateEntryTitleRequest,
+  UpdateVisibilityRequest,
+  UpdateVisibilityResponse,
 } from '../models/index';
 import {
     CreateEntryRequestFromJSON,
@@ -38,6 +40,10 @@ import {
     UpdateEntryBodyRequestToJSON,
     UpdateEntryTitleRequestFromJSON,
     UpdateEntryTitleRequestToJSON,
+    UpdateVisibilityRequestFromJSON,
+    UpdateVisibilityRequestToJSON,
+    UpdateVisibilityResponseFromJSON,
+    UpdateVisibilityResponseToJSON,
 } from '../models/index';
 
 export interface CreateEntryOperationRequest {
@@ -72,6 +78,11 @@ export interface UpdateEntryBodyOperationRequest {
 export interface UpdateEntryTitleOperationRequest {
     path: string;
     updateEntryTitleRequest: UpdateEntryTitleRequest;
+}
+
+export interface UpdateEntryVisibilityRequest {
+    path: string;
+    updateVisibilityRequest: UpdateVisibilityRequest;
 }
 
 /**
@@ -386,6 +397,49 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async updateEntryTitle(requestParameters: UpdateEntryTitleOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
         const response = await this.updateEntryTitleRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Update entry visibility
+     */
+    async updateEntryVisibilityRaw(requestParameters: UpdateEntryVisibilityRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UpdateVisibilityResponse>> {
+        if (requestParameters['path'] == null) {
+            throw new runtime.RequiredError(
+                'path',
+                'Required parameter "path" was null or undefined when calling updateEntryVisibility().'
+            );
+        }
+
+        if (requestParameters['updateVisibilityRequest'] == null) {
+            throw new runtime.RequiredError(
+                'updateVisibilityRequest',
+                'Required parameter "updateVisibilityRequest" was null or undefined when calling updateEntryVisibility().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+        const response = await this.request({
+            path: `/admin/api/entry/{path}/visibility`.replace(`{${"path"}}`, encodeURIComponent(String(requestParameters['path']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: UpdateVisibilityRequestToJSON(requestParameters['updateVisibilityRequest']),
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UpdateVisibilityResponseFromJSON(jsonValue));
+    }
+
+    /**
+     * Update entry visibility
+     */
+    async updateEntryVisibility(requestParameters: UpdateEntryVisibilityRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpdateVisibilityResponse> {
+        const response = await this.updateEntryVisibilityRaw(requestParameters, initOverrides);
         return await response.value();
     }
 
