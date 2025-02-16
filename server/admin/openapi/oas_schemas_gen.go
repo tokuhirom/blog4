@@ -48,6 +48,7 @@ func (*CreateEntryResponse) createEntryRes() {}
 // Ref: #/components/schemas/EmptyResponse
 type EmptyResponse struct{}
 
+func (*EmptyResponse) deleteEntryRes()      {}
 func (*EmptyResponse) updateEntryBodyRes()  {}
 func (*EmptyResponse) updateEntryTitleRes() {}
 
@@ -80,6 +81,7 @@ func (s *ErrorResponse) SetError(val OptString) {
 }
 
 func (*ErrorResponse) createEntryRes()     {}
+func (*ErrorResponse) deleteEntryRes()     {}
 func (*ErrorResponse) updateEntryBodyRes() {}
 
 // ErrorResponseStatusCode wraps ErrorResponse with StatusCode.

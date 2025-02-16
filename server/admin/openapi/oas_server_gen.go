@@ -14,6 +14,12 @@ type Handler interface {
 	//
 	// POST /entries
 	CreateEntry(ctx context.Context, req *CreateEntryRequest) (CreateEntryRes, error)
+	// DeleteEntry implements deleteEntry operation.
+	//
+	// Delete an entry.
+	//
+	// DELETE /entries/{path}
+	DeleteEntry(ctx context.Context, params DeleteEntryParams) (DeleteEntryRes, error)
 	// GetAllEntryTitles implements getAllEntryTitles operation.
 	//
 	// Get all entry titles.

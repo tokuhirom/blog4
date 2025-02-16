@@ -115,12 +115,16 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 				if len(elem) == 0 {
 					switch r.Method {
+					case "DELETE":
+						s.handleDeleteEntryRequest([1]string{
+							args[0],
+						}, elemIsEscaped, w, r)
 					case "GET":
 						s.handleGetEntryByDynamicPathRequest([1]string{
 							args[0],
 						}, elemIsEscaped, w, r)
 					default:
-						s.notAllowed(w, r, "GET")
+						s.notAllowed(w, r, "DELETE,GET")
 					}
 
 					return
@@ -376,6 +380,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 
 				if len(elem) == 0 {
 					switch method {
+					case "DELETE":
+						r.name = DeleteEntryOperation
+						r.summary = "Delete an entry"
+						r.operationID = "deleteEntry"
+						r.pathPattern = "/entries/{path}"
+						r.args = args
+						r.count = 1
+						return r, true
 					case "GET":
 						r.name = GetEntryByDynamicPathOperation
 						r.summary = "Get entry by dynamic path"

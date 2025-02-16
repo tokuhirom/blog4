@@ -66,3 +66,6 @@ ORDER BY title ASC;
 INSERT INTO entry
            (path, title, body, visibility)
     VALUES (?,        ?, '',    'private');
+
+-- name: DeleteEntry :execrows
+DELETE FROM entry WHERE path = ?

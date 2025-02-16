@@ -67,6 +67,18 @@ func (q *Queries) CreateEmptyEntry(ctx context.Context, arg CreateEmptyEntryPara
 	return result.RowsAffected()
 }
 
+const deleteEntry = `-- name: DeleteEntry :execrows
+DELETE FROM entry WHERE path = ?
+`
+
+func (q *Queries) DeleteEntry(ctx context.Context, path string) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deleteEntry, path)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
 const deleteEntryLink = `-- name: DeleteEntryLink :execrows
 DELETE FROM entry_link WHERE src_path = ?
 `

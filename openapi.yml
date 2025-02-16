@@ -86,6 +86,36 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+    delete:
+      summary: Delete an entry
+      operationId: deleteEntry
+      parameters:
+        - name: path
+          in: path
+          required: true
+          description: The path of the entry to delete
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Entry deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        '404':
+          description: Entry not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /entries/{path}/links:
     get:
       summary: Get linked entry paths

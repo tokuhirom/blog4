@@ -16,6 +16,72 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
+// DeleteEntryParams is parameters of deleteEntry operation.
+type DeleteEntryParams struct {
+	// The path of the entry to delete.
+	Path string
+}
+
+func unpackDeleteEntryParams(packed middleware.Parameters) (params DeleteEntryParams) {
+	{
+		key := middleware.ParameterKey{
+			Name: "path",
+			In:   "path",
+		}
+		params.Path = packed[key].(string)
+	}
+	return params
+}
+
+func decodeDeleteEntryParams(args [1]string, argsEscaped bool, r *http.Request) (params DeleteEntryParams, _ error) {
+	// Decode path: path.
+	if err := func() error {
+		param := args[0]
+		if argsEscaped {
+			unescaped, err := url.PathUnescape(args[0])
+			if err != nil {
+				return errors.Wrap(err, "unescape path")
+			}
+			param = unescaped
+		}
+		if len(param) > 0 {
+			d := uri.NewPathDecoder(uri.PathDecoderConfig{
+				Param:   "path",
+				Value:   param,
+				Style:   uri.PathStyleSimple,
+				Explode: false,
+			})
+
+			if err := func() error {
+				val, err := d.DecodeValue()
+				if err != nil {
+					return err
+				}
+
+				c, err := conv.ToString(val)
+				if err != nil {
+					return err
+				}
+
+				params.Path = c
+				return nil
+			}(); err != nil {
+				return err
+			}
+		} else {
+			return validate.ErrFieldRequired
+		}
+		return nil
+	}(); err != nil {
+		return params, &ogenerrors.DecodeParamError{
+			Name: "path",
+			In:   "path",
+			Err:  err,
+		}
+	}
+	return params, nil
+}
+
 // GetEntryByDynamicPathParams is parameters of getEntryByDynamicPath operation.
 type GetEntryByDynamicPathParams struct {
 	// The path of the entry.

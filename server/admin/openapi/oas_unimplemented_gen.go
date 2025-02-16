@@ -22,6 +22,15 @@ func (UnimplementedHandler) CreateEntry(ctx context.Context, req *CreateEntryReq
 	return r, ht.ErrNotImplemented
 }
 
+// DeleteEntry implements deleteEntry operation.
+//
+// Delete an entry.
+//
+// DELETE /entries/{path}
+func (UnimplementedHandler) DeleteEntry(ctx context.Context, params DeleteEntryParams) (r DeleteEntryRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetAllEntryTitles implements getAllEntryTitles operation.
 //
 // Get all entry titles.

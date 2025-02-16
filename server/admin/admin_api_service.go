@@ -3,6 +3,7 @@ package admin
 import (
 	"context"
 	"database/sql"
+	"errors"
 	"fmt"
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server/admin/openapi"
@@ -138,13 +139,31 @@ func (p *adminApiService) CreateEntry(ctx context.Context, req *openapi.CreateEn
 	}, nil
 }
 
+func (p *adminApiService) DeleteEntry(ctx context.Context, params openapi.DeleteEntryParams) (openapi.DeleteEntryRes, error) {
+	_, err := p.queries.DeleteEntry(ctx, params.Path)
+	if err != nil {
+		return nil, err
+	}
+	return &openapi.EmptyResponse{}, nil
+}
+
 func (p *adminApiService) NewError(_ context.Context, err error) *openapi.ErrorResponseStatusCode {
 	log.Printf("NewError %v", err)
-	return &openapi.ErrorResponseStatusCode{
-		StatusCode: 500,
-		Response: openapi.ErrorResponse{
-			Message: openapi.NewOptString("Internal Server Error"),
-			Error:   openapi.NewOptString(fmt.Sprintf("Internal Server Error: %v", err)),
-		},
+	if errors.Is(err, sql.ErrNoRows) {
+		return &openapi.ErrorResponseStatusCode{
+			StatusCode: 404,
+			Response: openapi.ErrorResponse{
+				Message: openapi.NewOptString("Not Found"),
+				Error:   openapi.NewOptString(fmt.Sprintf("Not Found: %v", err)),
+			},
+		}
+	} else {
+		return &openapi.ErrorResponseStatusCode{
+			StatusCode: 500,
+			Response: openapi.ErrorResponse{
+				Message: openapi.NewOptString("Internal Server Error"),
+				Error:   openapi.NewOptString(fmt.Sprintf("Internal Server Error: %v", err)),
+			},
+		}
 	}
 }

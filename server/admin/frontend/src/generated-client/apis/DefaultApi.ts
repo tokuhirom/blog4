@@ -41,6 +41,10 @@ export interface CreateEntryOperationRequest {
     createEntryRequest: CreateEntryRequest;
 }
 
+export interface DeleteEntryRequest {
+    path: string;
+}
+
 export interface GetEntryByDynamicPathRequest {
     path: string;
 }
@@ -101,6 +105,39 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async createEntry(requestParameters: CreateEntryOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<CreateEntryResponse> {
         const response = await this.createEntryRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Delete an entry
+     */
+    async deleteEntryRaw(requestParameters: DeleteEntryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        if (requestParameters['path'] == null) {
+            throw new runtime.RequiredError(
+                'path',
+                'Required parameter "path" was null or undefined when calling deleteEntry().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/entries/{path}`.replace(`{${"path"}}`, encodeURIComponent(String(requestParameters['path']))),
+            method: 'DELETE',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * Delete an entry
+     */
+    async deleteEntry(requestParameters: DeleteEntryRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.deleteEntryRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

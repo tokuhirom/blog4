@@ -10,7 +10,7 @@
     import MarkdownEditor from "./components/MarkdownEditor.svelte";
 
     import {createAdminApiClient} from "./admin_api";
-    import type {GetLatestEntriesRow} from "./generated-client";
+    import {type GetLatestEntriesRow, ResponseError} from "./generated-client";
     import {extractLinks} from "./extractLinks";
     import {debounce} from "./utils";
 
@@ -29,14 +29,24 @@
     let currentLinks: string[] = $state([]);
 
     onMount(async () => {
-        entry = await api.getEntryByDynamicPath({
-            path: path
-        });
+        try {
+            entry = await api.getEntryByDynamicPath({
+                path: path
+            });
 
-        title = entry.title!!;
-        body = entry.body!!;
-        visibility = entry.visibility!!;
-        currentLinks = extractLinks(entry.body!!);
+            title = entry.title!!;
+            body = entry.body!!;
+            visibility = entry.visibility!!;
+            currentLinks = extractLinks(entry.body!!);
+        } catch (e) {
+            console.error('Failed to get entry:', e);
+            if (e instanceof ResponseError) {
+                if (e.response.status === 404) {
+                    // maybe entry was deleted
+                    location.href = '/admin/';
+                }
+            }
+        }
 
         links = await api.getLinkedEntryPaths({path});
     });
@@ -98,13 +108,14 @@
         if (confirmed) {
             clearMessage();
 
-            const response = await fetch('/admin/api/entry/' + entry.path, {
-                method: 'DELETE'
-            });
-            if (response.ok) {
+            try {
+                await api.deleteEntry({
+                    path: entry.path!!
+                });
                 showMessage('success', 'Entry deleted successfully');
-                location.href = '/admin';
-            } else {
+                location.href = '/admin/';
+            } catch (e) {
+                console.log(e);
                 showMessage('error', 'Failed to delete entry');
             }
         }

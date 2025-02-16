@@ -7,6 +7,7 @@ type OperationName = string
 
 const (
 	CreateEntryOperation           OperationName = "CreateEntry"
+	DeleteEntryOperation           OperationName = "DeleteEntry"
 	GetAllEntryTitlesOperation     OperationName = "GetAllEntryTitles"
 	GetEntryByDynamicPathOperation OperationName = "GetEntryByDynamicPath"
 	GetLatestEntriesOperation      OperationName = "GetLatestEntries"

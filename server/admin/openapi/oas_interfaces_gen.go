@@ -5,6 +5,10 @@ type CreateEntryRes interface {
 	createEntryRes()
 }
 
+type DeleteEntryRes interface {
+	deleteEntryRes()
+}
+
 type UpdateEntryBodyRes interface {
 	updateEntryBodyRes()
 }
