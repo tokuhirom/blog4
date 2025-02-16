@@ -14,16 +14,16 @@ func (s *ErrorResponseStatusCode) Error() string {
 // Ref: #/components/schemas/CreateEntryRequest
 type CreateEntryRequest struct {
 	// The title of the new entry.
-	Title string `json:"title"`
+	Title OptString `json:"title"`
 }
 
 // GetTitle returns the value of Title.
-func (s *CreateEntryRequest) GetTitle() string {
+func (s *CreateEntryRequest) GetTitle() OptString {
 	return s.Title
 }
 
 // SetTitle sets the value of Title.
-func (s *CreateEntryRequest) SetTitle(val string) {
+func (s *CreateEntryRequest) SetTitle(val OptString) {
 	s.Title = val
 }
 

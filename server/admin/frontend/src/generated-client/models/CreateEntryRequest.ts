@@ -24,14 +24,13 @@ export interface CreateEntryRequest {
      * @type {string}
      * @memberof CreateEntryRequest
      */
-    title: string;
+    title?: string;
 }
 
 /**
  * Check if a given object implements the CreateEntryRequest interface.
  */
 export function instanceOfCreateEntryRequest(value: object): value is CreateEntryRequest {
-    if (!('title' in value) || value['title'] === undefined) return false;
     return true;
 }
 
@@ -45,7 +44,7 @@ export function CreateEntryRequestFromJSONTyped(json: any, ignoreDiscriminator: 
     }
     return {
         
-        'title': json['title'],
+        'title': json['title'] == null ? undefined : json['title'],
     };
 }
 

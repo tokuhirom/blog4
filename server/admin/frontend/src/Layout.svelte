@@ -1,14 +1,10 @@
 <script>
 import {Link} from "svelte-routing";
+import AdminHeader from "./components/AdminHeader.svelte";
 </script>
 
 <div>
-    <header>
-        <h1>tokuhirom's blog admin</h1>
-        <nav>
-            <a href="/">Home</a> | <Link to="/admin/help">New entry</Link>
-        </nav>
-    </header>
+    <AdminHeader />
 
     <main>
         <!-- This is where the routed components will be rendered -->
@@ -25,7 +21,7 @@ import {Link} from "svelte-routing";
     }
 
     main {
-        padding: 2rem;
+        padding: 3rem;
         margin-bottom: 4rem; /* to avoid overlap with footer */
     }
 </style>

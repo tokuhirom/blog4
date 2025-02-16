@@ -137,13 +137,17 @@ func (p *adminApiService) GetAllEntryTitles(ctx context.Context) (openapi.EntryT
 	return titles, nil
 }
 
+func getDefaultTitle() string {
+	return time.Now().Format("20060102150405")
+}
+
 func (p *adminApiService) CreateEntry(ctx context.Context, req *openapi.CreateEntryRequest) (openapi.CreateEntryRes, error) {
 	now := time.Now()
 	path := now.Format("2006/01/02/150405")
 
 	_, err := p.queries.CreateEmptyEntry(ctx, admindb.CreateEmptyEntryParams{
 		Path:  path,
-		Title: req.Title,
+		Title: req.Title.Or(getDefaultTitle()),
 	})
 	if err != nil {
 		return nil, err
