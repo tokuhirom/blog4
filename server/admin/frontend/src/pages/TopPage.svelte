@@ -1,9 +1,9 @@
 <script lang="ts">
-    import SearchBox from './SearchBox.svelte';
+    import SearchBox from '../components/SearchBox.svelte';
     import {onDestroy, onMount} from 'svelte';
-    import AdminEntryCardItem from './AdminEntryCardItem.svelte';
-    import {type GetLatestEntriesRow} from "./generated-client";
-    import {createAdminApiClient} from "./admin_api";
+    import AdminEntryCardItem from '../components/AdminEntryCardItem.svelte';
+    import {type GetLatestEntriesRow} from "../generated-client";
+    import {createAdminApiClient} from "../admin_api";
 
     onMount(() => {
         fetch(import.meta.env.VITE_API_BASE_URL + "/entries")

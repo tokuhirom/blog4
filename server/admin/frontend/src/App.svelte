@@ -2,8 +2,8 @@
     import {Link, Route, Router} from "svelte-routing";
     import Layout from "./Layout.svelte";
     import NotFound from "./NotFound.svelte";
-    import TopPage from "./TopPage.svelte";
-    import AdminEntryPage from "./AdminEntryPage.svelte";
+    import TopPage from "./pages/TopPage.svelte";
+    import AdminEntryPage from "./pages/AdminEntryPage.svelte";
 </script>
 
 <Router>

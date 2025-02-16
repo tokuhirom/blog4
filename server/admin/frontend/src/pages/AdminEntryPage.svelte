@@ -7,12 +7,12 @@
     // import { type LinkPalletData } from '$lib/LinkPallet';
     import {onMount} from 'svelte';
     // import LinkPallet from '../../AdminLinkPallet.svelte';
-    import MarkdownEditor from "./components/MarkdownEditor.svelte";
+    import MarkdownEditor from "../components/MarkdownEditor.svelte";
 
-    import {createAdminApiClient} from "./admin_api";
-    import {type GetLatestEntriesRow, ResponseError} from "./generated-client";
-    import {extractLinks} from "./extractLinks";
-    import {debounce} from "./utils";
+    import {createAdminApiClient} from "../admin_api";
+    import {type GetLatestEntriesRow, ResponseError} from "../generated-client";
+    import {extractLinks} from "../extractLinks";
+    import {debounce} from "../utils";
 
     let {path} = $props();
     const api = createAdminApiClient();
