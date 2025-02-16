@@ -56,24 +56,15 @@
     let isDirty = false;
 
 
-    // let linkPallet: LinkPalletData = $state(data.twohops);
+    let linkPallet: LinkPalletData = $state({});
 
     function loadLinks() {
-        fetch(`/admin/api/entry/${entry.path}/links`, {
-            method: 'GET'
-        })
-            .then((response) => {
-                if (response.ok) {
-                    return response.json();
-                } else {
-                    throw new Error('Failed to get total');
-                }
-            })
+        api.getLinkedEntryPaths({path})
             .then((data) => {
-                // linkPallet = data;
+                linkPallet = data;
             })
             .catch((error) => {
-                console.error('Failed to get total:', error);
+                console.error('Failed to get links:', error);
             });
     }
 

@@ -22,7 +22,7 @@ tasks:
   sqlc-admin:
     watch: true
     cmds:
-      - sqlc generate -f ./db/admin/sqlc-admin.yml
+      - go tool sqlc generate -f ./db/admin/sqlc-admin.yml
     sources:
       - ./db/admin/sqlc-admin.yml
       - ./db/admin/queries/admin.sql

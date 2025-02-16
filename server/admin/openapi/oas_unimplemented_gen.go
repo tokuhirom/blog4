@@ -63,7 +63,7 @@ func (UnimplementedHandler) GetLatestEntries(ctx context.Context, params GetLate
 // Get linked entry paths.
 //
 // GET /entries/{path}/links
-func (UnimplementedHandler) GetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (r LinkedEntriesResponse, _ error) {
+func (UnimplementedHandler) GetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (r *LinkPalletData, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

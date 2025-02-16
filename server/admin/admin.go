@@ -2,6 +2,7 @@ package admin
 
 import (
 	"bytes"
+	"database/sql"
 	"embed"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -32,7 +33,7 @@ func handleAssets(writer http.ResponseWriter, request *http.Request) {
 */
 
 // TODO auth
-func Router(cfg server.Config, queries *admindb.Queries) *chi.Mux {
+func Router(cfg server.Config, db *sql.DB) *chi.Mux {
 	if cfg.AdminUser == "" {
 		println("AdminUser is not set")
 	}
@@ -64,8 +65,10 @@ func Router(cfg server.Config, queries *admindb.Queries) *chi.Mux {
 	})
 	//r.Get("/assets/*", handleAssets)
 
+	queries := admindb.New(db)
 	apiService := adminApiService{
 		queries: queries,
+		db:      db,
 	}
 	adminApiHandler, err := openapi.NewServer(&apiService, openapi.WithPathPrefix("/admin/api"))
 	if err != nil {

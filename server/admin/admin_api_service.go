@@ -8,12 +8,12 @@ import (
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server/admin/openapi"
 	"log"
-	"strings"
 	"time"
 )
 
 type adminApiService struct {
 	queries *admindb.Queries
+	db      *sql.DB
 }
 
 func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.GetLatestEntriesParams) ([]openapi.GetLatestEntriesRow, error) {
@@ -76,20 +76,15 @@ func (p *adminApiService) GetEntryByDynamicPath(ctx context.Context, params open
 	}, nil
 }
 
-func (p *adminApiService) GetLinkedEntryPaths(ctx context.Context, params openapi.GetLinkedEntryPathsParams) (openapi.LinkedEntriesResponse, error) {
-	entries, err := p.queries.GetLinkedEntries(ctx, params.Path)
+func (p *adminApiService) GetLinkedEntryPaths(ctx context.Context, params openapi.GetLinkedEntryPathsParams) (*openapi.LinkPalletData, error) {
+	entry, err := p.queries.AdminGetEntryByPath(ctx, params.Path)
 	if err != nil {
 		return nil, err
 	}
 
-	links := make(map[string]openapi.NilString)
-	for _, entry := range entries {
-		links[strings.ToLower(entry.DstTitle)] = openapi.NilString{
-			Value: entry.Path.String,
-			Null:  !entry.Path.Valid,
-		}
-	}
-	return links, nil
+	twohops, err := getLinkPalletData(ctx, p.db, p.queries, params.Path, entry.Title)
+
+	return twohops, nil
 }
 
 func (p *adminApiService) UpdateEntryBody(ctx context.Context, req *openapi.UpdateEntryBodyRequest, params openapi.UpdateEntryBodyParams) (openapi.UpdateEntryBodyRes, error) {

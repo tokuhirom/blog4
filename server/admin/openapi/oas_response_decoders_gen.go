@@ -525,7 +525,7 @@ func decodeGetLatestEntriesResponse(resp *http.Response) (res []GetLatestEntries
 	return res, errors.Wrap(defRes, "error")
 }
 
-func decodeGetLinkedEntryPathsResponse(resp *http.Response) (res LinkedEntriesResponse, _ error) {
+func decodeGetLinkedEntryPathsResponse(resp *http.Response) (res *LinkPalletData, _ error) {
 	switch resp.StatusCode {
 	case 200:
 		// Code 200.
@@ -541,7 +541,7 @@ func decodeGetLinkedEntryPathsResponse(resp *http.Response) (res LinkedEntriesRe
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response LinkedEntriesResponse
+			var response LinkPalletData
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err
@@ -558,7 +558,16 @@ func decodeGetLinkedEntryPathsResponse(resp *http.Response) (res LinkedEntriesRe
 				}
 				return res, err
 			}
-			return response, nil
+			// Validate response.
+			if err := func() error {
+				if err := response.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return res, errors.Wrap(err, "validate")
+			}
+			return &response, nil
 		default:
 			return res, validate.InvalidContentType(ct)
 		}

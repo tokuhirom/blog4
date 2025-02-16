@@ -43,7 +43,7 @@ type Handler interface {
 	// Get linked entry paths.
 	//
 	// GET /entries/{path}/links
-	GetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (LinkedEntriesResponse, error)
+	GetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (*LinkPalletData, error)
 	// UpdateEntryBody implements updateEntryBody operation.
 	//
 	// Update entry body.

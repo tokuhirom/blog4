@@ -57,6 +57,12 @@ FROM entry_link
     LEFT JOIN entry_image ON (dest_entry.path = entry_image.path)
 WHERE entry_link.src_path = ?;
 
+-- name: GetEntriesByLinkedTitle :many
+SELECT DISTINCT entry.*
+FROM entry_link
+    INNER JOIN entry ON (entry.path = entry_link.src_path)
+WHERE entry_link.dst_title = ?;
+
 -- name: GetAllEntryTitles :many
 SELECT title
 FROM entry

@@ -19,6 +19,7 @@ import type {
   CreateEntryResponse,
   ErrorResponse,
   GetLatestEntriesRow,
+  LinkPalletData,
   UpdateEntryBodyRequest,
   UpdateEntryTitleRequest,
 } from '../models/index';
@@ -31,6 +32,8 @@ import {
     ErrorResponseToJSON,
     GetLatestEntriesRowFromJSON,
     GetLatestEntriesRowToJSON,
+    LinkPalletDataFromJSON,
+    LinkPalletDataToJSON,
     UpdateEntryBodyRequestFromJSON,
     UpdateEntryBodyRequestToJSON,
     UpdateEntryTitleRequestFromJSON,
@@ -233,7 +236,7 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Get linked entry paths
      */
-    async getLinkedEntryPathsRaw(requestParameters: GetLinkedEntryPathsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<{ [key: string]: string | null; }>> {
+    async getLinkedEntryPathsRaw(requestParameters: GetLinkedEntryPathsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<LinkPalletData>> {
         if (requestParameters['path'] == null) {
             throw new runtime.RequiredError(
                 'path',
@@ -252,13 +255,13 @@ export class DefaultApi extends runtime.BaseAPI {
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse<any>(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => LinkPalletDataFromJSON(jsonValue));
     }
 
     /**
      * Get linked entry paths
      */
-    async getLinkedEntryPaths(requestParameters: GetLinkedEntryPathsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<{ [key: string]: string | null; }> {
+    async getLinkedEntryPaths(requestParameters: GetLinkedEntryPathsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<LinkPalletData> {
         const response = await this.getLinkedEntryPathsRaw(requestParameters, initOverrides);
         return await response.value();
     }

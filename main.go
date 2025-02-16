@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/tokuhirom/blog4/server"
 	"github.com/tokuhirom/blog4/server/admin"
@@ -51,12 +50,11 @@ func main() {
 	}
 
 	publicQueries := publicdb.New(sqlDB)
-	adminQueries := admindb.New(sqlDB)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	r.Mount("/", server.Router(publicQueries))
-	r.Mount("/admin", admin.Router(cfg, adminQueries))
+	r.Mount("/admin", admin.Router(cfg, sqlDB))
 
 	// Start the server
 	log.Println("Starting server on http://localhost:8181/")

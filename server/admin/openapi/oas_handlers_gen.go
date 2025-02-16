@@ -841,7 +841,7 @@ func (s *Server) handleGetLinkedEntryPathsRequest(args [1]string, argsEscaped bo
 		return
 	}
 
-	var response LinkedEntriesResponse
+	var response *LinkPalletData
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -861,7 +861,7 @@ func (s *Server) handleGetLinkedEntryPathsRequest(args [1]string, argsEscaped bo
 		type (
 			Request  = struct{}
 			Params   = GetLinkedEntryPathsParams
-			Response = LinkedEntriesResponse
+			Response = *LinkPalletData
 		)
 		response, err = middleware.HookMiddleware[
 			Request,

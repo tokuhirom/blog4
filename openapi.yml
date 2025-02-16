@@ -133,7 +133,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LinkedEntriesResponse'
+                $ref: '#/components/schemas/LinkPalletData'
         default:
           description: An unexpected error occurred
           content:
@@ -282,13 +282,6 @@ components:
         error:
           type: string
 
-    LinkedEntriesResponse:
-      type: object
-      additionalProperties:
-        type: string
-        nullable: true
-      description: Object where keys are lowercase destination entry titles and values are their paths (null if entry doesn't exist)
-
     UpdateEntryBodyRequest:
       type: object
       required:
@@ -330,6 +323,73 @@ components:
         path:
           type: string
           description: The path of the created entry
+
+    LinkPalletData:
+      type: object
+      required:
+        - newLinks
+        - links
+        - twohops
+      properties:
+        newLinks:
+          type: array
+          items:
+            type: string
+          description: Array of potential new link titles
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntryWithImage'
+          description: Array of directly linked entries
+        twohops:
+          type: array
+          items:
+            $ref: '#/components/schemas/TwoHopLink'
+          description: Array of two-hop link relationships
+
+    EntryWithImage:
+      type: object
+      required:
+        - path
+        - title
+        - body
+        - visibility
+        - format
+      properties:
+        path:
+          type: string
+        title:
+          type: string
+        body:
+          type: string
+        visibility:
+          type: string
+        format:
+          type: string
+        imageUrl:
+          type: string
+          nullable: true
+
+    TwoHopLink:
+      type: object
+      required:
+        - src
+        - links
+      properties:
+        src:
+          $ref: '#/components/schemas/EntryWithDestTitle'
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntryWithImage'
+
+    EntryWithDestTitle:
+      allOf:
+        - $ref: '#/components/schemas/EntryWithImage'
+        - type: object
+          properties:
+            dstTitle:
+              type: string
 
     EmptyResponse:
       type: object

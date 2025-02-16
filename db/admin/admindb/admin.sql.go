@@ -120,6 +120,46 @@ func (q *Queries) GetAllEntryTitles(ctx context.Context) ([]string, error) {
 	return items, nil
 }
 
+const getEntriesByLinkedTitle = `-- name: GetEntriesByLinkedTitle :many
+SELECT DISTINCT entry.path, entry.title, entry.body, entry.visibility, entry.format, entry.published_at, entry.last_edited_at, entry.created_at, entry.updated_at
+FROM entry_link
+    INNER JOIN entry ON (entry.path = entry_link.src_path)
+WHERE entry_link.dst_title = ?
+`
+
+func (q *Queries) GetEntriesByLinkedTitle(ctx context.Context, dstTitle string) ([]Entry, error) {
+	rows, err := q.db.QueryContext(ctx, getEntriesByLinkedTitle, dstTitle)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Entry
+	for rows.Next() {
+		var i Entry
+		if err := rows.Scan(
+			&i.Path,
+			&i.Title,
+			&i.Body,
+			&i.Visibility,
+			&i.Format,
+			&i.PublishedAt,
+			&i.LastEditedAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getLatestEntries = `-- name: GetLatestEntries :many
 SELECT entry.path, entry.title, entry.body, entry.visibility, entry.format, entry.published_at, entry.last_edited_at, entry.created_at, entry.updated_at, entry_image.url AS image_url
 FROM entry

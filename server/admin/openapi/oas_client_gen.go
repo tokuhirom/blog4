@@ -63,7 +63,7 @@ type Invoker interface {
 	// Get linked entry paths.
 	//
 	// GET /entries/{path}/links
-	GetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (LinkedEntriesResponse, error)
+	GetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (*LinkPalletData, error)
 	// UpdateEntryBody invokes updateEntryBody operation.
 	//
 	// Update entry body.
@@ -550,12 +550,12 @@ func (c *Client) sendGetLatestEntries(ctx context.Context, params GetLatestEntri
 // Get linked entry paths.
 //
 // GET /entries/{path}/links
-func (c *Client) GetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (LinkedEntriesResponse, error) {
+func (c *Client) GetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (*LinkPalletData, error) {
 	res, err := c.sendGetLinkedEntryPaths(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendGetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (res LinkedEntriesResponse, err error) {
+func (c *Client) sendGetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (res *LinkPalletData, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getLinkedEntryPaths"),
 		semconv.HTTPRequestMethodKey.String("GET"),

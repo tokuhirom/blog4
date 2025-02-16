@@ -54,6 +54,158 @@ func (*EmptyResponse) updateEntryTitleRes() {}
 
 type EntryTitlesResponse []string
 
+// Merged schema.
+// Ref: #/components/schemas/EntryWithDestTitle
+type EntryWithDestTitle struct {
+	Path       string       `json:"path"`
+	Title      string       `json:"title"`
+	Body       string       `json:"body"`
+	Visibility string       `json:"visibility"`
+	Format     string       `json:"format"`
+	ImageUrl   OptNilString `json:"imageUrl"`
+	DstTitle   OptString    `json:"dstTitle"`
+}
+
+// GetPath returns the value of Path.
+func (s *EntryWithDestTitle) GetPath() string {
+	return s.Path
+}
+
+// GetTitle returns the value of Title.
+func (s *EntryWithDestTitle) GetTitle() string {
+	return s.Title
+}
+
+// GetBody returns the value of Body.
+func (s *EntryWithDestTitle) GetBody() string {
+	return s.Body
+}
+
+// GetVisibility returns the value of Visibility.
+func (s *EntryWithDestTitle) GetVisibility() string {
+	return s.Visibility
+}
+
+// GetFormat returns the value of Format.
+func (s *EntryWithDestTitle) GetFormat() string {
+	return s.Format
+}
+
+// GetImageUrl returns the value of ImageUrl.
+func (s *EntryWithDestTitle) GetImageUrl() OptNilString {
+	return s.ImageUrl
+}
+
+// GetDstTitle returns the value of DstTitle.
+func (s *EntryWithDestTitle) GetDstTitle() OptString {
+	return s.DstTitle
+}
+
+// SetPath sets the value of Path.
+func (s *EntryWithDestTitle) SetPath(val string) {
+	s.Path = val
+}
+
+// SetTitle sets the value of Title.
+func (s *EntryWithDestTitle) SetTitle(val string) {
+	s.Title = val
+}
+
+// SetBody sets the value of Body.
+func (s *EntryWithDestTitle) SetBody(val string) {
+	s.Body = val
+}
+
+// SetVisibility sets the value of Visibility.
+func (s *EntryWithDestTitle) SetVisibility(val string) {
+	s.Visibility = val
+}
+
+// SetFormat sets the value of Format.
+func (s *EntryWithDestTitle) SetFormat(val string) {
+	s.Format = val
+}
+
+// SetImageUrl sets the value of ImageUrl.
+func (s *EntryWithDestTitle) SetImageUrl(val OptNilString) {
+	s.ImageUrl = val
+}
+
+// SetDstTitle sets the value of DstTitle.
+func (s *EntryWithDestTitle) SetDstTitle(val OptString) {
+	s.DstTitle = val
+}
+
+// Ref: #/components/schemas/EntryWithImage
+type EntryWithImage struct {
+	Path       string       `json:"path"`
+	Title      string       `json:"title"`
+	Body       string       `json:"body"`
+	Visibility string       `json:"visibility"`
+	Format     string       `json:"format"`
+	ImageUrl   OptNilString `json:"imageUrl"`
+}
+
+// GetPath returns the value of Path.
+func (s *EntryWithImage) GetPath() string {
+	return s.Path
+}
+
+// GetTitle returns the value of Title.
+func (s *EntryWithImage) GetTitle() string {
+	return s.Title
+}
+
+// GetBody returns the value of Body.
+func (s *EntryWithImage) GetBody() string {
+	return s.Body
+}
+
+// GetVisibility returns the value of Visibility.
+func (s *EntryWithImage) GetVisibility() string {
+	return s.Visibility
+}
+
+// GetFormat returns the value of Format.
+func (s *EntryWithImage) GetFormat() string {
+	return s.Format
+}
+
+// GetImageUrl returns the value of ImageUrl.
+func (s *EntryWithImage) GetImageUrl() OptNilString {
+	return s.ImageUrl
+}
+
+// SetPath sets the value of Path.
+func (s *EntryWithImage) SetPath(val string) {
+	s.Path = val
+}
+
+// SetTitle sets the value of Title.
+func (s *EntryWithImage) SetTitle(val string) {
+	s.Title = val
+}
+
+// SetBody sets the value of Body.
+func (s *EntryWithImage) SetBody(val string) {
+	s.Body = val
+}
+
+// SetVisibility sets the value of Visibility.
+func (s *EntryWithImage) SetVisibility(val string) {
+	s.Visibility = val
+}
+
+// SetFormat sets the value of Format.
+func (s *EntryWithImage) SetFormat(val string) {
+	s.Format = val
+}
+
+// SetImageUrl sets the value of ImageUrl.
+func (s *EntryWithImage) SetImageUrl(val OptNilString) {
+	s.ImageUrl = val
+}
+
 // Ref: #/components/schemas/ErrorResponse
 type ErrorResponse struct {
 	Message OptString `json:"message"`
@@ -224,63 +376,44 @@ func (s *GetLatestEntriesRow) SetImageUrl(val OptNilString) {
 	s.ImageUrl = val
 }
 
-// Object where keys are lowercase destination entry titles and values are their paths (null if entry
-// doesn't exist).
-// Ref: #/components/schemas/LinkedEntriesResponse
-type LinkedEntriesResponse map[string]NilString
-
-func (s *LinkedEntriesResponse) init() LinkedEntriesResponse {
-	m := *s
-	if m == nil {
-		m = map[string]NilString{}
-		*s = m
-	}
-	return m
+// Ref: #/components/schemas/LinkPalletData
+type LinkPalletData struct {
+	// Array of potential new link titles.
+	NewLinks []string `json:"newLinks"`
+	// Array of directly linked entries.
+	Links []EntryWithImage `json:"links"`
+	// Array of two-hop link relationships.
+	Twohops []TwoHopLink `json:"twohops"`
 }
 
-// NewNilString returns new NilString with value set to v.
-func NewNilString(v string) NilString {
-	return NilString{
-		Value: v,
-	}
+// GetNewLinks returns the value of NewLinks.
+func (s *LinkPalletData) GetNewLinks() []string {
+	return s.NewLinks
 }
 
-// NilString is nullable string.
-type NilString struct {
-	Value string
-	Null  bool
+// GetLinks returns the value of Links.
+func (s *LinkPalletData) GetLinks() []EntryWithImage {
+	return s.Links
 }
 
-// SetTo sets value to v.
-func (o *NilString) SetTo(v string) {
-	o.Null = false
-	o.Value = v
+// GetTwohops returns the value of Twohops.
+func (s *LinkPalletData) GetTwohops() []TwoHopLink {
+	return s.Twohops
 }
 
-// IsSet returns true if value is Null.
-func (o NilString) IsNull() bool { return o.Null }
-
-// SetNull sets value to null.
-func (o *NilString) SetToNull() {
-	o.Null = true
-	var v string
-	o.Value = v
+// SetNewLinks sets the value of NewLinks.
+func (s *LinkPalletData) SetNewLinks(val []string) {
+	s.NewLinks = val
 }
 
-// Get returns value and boolean that denotes whether value was set.
-func (o NilString) Get() (v string, ok bool) {
-	if o.Null {
-		return v, false
-	}
-	return o.Value, true
+// SetLinks sets the value of Links.
+func (s *LinkPalletData) SetLinks(val []EntryWithImage) {
+	s.Links = val
 }
 
-// Or returns value if set, or given parameter if does not.
-func (o NilString) Or(d string) string {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
+// SetTwohops sets the value of Twohops.
+func (s *LinkPalletData) SetTwohops(val []TwoHopLink) {
+	s.Twohops = val
 }
 
 // NewOptDateTime returns new OptDateTime with value set to v.
@@ -499,6 +632,32 @@ func (o OptString) Or(d string) string {
 		return v
 	}
 	return d
+}
+
+// Ref: #/components/schemas/TwoHopLink
+type TwoHopLink struct {
+	Src   EntryWithDestTitle `json:"src"`
+	Links []EntryWithImage   `json:"links"`
+}
+
+// GetSrc returns the value of Src.
+func (s *TwoHopLink) GetSrc() EntryWithDestTitle {
+	return s.Src
+}
+
+// GetLinks returns the value of Links.
+func (s *TwoHopLink) GetLinks() []EntryWithImage {
+	return s.Links
+}
+
+// SetSrc sets the value of Src.
+func (s *TwoHopLink) SetSrc(val EntryWithDestTitle) {
+	s.Src = val
+}
+
+// SetLinks sets the value of Links.
+func (s *TwoHopLink) SetLinks(val []EntryWithImage) {
+	s.Links = val
 }
 
 // Ref: #/components/schemas/UpdateEntryBodyRequest

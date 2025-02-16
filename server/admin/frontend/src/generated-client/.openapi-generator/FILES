@@ -3,8 +3,12 @@ apis/index.ts
 index.ts
 models/CreateEntryRequest.ts
 models/CreateEntryResponse.ts
+models/EntryWithDestTitle.ts
+models/EntryWithImage.ts
 models/ErrorResponse.ts
 models/GetLatestEntriesRow.ts
+models/LinkPalletData.ts
+models/TwoHopLink.ts
 models/UpdateEntryBodyRequest.ts
 models/UpdateEntryTitleRequest.ts
 models/index.ts
