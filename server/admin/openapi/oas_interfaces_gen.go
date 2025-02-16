@@ -9,6 +9,10 @@ type DeleteEntryRes interface {
 	deleteEntryRes()
 }
 
+type GetLinkedEntryPathsRes interface {
+	getLinkedEntryPathsRes()
+}
+
 type UpdateEntryBodyRes interface {
 	updateEntryBodyRes()
 }

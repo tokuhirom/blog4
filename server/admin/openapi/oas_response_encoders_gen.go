@@ -125,7 +125,7 @@ func encodeGetLatestEntriesResponse(response []GetLatestEntriesRow, w http.Respo
 	return nil
 }
 
-func encodeGetLinkedEntryPathsResponse(response *LinkPalletData, w http.ResponseWriter, span trace.Span) error {
+func encodeGetLinkPalletResponse(response *LinkPalletData, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
 	span.SetStatus(codes.Ok, http.StatusText(200))
@@ -137,6 +137,39 @@ func encodeGetLinkedEntryPathsResponse(response *LinkPalletData, w http.Response
 	}
 
 	return nil
+}
+
+func encodeGetLinkedEntryPathsResponse(response GetLinkedEntryPathsRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *LinkedEntryPathsResponse:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *ErrorResponse:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(404)
+		span.SetStatus(codes.Error, http.StatusText(404))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
+	}
 }
 
 func encodeUpdateEntryBodyResponse(response UpdateEntryBodyRes, w http.ResponseWriter, span trace.Span) error {

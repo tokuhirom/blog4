@@ -8,6 +8,7 @@ import (
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server/admin/openapi"
 	"log"
+	"strings"
 	"time"
 )
 
@@ -59,6 +60,7 @@ func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.G
 func (p *adminApiService) GetEntryByDynamicPath(ctx context.Context, params openapi.GetEntryByDynamicPathParams) (*openapi.GetLatestEntriesRow, error) {
 	entry, err := p.queries.AdminGetEntryByPath(ctx, params.Path)
 	if err != nil {
+		log.Printf("GetEntryByDynamicPath %v", err)
 		return nil, err
 	}
 
@@ -76,15 +78,31 @@ func (p *adminApiService) GetEntryByDynamicPath(ctx context.Context, params open
 	}, nil
 }
 
-func (p *adminApiService) GetLinkedEntryPaths(ctx context.Context, params openapi.GetLinkedEntryPathsParams) (*openapi.LinkPalletData, error) {
+func (p *adminApiService) GetLinkPallet(ctx context.Context, params openapi.GetLinkPalletParams) (*openapi.LinkPalletData, error) {
 	entry, err := p.queries.AdminGetEntryByPath(ctx, params.Path)
 	if err != nil {
 		return nil, err
 	}
 
-	twohops, err := getLinkPalletData(ctx, p.db, p.queries, params.Path, entry.Title)
+	linkPallet, err := getLinkPalletData(ctx, p.db, p.queries, params.Path, entry.Title)
+	if err != nil {
+		return nil, err
+	}
 
-	return twohops, nil
+	return linkPallet, nil
+}
+
+func (p *adminApiService) GetLinkedEntryPaths(ctx context.Context, params openapi.GetLinkedEntryPathsParams) (openapi.GetLinkedEntryPathsRes, error) {
+	links, err := p.queries.GetLinkedEntries(ctx, params.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	result := make(openapi.LinkedEntryPathsResponse)
+	for _, link := range links {
+		result[strings.ToLower(link.DstTitle)] = link.Path.String
+	}
+	return &result, nil
 }
 
 func (p *adminApiService) UpdateEntryBody(ctx context.Context, req *openapi.UpdateEntryBodyRequest, params openapi.UpdateEntryBodyParams) (openapi.UpdateEntryBodyRes, error) {

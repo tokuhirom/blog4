@@ -38,12 +38,18 @@ type Handler interface {
 	//
 	// GET /entries
 	GetLatestEntries(ctx context.Context, params GetLatestEntriesParams) ([]GetLatestEntriesRow, error)
+	// GetLinkPallet implements getLinkPallet operation.
+	//
+	// Get linked entry paths.
+	//
+	// GET /entries/{path}/link-pallet
+	GetLinkPallet(ctx context.Context, params GetLinkPalletParams) (*LinkPalletData, error)
 	// GetLinkedEntryPaths implements getLinkedEntryPaths operation.
 	//
 	// Get linked entry paths.
 	//
-	// GET /entries/{path}/links
-	GetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (*LinkPalletData, error)
+	// GET /entries/{path}/linked-paths
+	GetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (GetLinkedEntryPathsRes, error)
 	// UpdateEntryBody implements updateEntryBody operation.
 	//
 	// Update entry body.

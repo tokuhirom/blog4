@@ -56,6 +56,10 @@ export interface GetLatestEntriesRequest {
     lastLastEditedAt?: Date;
 }
 
+export interface GetLinkPalletRequest {
+    path: string;
+}
+
 export interface GetLinkedEntryPathsRequest {
     path: string;
 }
@@ -236,7 +240,40 @@ export class DefaultApi extends runtime.BaseAPI {
     /**
      * Get linked entry paths
      */
-    async getLinkedEntryPathsRaw(requestParameters: GetLinkedEntryPathsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<LinkPalletData>> {
+    async getLinkPalletRaw(requestParameters: GetLinkPalletRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<LinkPalletData>> {
+        if (requestParameters['path'] == null) {
+            throw new runtime.RequiredError(
+                'path',
+                'Required parameter "path" was null or undefined when calling getLinkPallet().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/entries/{path}/link-pallet`.replace(`{${"path"}}`, encodeURIComponent(String(requestParameters['path']))),
+            method: 'GET',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => LinkPalletDataFromJSON(jsonValue));
+    }
+
+    /**
+     * Get linked entry paths
+     */
+    async getLinkPallet(requestParameters: GetLinkPalletRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<LinkPalletData> {
+        const response = await this.getLinkPalletRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Get linked entry paths
+     */
+    async getLinkedEntryPathsRaw(requestParameters: GetLinkedEntryPathsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<{ [key: string]: string; }>> {
         if (requestParameters['path'] == null) {
             throw new runtime.RequiredError(
                 'path',
@@ -249,19 +286,19 @@ export class DefaultApi extends runtime.BaseAPI {
         const headerParameters: runtime.HTTPHeaders = {};
 
         const response = await this.request({
-            path: `/entries/{path}/links`.replace(`{${"path"}}`, encodeURIComponent(String(requestParameters['path']))),
+            path: `/entries/{path}/linked-paths`.replace(`{${"path"}}`, encodeURIComponent(String(requestParameters['path']))),
             method: 'GET',
             headers: headerParameters,
             query: queryParameters,
         }, initOverrides);
 
-        return new runtime.JSONApiResponse(response, (jsonValue) => LinkPalletDataFromJSON(jsonValue));
+        return new runtime.JSONApiResponse<any>(response);
     }
 
     /**
      * Get linked entry paths
      */
-    async getLinkedEntryPaths(requestParameters: GetLinkedEntryPathsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<LinkPalletData> {
+    async getLinkedEntryPaths(requestParameters: GetLinkedEntryPathsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<{ [key: string]: string; }> {
         const response = await this.getLinkedEntryPathsRaw(requestParameters, initOverrides);
         return await response.value();
     }

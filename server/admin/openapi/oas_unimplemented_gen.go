@@ -58,12 +58,21 @@ func (UnimplementedHandler) GetLatestEntries(ctx context.Context, params GetLate
 	return r, ht.ErrNotImplemented
 }
 
+// GetLinkPallet implements getLinkPallet operation.
+//
+// Get linked entry paths.
+//
+// GET /entries/{path}/link-pallet
+func (UnimplementedHandler) GetLinkPallet(ctx context.Context, params GetLinkPalletParams) (r *LinkPalletData, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetLinkedEntryPaths implements getLinkedEntryPaths operation.
 //
 // Get linked entry paths.
 //
-// GET /entries/{path}/links
-func (UnimplementedHandler) GetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (r *LinkPalletData, _ error) {
+// GET /entries/{path}/linked-paths
+func (UnimplementedHandler) GetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (r GetLinkedEntryPathsRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

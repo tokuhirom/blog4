@@ -60,7 +60,7 @@ export interface EntryWithDestTitle {
      * @type {string}
      * @memberof EntryWithDestTitle
      */
-    dstTitle?: string;
+    dstTitle: string;
 }
 
 /**
@@ -72,6 +72,7 @@ export function instanceOfEntryWithDestTitle(value: object): value is EntryWithD
     if (!('body' in value) || value['body'] === undefined) return false;
     if (!('visibility' in value) || value['visibility'] === undefined) return false;
     if (!('format' in value) || value['format'] === undefined) return false;
+    if (!('dstTitle' in value) || value['dstTitle'] === undefined) return false;
     return true;
 }
 
@@ -91,7 +92,7 @@ export function EntryWithDestTitleFromJSONTyped(json: any, ignoreDiscriminator: 
         'visibility': json['visibility'],
         'format': json['format'],
         'imageUrl': json['imageUrl'] == null ? undefined : json['imageUrl'],
-        'dstTitle': json['dstTitle'] == null ? undefined : json['dstTitle'],
+        'dstTitle': json['dstTitle'],
     };
 }
 

@@ -1,5 +1,7 @@
 version: '3'
 
+interval: 500ms
+
 tasks:
   frontend:
     cmds:
@@ -65,7 +67,7 @@ tasks:
       - go generate main.go
     watch: true
     sources:
-      - oepnapi.yml
+      - openapi.yml
       - main.go
     generates:
       - ./server/admin/openapi/oas_cfg_gen.go
@@ -88,8 +90,8 @@ tasks:
     cmds:
       - npx openapi-generator-cli generate -i ../../../openapi.yml -g typescript-fetch -o ./src/generated-client
     sources:
-      - openapi.yml
+      - ../../../openapi.yml
     generates:
-      - ./server/admin/frontend/src/generated-client
-      - ./server/admin/frontend/src/generated-client/runtime.ts
+      - ./src/generated-client
+      - ./src/generated-client/runtime.ts
     desc: "Generate OpenAPI client code"

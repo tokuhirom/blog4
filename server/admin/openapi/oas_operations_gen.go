@@ -11,6 +11,7 @@ const (
 	GetAllEntryTitlesOperation     OperationName = "GetAllEntryTitles"
 	GetEntryByDynamicPathOperation OperationName = "GetEntryByDynamicPath"
 	GetLatestEntriesOperation      OperationName = "GetLatestEntries"
+	GetLinkPalletOperation         OperationName = "GetLinkPallet"
 	GetLinkedEntryPathsOperation   OperationName = "GetLinkedEntryPaths"
 	UpdateEntryBodyOperation       OperationName = "UpdateEntryBody"
 	UpdateEntryTitleOperation      OperationName = "UpdateEntryTitle"

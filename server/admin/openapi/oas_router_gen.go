@@ -165,26 +165,64 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 
 						elem = origElem
-					case 'l': // Prefix: "links"
+					case 'l': // Prefix: "link"
 						origElem := elem
-						if l := len("links"); len(elem) >= l && elem[0:l] == "links" {
+						if l := len("link"); len(elem) >= l && elem[0:l] == "link" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
 						if len(elem) == 0 {
-							// Leaf node.
-							switch r.Method {
-							case "GET":
-								s.handleGetLinkedEntryPathsRequest([1]string{
-									args[0],
-								}, elemIsEscaped, w, r)
-							default:
-								s.notAllowed(w, r, "GET")
+							break
+						}
+						switch elem[0] {
+						case '-': // Prefix: "-pallet"
+							origElem := elem
+							if l := len("-pallet"); len(elem) >= l && elem[0:l] == "-pallet" {
+								elem = elem[l:]
+							} else {
+								break
 							}
 
-							return
+							if len(elem) == 0 {
+								// Leaf node.
+								switch r.Method {
+								case "GET":
+									s.handleGetLinkPalletRequest([1]string{
+										args[0],
+									}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, "GET")
+								}
+
+								return
+							}
+
+							elem = origElem
+						case 'e': // Prefix: "ed-paths"
+							origElem := elem
+							if l := len("ed-paths"); len(elem) >= l && elem[0:l] == "ed-paths" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch r.Method {
+								case "GET":
+									s.handleGetLinkedEntryPathsRequest([1]string{
+										args[0],
+									}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, "GET")
+								}
+
+								return
+							}
+
+							elem = origElem
 						}
 
 						elem = origElem
@@ -438,28 +476,68 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 
 						elem = origElem
-					case 'l': // Prefix: "links"
+					case 'l': // Prefix: "link"
 						origElem := elem
-						if l := len("links"); len(elem) >= l && elem[0:l] == "links" {
+						if l := len("link"); len(elem) >= l && elem[0:l] == "link" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
 						if len(elem) == 0 {
-							// Leaf node.
-							switch method {
-							case "GET":
-								r.name = GetLinkedEntryPathsOperation
-								r.summary = "Get linked entry paths"
-								r.operationID = "getLinkedEntryPaths"
-								r.pathPattern = "/entries/{path}/links"
-								r.args = args
-								r.count = 1
-								return r, true
-							default:
-								return
+							break
+						}
+						switch elem[0] {
+						case '-': // Prefix: "-pallet"
+							origElem := elem
+							if l := len("-pallet"); len(elem) >= l && elem[0:l] == "-pallet" {
+								elem = elem[l:]
+							} else {
+								break
 							}
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch method {
+								case "GET":
+									r.name = GetLinkPalletOperation
+									r.summary = "Get linked entry paths"
+									r.operationID = "getLinkPallet"
+									r.pathPattern = "/entries/{path}/link-pallet"
+									r.args = args
+									r.count = 1
+									return r, true
+								default:
+									return
+								}
+							}
+
+							elem = origElem
+						case 'e': // Prefix: "ed-paths"
+							origElem := elem
+							if l := len("ed-paths"); len(elem) >= l && elem[0:l] == "ed-paths" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch method {
+								case "GET":
+									r.name = GetLinkedEntryPathsOperation
+									r.summary = "Get linked entry paths"
+									r.operationID = "getLinkedEntryPaths"
+									r.pathPattern = "/entries/{path}/linked-paths"
+									r.args = args
+									r.count = 1
+									return r, true
+								default:
+									return
+								}
+							}
+
+							elem = origElem
 						}
 
 						elem = origElem

@@ -1,18 +1,12 @@
 <script lang="ts">
-    // import { type Entry } from '$lib/entity';
-    // import { error } from '@sveltejs/kit';
-    // import type { PageData } from './$types';
-    // import { debounce } from '$lib/utils';
-    // import { beforeNavigate } from '$app/navigation';
-    // import { type LinkPalletData } from '$lib/LinkPallet';
     import {onMount} from 'svelte';
-    // import LinkPallet from '../../AdminLinkPallet.svelte';
     import MarkdownEditor from "../components/MarkdownEditor.svelte";
 
     import {createAdminApiClient} from "../admin_api";
-    import {type GetLatestEntriesRow, ResponseError} from "../generated-client";
+    import {type GetLatestEntriesRow, type LinkPalletData, ResponseError} from "../generated-client";
     import {extractLinks} from "../extractLinks";
     import {debounce} from "../utils";
+    import LinkPallet from "../components/LinkPallet.svelte";
 
     let {path} = $props();
     const api = createAdminApiClient();
@@ -20,13 +14,16 @@
 
     let links: {[key: string]: string|null} = $state({});
 
-    // const twohops = await locals.adminEntryService.getLinkPalletData(path, entry.title);
-    const twohops = {};
-
     let title: string = $state('');
     let body: string = $state('');
     let visibility = $state('');
     let currentLinks: string[] = $state([]);
+
+    let linkPallet: LinkPalletData = $state({
+        links: [],
+        twohops: [],
+        newLinks: []
+    });
 
     onMount(async () => {
         try {
@@ -49,18 +46,17 @@
         }
 
         links = await api.getLinkedEntryPaths({path});
+        loadLinks();
     });
 
     let pageTitles: string[] = $state([]);
 
     let isDirty = false;
 
-
-    let linkPallet: LinkPalletData = $state({});
-
     function loadLinks() {
-        api.getLinkedEntryPaths({path})
+        api.getLinkPallet({path})
             .then((data) => {
+                console.log("Got link pallet data", data);
                 linkPallet = data;
             })
             .catch((error) => {
@@ -235,6 +231,7 @@
             });
     }
 
+    // TODO: 未保存の変更がある場合に警告を表示する
     // beforeNavigate(({ cancel }) => {
     //     if (isDirty && !confirm('You have unsaved changes. Are you sure you want to leave?')) {
     //         cancel();
@@ -382,7 +379,7 @@
     {/if}
 
     <div class="link-pallet">
-        <!--      TODO:  <LinkPallet {linkPallet} />-->
+        <LinkPallet {linkPallet} />
     </div>
 </div>
 

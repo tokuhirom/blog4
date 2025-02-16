@@ -63,7 +63,7 @@ type EntryWithDestTitle struct {
 	Visibility string       `json:"visibility"`
 	Format     string       `json:"format"`
 	ImageUrl   OptNilString `json:"imageUrl"`
-	DstTitle   OptString    `json:"dstTitle"`
+	DstTitle   string       `json:"dstTitle"`
 }
 
 // GetPath returns the value of Path.
@@ -97,7 +97,7 @@ func (s *EntryWithDestTitle) GetImageUrl() OptNilString {
 }
 
 // GetDstTitle returns the value of DstTitle.
-func (s *EntryWithDestTitle) GetDstTitle() OptString {
+func (s *EntryWithDestTitle) GetDstTitle() string {
 	return s.DstTitle
 }
 
@@ -132,7 +132,7 @@ func (s *EntryWithDestTitle) SetImageUrl(val OptNilString) {
 }
 
 // SetDstTitle sets the value of DstTitle.
-func (s *EntryWithDestTitle) SetDstTitle(val OptString) {
+func (s *EntryWithDestTitle) SetDstTitle(val string) {
 	s.DstTitle = val
 }
 
@@ -232,9 +232,10 @@ func (s *ErrorResponse) SetError(val OptString) {
 	s.Error = val
 }
 
-func (*ErrorResponse) createEntryRes()     {}
-func (*ErrorResponse) deleteEntryRes()     {}
-func (*ErrorResponse) updateEntryBodyRes() {}
+func (*ErrorResponse) createEntryRes()         {}
+func (*ErrorResponse) deleteEntryRes()         {}
+func (*ErrorResponse) getLinkedEntryPathsRes() {}
+func (*ErrorResponse) updateEntryBodyRes()     {}
 
 // ErrorResponseStatusCode wraps ErrorResponse with StatusCode.
 type ErrorResponseStatusCode struct {
@@ -415,6 +416,22 @@ func (s *LinkPalletData) SetLinks(val []EntryWithImage) {
 func (s *LinkPalletData) SetTwohops(val []TwoHopLink) {
 	s.Twohops = val
 }
+
+// Object where keys are lowercase destination entry titles and values are their paths (null if entry
+// doesn't exist).
+// Ref: #/components/schemas/LinkedEntryPathsResponse
+type LinkedEntryPathsResponse map[string]string
+
+func (s *LinkedEntryPathsResponse) init() LinkedEntryPathsResponse {
+	m := *s
+	if m == nil {
+		m = map[string]string{}
+		*s = m
+	}
+	return m
+}
+
+func (*LinkedEntryPathsResponse) getLinkedEntryPathsRes() {}
 
 // NewOptDateTime returns new OptDateTime with value set to v.
 func NewOptDateTime(v time.Time) OptDateTime {

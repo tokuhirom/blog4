@@ -338,10 +338,8 @@ func (s *EntryWithDestTitle) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
-		if s.DstTitle.Set {
-			e.FieldStart("dstTitle")
-			s.DstTitle.Encode(e)
-		}
+		e.FieldStart("dstTitle")
+		e.Str(s.DstTitle)
 	}
 }
 
@@ -435,9 +433,11 @@ func (s *EntryWithDestTitle) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"imageUrl\"")
 			}
 		case "dstTitle":
+			requiredBitSet[0] |= 1 << 6
 			if err := func() error {
-				s.DstTitle.Reset()
-				if err := s.DstTitle.Decode(d); err != nil {
+				v, err := d.Str()
+				s.DstTitle = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -454,7 +454,7 @@ func (s *EntryWithDestTitle) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00011111,
+		0b01011111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -1135,6 +1135,62 @@ func (s *LinkPalletData) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *LinkPalletData) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s LinkedEntryPathsResponse) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields implements json.Marshaler.
+func (s LinkedEntryPathsResponse) encodeFields(e *jx.Encoder) {
+	for k, elem := range s {
+		e.FieldStart(k)
+
+		e.Str(elem)
+	}
+}
+
+// Decode decodes LinkedEntryPathsResponse from json.
+func (s *LinkedEntryPathsResponse) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode LinkedEntryPathsResponse to nil")
+	}
+	m := s.init()
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		var elem string
+		if err := func() error {
+			v, err := d.Str()
+			elem = string(v)
+			if err != nil {
+				return err
+			}
+			return nil
+		}(); err != nil {
+			return errors.Wrapf(err, "decode field %q", k)
+		}
+		m[string(k)] = elem
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode LinkedEntryPathsResponse")
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s LinkedEntryPathsResponse) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *LinkedEntryPathsResponse) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
