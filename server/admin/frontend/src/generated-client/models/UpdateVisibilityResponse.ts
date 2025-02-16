@@ -24,13 +24,14 @@ export interface UpdateVisibilityResponse {
      * @type {string}
      * @memberof UpdateVisibilityResponse
      */
-    visibility?: string;
+    visibility: string;
 }
 
 /**
  * Check if a given object implements the UpdateVisibilityResponse interface.
  */
 export function instanceOfUpdateVisibilityResponse(value: object): value is UpdateVisibilityResponse {
+    if (!('visibility' in value) || value['visibility'] === undefined) return false;
     return true;
 }
 
@@ -44,7 +45,7 @@ export function UpdateVisibilityResponseFromJSONTyped(json: any, ignoreDiscrimin
     }
     return {
         
-        'visibility': json['visibility'] == null ? undefined : json['visibility'],
+        'visibility': json['visibility'],
     };
 }
 

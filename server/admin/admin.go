@@ -69,6 +69,7 @@ func Router(cfg server.Config, db *sql.DB) *chi.Mux {
 	apiService := adminApiService{
 		queries: queries,
 		db:      db,
+		hubUrls: cfg.GetHubUrls(),
 	}
 	adminApiHandler, err := openapi.NewServer(&apiService, openapi.WithPathPrefix("/admin/api"))
 	if err != nil {

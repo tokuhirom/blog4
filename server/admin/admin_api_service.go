@@ -15,6 +15,7 @@ import (
 type adminApiService struct {
 	queries *admindb.Queries
 	db      *sql.DB
+	hubUrls []string
 }
 
 func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.GetLatestEntriesParams) ([]openapi.GetLatestEntriesRow, error) {
@@ -208,13 +209,13 @@ func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openap
 		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
-	// TODO ここで blog ping を送るとベターだが後でやる。
-	/*
-		for (const hubUrl of HUB_URLS) {
-			console.log(`Notify Hub: ${hubUrl}`);
-			await notifyHub(hubUrl, `https://blog.64p.org/feed`);
+	// Send notification to Hub
+	for _, hubUrl := range p.hubUrls {
+		log.Printf("Notify Hub: %s", hubUrl)
+		if err := NotifyHub(hubUrl, "https://blog.64p.org/feed"); err != nil {
+			log.Printf("Failed to notify Hub: %v", err)
 		}
-	*/
+	}
 
 	return &openapi.UpdateVisibilityResponse{
 		Visibility: req.Visibility,
