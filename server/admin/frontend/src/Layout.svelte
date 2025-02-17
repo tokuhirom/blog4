@@ -13,13 +13,6 @@ import AdminHeader from "./components/AdminHeader.svelte";
 </div>
 
 <style>
-    /* Add any styles specific to your layout here */
-    header {
-        background-color: #f8f9fa;
-        padding: 1rem;
-        text-align: center;
-    }
-
     main {
         padding: 4rem;
         margin-bottom: 4rem; /* to avoid overlap with footer */
