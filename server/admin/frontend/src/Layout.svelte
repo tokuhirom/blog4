@@ -21,7 +21,7 @@ import AdminHeader from "./components/AdminHeader.svelte";
     }
 
     main {
-        padding: 3rem;
+        padding: 4rem;
         margin-bottom: 4rem; /* to avoid overlap with footer */
     }
 </style>
