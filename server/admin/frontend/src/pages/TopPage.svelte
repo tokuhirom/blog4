@@ -2,7 +2,7 @@
 import SearchBox from "../components/SearchBox.svelte";
 import { onDestroy, onMount } from "svelte";
 import AdminEntryCardItem from "../components/AdminEntryCardItem.svelte";
-import { type GetLatestEntriesRow } from "../generated-client";
+import type { GetLatestEntriesRow } from "../generated-client";
 import { createAdminApiClient } from "../admin_api";
 
 onMount(() => {
@@ -16,7 +16,7 @@ onMount(() => {
 let searchKeyword = $state("");
 
 let allEntries: GetLatestEntriesRow[] = $state([]);
-let filteredEntries: GetLatestEntriesRow[] = $derived.by(() => {
+const filteredEntries: GetLatestEntriesRow[] = $derived.by(() => {
 	if (searchKeyword === "") {
 		return allEntries;
 	}

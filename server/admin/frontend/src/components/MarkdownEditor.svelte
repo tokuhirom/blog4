@@ -16,7 +16,7 @@ import {
 
 let container: HTMLDivElement;
 
-let {
+const {
 	initialContent = "",
 	onUpdateText,
 	onSave = () => {},

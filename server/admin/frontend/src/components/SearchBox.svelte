@@ -1,6 +1,6 @@
 <script lang="ts">
 import { debounce } from "../utils";
-let { onSearch } = $props();
+const { onSearch } = $props();
 let keyword = "";
 
 const debouncedSearch = debounce((newKeyword: string) => {

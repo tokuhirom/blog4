@@ -2,7 +2,7 @@
 import CardItem from "./CardItem.svelte";
 import type { GetLatestEntriesRow } from "../generated-client";
 
-let {
+const {
 	entry,
 	backgroundColor = entry.visibility == "private" ? "#cccccc" : "#f6f6f6",
 	color = "#0f0f0f",
@@ -26,11 +26,11 @@ function simplifyMarkdown(text: string): string {
 		.trim();
 }
 
-let title = entry.title;
-let content = entry.body
+const title = entry.title;
+const content = entry.body
 	? simplifyMarkdown(entry.body).slice(0, 100) + "..."
 	: "";
-let imgSrc = entry.imageUrl;
+const imgSrc = entry.imageUrl;
 </script>
 
 <CardItem {onClick} {backgroundColor} {color} {title} {content} {imgSrc} />

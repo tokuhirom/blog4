@@ -2,7 +2,7 @@
 import EntryCardItem from "./EntryCardItem.svelte";
 import type { GetLatestEntriesRow } from "../generated-client";
 
-let {
+const {
 	entry,
 	backgroundColor = entry.visibility == "private" ? "#cccccc" : "#f6f6f6",
 	color = "#0f0f0f",

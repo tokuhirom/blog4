@@ -4,7 +4,7 @@ import CardItem from "./CardItem.svelte";
 import type { LinkPalletData } from "../generated-client";
 import { createAdminApiClient } from "../admin_api";
 
-let { linkPallet }: { linkPallet: LinkPalletData } = $props();
+const { linkPallet }: { linkPallet: LinkPalletData } = $props();
 
 const api = createAdminApiClient();
 
