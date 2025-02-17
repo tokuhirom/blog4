@@ -1,19 +1,19 @@
 <script lang="ts">
-	import { debounce } from '../utils';
-	let { onSearch } = $props();
-	let keyword = '';
+import { debounce } from "../utils";
+let { onSearch } = $props();
+let keyword = "";
 
-	const debouncedSearch = debounce((newKeyword: string) => {
-		onSearch(newKeyword);
-	}, 1000);
+const debouncedSearch = debounce((newKeyword: string) => {
+	onSearch(newKeyword);
+}, 1000);
 
-	function onInput(event: Event) {
-		const target = event.target as HTMLInputElement;
-		if (target) {
-			keyword = target.value;
-		}
-		debouncedSearch(keyword);
+function onInput(event: Event) {
+	const target = event.target as HTMLInputElement;
+	if (target) {
+		keyword = target.value;
 	}
+	debouncedSearch(keyword);
+}
 </script>
 
 <input type="text" placeholder="Search entries..." class="search-input" oninput={onInput} />

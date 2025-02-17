@@ -1,5 +1,5 @@
 <script>
-    import AdminHeader from "./components/AdminHeader.svelte";
+import AdminHeader from "./components/AdminHeader.svelte";
 </script>
 
 <div>

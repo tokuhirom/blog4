@@ -1,25 +1,26 @@
 <script lang="ts">
-	import AdminEntryCardItem from './AdminEntryCardItem.svelte';
-	import CardItem from "./CardItem.svelte";
-	import type {LinkPalletData} from "../generated-client";
-	import {createAdminApiClient} from "../admin_api";
+import AdminEntryCardItem from "./AdminEntryCardItem.svelte";
+import CardItem from "./CardItem.svelte";
+import type { LinkPalletData } from "../generated-client";
+import { createAdminApiClient } from "../admin_api";
 
-	let { linkPallet }: { linkPallet: LinkPalletData } = $props();
+let { linkPallet }: { linkPallet: LinkPalletData } = $props();
 
-	const api = createAdminApiClient();
+const api = createAdminApiClient();
 
-	function createNewEntry(title: string) {
-		api.createEntry({
-			createEntryRequest: {title}
+function createNewEntry(title: string) {
+	api
+		.createEntry({
+			createEntryRequest: { title },
 		})
-			.then((data) => {
-				location.href = `/admin/entry/${data.path}`;
-			})
-			.catch((err) => {
-				console.error('Error creating new entry:', err);
-				alert('Failed to create new entry');
-			});
-	}
+		.then((data) => {
+			location.href = `/admin/entry/${data.path}`;
+		})
+		.catch((err) => {
+			console.error("Error creating new entry:", err);
+			alert("Failed to create new entry");
+		});
+}
 </script>
 
 <div class="link-pallet">

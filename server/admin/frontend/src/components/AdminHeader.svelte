@@ -1,18 +1,18 @@
 <script lang="ts">
-	import {createAdminApiClient} from "../admin_api";
+import { createAdminApiClient } from "../admin_api";
 
-	const api = createAdminApiClient();
+const api = createAdminApiClient();
 
-	async function handleNewEntry() {
-		try {
-			const data = await api.createEntry({createEntryRequest: {}});
-			console.log(`New entry created: ${data.path}`);
-			location.href = `/admin/entry/${data.path}`;
-		} catch (e) {
-			console.error('Error creating new entry:', e);
-			alert('Failed to create new entry');
-		}
+async function handleNewEntry() {
+	try {
+		const data = await api.createEntry({ createEntryRequest: {} });
+		console.log(`New entry created: ${data.path}`);
+		location.href = `/admin/entry/${data.path}`;
+	} catch (e) {
+		console.error("Error creating new entry:", e);
+		alert("Failed to create new entry");
 	}
+}
 </script>
 
 <header>

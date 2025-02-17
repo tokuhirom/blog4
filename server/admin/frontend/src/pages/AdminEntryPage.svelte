@@ -1,302 +1,316 @@
 <script lang="ts">
-    import {onMount} from 'svelte';
-    import MarkdownEditor from "../components/MarkdownEditor.svelte";
+import { onMount } from "svelte";
+import MarkdownEditor from "../components/MarkdownEditor.svelte";
 
-    import {createAdminApiClient} from "../admin_api";
-    import {type GetLatestEntriesRow, type LinkPalletData, ResponseError} from "../generated-client";
-    import {extractLinks} from "../extractLinks";
-    import {debounce} from "../utils";
-    import LinkPallet from "../components/LinkPallet.svelte";
+import { createAdminApiClient } from "../admin_api";
+import {
+	type GetLatestEntriesRow,
+	type LinkPalletData,
+	ResponseError,
+} from "../generated-client";
+import { extractLinks } from "../extractLinks";
+import { debounce } from "../utils";
+import LinkPallet from "../components/LinkPallet.svelte";
 
-    let {path} = $props();
-    const api = createAdminApiClient();
-    let entry: GetLatestEntriesRow = $state({});
+let { path } = $props();
+const api = createAdminApiClient();
+let entry: GetLatestEntriesRow = $state({});
 
-    let links: {[key: string]: string|null} = $state({});
+let links: { [key: string]: string | null } = $state({});
 
-    let title: string = $state('');
-    let body: string = $state('');
-    let visibility = $state('private');
-    let currentLinks: string[] = $state([]);
+let title: string = $state("");
+let body: string = $state("");
+let visibility = $state("private");
+let currentLinks: string[] = $state([]);
 
-    let linkPallet: LinkPalletData = $state({
-        links: [],
-        twohops: [],
-        newLinks: []
-    });
+let linkPallet: LinkPalletData = $state({
+	links: [],
+	twohops: [],
+	newLinks: [],
+});
 
-    onMount(async () => {
-        try {
-            entry = await api.getEntryByDynamicPath({
-                path: path
-            });
+onMount(async () => {
+	try {
+		entry = await api.getEntryByDynamicPath({
+			path: path,
+		});
 
-            title = entry.title!!;
-            body = entry.body!!;
-            visibility = entry.visibility!!;
-            currentLinks = extractLinks(entry.body!!);
-        } catch (e) {
-            console.error('Failed to get entry:', e);
-            if (e instanceof ResponseError) {
-                if (e.response.status === 404) {
-                    // maybe entry was deleted
-                    location.href = '/admin/';
-                }
-            }
-        }
+		title = entry.title!!;
+		body = entry.body!!;
+		visibility = entry.visibility!!;
+		currentLinks = extractLinks(entry.body!!);
+	} catch (e) {
+		console.error("Failed to get entry:", e);
+		if (e instanceof ResponseError) {
+			if (e.response.status === 404) {
+				// maybe entry was deleted
+				location.href = "/admin/";
+			}
+		}
+	}
 
-        links = await api.getLinkedEntryPaths({path});
-        loadLinks();
-    });
+	links = await api.getLinkedEntryPaths({ path });
+	loadLinks();
+});
 
-    let pageTitles: string[] = $state([]);
+let pageTitles: string[] = $state([]);
 
-    let isDirty = false;
+let isDirty = false;
 
-    function loadLinks() {
-        api.getLinkPallet({path})
-            .then((data) => {
-                console.log("Got link pallet data", data);
-                linkPallet = data;
-            })
-            .catch((error) => {
-                console.error('Failed to get links:', error);
-            });
-    }
+function loadLinks() {
+	api
+		.getLinkPallet({ path })
+		.then((data) => {
+			console.log("Got link pallet data", data);
+			linkPallet = data;
+		})
+		.catch((error) => {
+			console.error("Failed to get links:", error);
+		});
+}
 
-    let message = $state('');
-    let messageType: 'success' | 'error' | '' = $state('');
+let message = $state("");
+let messageType: "success" | "error" | "" = $state("");
 
-    let updatedMessage = $state('');
+let updatedMessage = $state("");
 
-    function showUpdatedMessage(text: string) {
-        updatedMessage = text;
-        setTimeout(() => (updatedMessage = ''), 1000);
-    }
+function showUpdatedMessage(text: string) {
+	updatedMessage = text;
+	setTimeout(() => (updatedMessage = ""), 1000);
+}
 
-    function clearMessage() {
-        message = '';
-        messageType = '';
-    }
+function clearMessage() {
+	message = "";
+	messageType = "";
+}
 
-    function showMessage(type: 'success' | 'error', text: string) {
-        messageType = type;
-        message = text;
-        setTimeout(() => {
-            message = '';
-            messageType = '';
-        }, 5000); // Hide message after 5 seconds
-    }
+function showMessage(type: "success" | "error", text: string) {
+	messageType = type;
+	message = text;
+	setTimeout(() => {
+		message = "";
+		messageType = "";
+	}, 5000); // Hide message after 5 seconds
+}
 
-    async function handleDelete(event: Event) {
-        event.preventDefault();
+async function handleDelete(event: Event) {
+	event.preventDefault();
 
-        const confirmed = confirm(`Are you sure you want to delete the entry "${title}"?`);
-        if (confirmed) {
-            clearMessage();
+	const confirmed = confirm(
+		`Are you sure you want to delete the entry "${title}"?`,
+	);
+	if (confirmed) {
+		clearMessage();
 
-            try {
-                await api.deleteEntry({
-                    path: entry.path!!
-                });
-                showMessage('success', 'Entry deleted successfully');
-                location.href = '/admin/';
-            } catch (e) {
-                console.log(e);
-                showMessage('error', 'Failed to delete entry');
-            }
-        }
-    }
+		try {
+			await api.deleteEntry({
+				path: entry.path!!,
+			});
+			showMessage("success", "Entry deleted successfully");
+			location.href = "/admin/";
+		} catch (e) {
+			console.log(e);
+			showMessage("error", "Failed to delete entry");
+		}
+	}
+}
 
-    async function handleUpdateBody() {
-        clearMessage();
+async function handleUpdateBody() {
+	clearMessage();
 
-        if (body === '') {
-            showMessage('error', 'Body cannot be empty');
-            return;
-        }
+	if (body === "") {
+		showMessage("error", "Body cannot be empty");
+		return;
+	}
 
-        try {
-            await api.updateEntryBody({
-                path: path,
-                updateEntryBodyRequest: {
-                    body: body,
-                }
-            })
+	try {
+		await api.updateEntryBody({
+			path: path,
+			updateEntryBodyRequest: {
+				body: body,
+			},
+		});
 
-            showUpdatedMessage('Updated');
-            isDirty = false; // Reset dirty flag on successful update
-        } catch (e) {
-            showMessage('error', 'Failed to update entry body');
-            console.error('Failed to update entry body:', e);
-        }
-    }
+		showUpdatedMessage("Updated");
+		isDirty = false; // Reset dirty flag on successful update
+	} catch (e) {
+		showMessage("error", "Failed to update entry body");
+		console.error("Failed to update entry body:", e);
+	}
+}
 
-    async function handleUpdateTitle() {
-        clearMessage()
-        if (title === '') {
-            showMessage('error', 'Title cannot be empty');
-            return;
-        }
+async function handleUpdateTitle() {
+	clearMessage();
+	if (title === "") {
+		showMessage("error", "Title cannot be empty");
+		return;
+	}
 
-        try {
-            await api.updateEntryTitle({
-                path: path,
-                updateEntryTitleRequest: {
-                    title
-                }
-            })
+	try {
+		await api.updateEntryTitle({
+			path: path,
+			updateEntryTitleRequest: {
+				title,
+			},
+		});
 
-            showMessage('success', 'Entry updated successfully');
-            isDirty = false; // Reset dirty flag on successful update
-        } catch (e) {
-            showMessage('error', 'Failed to update entry title');
-            console.error('Failed to update entry title:', e);
-        }
-    }
+		showMessage("success", "Entry updated successfully");
+		isDirty = false; // Reset dirty flag on successful update
+	} catch (e) {
+		showMessage("error", "Failed to update entry title");
+		console.error("Failed to update entry title:", e);
+	}
+}
 
-    async function createNewEntry(title: string): Promise<void> {
-        clearMessage();
+async function createNewEntry(title: string): Promise<void> {
+	clearMessage();
 
-        try {
-            const data = await api.createEntry({
-                createEntryRequest: {
-                    title
-                }
-            });
-            location.href = '/admin/entry/' + data.path;
-        } catch (error) {
-            console.error('Failed to create new entry:', error);
-            showMessage(
-                'error',
-                `Failed to create new entry: ${error instanceof Error ? error.message : error}`
-            );
-        }
-    }
+	try {
+		const data = await api.createEntry({
+			createEntryRequest: {
+				title,
+			},
+		});
+		location.href = "/admin/entry/" + data.path;
+	} catch (error) {
+		console.error("Failed to create new entry:", error);
+		showMessage(
+			"error",
+			`Failed to create new entry: ${error instanceof Error ? error.message : error}`,
+		);
+	}
+}
 
-    // デバウンスした自動保存関数
-    const debouncedUpdateBody = debounce(() => {
-        handleUpdateBody();
-    }, 800);
+// デバウンスした自動保存関数
+const debouncedUpdateBody = debounce(() => {
+	handleUpdateBody();
+}, 800);
 
-    // title related.
-    const debouncedTitleUpdate = debounce(() => {
-        handleUpdateTitle();
-    }, 500);
+// title related.
+const debouncedTitleUpdate = debounce(() => {
+	handleUpdateTitle();
+}, 500);
 
-    function handleTitleInput() {
-        isDirty = true;
-        debouncedTitleUpdate();
-    }
+function handleTitleInput() {
+	isDirty = true;
+	debouncedTitleUpdate();
+}
 
-    // 入力イベントや変更イベントにデバウンスされた関数をバインド
-    function handleInputBody() {
-        isDirty = true;
-        debouncedUpdateBody();
+// 入力イベントや変更イベントにデバウンスされた関数をバインド
+function handleInputBody() {
+	isDirty = true;
+	debouncedUpdateBody();
 
-        const newLinks = extractLinks(body);
-        if (currentLinks !== newLinks) {
-            currentLinks = newLinks;
-            loadLinks();
-        }
-    }
+	const newLinks = extractLinks(body);
+	if (currentLinks !== newLinks) {
+		currentLinks = newLinks;
+		loadLinks();
+	}
+}
 
-    function toggleVisibility(event: Event) {
-        event.preventDefault();
-        event.stopPropagation();
+function toggleVisibility(event: Event) {
+	event.preventDefault();
+	event.stopPropagation();
 
-        const newVisibility = visibility === 'private' ? 'public' : 'private';
+	const newVisibility = visibility === "private" ? "public" : "private";
 
-        if (!confirm(`Are you sure you want to change the visibility of this entry?`)) {
-            return;
-        }
+	if (
+		!confirm(`Are you sure you want to change the visibility of this entry?`)
+	) {
+		return;
+	}
 
-        console.log('Updating visibility to', newVisibility);
+	console.log("Updating visibility to", newVisibility);
 
-        api.updateEntryVisibility({
-            path: entry.path!!,
-            updateVisibilityRequest: {
-                visibility: newVisibility
-            }
-        })
-            .then((data) => {
-                visibility = data.visibility!;
-            })
-            .catch((error) => {
-                console.error('Failed to update visibility:', error);
-                showMessage('error', `Failed to update visibility: ${error.message}`);
-            });
-    }
+	api
+		.updateEntryVisibility({
+			path: entry.path!!,
+			updateVisibilityRequest: {
+				visibility: newVisibility,
+			},
+		})
+		.then((data) => {
+			visibility = data.visibility!;
+		})
+		.catch((error) => {
+			console.error("Failed to update visibility:", error);
+			showMessage("error", `Failed to update visibility: ${error.message}`);
+		});
+}
 
-    // TODO: 未保存の変更がある場合に警告を表示する
-    // beforeNavigate(({ cancel }) => {
-    //     if (isDirty && !confirm('You have unsaved changes. Are you sure you want to leave?')) {
-    //         cancel();
-    //     }
-    // });
+// TODO: 未保存の変更がある場合に警告を表示する
+// beforeNavigate(({ cancel }) => {
+//     if (isDirty && !confirm('You have unsaved changes. Are you sure you want to leave?')) {
+//         cancel();
+//     }
+// });
 
-    function getEditDistance(a: string, b: string): number {
-        const dp = Array.from({length: a.length + 1}, () => Array(b.length + 1).fill(0));
+function getEditDistance(a: string, b: string): number {
+	const dp = Array.from({ length: a.length + 1 }, () =>
+		Array(b.length + 1).fill(0),
+	);
 
-        for (let i = 0; i <= a.length; i++) dp[i][0] = i;
-        for (let j = 0; j <= b.length; j++) dp[0][j] = j;
+	for (let i = 0; i <= a.length; i++) dp[i][0] = i;
+	for (let j = 0; j <= b.length; j++) dp[0][j] = j;
 
-        for (let i = 1; i <= a.length; i++) {
-            for (let j = 1; j <= b.length; j++) {
-                if (a[i - 1] === b[j - 1]) {
-                    dp[i][j] = dp[i - 1][j - 1];
-                } else {
-                    dp[i][j] =
-                        Math.min(
-                            dp[i - 1][j], // 削除
-                            dp[i][j - 1], // 挿入
-                            dp[i - 1][j - 1] // 置換
-                        ) + 1;
-                }
-            }
-        }
+	for (let i = 1; i <= a.length; i++) {
+		for (let j = 1; j <= b.length; j++) {
+			if (a[i - 1] === b[j - 1]) {
+				dp[i][j] = dp[i - 1][j - 1];
+			} else {
+				dp[i][j] =
+					Math.min(
+						dp[i - 1][j], // 削除
+						dp[i][j - 1], // 挿入
+						dp[i - 1][j - 1], // 置換
+					) + 1;
+			}
+		}
+	}
 
-        return dp[a.length][b.length];
-    }
+	return dp[a.length][b.length];
+}
 
-    // 定期的に本文情報を再取得する。
-    // 他のユーザーが大幅に変更していた場合は警告を表示し、リロードを促す。
-    // TODO: 編集不可状態とする。
-    function checkOtherUsersUpdate() {
-        api.getEntryByDynamicPath({
-            path: entry.path!!,
-        }).then((data) => {
-            // 本文が短いときは消えてもダメージ少ないので無視
-            if (data.body && data.body.length > 100 && !isDirty) {
-                const threshold = Math.max(body.length, data.body.length) * 0.1; // 10%以上の変更で判定
-                const editDistance = getEditDistance(body, data.body);
-                if (editDistance > threshold) {
-                    if (
-                        confirm(
-                            `他のユーザーが大幅に変更しました。リロードしてください。 ${editDistance} > ${threshold}`
-                        )
-                    ) {
-                        location.reload();
-                    }
-                }
-            }
-        });
-    }
+// 定期的に本文情報を再取得する。
+// 他のユーザーが大幅に変更していた場合は警告を表示し、リロードを促す。
+// TODO: 編集不可状態とする。
+function checkOtherUsersUpdate() {
+	api
+		.getEntryByDynamicPath({
+			path: entry.path!!,
+		})
+		.then((data) => {
+			// 本文が短いときは消えてもダメージ少ないので無視
+			if (data.body && data.body.length > 100 && !isDirty) {
+				const threshold = Math.max(body.length, data.body.length) * 0.1; // 10%以上の変更で判定
+				const editDistance = getEditDistance(body, data.body);
+				if (editDistance > threshold) {
+					if (
+						confirm(
+							`他のユーザーが大幅に変更しました。リロードしてください。 ${editDistance} > ${threshold}`,
+						)
+					) {
+						location.reload();
+					}
+				}
+			}
+		});
+}
 
-    onMount(() => {
-        // get page titles
-        setTimeout(async () => (pageTitles = await api.getAllEntryTitles()), 0);
+onMount(() => {
+	// get page titles
+	setTimeout(async () => (pageTitles = await api.getAllEntryTitles()), 0);
 
-        document.addEventListener('visibilitychange', () => {
-            checkOtherUsersUpdate();
-        });
-    });
+	document.addEventListener("visibilitychange", () => {
+		checkOtherUsersUpdate();
+	});
+});
 
-    function selectIfPlaceholder(target: HTMLInputElement) {
-        if (/^2\d+$/.test(target.value)) {
-            target.select(); // 入力値を全選択
-        }
-    }
+function selectIfPlaceholder(target: HTMLInputElement) {
+	if (/^2\d+$/.test(target.value)) {
+		target.select(); // 入力値を全選択
+	}
+}
 </script>
 
 <div class="parent">

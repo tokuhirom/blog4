@@ -1,9 +1,9 @@
 <script lang="ts">
-    import {Link, Route, Router} from "svelte-routing";
-    import Layout from "./Layout.svelte";
-    import NotFound from "./NotFound.svelte";
-    import TopPage from "./pages/TopPage.svelte";
-    import AdminEntryPage from "./pages/AdminEntryPage.svelte";
+import { Link, Route, Router } from "svelte-routing";
+import Layout from "./Layout.svelte";
+import NotFound from "./NotFound.svelte";
+import TopPage from "./pages/TopPage.svelte";
+import AdminEntryPage from "./pages/AdminEntryPage.svelte";
 </script>
 
 <Router>
