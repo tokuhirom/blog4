@@ -171,7 +171,7 @@ async function createNewEntry(title: string): Promise<void> {
 				title,
 			},
 		});
-		location.href = "/admin/entry/" + data.path;
+		location.href = `/admin/entry/${data.path}`;
 	} catch (error) {
 		console.error("Failed to create new entry:", error);
 		showMessage(
@@ -215,7 +215,7 @@ function toggleVisibility(event: Event) {
 	const newVisibility = visibility === "private" ? "public" : "private";
 
 	if (
-		!confirm(`Are you sure you want to change the visibility of this entry?`)
+		!confirm("Are you sure you want to change the visibility of this entry?")
 	) {
 		return;
 	}
@@ -299,7 +299,7 @@ function checkOtherUsersUpdate() {
 
 onMount(() => {
 	// get page titles
-	setTimeout(async () => (pageTitles = await api.getAllEntryTitles()), 0);
+	setTimeout(async () => { pageTitles = await api.getAllEntryTitles() }, 0);
 
 	document.addEventListener("visibilitychange", () => {
 		checkOtherUsersUpdate();

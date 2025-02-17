@@ -5,12 +5,17 @@ import AdminEntryCardItem from "../components/AdminEntryCardItem.svelte";
 import type { GetLatestEntriesRow } from "../generated-client";
 import { createAdminApiClient } from "../admin_api";
 
+const api = createAdminApiClient();
+
 onMount(() => {
-	fetch(import.meta.env.VITE_API_BASE_URL + "/entries")
-		.then((res) => res.json())
-		.then((data) => {
-			console.log(data);
-		});
+    try {
+        api.getLatestEntries().then((entries) => {
+            allEntries = entries;
+        });
+    } catch (err) {
+        console.error(err);
+        alert(`Failed to load entries: ${err}`);
+    }
 });
 
 let searchKeyword = $state("");
@@ -51,7 +56,6 @@ async function loadMoreEntries() {
 	}
 
 	try {
-		const api = createAdminApiClient();
 		const newEntries = await api.getLatestEntries(
 			last_last_edited_at
 				? {
@@ -67,7 +71,7 @@ async function loadMoreEntries() {
 			const addingNewEntries = newEntries.filter(
 				(entry) => !existingPaths.includes(entry.path),
 			);
-			if (addingNewEntries.length == 0) {
+			if (addingNewEntries.length === 0) {
 				console.log(
 					`All entries are duplicated... stopping loading more entries. last_last_edited_at=${last_last_edited_at}, newEntries=${newEntries.map((entry) => entry.title)}`,
 				);
