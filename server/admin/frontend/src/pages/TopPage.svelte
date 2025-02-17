@@ -8,14 +8,14 @@ import { createAdminApiClient } from "../admin_api";
 const api = createAdminApiClient();
 
 onMount(() => {
-    try {
-        api.getLatestEntries().then((entries) => {
-            allEntries = entries;
-        });
-    } catch (err) {
-        console.error(err);
-        alert(`Failed to load entries: ${err}`);
-    }
+	try {
+		api.getLatestEntries().then((entries) => {
+			allEntries = entries;
+		});
+	} catch (err) {
+		console.error(err);
+		alert(`Failed to load entries: ${err}`);
+	}
 });
 
 let searchKeyword = $state("");

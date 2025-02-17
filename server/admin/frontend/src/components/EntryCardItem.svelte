@@ -4,7 +4,7 @@ import type { GetLatestEntriesRow } from "../generated-client";
 
 const {
 	entry,
-	backgroundColor = entry.visibility == "private" ? "#cccccc" : "#f6f6f6",
+	backgroundColor = entry.visibility === "private" ? "#cccccc" : "#f6f6f6",
 	color = "#0f0f0f",
 	onClick,
 }: {
@@ -28,7 +28,7 @@ function simplifyMarkdown(text: string): string {
 
 const title = entry.title;
 const content = entry.body
-	? simplifyMarkdown(entry.body).slice(0, 100) + "..."
+	? `${simplifyMarkdown(entry.body).slice(0, 100)}...`
 	: "";
 const imgSrc = entry.imageUrl;
 </script>

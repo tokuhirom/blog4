@@ -22,7 +22,7 @@
 		"rules": {
 			"recommended": true
 		},
-		"ignore": ["src/generated-client/**"]
+		"ignore": ["src/generated-client/**", "dist/"]
 	},
 	"javascript": {
 		"formatter": {

@@ -76,7 +76,9 @@ let updatedMessage = $state("");
 
 function showUpdatedMessage(text: string) {
 	updatedMessage = text;
-	setTimeout(() => (updatedMessage = ""), 1000);
+	setTimeout(() => {
+		updatedMessage = "";
+	}, 1000);
 }
 
 function clearMessage() {
@@ -299,7 +301,9 @@ function checkOtherUsersUpdate() {
 
 onMount(() => {
 	// get page titles
-	setTimeout(async () => { pageTitles = await api.getAllEntryTitles() }, 0);
+	setTimeout(async () => {
+		pageTitles = await api.getAllEntryTitles();
+	}, 0);
 
 	document.addEventListener("visibilitychange", () => {
 		checkOtherUsersUpdate();

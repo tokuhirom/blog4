@@ -30,7 +30,8 @@ export function internalLinkPlugin(
 				const re = /\[\[([^|`]+?)]]/g; // 内部リンクの正規表現
 				for (const { from, to } of view.visibleRanges) {
 					const text = view.state.doc.sliceString(from, to);
-					let match;
+					let match: RegExpExecArray | null;
+					// biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
 					while ((match = re.exec(text))) {
 						const pos = from + match.index;
 						const exists = !!existsEntryByTitle(match[1]);
@@ -65,7 +66,7 @@ export function internalLinkPlugin(
 
 								const keyword = m[1];
 
-								console.log("Keyword clicked: " + keyword);
+								console.log(`Keyword clicked: ${keyword}`);
 								findOrCreateEntry(keyword);
 							}
 						}
