@@ -8,6 +8,7 @@ import (
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server/admin/openapi"
 	"log"
+	"regexp"
 	"strings"
 	"time"
 )
@@ -107,14 +108,101 @@ func (p *adminApiService) GetLinkedEntryPaths(ctx context.Context, params openap
 }
 
 func (p *adminApiService) UpdateEntryBody(ctx context.Context, req *openapi.UpdateEntryBodyRequest, params openapi.UpdateEntryBodyParams) (openapi.UpdateEntryBodyRes, error) {
-	_, err := p.queries.UpdateEntryBody(ctx, admindb.UpdateEntryBodyParams{
+	tx, err := p.db.Begin()
+	if err != nil {
+		log.Printf("failed to begin transaction: %v", err)
+		return nil, fmt.Errorf("failed to begin transaction: %w", err)
+	}
+
+	defer func() {
+		err := tx.Rollback()
+		if err != nil && !errors.Is(err, sql.ErrTxDone) {
+			log.Printf("failed to rollback transaction: %v", err)
+		}
+	}()
+
+	// クエリの準備
+	qtx := p.queries.WithTx(tx)
+
+	affectedRows, err := qtx.UpdateEntryBody(ctx, admindb.UpdateEntryBodyParams{
 		Path: params.Path,
 		Body: req.Body,
 	})
 	if err != nil {
 		return nil, err
 	}
+	if affectedRows == 0 {
+		return nil, fmt.Errorf("entry not found")
+	}
+
+	newEntry, err := qtx.AdminGetEntryByPath(ctx, params.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	if err := updateEntryLink(ctx, tx, qtx, params.Path, newEntry.Title, req.Body); err != nil {
+		return nil, err
+	}
+
+	if err = tx.Commit(); err != nil {
+		return nil, fmt.Errorf("failed to commit transaction: %w", err)
+	}
+
 	return &openapi.EmptyResponse{}, nil
+}
+
+// extractLinks extracts links from the markdown text.
+func extractLinks(markdown string) []string {
+	re := regexp.MustCompile(`\[\[(.+?)\]\]`)
+	matches := re.FindAllStringSubmatch(markdown, -1)
+	seen := make(map[string]struct{})
+	var result []string
+
+	for _, match := range matches {
+		link := strings.TrimSpace(match[1])
+		lowerLink := strings.ToLower(link)
+		if _, exists := seen[lowerLink]; !exists {
+			seen[lowerLink] = struct{}{}
+			result = append(result, link)
+		}
+	}
+
+	return result
+}
+
+// updateEntryLink updates the entry_link table within a transaction.
+func updateEntryLink(ctx context.Context, tx *sql.Tx, qtx *admindb.Queries, path string, title string, body string) error {
+	// Extract links from the body, filtering out the title.
+	links := extractLinks(body)
+	var filteredLinks []string
+	for _, link := range links {
+		if strings.ToLower(link) != strings.ToLower(title) {
+			filteredLinks = append(filteredLinks, link)
+		}
+	}
+
+	// Delete current links for the given path.
+	if _, err := qtx.DeleteEntryLinkByPath(ctx, path); err != nil {
+		return err
+	}
+
+	// Insert new links into the entry_link table.
+	if len(filteredLinks) > 0 {
+		var values []interface{}
+		var placeholders []string
+		for _, link := range filteredLinks {
+			values = append(values, path, link)
+			placeholders = append(placeholders, "(?, ?)")
+		}
+		query := `
+			INSERT INTO entry_link (src_path, dst_title)
+			VALUES ` + strings.Join(placeholders, ", ")
+		if _, err := tx.ExecContext(ctx, query, values...); err != nil {
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (p *adminApiService) UpdateEntryTitle(ctx context.Context, req *openapi.UpdateEntryTitleRequest, params openapi.UpdateEntryTitleParams) (openapi.UpdateEntryTitleRes, error) {
@@ -166,8 +254,6 @@ func (p *adminApiService) DeleteEntry(ctx context.Context, params openapi.Delete
 }
 
 func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openapi.UpdateVisibilityRequest, params openapi.UpdateEntryVisibilityParams) (openapi.UpdateEntryVisibilityRes, error) {
-	// トランザクションがうまく動かないので一旦コメントアウト
-
 	tx, err := p.db.Begin()
 	if err != nil {
 		log.Printf("failed to begin transaction: %v", err)

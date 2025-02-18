@@ -24,7 +24,7 @@ UPDATE entry
 SET body = ?, last_edited_at = NOW()
 WHERE path = ?;
 
--- name: DeleteEntryLink :execrows
+-- name: DeleteEntryLinkByPath :execrows
 DELETE FROM entry_link WHERE src_path = ?;
 
 -- name: InsertEntryLink :execrows
