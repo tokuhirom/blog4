@@ -14,9 +14,10 @@ import (
 )
 
 type adminApiService struct {
-	queries *admindb.Queries
-	db      *sql.DB
-	hubUrls []string
+	queries     *admindb.Queries
+	db          *sql.DB
+	hubUrls     []string
+	paapiClient *PAAPIClient
 }
 
 func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.GetLatestEntriesParams) ([]openapi.GetLatestEntriesRow, error) {
@@ -151,9 +152,9 @@ func (p *adminApiService) UpdateEntryBody(ctx context.Context, req *openapi.Upda
 	return &openapi.EmptyResponse{}, nil
 }
 
-// extractLinks extracts links from the markdown text.
+// extractLinks extracts links from the Markdown text.
 func extractLinks(markdown string) []string {
-	re := regexp.MustCompile(`\[\[(.+?)\]\]`)
+	re := regexp.MustCompile(`\[\[(.+?)]]`)
 	matches := re.FindAllStringSubmatch(markdown, -1)
 	seen := make(map[string]struct{})
 	var result []string
@@ -294,8 +295,33 @@ func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openap
 		}
 	}
 
+	// ここで body に amzn.to の短縮URLがあれば､amazon の商品情報を取得してキャッシュします｡
+	newEntry, err := qtx.AdminGetEntryByPath(ctx, params.Path)
+	if err != nil {
+		return nil, err
+	}
+	rewroteBody := rewriteAmazonShortUrlInMarkdown(newEntry.Body)
+	if rewroteBody != newEntry.Body {
+		if _, err := qtx.UpdateEntryBody(ctx, admindb.UpdateEntryBodyParams{
+			Path: params.Path,
+			Body: rewroteBody,
+		}); err != nil {
+			return nil, err
+		}
+	}
+
+	// 次に､amazon の画像キャッシュを更新します｡
+	// これはバックグラウンドで処理してかまいません｡
+	go func() {
+		log.Printf("Starting to get amazon cache")
+		err := p.getAmazonCache(newEntry.Body, ctx)
+		if err != nil {
+			log.Printf("failed to get amazon cache: %v", err)
+		}
+	}()
+
 	// トランザクションのコミット
-	if err = tx.Commit(); err != nil {
+	if err := tx.Commit(); err != nil {
 		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
@@ -310,6 +336,71 @@ func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openap
 	return &openapi.UpdateVisibilityResponse{
 		Visibility: req.Visibility,
 	}, nil
+}
+
+func (p *adminApiService) getAmazonCache(markdown string, ctx context.Context) error {
+	// extract asin from body
+	re := regexp.MustCompile(`asin:([A-Z0-9]+):detail`)
+	matches := re.FindAllStringSubmatch(markdown, -1)
+	var asins []string
+	for _, match := range matches {
+		asin := match[1]
+		count, err := p.queries.CountAmazonCacheByAsin(ctx, asin)
+		if err != nil {
+			return err
+		}
+		if count > 0 {
+			log.Printf("ASIN %s is already cached", asin)
+			continue
+		}
+
+		asins = append(asins, asin)
+	}
+
+	log.Printf("getAmazonCache: %v", asins)
+
+	// バッチサイズは10
+	const batchSize = 10
+	// バッチ処理間の待機時間は1分
+	const waitDuration = 1 * time.Minute
+
+	// ASINsをバッチに分割して処理
+	for i := 0; i < len(asins); i += batchSize {
+		end := i + batchSize
+		if end > len(asins) {
+			end = len(asins)
+		}
+
+		// 現在のバッチを取得
+		currentBatch := asins[i:end]
+
+		// バッチ処理を実行
+		productDetails, err := p.paapiClient.FetchAmazonProductDetails(ctx, currentBatch)
+		if err != nil {
+			log.Printf("failed to fetch amazon product details: %v", err)
+			return err
+		}
+
+		for _, productDetail := range productDetails {
+			log.Printf("ASIN: %s, Title: %s", productDetail.ASIN, productDetail.Title)
+			_, err := p.queries.InsertAmazonProductDetail(ctx, admindb.InsertAmazonProductDetailParams{
+				Asin:           productDetail.ASIN,
+				Title:          sql.NullString{String: productDetail.Title, Valid: true},
+				ImageMediumUrl: sql.NullString{String: productDetail.ImageMediumURL, Valid: true},
+				Link:           productDetail.Link,
+			})
+			if err != nil {
+				return err
+			}
+		}
+
+		// 最後のバッチでなければ待機
+		if end < len(asins) {
+			time.Sleep(waitDuration)
+		}
+	}
+	log.Printf("getAmazonCache: done")
+	return nil
 }
 
 func (p *adminApiService) NewError(_ context.Context, err error) *openapi.ErrorResponseStatusCode {

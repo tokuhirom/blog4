@@ -67,9 +67,10 @@ func Router(cfg server.Config, db *sql.DB) *chi.Mux {
 
 	queries := admindb.New(db)
 	apiService := adminApiService{
-		queries: queries,
-		db:      db,
-		hubUrls: cfg.GetHubUrls(),
+		queries:     queries,
+		db:          db,
+		hubUrls:     cfg.GetHubUrls(),
+		paapiClient: NewPAAPIClient(cfg.AmazonPaapi5AccessKey, cfg.AmazonPaapi5SecretKey),
 	}
 	adminApiHandler, err := openapi.NewServer(&apiService, openapi.WithPathPrefix("/admin/api"))
 	if err != nil {

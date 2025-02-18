@@ -48,6 +48,19 @@ func (q *Queries) AdminGetEntryByPath(ctx context.Context, path string) (AdminGe
 	return i, err
 }
 
+const countAmazonCacheByAsin = `-- name: CountAmazonCacheByAsin :one
+SELECT count(1)
+FROM amazon_cache
+WHERE asin = ?
+`
+
+func (q *Queries) CountAmazonCacheByAsin(ctx context.Context, asin string) (int64, error) {
+	row := q.db.QueryRowContext(ctx, countAmazonCacheByAsin, asin)
+	var count int64
+	err := row.Scan(&count)
+	return count, err
+}
+
 const createEmptyEntry = `-- name: CreateEmptyEntry :execrows
 INSERT INTO entry
            (path, title, body, visibility)
@@ -284,6 +297,30 @@ func (q *Queries) GetLinkedEntries(ctx context.Context, srcPath string) ([]GetLi
 		return nil, err
 	}
 	return items, nil
+}
+
+const insertAmazonProductDetail = `-- name: InsertAmazonProductDetail :execrows
+INSERT INTO amazon_cache (asin, title, image_medium_url, link) VALUES (?, ?, ?, ?)
+`
+
+type InsertAmazonProductDetailParams struct {
+	Asin           string
+	Title          sql.NullString
+	ImageMediumUrl sql.NullString
+	Link           string
+}
+
+func (q *Queries) InsertAmazonProductDetail(ctx context.Context, arg InsertAmazonProductDetailParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, insertAmazonProductDetail,
+		arg.Asin,
+		arg.Title,
+		arg.ImageMediumUrl,
+		arg.Link,
+	)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
 }
 
 const insertEntryLink = `-- name: InsertEntryLink :execrows
