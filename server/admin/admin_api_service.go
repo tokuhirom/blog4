@@ -149,6 +149,14 @@ func (p *adminApiService) UpdateEntryBody(ctx context.Context, req *openapi.Upda
 		return nil, fmt.Errorf("failed to commit transaction: %w", err)
 	}
 
+	go func() {
+		log.Printf("Starting to generate entry_image")
+		err := NewEntryImageWorker(p.queries).processEntryImages(context.Background())
+		if err != nil {
+			log.Printf("failed to process entry images: %v", err)
+		}
+	}()
+
 	return &openapi.EmptyResponse{}, nil
 }
 
@@ -313,10 +321,17 @@ func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openap
 	// 次に､amazon の画像キャッシュを更新します｡
 	// これはバックグラウンドで処理してかまいません｡
 	go func() {
+		ctx := context.Background()
 		log.Printf("Starting to get amazon cache")
 		err := p.getAmazonCache(newEntry.Body, ctx)
 		if err != nil {
 			log.Printf("failed to get amazon cache: %v", err)
+		}
+
+		// update entry_image after that.
+		err = NewEntryImageWorker(p.queries).processEntryImages(ctx)
+		if err != nil {
+			log.Printf("failed to process entry images: %v", err)
 		}
 	}()
 
