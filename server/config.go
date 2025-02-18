@@ -18,6 +18,9 @@ type Config struct {
 
 	HubUrls string `env:"HUB_URLS"`
 
+	AmazonPaapi5AccessKey string `env:"AMAZON_PAAPI5_ACCESS_KEY"`
+	AmazonPaapi5SecretKey string `env:"AMAZON_PAAPI5_SECRET_KEY"`
+
 	// 9*60*60=32400 is JST
 	TimeZoneOffset int `env:"TIMEZONE_OFFSET" envDefault:"32400"`
 }

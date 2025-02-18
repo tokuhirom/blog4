@@ -1,6 +1,14 @@
 package admin
 
-import "testing"
+import (
+	"github.com/zeebo/assert"
+	"testing"
+)
+
+func Test_rewriteAmazonShortUrlInMarkdown(t *testing.T) {
+	rewrote := rewriteAmazonShortUrlInMarkdown("Hello, https://amzn.to/42051PN world.")
+	assert.Equal(t, rewrote, "Hello, [asin:B01M2BOZDL:detail] world.")
+}
 
 func Test_amazonShortUrlToAsin(t *testing.T) {
 	type args struct {
