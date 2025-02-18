@@ -79,12 +79,12 @@ func (q *Queries) DeleteEntry(ctx context.Context, path string) (int64, error) {
 	return result.RowsAffected()
 }
 
-const deleteEntryLink = `-- name: DeleteEntryLink :execrows
+const deleteEntryLinkByPath = `-- name: DeleteEntryLinkByPath :execrows
 DELETE FROM entry_link WHERE src_path = ?
 `
 
-func (q *Queries) DeleteEntryLink(ctx context.Context, srcPath string) (int64, error) {
-	result, err := q.db.ExecContext(ctx, deleteEntryLink, srcPath)
+func (q *Queries) DeleteEntryLinkByPath(ctx context.Context, srcPath string) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deleteEntryLinkByPath, srcPath)
 	if err != nil {
 		return 0, err
 	}
