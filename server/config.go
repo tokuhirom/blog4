@@ -27,7 +27,7 @@ type Config struct {
 	S3SecretAccessKey       string `env:"S3_SECRET_ACCESS_KEY"`
 	S3Region                string `env:"S3_REGION" envDefault:"jp-north-1"`
 	S3AttachmentsBucketName string `env:"S3_ATTACHMENTS_BUCKET_NAME" envDefault:"blog3-attachments"`
-	S3Endpoint              string `env:"S3_ENDPOINT" envDefault:"https://s3.isk01.sakurastorage.jp"`
+	S3Endpoint              string `env:"S3_ENDPOINT" envDefault:"s3.isk01.sakurastorage.jp"`
 
 	// 9*60*60=32400 is JST
 	TimeZoneOffset int `env:"TIMEZONE_OFFSET" envDefault:"32400"`

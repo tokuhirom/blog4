@@ -2,19 +2,14 @@ package admin
 
 import (
 	"context"
-	"github.com/aws/aws-sdk-go-v2/aws"
-	"github.com/aws/aws-sdk-go-v2/config"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go-v2/service/s3/types"
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
 	"io"
 	"log"
-	"os"
 )
 
-// See https://cloud.sakura.ad.jp/news/2025/02/04/objectstorage_defectversion/
-
 type S3Client struct {
-	s3Client                *s3.Client
+	minioClient             *minio.Client
 	s3AttachmentsBucketName string
 }
 
@@ -23,48 +18,27 @@ func NewS3Client(s3AccessKeyId, s3SecretAccessKey, s3Region, s3AttachmentsBucket
 		log.Fatal("S3 credentials are not set")
 	}
 
-	requestChecksumCalculation := os.Getenv("AWS_REQUEST_CHECKSUM_CALCULATION")
-	log.Printf("AWS_REQUEST_CHECKSUM_CALCULATION: '%s'", requestChecksumCalculation)
+	log.Printf("Creating S3 client for %s", s3Endpoint)
 
-	// AWS_RESPONSE_CHECKSUM_VALIDATION
-	responseChecksumValidation := os.Getenv("AWS_RESPONSE_CHECKSUM_VALIDATION")
-	log.Printf("AWS_RESPONSE_CHECKSUM_VALIDATION: '%s'", responseChecksumValidation)
-
-	// カスタムエンドポイントの設定
-	cfg, err := config.LoadDefaultConfig(context.Background(),
-		config.WithRegion(s3Region),
-		config.WithCredentialsProvider(aws.CredentialsProviderFunc(
-			func(ctx context.Context) (aws.Credentials, error) {
-				return aws.Credentials{
-					AccessKeyID:     s3AccessKeyId,
-					SecretAccessKey: s3SecretAccessKey,
-				}, nil
-			},
-		)),
-	)
+	// Initialize minio client object.
+	minioClient, err := minio.New(s3Endpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(s3AccessKeyId, s3SecretAccessKey, ""),
+		Secure: true,
+		Region: s3Region,
+	})
 	if err != nil {
-		log.Fatalf("unable to load SDK config: %v", err)
+		log.Fatalf("unable to initialize minio client: %v", err)
 	}
 
-	// S3クライアントの初期化
-	s3Client := s3.NewFromConfig(cfg, func(o *s3.Options) {
-		o.BaseEndpoint = aws.String(s3Endpoint)
-	})
-
 	return &S3Client{
-		s3Client:                s3Client,
+		minioClient:             minioClient,
 		s3AttachmentsBucketName: s3AttachmentsBucketName,
 	}
 }
 
 func (c *S3Client) PutObjectToAttachmentBucket(ctx context.Context, key string, contentType string, contentLength int64, body io.Reader) error {
-	_, err := c.s3Client.PutObject(ctx, &s3.PutObjectInput{
-		Bucket:            aws.String(c.s3AttachmentsBucketName),
-		Key:               aws.String(key),
-		ContentType:       aws.String(contentType),
-		ContentLength:     &contentLength,
-		Body:              body,
-		ChecksumAlgorithm: types.ChecksumAlgorithmSha256,
+	_, err := c.minioClient.PutObject(ctx, c.s3AttachmentsBucketName, key, body, contentLength, minio.PutObjectOptions{
+		ContentType: contentType,
 	})
 	if err != nil {
 		return err
