@@ -1,5 +1,5 @@
 export function extractLinks(markdown: string): string[] {
-	const links: string[] = markdown.match(/\[\[(.+?)\]\]/g) || [];
+	const links: string[] = markdown.match(/\[\[(.+?)]]/g) || [];
 	const seen = new Set();
 	const result: string[] = [];
 	for (const link of links) {
