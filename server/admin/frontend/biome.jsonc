@@ -12,7 +12,7 @@
 	"formatter": {
 		"enabled": true,
 		"indentStyle": "tab",
-		"ignore": ["src/generated-client/**", "package-lock.json"]
+		"ignore": ["src/generated-client/**", "package-lock.json", "dist/"]
 	},
 	"organizeImports": {
 		"enabled": true

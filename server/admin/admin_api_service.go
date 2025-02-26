@@ -50,11 +50,11 @@ func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.G
 	var result []openapi.GetLatestEntriesRow
 	for _, entry := range entries {
 		result = append(result, openapi.GetLatestEntriesRow{
-			Path:         openapi.NewOptString(entry.Path),
-			Title:        openapi.NewOptString(entry.Title),
-			Body:         openapi.NewOptString(entry.Body),
-			Visibility:   openapi.NewOptString(string(entry.Visibility)),
-			Format:       openapi.NewOptString(string(entry.Format)),
+			Path:         entry.Path,
+			Title:        entry.Title,
+			Body:         entry.Body,
+			Visibility:   string(entry.Visibility),
+			Format:       string(entry.Format),
 			PublishedAt:  openapi.NewOptNilDateTime(entry.PublishedAt.Time),
 			LastEditedAt: openapi.NewOptNilDateTime(entry.LastEditedAt.Time),
 			CreatedAt:    openapi.NewOptNilDateTime(entry.CreatedAt.Time),
@@ -74,11 +74,11 @@ func (p *adminApiService) GetEntryByDynamicPath(ctx context.Context, params open
 	}
 
 	return &openapi.GetLatestEntriesRow{
-		Path:         openapi.NewOptString(entry.Path),
-		Title:        openapi.NewOptString(entry.Title),
-		Body:         openapi.NewOptString(entry.Body),
-		Visibility:   openapi.NewOptString(string(entry.Visibility)),
-		Format:       openapi.NewOptString(string(entry.Format)),
+		Path:         entry.Path,
+		Title:        entry.Title,
+		Body:         entry.Body,
+		Visibility:   string(entry.Visibility),
+		Format:       string(entry.Format),
 		PublishedAt:  openapi.NewOptNilDateTime(entry.PublishedAt.Time),
 		LastEditedAt: openapi.NewOptNilDateTime(entry.LastEditedAt.Time),
 		CreatedAt:    openapi.NewOptNilDateTime(entry.CreatedAt.Time),

@@ -13,7 +13,7 @@ import {
 	autocompletion,
 	type CompletionContext,
 } from "@codemirror/autocomplete";
-import {createAdminApiClient} from "../admin_api";
+import { createAdminApiClient } from "../admin_api";
 
 let container: HTMLDivElement;
 

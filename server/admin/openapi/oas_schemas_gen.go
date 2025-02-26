@@ -281,11 +281,11 @@ func (*GetLatestEntriesOKApplicationJSON) getLatestEntriesRes() {}
 
 // Ref: #/components/schemas/GetLatestEntriesRow
 type GetLatestEntriesRow struct {
-	Path         OptString      `json:"Path"`
-	Title        OptString      `json:"Title"`
-	Body         OptString      `json:"Body"`
-	Visibility   OptString      `json:"Visibility"`
-	Format       OptString      `json:"Format"`
+	Path         string         `json:"Path"`
+	Title        string         `json:"Title"`
+	Body         string         `json:"Body"`
+	Visibility   string         `json:"Visibility"`
+	Format       string         `json:"Format"`
 	PublishedAt  OptNilDateTime `json:"PublishedAt"`
 	LastEditedAt OptNilDateTime `json:"LastEditedAt"`
 	CreatedAt    OptNilDateTime `json:"CreatedAt"`
@@ -294,27 +294,27 @@ type GetLatestEntriesRow struct {
 }
 
 // GetPath returns the value of Path.
-func (s *GetLatestEntriesRow) GetPath() OptString {
+func (s *GetLatestEntriesRow) GetPath() string {
 	return s.Path
 }
 
 // GetTitle returns the value of Title.
-func (s *GetLatestEntriesRow) GetTitle() OptString {
+func (s *GetLatestEntriesRow) GetTitle() string {
 	return s.Title
 }
 
 // GetBody returns the value of Body.
-func (s *GetLatestEntriesRow) GetBody() OptString {
+func (s *GetLatestEntriesRow) GetBody() string {
 	return s.Body
 }
 
 // GetVisibility returns the value of Visibility.
-func (s *GetLatestEntriesRow) GetVisibility() OptString {
+func (s *GetLatestEntriesRow) GetVisibility() string {
 	return s.Visibility
 }
 
 // GetFormat returns the value of Format.
-func (s *GetLatestEntriesRow) GetFormat() OptString {
+func (s *GetLatestEntriesRow) GetFormat() string {
 	return s.Format
 }
 
@@ -344,27 +344,27 @@ func (s *GetLatestEntriesRow) GetImageUrl() OptNilString {
 }
 
 // SetPath sets the value of Path.
-func (s *GetLatestEntriesRow) SetPath(val OptString) {
+func (s *GetLatestEntriesRow) SetPath(val string) {
 	s.Path = val
 }
 
 // SetTitle sets the value of Title.
-func (s *GetLatestEntriesRow) SetTitle(val OptString) {
+func (s *GetLatestEntriesRow) SetTitle(val string) {
 	s.Title = val
 }
 
 // SetBody sets the value of Body.
-func (s *GetLatestEntriesRow) SetBody(val OptString) {
+func (s *GetLatestEntriesRow) SetBody(val string) {
 	s.Body = val
 }
 
 // SetVisibility sets the value of Visibility.
-func (s *GetLatestEntriesRow) SetVisibility(val OptString) {
+func (s *GetLatestEntriesRow) SetVisibility(val string) {
 	s.Visibility = val
 }
 
 // SetFormat sets the value of Format.
-func (s *GetLatestEntriesRow) SetFormat(val OptString) {
+func (s *GetLatestEntriesRow) SetFormat(val string) {
 	s.Format = val
 }
 

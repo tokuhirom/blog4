@@ -8,7 +8,6 @@ import (
 	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"html/template"
 	"log"
-	"log/slog"
 	"net/http"
 	"os"
 	"regexp"
@@ -75,7 +74,7 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Que
 	if pageStr := r.URL.Query().Get("page"); pageStr != "" {
 		page, err = strconv.Atoi(pageStr)
 		if err != nil {
-			slog.Info("failed to parse page number: %v", err)
+			log.Printf("failed to parse page number: %v", err)
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
@@ -89,7 +88,7 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Que
 		Offset: int32(offset),
 	})
 	if err != nil {
-		slog.Info("failed to search entries: %v", err)
+		log.Printf("failed to search entries: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -145,7 +144,7 @@ func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Q
 	log.Printf("path: %s", extractedPath)
 	entry, err := queries.GetEntryByPath(r.Context(), extractedPath)
 	if err != nil {
-		slog.Info("failed to get entry by path", err)
+		log.Printf("failed to get entry by path: %v", err)
 		http.NotFound(w, r)
 		return
 	}
@@ -162,14 +161,14 @@ func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Q
 
 	body, err := md.Render(entry.Body)
 	if err != nil {
-		slog.Info("failed to render markdown", err)
+		log.Printf("failed to render markdown: %v", err)
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	relatedEntries, err := getRelatedEntries(r.Context(), queries, entry)
 	if err != nil {
-		slog.Info("failed to get related entries", err)
+		log.Printf("failed to get related entries: %v", err)
 	}
 
 	data := struct {
@@ -251,7 +250,7 @@ func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *publ
 		Offset: 0,
 	})
 	if err != nil {
-		slog.Info("failed to search entries: %v", err)
+		log.Printf("failed to search entries: %v", err)
 		http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -268,7 +267,7 @@ func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *publ
 	for _, entry := range entries {
 		render, err := md.Render(entry.Body)
 		if err != nil {
-			slog.Info("failed to render markdown", err, entry.Path)
+			log.Printf("failed to render markdown: %v, %s", err, entry.Path)
 			// skip this entry
 			continue
 		}
@@ -284,7 +283,7 @@ func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *publ
 
 	rss, err := feed.ToRss()
 	if err != nil {
-		slog.Info("failed to generate RSS", err)
+		log.Printf("failed to generate RSS: %v", err)
 		http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -293,7 +292,7 @@ func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *publ
 	writer.WriteHeader(http.StatusOK)
 	_, err = writer.Write([]byte(rss))
 	if err != nil {
-		slog.Info("failed to write response", err)
+		log.Printf("failed to write response: %v", err)
 		http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}

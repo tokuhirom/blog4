@@ -333,6 +333,12 @@ components:
   schemas:
     GetLatestEntriesRow:
       type: object
+      required:
+        - Path
+        - Title
+        - Body
+        - Visibility
+        - Format
       properties:
         Path:
           type: string

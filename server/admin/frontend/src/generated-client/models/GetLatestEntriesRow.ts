@@ -24,31 +24,31 @@ export interface GetLatestEntriesRow {
      * @type {string}
      * @memberof GetLatestEntriesRow
      */
-    path?: string;
+    path: string;
     /**
      * 
      * @type {string}
      * @memberof GetLatestEntriesRow
      */
-    title?: string;
+    title: string;
     /**
      * 
      * @type {string}
      * @memberof GetLatestEntriesRow
      */
-    body?: string;
+    body: string;
     /**
      * 
      * @type {string}
      * @memberof GetLatestEntriesRow
      */
-    visibility?: string;
+    visibility: string;
     /**
      * 
      * @type {string}
      * @memberof GetLatestEntriesRow
      */
-    format?: string;
+    format: string;
     /**
      * 
      * @type {Date}
@@ -85,6 +85,11 @@ export interface GetLatestEntriesRow {
  * Check if a given object implements the GetLatestEntriesRow interface.
  */
 export function instanceOfGetLatestEntriesRow(value: object): value is GetLatestEntriesRow {
+    if (!('path' in value) || value['path'] === undefined) return false;
+    if (!('title' in value) || value['title'] === undefined) return false;
+    if (!('body' in value) || value['body'] === undefined) return false;
+    if (!('visibility' in value) || value['visibility'] === undefined) return false;
+    if (!('format' in value) || value['format'] === undefined) return false;
     return true;
 }
 
@@ -98,11 +103,11 @@ export function GetLatestEntriesRowFromJSONTyped(json: any, ignoreDiscriminator:
     }
     return {
         
-        'path': json['Path'] == null ? undefined : json['Path'],
-        'title': json['Title'] == null ? undefined : json['Title'],
-        'body': json['Body'] == null ? undefined : json['Body'],
-        'visibility': json['Visibility'] == null ? undefined : json['Visibility'],
-        'format': json['Format'] == null ? undefined : json['Format'],
+        'path': json['Path'],
+        'title': json['Title'],
+        'body': json['Body'],
+        'visibility': json['Visibility'],
+        'format': json['Format'],
         'publishedAt': json['PublishedAt'] == null ? undefined : (new Date(json['PublishedAt'])),
         'lastEditedAt': json['LastEditedAt'] == null ? undefined : (new Date(json['LastEditedAt'])),
         'createdAt': json['CreatedAt'] == null ? undefined : (new Date(json['CreatedAt'])),

@@ -788,34 +788,24 @@ func (s *GetLatestEntriesRow) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *GetLatestEntriesRow) encodeFields(e *jx.Encoder) {
 	{
-		if s.Path.Set {
-			e.FieldStart("Path")
-			s.Path.Encode(e)
-		}
+		e.FieldStart("Path")
+		e.Str(s.Path)
 	}
 	{
-		if s.Title.Set {
-			e.FieldStart("Title")
-			s.Title.Encode(e)
-		}
+		e.FieldStart("Title")
+		e.Str(s.Title)
 	}
 	{
-		if s.Body.Set {
-			e.FieldStart("Body")
-			s.Body.Encode(e)
-		}
+		e.FieldStart("Body")
+		e.Str(s.Body)
 	}
 	{
-		if s.Visibility.Set {
-			e.FieldStart("Visibility")
-			s.Visibility.Encode(e)
-		}
+		e.FieldStart("Visibility")
+		e.Str(s.Visibility)
 	}
 	{
-		if s.Format.Set {
-			e.FieldStart("Format")
-			s.Format.Encode(e)
-		}
+		e.FieldStart("Format")
+		e.Str(s.Format)
 	}
 	{
 		if s.PublishedAt.Set {
@@ -867,13 +857,16 @@ func (s *GetLatestEntriesRow) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode GetLatestEntriesRow to nil")
 	}
+	var requiredBitSet [2]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
 		case "Path":
+			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				s.Path.Reset()
-				if err := s.Path.Decode(d); err != nil {
+				v, err := d.Str()
+				s.Path = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -881,9 +874,11 @@ func (s *GetLatestEntriesRow) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"Path\"")
 			}
 		case "Title":
+			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				s.Title.Reset()
-				if err := s.Title.Decode(d); err != nil {
+				v, err := d.Str()
+				s.Title = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -891,9 +886,11 @@ func (s *GetLatestEntriesRow) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"Title\"")
 			}
 		case "Body":
+			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
-				s.Body.Reset()
-				if err := s.Body.Decode(d); err != nil {
+				v, err := d.Str()
+				s.Body = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -901,9 +898,11 @@ func (s *GetLatestEntriesRow) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"Body\"")
 			}
 		case "Visibility":
+			requiredBitSet[0] |= 1 << 3
 			if err := func() error {
-				s.Visibility.Reset()
-				if err := s.Visibility.Decode(d); err != nil {
+				v, err := d.Str()
+				s.Visibility = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -911,9 +910,11 @@ func (s *GetLatestEntriesRow) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"Visibility\"")
 			}
 		case "Format":
+			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
-				s.Format.Reset()
-				if err := s.Format.Decode(d); err != nil {
+				v, err := d.Str()
+				s.Format = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -976,6 +977,39 @@ func (s *GetLatestEntriesRow) Decode(d *jx.Decoder) error {
 		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode GetLatestEntriesRow")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [2]uint8{
+		0b00011111,
+		0b00000000,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfGetLatestEntriesRow) {
+					name = jsonFieldsNameOfGetLatestEntriesRow[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
 	}
 
 	return nil

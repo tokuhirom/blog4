@@ -35,10 +35,10 @@ onMount(async () => {
 			path: path,
 		});
 
-		title = entry.title!;
-		body = entry.body!;
-		visibility = entry.visibility!;
-		currentLinks = extractLinks(entry.body!);
+		title = entry.title;
+		body = entry.body;
+		visibility = entry.visibility;
+		currentLinks = extractLinks(entry.body);
 	} catch (e) {
 		console.error("Failed to get entry:", e);
 		if (e instanceof ResponseError) {
@@ -106,7 +106,7 @@ async function handleDelete(event: Event) {
 
 		try {
 			await api.deleteEntry({
-				path: entry.path!,
+				path: entry.path,
 			});
 			showMessage("success", "Entry deleted successfully");
 			location.href = "/admin/";
@@ -226,13 +226,13 @@ function toggleVisibility(event: Event) {
 
 	api
 		.updateEntryVisibility({
-			path: entry.path!,
+			path: entry.path,
 			updateVisibilityRequest: {
 				visibility: newVisibility,
 			},
 		})
 		.then((data) => {
-			visibility = data.visibility!;
+			visibility = data.visibility;
 		})
 		.catch((error) => {
 			console.error("Failed to update visibility:", error);
@@ -279,7 +279,7 @@ function getEditDistance(a: string, b: string): number {
 function checkOtherUsersUpdate() {
 	api
 		.getEntryByDynamicPath({
-			path: entry.path!,
+			path: entry.path,
 		})
 		.then((data) => {
 			// 本文が短いときは消えてもダメージ少ないので無視
