@@ -1,6 +1,8 @@
 package server
 
-import "strings"
+import (
+	"strings"
+)
 
 type Config struct {
 	LocalDev bool `env:"LOCAL_DEV" envDefault:"false"`
@@ -20,6 +22,12 @@ type Config struct {
 
 	AmazonPaapi5AccessKey string `env:"AMAZON_PAAPI5_ACCESS_KEY"`
 	AmazonPaapi5SecretKey string `env:"AMAZON_PAAPI5_SECRET_KEY"`
+
+	S3AccessKeyId           string `env:"S3_ACCESS_KEY_ID"`
+	S3SecretAccessKey       string `env:"S3_SECRET_ACCESS_KEY"`
+	S3Region                string `env:"S3_REGION" envDefault:"jp-north-1"`
+	S3AttachmentsBucketName string `env:"S3_ATTACHMENTS_BUCKET_NAME" envDefault:"blog3-attachments"`
+	S3Endpoint              string `env:"S3_ENDPOINT" envDefault:"https://s3.isk01.sakurastorage.jp"`
 
 	// 9*60*60=32400 is JST
 	TimeZoneOffset int `env:"TIMEZONE_OFFSET" envDefault:"32400"`

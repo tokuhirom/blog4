@@ -71,6 +71,7 @@ func Router(cfg server.Config, db *sql.DB) *chi.Mux {
 		db:          db,
 		hubUrls:     cfg.GetHubUrls(),
 		paapiClient: NewPAAPIClient(cfg.AmazonPaapi5AccessKey, cfg.AmazonPaapi5SecretKey),
+		S3Client:    NewS3Client(cfg.S3AccessKeyId, cfg.S3SecretAccessKey, cfg.S3Region, cfg.S3AttachmentsBucketName, cfg.S3Endpoint),
 	}
 	adminApiHandler, err := openapi.NewServer(&apiService, openapi.WithPathPrefix("/admin/api"))
 	if err != nil {

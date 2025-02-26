@@ -13,8 +13,11 @@ import {
 	autocompletion,
 	type CompletionContext,
 } from "@codemirror/autocomplete";
+import {createAdminApiClient} from "../admin_api";
 
 let container: HTMLDivElement;
+
+const api = createAdminApiClient();
 
 const {
 	initialContent = "",
@@ -42,7 +45,7 @@ let errorMessage: string = $state(""); // エラー通知メッセージ
 const myCompletion = (context: CompletionContext) => {
 	{
 		// `[[foobar]]` style notation
-		const word = context.matchBefore(/\[\[(?:(?!\]\].*).)*/);
+		const word = context.matchBefore(/\[\[(?:(?!]].*).)*/);
 		if (word) {
 			console.log("Return links");
 			const options = pageTitles.map((title) => {
@@ -151,17 +154,14 @@ async function uploadImage(file: File): Promise<string> {
 	const formData = new FormData();
 	formData.append("file", file);
 
-	const response = await fetch("/admin/api/upload", {
-		method: "POST",
-		body: formData,
-	});
-
-	if (!response.ok) {
+	try {
+		const data = await api.uploadPost({
+			file,
+		});
+		return data.url;
+	} catch (e) {
 		throw new Error("Failed to upload image");
 	}
-
-	const data = await response.json();
-	return data.url;
 }
 
 function insertMarkdownImage(url: string) {

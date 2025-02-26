@@ -25,25 +25,25 @@ type Handler interface {
 	// Get all entry titles.
 	//
 	// GET /entries/titles
-	GetAllEntryTitles(ctx context.Context) (EntryTitlesResponse, error)
+	GetAllEntryTitles(ctx context.Context) (GetAllEntryTitlesRes, error)
 	// GetEntryByDynamicPath implements getEntryByDynamicPath operation.
 	//
 	// Get entry by dynamic path.
 	//
 	// GET /entries/{path}
-	GetEntryByDynamicPath(ctx context.Context, params GetEntryByDynamicPathParams) (*GetLatestEntriesRow, error)
+	GetEntryByDynamicPath(ctx context.Context, params GetEntryByDynamicPathParams) (GetEntryByDynamicPathRes, error)
 	// GetLatestEntries implements getLatestEntries operation.
 	//
 	// Get latest entries.
 	//
 	// GET /entries
-	GetLatestEntries(ctx context.Context, params GetLatestEntriesParams) ([]GetLatestEntriesRow, error)
+	GetLatestEntries(ctx context.Context, params GetLatestEntriesParams) (GetLatestEntriesRes, error)
 	// GetLinkPallet implements getLinkPallet operation.
 	//
 	// Get linked entry paths.
 	//
 	// GET /entries/{path}/link-pallet
-	GetLinkPallet(ctx context.Context, params GetLinkPalletParams) (*LinkPalletData, error)
+	GetLinkPallet(ctx context.Context, params GetLinkPalletParams) (GetLinkPalletRes, error)
 	// GetLinkedEntryPaths implements getLinkedEntryPaths operation.
 	//
 	// Get linked entry paths.
@@ -68,10 +68,10 @@ type Handler interface {
 	//
 	// POST /admin/api/entry/{path}/visibility
 	UpdateEntryVisibility(ctx context.Context, req *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (UpdateEntryVisibilityRes, error)
-	// NewError creates *ErrorResponseStatusCode from error returned by handler.
+	// UploadPost implements POST /upload operation.
 	//
-	// Used for common default response.
-	NewError(ctx context.Context, err error) *ErrorResponseStatusCode
+	// POST /upload
+	UploadPost(ctx context.Context, req *UploadPostReq) (*UploadFileResponse, error)
 }
 
 // Server implements http server based on OpenAPI v3 specification and

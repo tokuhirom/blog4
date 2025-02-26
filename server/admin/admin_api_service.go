@@ -1,13 +1,16 @@
 package admin
 
 import (
+	"bytes"
 	"context"
 	"database/sql"
 	"errors"
 	"fmt"
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server/admin/openapi"
+	"io"
 	"log"
+	"net/url"
 	"regexp"
 	"strings"
 	"time"
@@ -18,9 +21,10 @@ type adminApiService struct {
 	db          *sql.DB
 	hubUrls     []string
 	paapiClient *PAAPIClient
+	S3Client    *S3Client
 }
 
-func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.GetLatestEntriesParams) ([]openapi.GetLatestEntriesRow, error) {
+func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.GetLatestEntriesParams) (openapi.GetLatestEntriesRes, error) {
 	var lastEditedAt sql.NullTime
 	if params.LastLastEditedAt.IsSet() {
 		lastEditedAt = sql.NullTime{
@@ -57,10 +61,11 @@ func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.G
 			ImageUrl:     openapi.NewOptNilString(entry.ImageUrl.String),
 		})
 	}
-	return result, nil
+	resp := openapi.GetLatestEntriesOKApplicationJSON(result)
+	return &resp, nil
 }
 
-func (p *adminApiService) GetEntryByDynamicPath(ctx context.Context, params openapi.GetEntryByDynamicPathParams) (*openapi.GetLatestEntriesRow, error) {
+func (p *adminApiService) GetEntryByDynamicPath(ctx context.Context, params openapi.GetEntryByDynamicPathParams) (openapi.GetEntryByDynamicPathRes, error) {
 	entry, err := p.queries.AdminGetEntryByPath(ctx, params.Path)
 	if err != nil {
 		log.Printf("GetEntryByDynamicPath %v", err)
@@ -81,7 +86,7 @@ func (p *adminApiService) GetEntryByDynamicPath(ctx context.Context, params open
 	}, nil
 }
 
-func (p *adminApiService) GetLinkPallet(ctx context.Context, params openapi.GetLinkPalletParams) (*openapi.LinkPalletData, error) {
+func (p *adminApiService) GetLinkPallet(ctx context.Context, params openapi.GetLinkPalletParams) (openapi.GetLinkPalletRes, error) {
 	entry, err := p.queries.AdminGetEntryByPath(ctx, params.Path)
 	if err != nil {
 		return nil, err
@@ -225,13 +230,14 @@ func (p *adminApiService) UpdateEntryTitle(ctx context.Context, req *openapi.Upd
 	return &openapi.EmptyResponse{}, nil
 }
 
-func (p *adminApiService) GetAllEntryTitles(ctx context.Context) (openapi.EntryTitlesResponse, error) {
+func (p *adminApiService) GetAllEntryTitles(ctx context.Context) (openapi.GetAllEntryTitlesRes, error) {
 	titles, err := p.queries.GetAllEntryTitles(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	return titles, nil
+	resp := openapi.EntryTitlesResponse(titles)
+	return &resp, nil
 }
 
 func getDefaultTitle() string {
@@ -416,6 +422,57 @@ func (p *adminApiService) getAmazonCache(markdown string, ctx context.Context) e
 	}
 	log.Printf("getAmazonCache: done")
 	return nil
+}
+
+func (p *adminApiService) UploadPost(ctx context.Context, req *openapi.UploadPostReq) (*openapi.UploadFileResponse, error) {
+	// Content-Type の取得
+	contentType := req.File.Header.Get("Content-Type")
+	contentLength := req.File.Size
+
+	now := time.Now().UnixMilli()
+	key := fmt.Sprintf("%d-%s", now, req.File.Name)
+
+	log.Printf("UploadPost: %s, %s, %d", contentType, key, req.File.Size)
+
+	// 先頭100バイトをキャプチャするためのバッファ
+	var previewBuf bytes.Buffer
+	previewReader := io.TeeReader(io.LimitReader(req.File.File, 100), &previewBuf)
+
+	// 残りのデータと組み合わせるためのMultiReader
+	reader := io.MultiReader(
+		&previewBuf,
+		req.File.File,
+	)
+
+	// プレビューデータを読み込んでURLエスケープ
+	preview := make([]byte, req.File.Size)
+	n, _ := previewReader.Read(preview)
+	escapedPreview := url.QueryEscape(string(preview[:n]))
+
+	log.Printf("UploadPost: contentType=%s, key=%s, size=%d, preview=%s, bufSize=%d",
+		contentType, key, req.File.Size, escapedPreview, len(preview))
+
+	// S3にアップロード
+	err := p.S3Client.PutObjectToAttachmentBucket(
+		ctx,
+		key,
+		contentType,
+		contentLength,
+		reader,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to upload to S3: %w", err)
+	}
+
+	url, err := url.Parse(`https://blog-attachments.64p.org/` + key)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse URL: %w", err)
+	}
+	log.Printf("UploadPost: %s", url)
+
+	return &openapi.UploadFileResponse{
+		URL: *url,
+	}, nil
 }
 
 func (p *adminApiService) NewError(_ context.Context, err error) *openapi.ErrorResponseStatusCode {
