@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"embed"
 	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server"
@@ -54,7 +55,14 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) *chi.Mux
 			MaxAge:           300,
 		}))
 	} else {
-		log.Printf("LocalDevelopment mode disabled. CORS is not allowed")
+		log.Printf("LocalDevelopment mode disabled. CORS is not allowed... And enable BasicAuth for %s",
+			cfg.AdminUser)
+		r.Use(middleware.BasicAuth(
+			"admin",
+			map[string]string{
+				cfg.AdminUser: cfg.AdminPassword,
+			},
+		))
 	}
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		file, err := frontendFS.ReadFile("frontend/dist/index.html")
@@ -77,6 +85,9 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) *chi.Mux
 	adminApiHandler, err := openapi.NewServer(&apiService, openapi.WithPathPrefix("/admin/api"))
 	if err != nil {
 		return nil
+	}
+	if cfg.AdminPassword == "" {
+		log.Fatalf("Missing AdminPassword")
 	}
 	r.Mount("/api/", adminApiHandler)
 

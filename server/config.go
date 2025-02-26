@@ -16,7 +16,7 @@ type Config struct {
 	DBName     string `env:"DATABASE_DB"   envDefault:"blog3"`
 
 	AdminUser     string `env:"ADMIN_USER"   envDefault:"admin"`
-	AdminPassword string `env:"ADMIN_PW"   envDefault:"admin"`
+	AdminPassword string `env:"ADMIN_PW"`
 
 	HubUrls string `env:"HUB_URLS"`
 
