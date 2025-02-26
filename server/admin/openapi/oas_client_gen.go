@@ -45,25 +45,25 @@ type Invoker interface {
 	// Get all entry titles.
 	//
 	// GET /entries/titles
-	GetAllEntryTitles(ctx context.Context) (EntryTitlesResponse, error)
+	GetAllEntryTitles(ctx context.Context) (GetAllEntryTitlesRes, error)
 	// GetEntryByDynamicPath invokes getEntryByDynamicPath operation.
 	//
 	// Get entry by dynamic path.
 	//
 	// GET /entries/{path}
-	GetEntryByDynamicPath(ctx context.Context, params GetEntryByDynamicPathParams) (*GetLatestEntriesRow, error)
+	GetEntryByDynamicPath(ctx context.Context, params GetEntryByDynamicPathParams) (GetEntryByDynamicPathRes, error)
 	// GetLatestEntries invokes getLatestEntries operation.
 	//
 	// Get latest entries.
 	//
 	// GET /entries
-	GetLatestEntries(ctx context.Context, params GetLatestEntriesParams) ([]GetLatestEntriesRow, error)
+	GetLatestEntries(ctx context.Context, params GetLatestEntriesParams) (GetLatestEntriesRes, error)
 	// GetLinkPallet invokes getLinkPallet operation.
 	//
 	// Get linked entry paths.
 	//
 	// GET /entries/{path}/link-pallet
-	GetLinkPallet(ctx context.Context, params GetLinkPalletParams) (*LinkPalletData, error)
+	GetLinkPallet(ctx context.Context, params GetLinkPalletParams) (GetLinkPalletRes, error)
 	// GetLinkedEntryPaths invokes getLinkedEntryPaths operation.
 	//
 	// Get linked entry paths.
@@ -88,6 +88,10 @@ type Invoker interface {
 	//
 	// POST /admin/api/entry/{path}/visibility
 	UpdateEntryVisibility(ctx context.Context, request *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (UpdateEntryVisibilityRes, error)
+	// UploadPost invokes POST /upload operation.
+	//
+	// POST /upload
+	UploadPost(ctx context.Context, request *UploadPostReq) (*UploadFileResponse, error)
 }
 
 // Client implements OAS client.
@@ -95,12 +99,8 @@ type Client struct {
 	serverURL *url.URL
 	baseClient
 }
-type errorHandler interface {
-	NewError(ctx context.Context, err error) *ErrorResponseStatusCode
-}
 
 var _ Handler = struct {
-	errorHandler
 	*Client
 }{}
 
@@ -307,12 +307,12 @@ func (c *Client) sendDeleteEntry(ctx context.Context, params DeleteEntryParams) 
 // Get all entry titles.
 //
 // GET /entries/titles
-func (c *Client) GetAllEntryTitles(ctx context.Context) (EntryTitlesResponse, error) {
+func (c *Client) GetAllEntryTitles(ctx context.Context) (GetAllEntryTitlesRes, error) {
 	res, err := c.sendGetAllEntryTitles(ctx)
 	return res, err
 }
 
-func (c *Client) sendGetAllEntryTitles(ctx context.Context) (res EntryTitlesResponse, err error) {
+func (c *Client) sendGetAllEntryTitles(ctx context.Context) (res GetAllEntryTitlesRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getAllEntryTitles"),
 		semconv.HTTPRequestMethodKey.String("GET"),
@@ -379,12 +379,12 @@ func (c *Client) sendGetAllEntryTitles(ctx context.Context) (res EntryTitlesResp
 // Get entry by dynamic path.
 //
 // GET /entries/{path}
-func (c *Client) GetEntryByDynamicPath(ctx context.Context, params GetEntryByDynamicPathParams) (*GetLatestEntriesRow, error) {
+func (c *Client) GetEntryByDynamicPath(ctx context.Context, params GetEntryByDynamicPathParams) (GetEntryByDynamicPathRes, error) {
 	res, err := c.sendGetEntryByDynamicPath(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendGetEntryByDynamicPath(ctx context.Context, params GetEntryByDynamicPathParams) (res *GetLatestEntriesRow, err error) {
+func (c *Client) sendGetEntryByDynamicPath(ctx context.Context, params GetEntryByDynamicPathParams) (res GetEntryByDynamicPathRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getEntryByDynamicPath"),
 		semconv.HTTPRequestMethodKey.String("GET"),
@@ -469,12 +469,12 @@ func (c *Client) sendGetEntryByDynamicPath(ctx context.Context, params GetEntryB
 // Get latest entries.
 //
 // GET /entries
-func (c *Client) GetLatestEntries(ctx context.Context, params GetLatestEntriesParams) ([]GetLatestEntriesRow, error) {
+func (c *Client) GetLatestEntries(ctx context.Context, params GetLatestEntriesParams) (GetLatestEntriesRes, error) {
 	res, err := c.sendGetLatestEntries(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendGetLatestEntries(ctx context.Context, params GetLatestEntriesParams) (res []GetLatestEntriesRow, err error) {
+func (c *Client) sendGetLatestEntries(ctx context.Context, params GetLatestEntriesParams) (res GetLatestEntriesRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getLatestEntries"),
 		semconv.HTTPRequestMethodKey.String("GET"),
@@ -562,12 +562,12 @@ func (c *Client) sendGetLatestEntries(ctx context.Context, params GetLatestEntri
 // Get linked entry paths.
 //
 // GET /entries/{path}/link-pallet
-func (c *Client) GetLinkPallet(ctx context.Context, params GetLinkPalletParams) (*LinkPalletData, error) {
+func (c *Client) GetLinkPallet(ctx context.Context, params GetLinkPalletParams) (GetLinkPalletRes, error) {
 	res, err := c.sendGetLinkPallet(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendGetLinkPallet(ctx context.Context, params GetLinkPalletParams) (res *LinkPalletData, err error) {
+func (c *Client) sendGetLinkPallet(ctx context.Context, params GetLinkPalletParams) (res GetLinkPalletRes, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getLinkPallet"),
 		semconv.HTTPRequestMethodKey.String("GET"),
@@ -1014,6 +1014,78 @@ func (c *Client) sendUpdateEntryVisibility(ctx context.Context, request *UpdateV
 
 	stage = "DecodeResponse"
 	result, err := decodeUpdateEntryVisibilityResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// UploadPost invokes POST /upload operation.
+//
+// POST /upload
+func (c *Client) UploadPost(ctx context.Context, request *UploadPostReq) (*UploadFileResponse, error) {
+	res, err := c.sendUploadPost(ctx, request)
+	return res, err
+}
+
+func (c *Client) sendUploadPost(ctx context.Context, request *UploadPostReq) (res *UploadFileResponse, err error) {
+	otelAttrs := []attribute.KeyValue{
+		semconv.HTTPRequestMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/upload"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, UploadPostOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/upload"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeUploadPostRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeUploadPostResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

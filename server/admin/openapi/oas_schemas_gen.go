@@ -3,13 +3,11 @@
 package openapi
 
 import (
-	"fmt"
+	"net/url"
 	"time"
-)
 
-func (s *ErrorResponseStatusCode) Error() string {
-	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
-}
+	ht "github.com/ogen-go/ogen/http"
+)
 
 // Ref: #/components/schemas/CreateEntryRequest
 type CreateEntryRequest struct {
@@ -53,6 +51,8 @@ func (*EmptyResponse) updateEntryBodyRes()  {}
 func (*EmptyResponse) updateEntryTitleRes() {}
 
 type EntryTitlesResponse []string
+
+func (*EntryTitlesResponse) getAllEntryTitlesRes() {}
 
 // Merged schema.
 // Ref: #/components/schemas/EntryWithDestTitle
@@ -264,6 +264,21 @@ func (s *ErrorResponseStatusCode) SetResponse(val ErrorResponse) {
 	s.Response = val
 }
 
+func (*ErrorResponseStatusCode) createEntryRes()           {}
+func (*ErrorResponseStatusCode) deleteEntryRes()           {}
+func (*ErrorResponseStatusCode) getAllEntryTitlesRes()     {}
+func (*ErrorResponseStatusCode) getEntryByDynamicPathRes() {}
+func (*ErrorResponseStatusCode) getLatestEntriesRes()      {}
+func (*ErrorResponseStatusCode) getLinkPalletRes()         {}
+func (*ErrorResponseStatusCode) getLinkedEntryPathsRes()   {}
+func (*ErrorResponseStatusCode) updateEntryBodyRes()       {}
+func (*ErrorResponseStatusCode) updateEntryTitleRes()      {}
+func (*ErrorResponseStatusCode) updateEntryVisibilityRes() {}
+
+type GetLatestEntriesOKApplicationJSON []GetLatestEntriesRow
+
+func (*GetLatestEntriesOKApplicationJSON) getLatestEntriesRes() {}
+
 // Ref: #/components/schemas/GetLatestEntriesRow
 type GetLatestEntriesRow struct {
 	Path         OptString      `json:"Path"`
@@ -378,6 +393,8 @@ func (s *GetLatestEntriesRow) SetImageUrl(val OptNilString) {
 	s.ImageUrl = val
 }
 
+func (*GetLatestEntriesRow) getEntryByDynamicPathRes() {}
+
 // Ref: #/components/schemas/LinkPalletData
 type LinkPalletData struct {
 	// Array of potential new link titles.
@@ -417,6 +434,8 @@ func (s *LinkPalletData) SetLinks(val []EntryWithImage) {
 func (s *LinkPalletData) SetTwohops(val []TwoHopLink) {
 	s.Twohops = val
 }
+
+func (*LinkPalletData) getLinkPalletRes() {}
 
 // Object where keys are lowercase destination entry titles and values are their paths (null if entry
 // doesn't exist)..
@@ -751,3 +770,32 @@ func (s *UpdateVisibilityResponse) SetVisibility(val string) {
 }
 
 func (*UpdateVisibilityResponse) updateEntryVisibilityRes() {}
+
+// Ref: #/components/schemas/UploadFileResponse
+type UploadFileResponse struct {
+	URL url.URL `json:"url"`
+}
+
+// GetURL returns the value of URL.
+func (s *UploadFileResponse) GetURL() url.URL {
+	return s.URL
+}
+
+// SetURL sets the value of URL.
+func (s *UploadFileResponse) SetURL(val url.URL) {
+	s.URL = val
+}
+
+type UploadPostReq struct {
+	File ht.MultipartFile `json:"file"`
+}
+
+// GetFile returns the value of File.
+func (s *UploadPostReq) GetFile() ht.MultipartFile {
+	return s.File
+}
+
+// SetFile sets the value of File.
+func (s *UploadPostReq) SetFile(val ht.MultipartFile) {
+	s.File = val
+}

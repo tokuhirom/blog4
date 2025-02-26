@@ -18,6 +18,14 @@ func (s EntryTitlesResponse) Validate() error {
 	return nil
 }
 
+func (s GetLatestEntriesOKApplicationJSON) Validate() error {
+	alias := ([]GetLatestEntriesRow)(s)
+	if alias == nil {
+		return errors.New("nil is invalid value")
+	}
+	return nil
+}
+
 func (s *LinkPalletData) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer

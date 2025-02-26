@@ -13,5 +13,6 @@ models/UpdateEntryBodyRequest.ts
 models/UpdateEntryTitleRequest.ts
 models/UpdateVisibilityRequest.ts
 models/UpdateVisibilityResponse.ts
+models/UploadFileResponse.ts
 models/index.ts
 runtime.ts

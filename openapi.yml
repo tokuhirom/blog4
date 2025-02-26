@@ -4,6 +4,28 @@ info:
   version: 1.0.0
 
 paths:
+  /upload:
+    post:
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - file
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: File uploaded successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadFileResponse'
+
   /entries:
     get:
       summary: Get latest entries
@@ -481,6 +503,16 @@ components:
         visibility:
           type: string
           description: The new visibility status for the entry
+
+    UploadFileResponse:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: uri
+          example: "https://example.com/files/1234567890.jpg"
 
     EmptyResponse:
       type: object

@@ -24,6 +24,7 @@ import type {
   UpdateEntryTitleRequest,
   UpdateVisibilityRequest,
   UpdateVisibilityResponse,
+  UploadFileResponse,
 } from '../models/index';
 import {
     CreateEntryRequestFromJSON,
@@ -44,6 +45,8 @@ import {
     UpdateVisibilityRequestToJSON,
     UpdateVisibilityResponseFromJSON,
     UpdateVisibilityResponseToJSON,
+    UploadFileResponseFromJSON,
+    UploadFileResponseToJSON,
 } from '../models/index';
 
 export interface CreateEntryOperationRequest {
@@ -83,6 +86,10 @@ export interface UpdateEntryTitleOperationRequest {
 export interface UpdateEntryVisibilityRequest {
     path: string;
     updateVisibilityRequest: UpdateVisibilityRequest;
+}
+
+export interface UploadPostRequest {
+    file: Blob;
 }
 
 /**
@@ -440,6 +447,58 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async updateEntryVisibility(requestParameters: UpdateEntryVisibilityRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UpdateVisibilityResponse> {
         const response = await this.updateEntryVisibilityRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async uploadPostRaw(requestParameters: UploadPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<UploadFileResponse>> {
+        if (requestParameters['file'] == null) {
+            throw new runtime.RequiredError(
+                'file',
+                'Required parameter "file" was null or undefined when calling uploadPost().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const consumes: runtime.Consume[] = [
+            { contentType: 'multipart/form-data' },
+        ];
+        // @ts-ignore: canConsumeForm may be unused
+        const canConsumeForm = runtime.canConsumeForm(consumes);
+
+        let formParams: { append(param: string, value: any): any };
+        let useForm = false;
+        // use FormData to transmit files using content-type "multipart/form-data"
+        useForm = canConsumeForm;
+        if (useForm) {
+            formParams = new FormData();
+        } else {
+            formParams = new URLSearchParams();
+        }
+
+        if (requestParameters['file'] != null) {
+            formParams.append('file', requestParameters['file'] as any);
+        }
+
+        const response = await this.request({
+            path: `/upload`,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: formParams,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse(response, (jsonValue) => UploadFileResponseFromJSON(jsonValue));
+    }
+
+    /**
+     */
+    async uploadPost(requestParameters: UploadPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<UploadFileResponse> {
+        const response = await this.uploadPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

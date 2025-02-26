@@ -36,7 +36,7 @@ func (UnimplementedHandler) DeleteEntry(ctx context.Context, params DeleteEntryP
 // Get all entry titles.
 //
 // GET /entries/titles
-func (UnimplementedHandler) GetAllEntryTitles(ctx context.Context) (r EntryTitlesResponse, _ error) {
+func (UnimplementedHandler) GetAllEntryTitles(ctx context.Context) (r GetAllEntryTitlesRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -45,7 +45,7 @@ func (UnimplementedHandler) GetAllEntryTitles(ctx context.Context) (r EntryTitle
 // Get entry by dynamic path.
 //
 // GET /entries/{path}
-func (UnimplementedHandler) GetEntryByDynamicPath(ctx context.Context, params GetEntryByDynamicPathParams) (r *GetLatestEntriesRow, _ error) {
+func (UnimplementedHandler) GetEntryByDynamicPath(ctx context.Context, params GetEntryByDynamicPathParams) (r GetEntryByDynamicPathRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -54,7 +54,7 @@ func (UnimplementedHandler) GetEntryByDynamicPath(ctx context.Context, params Ge
 // Get latest entries.
 //
 // GET /entries
-func (UnimplementedHandler) GetLatestEntries(ctx context.Context, params GetLatestEntriesParams) (r []GetLatestEntriesRow, _ error) {
+func (UnimplementedHandler) GetLatestEntries(ctx context.Context, params GetLatestEntriesParams) (r GetLatestEntriesRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -63,7 +63,7 @@ func (UnimplementedHandler) GetLatestEntries(ctx context.Context, params GetLate
 // Get linked entry paths.
 //
 // GET /entries/{path}/link-pallet
-func (UnimplementedHandler) GetLinkPallet(ctx context.Context, params GetLinkPalletParams) (r *LinkPalletData, _ error) {
+func (UnimplementedHandler) GetLinkPallet(ctx context.Context, params GetLinkPalletParams) (r GetLinkPalletRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -103,10 +103,9 @@ func (UnimplementedHandler) UpdateEntryVisibility(ctx context.Context, req *Upda
 	return r, ht.ErrNotImplemented
 }
 
-// NewError creates *ErrorResponseStatusCode from error returned by handler.
+// UploadPost implements POST /upload operation.
 //
-// Used for common default response.
-func (UnimplementedHandler) NewError(ctx context.Context, err error) (r *ErrorResponseStatusCode) {
-	r = new(ErrorResponseStatusCode)
-	return r
+// POST /upload
+func (UnimplementedHandler) UploadPost(ctx context.Context, req *UploadPostReq) (r *UploadFileResponse, _ error) {
+	return r, ht.ErrNotImplemented
 }

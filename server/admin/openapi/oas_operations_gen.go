@@ -16,4 +16,5 @@ const (
 	UpdateEntryBodyOperation       OperationName = "UpdateEntryBody"
 	UpdateEntryTitleOperation      OperationName = "UpdateEntryTitle"
 	UpdateEntryVisibilityOperation OperationName = "UpdateEntryVisibility"
+	UploadPostOperation            OperationName = "UploadPost"
 )

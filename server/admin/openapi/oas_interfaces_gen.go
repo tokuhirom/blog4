@@ -9,6 +9,22 @@ type DeleteEntryRes interface {
 	deleteEntryRes()
 }
 
+type GetAllEntryTitlesRes interface {
+	getAllEntryTitlesRes()
+}
+
+type GetEntryByDynamicPathRes interface {
+	getEntryByDynamicPathRes()
+}
+
+type GetLatestEntriesRes interface {
+	getLatestEntriesRes()
+}
+
+type GetLinkPalletRes interface {
+	getLinkPalletRes()
+}
+
 type GetLinkedEntryPathsRes interface {
 	getLinkedEntryPathsRes()
 }

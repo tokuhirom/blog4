@@ -12,3 +12,4 @@ export * from './UpdateEntryBodyRequest';
 export * from './UpdateEntryTitleRequest';
 export * from './UpdateVisibilityRequest';
 export * from './UpdateVisibilityResponse';
+export * from './UploadFileResponse';
