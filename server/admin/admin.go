@@ -9,6 +9,7 @@ import (
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server"
 	"github.com/tokuhirom/blog4/server/admin/openapi"
+	"github.com/tokuhirom/blog4/server/sobs"
 	"log"
 	"net/http"
 	"time"
@@ -33,7 +34,7 @@ func handleAssets(writer http.ResponseWriter, request *http.Request) {
 */
 
 // TODO auth
-func Router(cfg server.Config, db *sql.DB) *chi.Mux {
+func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) *chi.Mux {
 	if cfg.AdminUser == "" {
 		println("AdminUser is not set")
 	}
@@ -71,7 +72,7 @@ func Router(cfg server.Config, db *sql.DB) *chi.Mux {
 		db:          db,
 		hubUrls:     cfg.GetHubUrls(),
 		paapiClient: NewPAAPIClient(cfg.AmazonPaapi5AccessKey, cfg.AmazonPaapi5SecretKey),
-		S3Client:    NewS3Client(cfg.S3AccessKeyId, cfg.S3SecretAccessKey, cfg.S3Region, cfg.S3AttachmentsBucketName, cfg.S3Endpoint),
+		S3Client:    sobsClient,
 	}
 	adminApiHandler, err := openapi.NewServer(&apiService, openapi.WithPathPrefix("/admin/api"))
 	if err != nil {

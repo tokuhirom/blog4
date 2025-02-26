@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server/admin/openapi"
+	"github.com/tokuhirom/blog4/server/sobs"
 	"io"
 	"log"
 	"net/url"
@@ -21,7 +22,7 @@ type adminApiService struct {
 	db          *sql.DB
 	hubUrls     []string
 	paapiClient *PAAPIClient
-	S3Client    *S3Client
+	S3Client    *sobs.SobsClient
 }
 
 func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.GetLatestEntriesParams) (openapi.GetLatestEntriesRes, error) {

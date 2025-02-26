@@ -7,6 +7,7 @@ import (
 	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/tokuhirom/blog4/server"
 	"github.com/tokuhirom/blog4/server/admin"
+	"github.com/tokuhirom/blog4/server/sobs"
 	"log"
 	"net"
 	"net/http"
@@ -50,11 +51,17 @@ func main() {
 	}
 
 	publicQueries := publicdb.New(sqlDB)
+	sobsClient := sobs.NewSobsClient(cfg.S3AccessKeyId, cfg.S3SecretAccessKey, cfg.S3Region, cfg.S3AttachmentsBucketName, cfg.S3BackupBucketName, cfg.S3Endpoint)
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	r.Mount("/admin", admin.Router(cfg, sqlDB))
+	r.Mount("/admin", admin.Router(cfg, sqlDB, sobsClient))
 	r.Mount("/", server.Router(publicQueries))
+
+	go (func() {
+		log.Printf("Starting backup process...")
+		server.StartBackup(cfg.BackupEncryptionKey, sobsClient)
+	})()
 
 	// Start the server
 	log.Println("Starting server on http://localhost:8181/")

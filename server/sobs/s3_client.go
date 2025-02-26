@@ -1,4 +1,4 @@
-package admin
+package sobs
 
 import (
 	"context"
@@ -8,12 +8,13 @@ import (
 	"log"
 )
 
-type S3Client struct {
+type SobsClient struct {
 	minioClient             *minio.Client
 	s3AttachmentsBucketName string
+	s3BackupBucketName      string
 }
 
-func NewS3Client(s3AccessKeyId, s3SecretAccessKey, s3Region, s3AttachmentsBucketName, s3Endpoint string) *S3Client {
+func NewSobsClient(s3AccessKeyId, s3SecretAccessKey, s3Region, s3AttachmentsBucketName, s3BackupBucketName, s3Endpoint string) *SobsClient {
 	if s3AccessKeyId == "" || s3SecretAccessKey == "" {
 		log.Fatal("S3 credentials are not set")
 	}
@@ -30,14 +31,27 @@ func NewS3Client(s3AccessKeyId, s3SecretAccessKey, s3Region, s3AttachmentsBucket
 		log.Fatalf("unable to initialize minio client: %v", err)
 	}
 
-	return &S3Client{
+	return &SobsClient{
 		minioClient:             minioClient,
 		s3AttachmentsBucketName: s3AttachmentsBucketName,
+		s3BackupBucketName:      s3BackupBucketName,
 	}
 }
 
-func (c *S3Client) PutObjectToAttachmentBucket(ctx context.Context, key string, contentType string, contentLength int64, body io.Reader) error {
+func (c *SobsClient) PutObjectToAttachmentBucket(ctx context.Context, key string, contentType string, contentLength int64, body io.Reader) error {
 	_, err := c.minioClient.PutObject(ctx, c.s3AttachmentsBucketName, key, body, contentLength, minio.PutObjectOptions{
+		ContentType: contentType,
+	})
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *SobsClient) PutObjectToBackupBucket(ctx context.Context, key string, contentType string, contentLength int64, body io.Reader) error {
+	log.Printf("Uploading file to Sobs: bucket=%s key=%s", c.s3BackupBucketName, key)
+	_, err := c.minioClient.PutObject(ctx, c.s3BackupBucketName, key, body, contentLength, minio.PutObjectOptions{
 		ContentType: contentType,
 	})
 	if err != nil {
