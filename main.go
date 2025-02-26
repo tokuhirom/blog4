@@ -11,6 +11,7 @@ import (
 	"log"
 	"net"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -22,9 +23,14 @@ import (
 //go:generate go run github.com/ogen-go/ogen/cmd/ogen@latest --target ./server/admin/openapi -package openapi --clean openapi.yml
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatalf("failed to load .env: %v", err)
+	if _, err := os.Stat(".env"); err == nil {
+		log.Printf("loading .env file")
+		err := godotenv.Load()
+		if err != nil {
+			log.Fatalf("failed to load .env: %v", err)
+		}
+	} else {
+		log.Printf(".env file not found")
 	}
 
 	cfg, err := env.ParseAs[server.Config]()

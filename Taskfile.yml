@@ -11,6 +11,7 @@ tasks:
 
   frontend-build:
     deps: [npmi]
+    watch: true
     cmds:
       - npm run build
     dir: ./server/admin/frontend
@@ -19,6 +20,8 @@ tasks:
       - ./server/admin/frontend/package-lock.json
       - ./server/admin/frontend/tsconfig.json
       - ./server/admin/frontend/src/**/*
+    generates:
+      - ./server/admin/frontend/dist/index.html
     desc: "Build the frontend"
 
   sqlc-admin:
@@ -96,3 +99,13 @@ tasks:
       - ./src/generated-client
       - ./src/generated-client/runtime.ts
     desc: "Generate OpenAPI client code"
+
+  docker-build:
+    cmds:
+      - docker build -t blog4 .
+    sources:
+      - Dockerfile
+
+  docker-run:
+    cmds:
+      - docker run --rm -it --env-file .env -p 8080:8080 blog4
