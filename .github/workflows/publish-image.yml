@@ -28,3 +28,6 @@ jobs:
           docker build -t blog4 .
           docker tag blog4 tokuhirom.sakuracr.jp/blog4:latest
           docker push tokuhirom.sakuracr.jp/blog4:latest
+
+      - run: |
+          ./deploy.sh ${{ secrets.SACLOUD_API_TOKEN_ID }} ${{ secrets.SAKURA_API_TOKEN_SECRET }} ${{ vars.APPRUN_APP_ID }}
