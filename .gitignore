@@ -1,3 +1,6 @@
 .env
 /db/mariadb/
 /.task/checksum/
+deploy.json
+app.jsonnet
+app.json
