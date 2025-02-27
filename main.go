@@ -63,6 +63,13 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Mount("/admin", admin.Router(cfg, sqlDB, sobsClient))
 	r.Mount("/", server.Router(publicQueries))
+	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		_, err := w.Write([]byte("ok"))
+		if err != nil {
+			log.Printf("failed to write response: %v", err)
+		}
+	})
 
 	go (func() {
 		log.Printf("Starting backup process...")
