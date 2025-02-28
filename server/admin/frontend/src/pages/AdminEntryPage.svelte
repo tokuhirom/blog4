@@ -117,6 +117,23 @@ async function handleDelete(event: Event) {
 	}
 }
 
+async function handleRegenerateEntryImage(event: Event) {
+    event.preventDefault();
+
+    clearMessage();
+
+    try {
+        await api.regenerateEntryImage({
+            "path": entry.path,
+        });
+        showMessage("success", "Entry image regenerated successfully");
+        location.href = "/admin/";
+    } catch (e) {
+        console.log(e);
+        showMessage("error", "Failed to regenerate entry image");
+    }
+}
+
 async function handleUpdateBody() {
 	clearMessage();
 
@@ -370,6 +387,9 @@ function selectIfPlaceholder(target: HTMLInputElement) {
         <div class="right-pane">
             <div class="button-container">
                 <button type="submit" class="delete-button" onclick={handleDelete}> Delete</button>
+            </div>
+            <div class="button-container">
+                <button type="submit" class="regenerate-button" onclick={handleRegenerateEntryImage}> Regenerate entry_image</button>
             </div>
 
             <!-- link to the user side page -->

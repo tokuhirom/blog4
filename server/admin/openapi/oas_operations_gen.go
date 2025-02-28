@@ -13,6 +13,7 @@ const (
 	GetLatestEntriesOperation      OperationName = "GetLatestEntries"
 	GetLinkPalletOperation         OperationName = "GetLinkPallet"
 	GetLinkedEntryPathsOperation   OperationName = "GetLinkedEntryPaths"
+	RegenerateEntryImageOperation  OperationName = "RegenerateEntryImage"
 	UpdateEntryBodyOperation       OperationName = "UpdateEntryBody"
 	UpdateEntryTitleOperation      OperationName = "UpdateEntryTitle"
 	UpdateEntryVisibilityOperation OperationName = "UpdateEntryVisibility"

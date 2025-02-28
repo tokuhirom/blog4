@@ -285,6 +285,29 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							}
 
 							elem = origElem
+						case 'r': // Prefix: "regenerate-image"
+							origElem := elem
+							if l := len("regenerate-image"); len(elem) >= l && elem[0:l] == "regenerate-image" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch r.Method {
+								case "POST":
+									s.handleRegenerateEntryImageRequest([1]string{
+										args[0],
+									}, elemIsEscaped, w, r)
+								default:
+									s.notAllowed(w, r, "POST")
+								}
+
+								return
+							}
+
+							elem = origElem
 						case 't': // Prefix: "title"
 							origElem := elem
 							if l := len("title"); len(elem) >= l && elem[0:l] == "title" {
@@ -682,6 +705,31 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								}
 
 								elem = origElem
+							}
+
+							elem = origElem
+						case 'r': // Prefix: "regenerate-image"
+							origElem := elem
+							if l := len("regenerate-image"); len(elem) >= l && elem[0:l] == "regenerate-image" {
+								elem = elem[l:]
+							} else {
+								break
+							}
+
+							if len(elem) == 0 {
+								// Leaf node.
+								switch method {
+								case "POST":
+									r.name = RegenerateEntryImageOperation
+									r.summary = "Regenerate entry image"
+									r.operationID = "regenerateEntryImage"
+									r.pathPattern = "/entries/{path}/regenerate-image"
+									r.args = args
+									r.count = 1
+									return r, true
+								default:
+									return
+								}
 							}
 
 							elem = origElem

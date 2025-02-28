@@ -10,6 +10,18 @@ import (
 	"database/sql"
 )
 
+const deleteEntryImageByPath = `-- name: DeleteEntryImageByPath :execrows
+DELETE FROM entry_image WHERE path = ?
+`
+
+func (q *Queries) DeleteEntryImageByPath(ctx context.Context, path string) (int64, error) {
+	result, err := q.db.ExecContext(ctx, deleteEntryImageByPath, path)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
 const getEntryImageNotProcessedEntries = `-- name: GetEntryImageNotProcessedEntries :many
 SELECT entry.path, entry.title, entry.body, entry.visibility, entry.format, entry.published_at, entry.last_edited_at, entry.created_at, entry.updated_at
 FROM entry

@@ -73,6 +73,10 @@ export interface GetLinkedEntryPathsRequest {
     path: string;
 }
 
+export interface RegenerateEntryImageRequest {
+    path: string;
+}
+
 export interface UpdateEntryBodyOperationRequest {
     path: string;
     updateEntryBodyRequest: UpdateEntryBodyRequest;
@@ -318,6 +322,39 @@ export class DefaultApi extends runtime.BaseAPI {
      */
     async getLinkedEntryPaths(requestParameters: GetLinkedEntryPathsRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<{ [key: string]: string; }> {
         const response = await this.getLinkedEntryPathsRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     * Regenerate entry image
+     */
+    async regenerateEntryImageRaw(requestParameters: RegenerateEntryImageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<object>> {
+        if (requestParameters['path'] == null) {
+            throw new runtime.RequiredError(
+                'path',
+                'Required parameter "path" was null or undefined when calling regenerateEntryImage().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        const response = await this.request({
+            path: `/entries/{path}/regenerate-image`.replace(`{${"path"}}`, encodeURIComponent(String(requestParameters['path']))),
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+        }, initOverrides);
+
+        return new runtime.JSONApiResponse<any>(response);
+    }
+
+    /**
+     * Regenerate entry image
+     */
+    async regenerateEntryImage(requestParameters: RegenerateEntryImageRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<object> {
+        const response = await this.regenerateEntryImageRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

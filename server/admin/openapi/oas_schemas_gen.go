@@ -46,9 +46,10 @@ func (*CreateEntryResponse) createEntryRes() {}
 // Ref: #/components/schemas/EmptyResponse
 type EmptyResponse struct{}
 
-func (*EmptyResponse) deleteEntryRes()      {}
-func (*EmptyResponse) updateEntryBodyRes()  {}
-func (*EmptyResponse) updateEntryTitleRes() {}
+func (*EmptyResponse) deleteEntryRes()          {}
+func (*EmptyResponse) regenerateEntryImageRes() {}
+func (*EmptyResponse) updateEntryBodyRes()      {}
+func (*EmptyResponse) updateEntryTitleRes()     {}
 
 type EntryTitlesResponse []string
 
@@ -235,6 +236,7 @@ func (s *ErrorResponse) SetError(val OptString) {
 func (*ErrorResponse) createEntryRes()           {}
 func (*ErrorResponse) deleteEntryRes()           {}
 func (*ErrorResponse) getLinkedEntryPathsRes()   {}
+func (*ErrorResponse) regenerateEntryImageRes()  {}
 func (*ErrorResponse) updateEntryBodyRes()       {}
 func (*ErrorResponse) updateEntryVisibilityRes() {}
 
@@ -271,6 +273,7 @@ func (*ErrorResponseStatusCode) getEntryByDynamicPathRes() {}
 func (*ErrorResponseStatusCode) getLatestEntriesRes()      {}
 func (*ErrorResponseStatusCode) getLinkPalletRes()         {}
 func (*ErrorResponseStatusCode) getLinkedEntryPathsRes()   {}
+func (*ErrorResponseStatusCode) regenerateEntryImageRes()  {}
 func (*ErrorResponseStatusCode) updateEntryBodyRes()       {}
 func (*ErrorResponseStatusCode) updateEntryTitleRes()      {}
 func (*ErrorResponseStatusCode) updateEntryVisibilityRes() {}

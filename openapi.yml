@@ -329,6 +329,37 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /entries/{path}/regenerate-image:
+    post:
+      summary: Regenerate entry image
+      operationId: regenerateEntryImage
+      parameters:
+        - name: path
+          in: path
+          required: true
+          description: The path of the entry to regenerate the image for
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Entry image regenerated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+        '404':
+          description: Entry not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        default:
+          description: An unexpected error occurred
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   schemas:
     GetLatestEntriesRow:
