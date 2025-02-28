@@ -9,3 +9,6 @@ ORDER BY updated_at DESC;
 -- name: InsertEntryImage :execrows
 INSERT INTO entry_image (path, url)
 VALUES (?, ?);
+
+-- name: DeleteEntryImageByPath :execrows
+DELETE FROM entry_image WHERE path = ?;

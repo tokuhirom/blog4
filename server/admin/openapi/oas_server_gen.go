@@ -50,6 +50,12 @@ type Handler interface {
 	//
 	// GET /entries/{path}/linked-paths
 	GetLinkedEntryPaths(ctx context.Context, params GetLinkedEntryPathsParams) (GetLinkedEntryPathsRes, error)
+	// RegenerateEntryImage implements regenerateEntryImage operation.
+	//
+	// Regenerate entry image.
+	//
+	// POST /entries/{path}/regenerate-image
+	RegenerateEntryImage(ctx context.Context, params RegenerateEntryImageParams) (RegenerateEntryImageRes, error)
 	// UpdateEntryBody implements updateEntryBody operation.
 	//
 	// Update entry body.

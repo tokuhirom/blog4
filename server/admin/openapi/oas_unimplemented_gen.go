@@ -76,6 +76,15 @@ func (UnimplementedHandler) GetLinkedEntryPaths(ctx context.Context, params GetL
 	return r, ht.ErrNotImplemented
 }
 
+// RegenerateEntryImage implements regenerateEntryImage operation.
+//
+// Regenerate entry image.
+//
+// POST /entries/{path}/regenerate-image
+func (UnimplementedHandler) RegenerateEntryImage(ctx context.Context, params RegenerateEntryImageParams) (r RegenerateEntryImageRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // UpdateEntryBody implements updateEntryBody operation.
 //
 // Update entry body.

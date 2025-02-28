@@ -29,6 +29,10 @@ type GetLinkedEntryPathsRes interface {
 	getLinkedEntryPathsRes()
 }
 
+type RegenerateEntryImageRes interface {
+	regenerateEntryImageRes()
+}
+
 type UpdateEntryBodyRes interface {
 	updateEntryBodyRes()
 }

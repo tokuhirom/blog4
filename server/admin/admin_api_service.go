@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/tokuhirom/blog4/db/admin/admindb"
+	"github.com/tokuhirom/blog4/server"
 	"github.com/tokuhirom/blog4/server/admin/openapi"
 	"github.com/tokuhirom/blog4/server/sobs"
 	"io"
@@ -495,4 +496,26 @@ func (p *adminApiService) NewError(_ context.Context, err error) *openapi.ErrorR
 			},
 		}
 	}
+}
+
+func (p *adminApiService) RegenerateEntryImage(ctx context.Context, params openapi.RegenerateEntryImageParams) (openapi.RegenerateEntryImageRes, error) {
+	_, err := p.queries.DeleteEntryImageByPath(ctx, params.Path)
+	if err != nil {
+		return nil, err
+	}
+
+	service := server.NewEntryImageService(p.queries)
+	entries, err := service.GetEntryImageNotProcessedEntries(ctx)
+	if err != nil {
+		return nil, err
+	}
+	for _, entry := range entries {
+		if entry.Path == params.Path {
+			err = service.ProcessEntry(ctx, entry)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
+	return &openapi.EmptyResponse{}, nil
 }
