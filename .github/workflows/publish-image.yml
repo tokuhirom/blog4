@@ -29,7 +29,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t blog4 .
+          docker build --build-arg GIT_HASH=${{ env.GIT_HASH }} -t blog4 .
           docker tag blog4 tokuhirom.sakuracr.jp/blog4:${{ env.GIT_HASH }}
           docker push tokuhirom.sakuracr.jp/blog4:${{ env.GIT_HASH }}
 

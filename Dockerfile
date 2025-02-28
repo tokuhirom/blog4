@@ -21,5 +21,9 @@ COPY --from=backend-builder /app/server/blog4 /app/
 COPY --from=frontend-builder /app/dist /app/server/admin/frontend/dist
 COPY server/static /app/server/static
 RUN apt-get update && apt-get install -y tzdata mysql-client openssl ca-certificates
+
+ARG GIT_HASH
+ENV GIT_HASH=$GIT_HASH
+
 EXPOSE 8181
 CMD ["/app/blog4"]
