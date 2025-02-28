@@ -43,10 +43,26 @@ func (s *CreateEntryResponse) SetPath(val string) {
 
 func (*CreateEntryResponse) createEntryRes() {}
 
-// DeleteEntryOK is response for DeleteEntry operation.
-type DeleteEntryOK struct{}
+// An empty response.
+// Ref: #/components/schemas/EmptyResponse
+type EmptyResponse struct {
+	Message OptString `json:"message"`
+}
 
-func (*DeleteEntryOK) deleteEntryRes() {}
+// GetMessage returns the value of Message.
+func (s *EmptyResponse) GetMessage() OptString {
+	return s.Message
+}
+
+// SetMessage sets the value of Message.
+func (s *EmptyResponse) SetMessage(val OptString) {
+	s.Message = val
+}
+
+func (*EmptyResponse) deleteEntryRes()          {}
+func (*EmptyResponse) regenerateEntryImageRes() {}
+func (*EmptyResponse) updateEntryBodyRes()      {}
+func (*EmptyResponse) updateEntryTitleRes()     {}
 
 type EntryTitlesResponse []string
 
@@ -670,11 +686,6 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
-// RegenerateEntryImageOK is response for RegenerateEntryImage operation.
-type RegenerateEntryImageOK struct{}
-
-func (*RegenerateEntryImageOK) regenerateEntryImageRes() {}
-
 // Ref: #/components/schemas/TwoHopLink
 type TwoHopLink struct {
 	Src   EntryWithDestTitle `json:"src"`
@@ -701,11 +712,6 @@ func (s *TwoHopLink) SetLinks(val []EntryWithImage) {
 	s.Links = val
 }
 
-// UpdateEntryBodyOK is response for UpdateEntryBody operation.
-type UpdateEntryBodyOK struct{}
-
-func (*UpdateEntryBodyOK) updateEntryBodyRes() {}
-
 // Ref: #/components/schemas/UpdateEntryBodyRequest
 type UpdateEntryBodyRequest struct {
 	// The new content of the entry.
@@ -729,11 +735,6 @@ func (*UpdateEntryTitleConflict) updateEntryTitleRes() {}
 type UpdateEntryTitleNotFound ErrorResponse
 
 func (*UpdateEntryTitleNotFound) updateEntryTitleRes() {}
-
-// UpdateEntryTitleOK is response for UpdateEntryTitle operation.
-type UpdateEntryTitleOK struct{}
-
-func (*UpdateEntryTitleOK) updateEntryTitleRes() {}
 
 // Ref: #/components/schemas/UpdateEntryTitleRequest
 type UpdateEntryTitleRequest struct {

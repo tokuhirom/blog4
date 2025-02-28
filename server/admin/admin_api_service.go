@@ -164,7 +164,7 @@ func (p *adminApiService) UpdateEntryBody(ctx context.Context, req *openapi.Upda
 		}
 	}()
 
-	return &openapi.UpdateEntryBodyOK{}, nil
+	return &openapi.EmptyResponse{}, nil
 }
 
 // extractLinks extracts links from the Markdown text.
@@ -229,7 +229,7 @@ func (p *adminApiService) UpdateEntryTitle(ctx context.Context, req *openapi.Upd
 	if err != nil {
 		return nil, err
 	}
-	return &openapi.UpdateEntryTitleOK{}, nil
+	return &openapi.EmptyResponse{}, nil
 }
 
 func (p *adminApiService) GetAllEntryTitles(ctx context.Context) (openapi.GetAllEntryTitlesRes, error) {
@@ -267,7 +267,7 @@ func (p *adminApiService) DeleteEntry(ctx context.Context, params openapi.Delete
 	if err != nil {
 		return nil, err
 	}
-	return &openapi.DeleteEntryOK{}, nil
+	return &openapi.EmptyResponse{}, nil
 }
 
 func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openapi.UpdateVisibilityRequest, params openapi.UpdateEntryVisibilityParams) (openapi.UpdateEntryVisibilityRes, error) {
@@ -517,5 +517,5 @@ func (p *adminApiService) RegenerateEntryImage(ctx context.Context, params opena
 			}
 		}
 	}
-	return &openapi.RegenerateEntryImageOK{}, nil
+	return &openapi.EmptyResponse{}, nil
 }

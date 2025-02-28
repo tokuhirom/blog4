@@ -73,9 +73,16 @@ func encodeCreateEntryResponse(response CreateEntryRes, w http.ResponseWriter, s
 
 func encodeDeleteEntryResponse(response DeleteEntryRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *DeleteEntryOK:
+	case *EmptyResponse:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
 
 		return nil
 
@@ -362,9 +369,16 @@ func encodeGetLinkedEntryPathsResponse(response GetLinkedEntryPathsRes, w http.R
 
 func encodeRegenerateEntryImageResponse(response RegenerateEntryImageRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *RegenerateEntryImageOK:
+	case *EmptyResponse:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
 
 		return nil
 
@@ -413,9 +427,16 @@ func encodeRegenerateEntryImageResponse(response RegenerateEntryImageRes, w http
 
 func encodeUpdateEntryBodyResponse(response UpdateEntryBodyRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *UpdateEntryBodyOK:
+	case *EmptyResponse:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
 
 		return nil
 
@@ -464,9 +485,16 @@ func encodeUpdateEntryBodyResponse(response UpdateEntryBodyRes, w http.ResponseW
 
 func encodeUpdateEntryTitleResponse(response UpdateEntryTitleRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *UpdateEntryTitleOK:
+	case *EmptyResponse:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
+
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
 
 		return nil
 
