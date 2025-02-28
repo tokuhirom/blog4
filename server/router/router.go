@@ -19,9 +19,9 @@ func BuildRouter(cfg server.Config, sqlDB *sql.DB, sobsClient *sobs.SobsClient) 
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
-	if cfg.ValidateHostHeader != "" {
-		log.Printf("HostHeader validation enabled: %s", cfg.ValidateHostHeader)
-		r.Use(middleware2.HostHeader(cfg.ValidateHostHeader))
+	if cfg.WebAccelGuard != "" {
+		log.Printf("CheckWebAccelHeader validation enabled")
+		r.Use(middleware2.CheckWebAccelHeader(cfg.WebAccelGuard))
 	}
 
 	r.Mount("/admin", admin.Router(cfg, sqlDB, sobsClient))

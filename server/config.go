@@ -32,7 +32,7 @@ type Config struct {
 
 	BackupEncryptionKey string `env:"BACKUP_ENCRYPTION_KEY"`
 
-	ValidateHostHeader string `env:"VALIDATE_HOST_HEADER"`
+	WebAccelGuard string `env:"WEBACCEL_GUARD"`
 
 	KeepAliveUrl string `env:"KEEP_ALIVE_URL"`
 
