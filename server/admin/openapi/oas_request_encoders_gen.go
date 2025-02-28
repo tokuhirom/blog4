@@ -71,8 +71,8 @@ func encodeUpdateEntryVisibilityRequest(
 	return nil
 }
 
-func encodeUploadPostRequest(
-	req *UploadPostReq,
+func encodeUploadFileRequest(
+	req *UploadFileReq,
 	r *http.Request,
 ) error {
 	const contentType = "multipart/form-data"

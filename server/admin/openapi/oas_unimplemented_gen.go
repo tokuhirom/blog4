@@ -107,14 +107,14 @@ func (UnimplementedHandler) UpdateEntryTitle(ctx context.Context, req *UpdateEnt
 //
 // Update entry visibility.
 //
-// POST /admin/api/entry/{path}/visibility
+// POST /entry/{path}/visibility
 func (UnimplementedHandler) UpdateEntryVisibility(ctx context.Context, req *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (r UpdateEntryVisibilityRes, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// UploadPost implements POST /upload operation.
+// UploadFile implements uploadFile operation.
 //
 // POST /upload
-func (UnimplementedHandler) UploadPost(ctx context.Context, req *UploadPostReq) (r *UploadFileResponse, _ error) {
+func (UnimplementedHandler) UploadFile(ctx context.Context, req *UploadFileReq) (r UploadFileRes, _ error) {
 	return r, ht.ErrNotImplemented
 }

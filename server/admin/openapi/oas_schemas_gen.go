@@ -43,19 +43,15 @@ func (s *CreateEntryResponse) SetPath(val string) {
 
 func (*CreateEntryResponse) createEntryRes() {}
 
-// Ref: #/components/schemas/EmptyResponse
-type EmptyResponse struct{}
+// DeleteEntryOK is response for DeleteEntry operation.
+type DeleteEntryOK struct{}
 
-func (*EmptyResponse) deleteEntryRes()          {}
-func (*EmptyResponse) regenerateEntryImageRes() {}
-func (*EmptyResponse) updateEntryBodyRes()      {}
-func (*EmptyResponse) updateEntryTitleRes()     {}
+func (*DeleteEntryOK) deleteEntryRes() {}
 
 type EntryTitlesResponse []string
 
 func (*EntryTitlesResponse) getAllEntryTitlesRes() {}
 
-// Merged schema.
 // Ref: #/components/schemas/EntryWithDestTitle
 type EntryWithDestTitle struct {
 	Path       string       `json:"path"`
@@ -674,6 +670,11 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
+// RegenerateEntryImageOK is response for RegenerateEntryImage operation.
+type RegenerateEntryImageOK struct{}
+
+func (*RegenerateEntryImageOK) regenerateEntryImageRes() {}
+
 // Ref: #/components/schemas/TwoHopLink
 type TwoHopLink struct {
 	Src   EntryWithDestTitle `json:"src"`
@@ -700,6 +701,11 @@ func (s *TwoHopLink) SetLinks(val []EntryWithImage) {
 	s.Links = val
 }
 
+// UpdateEntryBodyOK is response for UpdateEntryBody operation.
+type UpdateEntryBodyOK struct{}
+
+func (*UpdateEntryBodyOK) updateEntryBodyRes() {}
+
 // Ref: #/components/schemas/UpdateEntryBodyRequest
 type UpdateEntryBodyRequest struct {
 	// The new content of the entry.
@@ -723,6 +729,11 @@ func (*UpdateEntryTitleConflict) updateEntryTitleRes() {}
 type UpdateEntryTitleNotFound ErrorResponse
 
 func (*UpdateEntryTitleNotFound) updateEntryTitleRes() {}
+
+// UpdateEntryTitleOK is response for UpdateEntryTitle operation.
+type UpdateEntryTitleOK struct{}
+
+func (*UpdateEntryTitleOK) updateEntryTitleRes() {}
 
 // Ref: #/components/schemas/UpdateEntryTitleRequest
 type UpdateEntryTitleRequest struct {
@@ -774,6 +785,25 @@ func (s *UpdateVisibilityResponse) SetVisibility(val string) {
 
 func (*UpdateVisibilityResponse) updateEntryVisibilityRes() {}
 
+// UploadFileBadRequest is response for UploadFile operation.
+type UploadFileBadRequest struct{}
+
+func (*UploadFileBadRequest) uploadFileRes() {}
+
+type UploadFileReq struct {
+	File ht.MultipartFile `json:"file"`
+}
+
+// GetFile returns the value of File.
+func (s *UploadFileReq) GetFile() ht.MultipartFile {
+	return s.File
+}
+
+// SetFile sets the value of File.
+func (s *UploadFileReq) SetFile(val ht.MultipartFile) {
+	s.File = val
+}
+
 // Ref: #/components/schemas/UploadFileResponse
 type UploadFileResponse struct {
 	URL url.URL `json:"url"`
@@ -789,16 +819,4 @@ func (s *UploadFileResponse) SetURL(val url.URL) {
 	s.URL = val
 }
 
-type UploadPostReq struct {
-	File ht.MultipartFile `json:"file"`
-}
-
-// GetFile returns the value of File.
-func (s *UploadPostReq) GetFile() ht.MultipartFile {
-	return s.File
-}
-
-// SetFile sets the value of File.
-func (s *UploadPostReq) SetFile(val ht.MultipartFile) {
-	s.File = val
-}
+func (*UploadFileResponse) uploadFileRes() {}

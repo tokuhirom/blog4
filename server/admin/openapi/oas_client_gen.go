@@ -92,12 +92,12 @@ type Invoker interface {
 	//
 	// Update entry visibility.
 	//
-	// POST /admin/api/entry/{path}/visibility
+	// POST /entry/{path}/visibility
 	UpdateEntryVisibility(ctx context.Context, request *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (UpdateEntryVisibilityRes, error)
-	// UploadPost invokes POST /upload operation.
+	// UploadFile invokes uploadFile operation.
 	//
 	// POST /upload
-	UploadPost(ctx context.Context, request *UploadPostReq) (*UploadFileResponse, error)
+	UploadFile(ctx context.Context, request *UploadFileReq) (UploadFileRes, error)
 }
 
 // Client implements OAS client.
@@ -1028,7 +1028,7 @@ func (c *Client) sendUpdateEntryTitle(ctx context.Context, request *UpdateEntryT
 //
 // Update entry visibility.
 //
-// POST /admin/api/entry/{path}/visibility
+// POST /entry/{path}/visibility
 func (c *Client) UpdateEntryVisibility(ctx context.Context, request *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (UpdateEntryVisibilityRes, error) {
 	res, err := c.sendUpdateEntryVisibility(ctx, request, params)
 	return res, err
@@ -1038,7 +1038,7 @@ func (c *Client) sendUpdateEntryVisibility(ctx context.Context, request *UpdateV
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateEntryVisibility"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/admin/api/entry/{path}/visibility"),
+		semconv.HTTPRouteKey.String("/entry/{path}/visibility"),
 	}
 
 	// Run stopwatch.
@@ -1071,7 +1071,7 @@ func (c *Client) sendUpdateEntryVisibility(ctx context.Context, request *UpdateV
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [3]string
-	pathParts[0] = "/admin/api/entry/"
+	pathParts[0] = "/entry/"
 	{
 		// Encode "path" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
@@ -1118,16 +1118,17 @@ func (c *Client) sendUpdateEntryVisibility(ctx context.Context, request *UpdateV
 	return result, nil
 }
 
-// UploadPost invokes POST /upload operation.
+// UploadFile invokes uploadFile operation.
 //
 // POST /upload
-func (c *Client) UploadPost(ctx context.Context, request *UploadPostReq) (*UploadFileResponse, error) {
-	res, err := c.sendUploadPost(ctx, request)
+func (c *Client) UploadFile(ctx context.Context, request *UploadFileReq) (UploadFileRes, error) {
+	res, err := c.sendUploadFile(ctx, request)
 	return res, err
 }
 
-func (c *Client) sendUploadPost(ctx context.Context, request *UploadPostReq) (res *UploadFileResponse, err error) {
+func (c *Client) sendUploadFile(ctx context.Context, request *UploadFileReq) (res UploadFileRes, err error) {
 	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("uploadFile"),
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/upload"),
 	}
@@ -1144,7 +1145,7 @@ func (c *Client) sendUploadPost(ctx context.Context, request *UploadPostReq) (re
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, UploadPostOperation,
+	ctx, span := c.cfg.Tracer.Start(ctx, UploadFileOperation,
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -1170,7 +1171,7 @@ func (c *Client) sendUploadPost(ctx context.Context, request *UploadPostReq) (re
 	if err != nil {
 		return res, errors.Wrap(err, "create request")
 	}
-	if err := encodeUploadPostRequest(request, r); err != nil {
+	if err := encodeUploadFileRequest(request, r); err != nil {
 		return res, errors.Wrap(err, "encode request")
 	}
 
@@ -1182,7 +1183,7 @@ func (c *Client) sendUploadPost(ctx context.Context, request *UploadPostReq) (re
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeUploadPostResponse(resp)
+	result, err := decodeUploadFileResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

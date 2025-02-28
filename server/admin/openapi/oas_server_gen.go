@@ -72,12 +72,12 @@ type Handler interface {
 	//
 	// Update entry visibility.
 	//
-	// POST /admin/api/entry/{path}/visibility
+	// POST /entry/{path}/visibility
 	UpdateEntryVisibility(ctx context.Context, req *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (UpdateEntryVisibilityRes, error)
-	// UploadPost implements POST /upload operation.
+	// UploadFile implements uploadFile operation.
 	//
 	// POST /upload
-	UploadPost(ctx context.Context, req *UploadPostReq) (*UploadFileResponse, error)
+	UploadFile(ctx context.Context, req *UploadFileReq) (UploadFileRes, error)
 }
 
 // Server implements http server based on OpenAPI v3 specification and
