@@ -70,6 +70,18 @@ func main() {
 			log.Printf("failed to write response: %v", err)
 		}
 	})
+	r.Get("/git_hash", func(w http.ResponseWriter, r *http.Request) {
+		gitHash := os.Getenv("GIT_HASH")
+		if gitHash == "" {
+			http.Error(w, "GIT_HASH not set", http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		_, err := w.Write([]byte(gitHash))
+		if err != nil {
+			log.Printf("failed to write response: %v", err)
+		}
+	})
 
 	go (func() {
 		log.Printf("Starting backup process...")
