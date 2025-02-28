@@ -23,11 +23,15 @@ jobs:
           username: ${{ vars.SAKURA_REGISTRY_USERNAME }}
           password: ${{ secrets.SAKURA_REGISTRY_PASSWORD }}
 
+      - name: Extract GIT_HASH
+        id: vars
+        run: echo "GIT_HASH=$(git rev-parse --short HEAD)" >> $GITHUB_ENV
+
       - name: Build and push Docker image
         run: |
           docker build -t blog4 .
-          docker tag blog4 tokuhirom.sakuracr.jp/blog4:latest
-          docker push tokuhirom.sakuracr.jp/blog4:latest
+          docker tag blog4 tokuhirom.sakuracr.jp/blog4:${{ env.GIT_HASH }}
+          docker push tokuhirom.sakuracr.jp/blog4:${{ env.GIT_HASH }}
 
       - run: |
-          ./deploy.sh ${{ secrets.SACLOUD_API_TOKEN_ID }} ${{ secrets.SAKURA_API_TOKEN_SECRET }} ${{ vars.APPRUN_APP_ID }}
+          ./deploy.sh ${{ secrets.SACLOUD_API_TOKEN_ID }} ${{ secrets.SAKURA_API_TOKEN_SECRET }} ${{ vars.APPRUN_APP_ID }} ${{ env.GIT_HASH }}
