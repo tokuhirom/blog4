@@ -94,22 +94,10 @@ func main() {
 		server.StartBackup(cfg.BackupEncryptionKey, sobsClient)
 	})()
 
-	// apprun が今 min-scale 0 なので､寝ないように自分で自分を起こし続ける
-	go (func() {
-		url := "https://app-ceb34d94-8ffd-4ade-ba21-1dd9b124f836.ingress.apprun.sakura.ne.jp/healthz"
-		for {
-			time.Sleep(10 * time.Second)
-			resp, err := http.Get(url)
-			if err != nil {
-				log.Printf("failed to request %s: %v", url, err)
-				continue
-			}
-			if resp.StatusCode != http.StatusOK {
-				log.Printf("unexpected status code: %d", resp.StatusCode)
-			}
-			_ = resp.Body.Close()
-		}
-	})()
+	if cfg.KeepAliveUrl != "" {
+		url := cfg.KeepAliveUrl
+		go server.KeepAlive(url)
+	}
 
 	// Start the server
 	log.Println("Starting server on http://localhost:8181/")

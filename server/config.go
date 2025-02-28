@@ -34,6 +34,8 @@ type Config struct {
 
 	ValidateHostHeader string `env:"VALIDATE_HOST_HEADER"`
 
+	KeepAliveUrl string `env:"KEEP_ALIVE_URL"`
+
 	// 9*60*60=32400 is JST
 	TimeZoneOffset int `env:"TIMEZONE_OFFSET" envDefault:"32400"`
 }
