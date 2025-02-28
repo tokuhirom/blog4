@@ -12,7 +12,10 @@ model ErrorResponse {
   error?: string;
 }
 
-model EmptyResponse {}
+@doc("An empty response.")
+model EmptyResponse {
+    message?: string;
+}
 
 namespace GeneratedHelpers {
   @doc(Description)
