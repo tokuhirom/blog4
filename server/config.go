@@ -32,6 +32,8 @@ type Config struct {
 
 	BackupEncryptionKey string `env:"BACKUP_ENCRYPTION_KEY"`
 
+	ValidateHostHeader string `env:"VALIDATE_HOST_HEADER"`
+
 	// 9*60*60=32400 is JST
 	TimeZoneOffset int `env:"TIMEZONE_OFFSET" envDefault:"32400"`
 }

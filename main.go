@@ -7,6 +7,7 @@ import (
 	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/tokuhirom/blog4/server"
 	"github.com/tokuhirom/blog4/server/admin"
+	blog4middleware "github.com/tokuhirom/blog4/server/middleware"
 	"github.com/tokuhirom/blog4/server/sobs"
 	"log"
 	"net"
@@ -61,6 +62,11 @@ func main() {
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
+	if cfg.ValidateHostHeader != "" {
+		log.Printf("HostHeader validation enabled: %s", cfg.ValidateHostHeader)
+		r.Use(blog4middleware.HostHeader(cfg.ValidateHostHeader))
+	}
+
 	r.Mount("/admin", admin.Router(cfg, sqlDB, sobsClient))
 	r.Mount("/", server.Router(publicQueries))
 	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
