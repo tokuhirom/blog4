@@ -2,12 +2,8 @@ package main
 
 import (
 	"database/sql"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/tokuhirom/blog4/server"
-	"github.com/tokuhirom/blog4/server/admin"
-	blog4middleware "github.com/tokuhirom/blog4/server/middleware"
+	"github.com/tokuhirom/blog4/server/router"
 	"github.com/tokuhirom/blog4/server/sobs"
 	"log"
 	"net"
@@ -57,37 +53,9 @@ func main() {
 		log.Fatalf("failed to ping DB: %v", err)
 	}
 
-	publicQueries := publicdb.New(sqlDB)
 	sobsClient := sobs.NewSobsClient(cfg.S3AccessKeyId, cfg.S3SecretAccessKey, cfg.S3Region, cfg.S3AttachmentsBucketName, cfg.S3BackupBucketName, cfg.S3Endpoint)
 
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-	if cfg.ValidateHostHeader != "" {
-		log.Printf("HostHeader validation enabled: %s", cfg.ValidateHostHeader)
-		r.Use(blog4middleware.HostHeader(cfg.ValidateHostHeader))
-	}
-
-	r.Mount("/admin", admin.Router(cfg, sqlDB, sobsClient))
-	r.Mount("/", server.Router(publicQueries))
-	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		_, err := w.Write([]byte("ok"))
-		if err != nil {
-			log.Printf("failed to write response: %v", err)
-		}
-	})
-	r.Get("/git_hash", func(w http.ResponseWriter, r *http.Request) {
-		gitHash := os.Getenv("GIT_HASH")
-		if gitHash == "" {
-			http.Error(w, "GIT_HASH not set", http.StatusInternalServerError)
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-		_, err := w.Write([]byte(gitHash))
-		if err != nil {
-			log.Printf("failed to write response: %v", err)
-		}
-	})
+	r := router.BuildRouter(cfg, sqlDB, sobsClient)
 
 	go (func() {
 		log.Printf("Starting backup process...")
