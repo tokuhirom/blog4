@@ -99,7 +99,7 @@ tasks:
     desc: "Install npm dependencies"
 
   openapi-client:
-    deps: [npmi, tsp]
+    ideps: [npmi, tsp]
     dir: ./server/admin/frontend
     watch: true
     cmds:
