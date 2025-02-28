@@ -17,7 +17,7 @@ import (
 	"github.com/joho/godotenv"
 )
 
-//go:generate go run github.com/ogen-go/ogen/cmd/ogen@latest --target ./server/admin/openapi -package openapi --clean openapi.yml
+//go:generate go run github.com/ogen-go/ogen/cmd/ogen@latest --target ./server/admin/openapi -package openapi --clean typespec/tsp-output/@typespec/openapi3/openapi.yaml
 
 func main() {
 	if _, err := os.Stat(".env"); err == nil {

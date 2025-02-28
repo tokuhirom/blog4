@@ -1425,14 +1425,14 @@ func (s *Server) handleUpdateEntryTitleRequest(args [1]string, argsEscaped bool,
 //
 // Update entry visibility.
 //
-// POST /admin/api/entry/{path}/visibility
+// POST /entry/{path}/visibility
 func (s *Server) handleUpdateEntryVisibilityRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateEntryVisibility"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/admin/api/entry/{path}/visibility"),
+		semconv.HTTPRouteKey.String("/entry/{path}/visibility"),
 	}
 
 	// Start a span for this request.
@@ -1574,19 +1574,20 @@ func (s *Server) handleUpdateEntryVisibilityRequest(args [1]string, argsEscaped 
 	}
 }
 
-// handleUploadPostRequest handles POST /upload operation.
+// handleUploadFileRequest handles uploadFile operation.
 //
 // POST /upload
-func (s *Server) handleUploadPostRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+func (s *Server) handleUploadFileRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("uploadFile"),
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/upload"),
 	}
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), UploadPostOperation,
+	ctx, span := s.cfg.Tracer.Start(r.Context(), UploadFileOperation,
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -1641,11 +1642,11 @@ func (s *Server) handleUploadPostRequest(args [0]string, argsEscaped bool, w htt
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: UploadPostOperation,
-			ID:   "",
+			Name: UploadFileOperation,
+			ID:   "uploadFile",
 		}
 	)
-	request, close, err := s.decodeUploadPostRequest(r)
+	request, close, err := s.decodeUploadFileRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -1661,22 +1662,22 @@ func (s *Server) handleUploadPostRequest(args [0]string, argsEscaped bool, w htt
 		}
 	}()
 
-	var response *UploadFileResponse
+	var response UploadFileRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
-			OperationName:    UploadPostOperation,
+			OperationName:    UploadFileOperation,
 			OperationSummary: "",
-			OperationID:      "",
+			OperationID:      "uploadFile",
 			Body:             request,
 			Params:           middleware.Parameters{},
 			Raw:              r,
 		}
 
 		type (
-			Request  = *UploadPostReq
+			Request  = *UploadFileReq
 			Params   = struct{}
-			Response = *UploadFileResponse
+			Response = UploadFileRes
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -1687,12 +1688,12 @@ func (s *Server) handleUploadPostRequest(args [0]string, argsEscaped bool, w htt
 			mreq,
 			nil,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.UploadPost(ctx, request)
+				response, err = s.h.UploadFile(ctx, request)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.UploadPost(ctx, request)
+		response, err = s.h.UploadFile(ctx, request)
 	}
 	if err != nil {
 		defer recordError("Internal", err)
@@ -1700,7 +1701,7 @@ func (s *Server) handleUploadPostRequest(args [0]string, argsEscaped bool, w htt
 		return
 	}
 
-	if err := encodeUploadPostResponse(response, w, span); err != nil {
+	if err := encodeUploadFileResponse(response, w, span); err != nil {
 		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)

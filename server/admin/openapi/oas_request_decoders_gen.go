@@ -269,8 +269,8 @@ func (s *Server) decodeUpdateEntryVisibilityRequest(r *http.Request) (
 	}
 }
 
-func (s *Server) decodeUploadPostRequest(r *http.Request) (
-	req *UploadPostReq,
+func (s *Server) decodeUploadFileRequest(r *http.Request) (
+	req *UploadFileReq,
 	close func() error,
 	rerr error,
 ) {
@@ -310,7 +310,7 @@ func (s *Server) decodeUploadPostRequest(r *http.Request) (
 		form := url.Values(r.MultipartForm.Value)
 		_ = form
 
-		var request UploadPostReq
+		var request UploadFileReq
 		{
 			if err := func() error {
 				files, ok := r.MultipartForm.File["file"]

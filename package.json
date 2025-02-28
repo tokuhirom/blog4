@@ -1,0 +1,27 @@
+{
+  "name": "blog4",
+  "version": "1.0.0",
+  "description": "`brew install go-task`",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tokuhirom/blog4.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tokuhirom/blog4/issues"
+  },
+  "homepage": "https://github.com/tokuhirom/blog4#readme",
+  "devDependencies": {
+    "@typespec/compiler": "^0.65.3"
+  },
+  "dependencies": {
+    "@typespec/http": "^0.65.0",
+    "@typespec/openapi3": "^0.65.0",
+    "@typespec/rest": "^0.65.0"
+  }
+}

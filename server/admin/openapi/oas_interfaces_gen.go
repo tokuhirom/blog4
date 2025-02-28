@@ -44,3 +44,7 @@ type UpdateEntryTitleRes interface {
 type UpdateEntryVisibilityRes interface {
 	updateEntryVisibilityRes()
 }
+
+type UploadFileRes interface {
+	uploadFileRes()
+}

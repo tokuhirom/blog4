@@ -73,16 +73,9 @@ func encodeCreateEntryResponse(response CreateEntryRes, w http.ResponseWriter, s
 
 func encodeDeleteEntryResponse(response DeleteEntryRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *EmptyResponse:
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	case *DeleteEntryOK:
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
-
-		e := new(jx.Encoder)
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
 
 		return nil
 
@@ -369,16 +362,9 @@ func encodeGetLinkedEntryPathsResponse(response GetLinkedEntryPathsRes, w http.R
 
 func encodeRegenerateEntryImageResponse(response RegenerateEntryImageRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *EmptyResponse:
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	case *RegenerateEntryImageOK:
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
-
-		e := new(jx.Encoder)
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
 
 		return nil
 
@@ -427,16 +413,9 @@ func encodeRegenerateEntryImageResponse(response RegenerateEntryImageRes, w http
 
 func encodeUpdateEntryBodyResponse(response UpdateEntryBodyRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *EmptyResponse:
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	case *UpdateEntryBodyOK:
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
-
-		e := new(jx.Encoder)
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
 
 		return nil
 
@@ -485,16 +464,9 @@ func encodeUpdateEntryBodyResponse(response UpdateEntryBodyRes, w http.ResponseW
 
 func encodeUpdateEntryTitleResponse(response UpdateEntryTitleRes, w http.ResponseWriter, span trace.Span) error {
 	switch response := response.(type) {
-	case *EmptyResponse:
-		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	case *UpdateEntryTitleOK:
 		w.WriteHeader(200)
 		span.SetStatus(codes.Ok, http.StatusText(200))
-
-		e := new(jx.Encoder)
-		response.Encode(e)
-		if _, err := e.WriteTo(w); err != nil {
-			return errors.Wrap(err, "write")
-		}
 
 		return nil
 
@@ -612,16 +584,28 @@ func encodeUpdateEntryVisibilityResponse(response UpdateEntryVisibilityRes, w ht
 	}
 }
 
-func encodeUploadPostResponse(response *UploadFileResponse, w http.ResponseWriter, span trace.Span) error {
-	w.Header().Set("Content-Type", "application/json; charset=utf-8")
-	w.WriteHeader(200)
-	span.SetStatus(codes.Ok, http.StatusText(200))
+func encodeUploadFileResponse(response UploadFileRes, w http.ResponseWriter, span trace.Span) error {
+	switch response := response.(type) {
+	case *UploadFileResponse:
+		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.WriteHeader(200)
+		span.SetStatus(codes.Ok, http.StatusText(200))
 
-	e := new(jx.Encoder)
-	response.Encode(e)
-	if _, err := e.WriteTo(w); err != nil {
-		return errors.Wrap(err, "write")
+		e := new(jx.Encoder)
+		response.Encode(e)
+		if _, err := e.WriteTo(w); err != nil {
+			return errors.Wrap(err, "write")
+		}
+
+		return nil
+
+	case *UploadFileBadRequest:
+		w.WriteHeader(400)
+		span.SetStatus(codes.Error, http.StatusText(400))
+
+		return nil
+
+	default:
+		return errors.Errorf("unexpected response type: %T", response)
 	}
-
-	return nil
 }

@@ -3,6 +3,16 @@ version: '3'
 interval: 500ms
 
 tasks:
+  tsp:
+    cmds:
+      - tsp compile main.tsp --emit @typespec/openapi3
+    dir: ./typespec/
+    watch: true
+    sources:
+      - typespec/**/*.tsp
+    generates:
+      - typespec/tsp-output/@typespec/openapi3/openapi.yaml
+
   frontend:
     cmds:
       - npm run dev
@@ -67,11 +77,12 @@ tasks:
     desc: "Generate OpenAPI server and client code"
 
   ogen:
+    deps: ['tsp']
     cmds:
       - go generate main.go
     watch: true
     sources:
-      - openapi.yml
+      - typespec/tsp-output/@typespec/openapi3/openapi.yaml
       - main.go
     generates:
       - ./server/admin/openapi/oas_cfg_gen.go

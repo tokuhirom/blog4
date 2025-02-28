@@ -4,3 +4,4 @@
 deploy.json
 app.jsonnet
 app.json
+node_modules/

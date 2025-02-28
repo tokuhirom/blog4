@@ -164,7 +164,7 @@ func (p *adminApiService) UpdateEntryBody(ctx context.Context, req *openapi.Upda
 		}
 	}()
 
-	return &openapi.EmptyResponse{}, nil
+	return &openapi.UpdateEntryBodyOK{}, nil
 }
 
 // extractLinks extracts links from the Markdown text.
@@ -229,7 +229,7 @@ func (p *adminApiService) UpdateEntryTitle(ctx context.Context, req *openapi.Upd
 	if err != nil {
 		return nil, err
 	}
-	return &openapi.EmptyResponse{}, nil
+	return &openapi.UpdateEntryTitleOK{}, nil
 }
 
 func (p *adminApiService) GetAllEntryTitles(ctx context.Context) (openapi.GetAllEntryTitlesRes, error) {
@@ -267,7 +267,7 @@ func (p *adminApiService) DeleteEntry(ctx context.Context, params openapi.Delete
 	if err != nil {
 		return nil, err
 	}
-	return &openapi.EmptyResponse{}, nil
+	return &openapi.DeleteEntryOK{}, nil
 }
 
 func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openapi.UpdateVisibilityRequest, params openapi.UpdateEntryVisibilityParams) (openapi.UpdateEntryVisibilityRes, error) {
@@ -426,7 +426,7 @@ func (p *adminApiService) getAmazonCache(markdown string, ctx context.Context) e
 	return nil
 }
 
-func (p *adminApiService) UploadPost(ctx context.Context, req *openapi.UploadPostReq) (*openapi.UploadFileResponse, error) {
+func (p *adminApiService) UploadFile(ctx context.Context, req *openapi.UploadFileReq) (openapi.UploadFileRes, error) {
 	// Content-Type の取得
 	contentType := req.File.Header.Get("Content-Type")
 	contentLength := req.File.Size
@@ -517,5 +517,5 @@ func (p *adminApiService) RegenerateEntryImage(ctx context.Context, params opena
 			}
 		}
 	}
-	return &openapi.EmptyResponse{}, nil
+	return &openapi.RegenerateEntryImageOK{}, nil
 }
