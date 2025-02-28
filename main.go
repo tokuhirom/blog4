@@ -2,11 +2,8 @@ package main
 
 import (
 	"database/sql"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/tokuhirom/blog4/server"
-	"github.com/tokuhirom/blog4/server/admin"
+	"github.com/tokuhirom/blog4/server/router"
 	"github.com/tokuhirom/blog4/server/sobs"
 	"log"
 	"net"
@@ -56,54 +53,19 @@ func main() {
 		log.Fatalf("failed to ping DB: %v", err)
 	}
 
-	publicQueries := publicdb.New(sqlDB)
 	sobsClient := sobs.NewSobsClient(cfg.S3AccessKeyId, cfg.S3SecretAccessKey, cfg.S3Region, cfg.S3AttachmentsBucketName, cfg.S3BackupBucketName, cfg.S3Endpoint)
 
-	r := chi.NewRouter()
-	r.Use(middleware.Logger)
-	r.Mount("/admin", admin.Router(cfg, sqlDB, sobsClient))
-	r.Mount("/", server.Router(publicQueries))
-	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
-		w.WriteHeader(http.StatusOK)
-		_, err := w.Write([]byte("ok"))
-		if err != nil {
-			log.Printf("failed to write response: %v", err)
-		}
-	})
-	r.Get("/git_hash", func(w http.ResponseWriter, r *http.Request) {
-		gitHash := os.Getenv("GIT_HASH")
-		if gitHash == "" {
-			http.Error(w, "GIT_HASH not set", http.StatusInternalServerError)
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-		_, err := w.Write([]byte(gitHash))
-		if err != nil {
-			log.Printf("failed to write response: %v", err)
-		}
-	})
+	r := router.BuildRouter(cfg, sqlDB, sobsClient)
 
 	go (func() {
 		log.Printf("Starting backup process...")
 		server.StartBackup(cfg.BackupEncryptionKey, sobsClient)
 	})()
 
-	// apprun が今 min-scale 0 なので､寝ないように自分で自分を起こし続ける
-	go (func() {
-		url := "https://app-ceb34d94-8ffd-4ade-ba21-1dd9b124f836.ingress.apprun.sakura.ne.jp/healthz"
-		for {
-			time.Sleep(10 * time.Second)
-			resp, err := http.Get(url)
-			if err != nil {
-				log.Printf("failed to request %s: %v", url, err)
-				continue
-			}
-			if resp.StatusCode != http.StatusOK {
-				log.Printf("unexpected status code: %d", resp.StatusCode)
-			}
-			_ = resp.Body.Close()
-		}
-	})()
+	if cfg.KeepAliveUrl != "" {
+		url := cfg.KeepAliveUrl
+		go server.KeepAlive(url)
+	}
 
 	// Start the server
 	log.Println("Starting server on http://localhost:8181/")
