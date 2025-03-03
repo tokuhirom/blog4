@@ -1,0 +1,21 @@
+name: 'Deploy to AppRun'
+description: 'Deploy a Docker image to AppRun'
+runs:
+  using: 'composite'
+  steps:
+    - run: ./deploy.sh ${{ inputs.token_id }} ${{ inputs.token_secret }} ${{ inputs.app_id }} ${{ inputs.image }}
+      shell: bash
+      working-directory: ${{ github.action_path }}
+inputs:
+  token_id:
+    description: 'SAKURA API token ID'
+    required: true
+  token_secret:
+    description: 'SAKURA API token secret'
+    required: true
+  app_id:
+    description: 'AppRun application ID'
+    required: true
+  image:
+    description: 'Docker image name to deploy'
+    required: true

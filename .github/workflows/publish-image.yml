@@ -36,5 +36,10 @@ jobs:
           build-args: |
             GIT_HASH=${{ env.GIT_HASH }}
 
-      - run: |
-          ./deploy.sh ${{ secrets.SACLOUD_API_TOKEN_ID }} ${{ secrets.SAKURA_API_TOKEN_SECRET }} ${{ vars.APPRUN_APP_ID }} ${{ env.GIT_HASH }}
+      - name: Deploy
+        uses: ./.github/actions/deploy-apprun
+        with:
+          token_id: ${{ secrets.SACLOUD_API_TOKEN_ID }}
+          token_secret: ${{ secrets.SAKURA_API_TOKEN_SECRET }}
+          app_id: ${{ vars.APPRUN_APP_ID }}
+          image: tokuhirom.sakuracr.jp/blog4:${{ env.GIT_HASH }}
