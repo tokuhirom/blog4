@@ -7,17 +7,6 @@ import { createAdminApiClient } from "../admin_api";
 
 const api = createAdminApiClient();
 
-onMount(() => {
-	try {
-		api.getLatestEntries().then((entries) => {
-			allEntries = entries;
-		});
-	} catch (err) {
-		console.error(err);
-		alert(`Failed to load entries: ${err}`);
-	}
-});
-
 let searchKeyword = $state("");
 
 let allEntries: GetLatestEntriesRow[] = $state([]);
@@ -43,7 +32,7 @@ function handleSearch(keyword: string) {
 }
 
 async function loadMoreEntries() {
-	console.log("loadMoreEntries");
+	console.log(`loadMoreEntries ${isLoading} ${hasMore} ${allEntries.length}`);
 	if (isLoading || !hasMore) return;
 
 	isLoading = true;
@@ -56,6 +45,8 @@ async function loadMoreEntries() {
 	}
 
 	try {
+        console.log(`loadMoreEntries ${last_last_edited_at}`);
+        console.log(allEntries)
 		const newEntries = await api.getLatestEntries(
 			last_last_edited_at
 				? {
@@ -65,6 +56,7 @@ async function loadMoreEntries() {
 		);
 
 		if (newEntries.length === 0) {
+            console.log(`No more entries to load... stopping loading more entries. last_last_edited_at=${last_last_edited_at}`);
 			hasMore = false;
 		} else {
 			const existingPaths = allEntries.map((entry) => entry.path);
@@ -77,6 +69,7 @@ async function loadMoreEntries() {
 				);
 				hasMore = false;
 			} else {
+                console.log(`Adding new entries... last_last_edited_at=${last_last_edited_at}, newEntries=${newEntries.map((entry) => entry.title)}`);
 				allEntries = [...allEntries, ...addingNewEntries];
 			}
 		}
@@ -124,12 +117,29 @@ async function handleKeydown(event: KeyboardEvent) {
 }
 
 onMount(() => {
-	window.addEventListener("keydown", handleKeydown);
-	loadInterval = setInterval(() => {
-		if (!isLoading && hasMore) {
-			loadMoreEntries();
-		}
-	}, 10);
+    window.addEventListener("keydown", handleKeydown);
+
+    try {
+        console.log("Loading entries...");
+        isLoading = true;
+        api.getLatestEntries().then((entries) => {
+            console.log("Loaded entries");
+            allEntries = entries;
+            isLoading = false;
+
+            console.log("Start loading more entries...");
+            // start loading more entries
+            loadInterval = setInterval(() => {
+                if (!isLoading && hasMore) {
+                    loadMoreEntries();
+                }
+            }, 10);
+        });
+    } catch (err) {
+        console.error(err);
+        alert(`Failed to load entries: ${err}`);
+    }
+
 
 	return () => {
 		if (loadInterval) {
