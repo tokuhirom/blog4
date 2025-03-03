@@ -20,18 +20,18 @@ tasks:
     desc: "Run the Node.js development server"
 
   frontend-build:
-    deps: [npmi]
+    deps: [npmi, openapi-client]
     watch: true
     cmds:
-      - npm run build
-    dir: ./server/admin/frontend
+      - cd ./server/admin/frontend && npm run build
     sources:
       - ./server/admin/frontend/package.json
       - ./server/admin/frontend/package-lock.json
       - ./server/admin/frontend/tsconfig.json
-      - ./server/admin/frontend/src/**/*
+      - ./server/admin/frontend/src/**/*.svelte
     generates:
       - ./server/admin/frontend/dist/index.html
+      - ./server/admin/frontend/dist/**/*.js
     desc: "Build the frontend"
 
   sqlc-admin:
