@@ -271,6 +271,7 @@ func (p *adminApiService) DeleteEntry(ctx context.Context, params openapi.Delete
 }
 
 func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openapi.UpdateVisibilityRequest, params openapi.UpdateEntryVisibilityParams) (openapi.UpdateEntryVisibilityRes, error) {
+	log.Printf("UpdateEntryVisibility %v", req)
 	tx, err := p.db.Begin()
 	if err != nil {
 		log.Printf("failed to begin transaction: %v", err)

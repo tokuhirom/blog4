@@ -2,6 +2,7 @@
 /* eslint-disable */
 export * from './CreateEntryRequest';
 export * from './CreateEntryResponse';
+export * from './EmptyResponse';
 export * from './EntryWithDestTitle';
 export * from './EntryWithImage';
 export * from './ErrorResponse';
