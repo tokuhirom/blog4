@@ -387,8 +387,6 @@ function selectIfPlaceholder(target: HTMLInputElement) {
         <div class="right-pane">
             <div class="button-container">
                 <button type="submit" class="delete-button" onclick={handleDelete}> Delete</button>
-            </div>
-            <div class="button-container">
                 <button type="submit" class="regenerate-button" onclick={handleRegenerateEntryImage}> Regenerate entry_image</button>
             </div>
 
@@ -444,6 +442,37 @@ function selectIfPlaceholder(target: HTMLInputElement) {
     .right-pane {
         margin-left: 1rem; /* Add some space between the panes */
         max-width: 300px;
+
+        .link-container {
+            margin-top: 80px;
+        }
+
+        button, a {
+            display: block;
+            border-radius: 0.375rem;
+            border: 1px solid antiquewhite;
+            padding: 0.5rem 1rem;
+            margin-top: 4px;
+        }
+
+        .delete-button {
+            background-color: #ef4444;
+            color: white;
+
+            &:hover {
+                background-color: #dc2626;
+            }
+        }
+
+        .link {
+            background-color: #10b981;
+            color: white;
+            text-decoration: none;
+
+            &:hover {
+                text-decoration: underline;
+            }
+        }
     }
 
     .form {
@@ -479,29 +508,6 @@ function selectIfPlaceholder(target: HTMLInputElement) {
         border-radius: 0.25rem;
         height: 400px;
         overflow-y: scroll;
-    }
-
-    .delete-button {
-        border-radius: 0.375rem;
-        background-color: #ef4444;
-        padding: 0.5rem 1rem;
-        color: white;
-    }
-
-    .delete-button:hover {
-        background-color: #dc2626;
-    }
-
-    .link {
-        border-radius: 0.375rem;
-        background-color: #10b981;
-        padding: 0.5rem 1rem;
-        color: white;
-        text-decoration: none;
-    }
-
-    .link:hover {
-        text-decoration: underline;
     }
 
     .popup-message {

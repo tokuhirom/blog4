@@ -24,43 +24,45 @@
 <nav>
     <a href="/">tokuhirom's blog</a>
 </nav>
-<ul class="card-container">
-    {{range $path, $entry := .Entries}}
-    <li class="card">
-        <div class="entry-head">
-            <a href="/entry/{{$entry.Path}}" class="entry-title">
-                {{$entry.Title}}
+<div class="wrapper">
+    <ul class="card-container">
+        {{range $path, $entry := .Entries}}
+        <li class="card">
+            <div class="entry-head">
+                <a href="/entry/{{$entry.Path}}" class="entry-title">
+                    {{$entry.Title}}
+                </a>
+            </div>
+            {{if $entry.ImageUrl}}
+            <div>
+                <a href="/entry/{{$entry.Path}}">
+                <img src="{{$entry.ImageUrl}}" class="entry-image" alt="{{$entry.Title}}">
+                </a>
+            </div>
+            {{else}}
+            <div class="entry-text-preview"><a href="/entry/{{$entry.Path}}">{{$entry.TextPreview}}</a></div>
+            {{end}}
+            <a href="/entry/{{$entry.Path}}" class="published-date">
+                {{$entry.PublishedAt}}
             </a>
+        </li>
+        {{end}}
+    </ul>
+    <div class="pager">
+        <div class="prev">
+            {{if .HasPrev}}
+            <a href="/?page={{.Prev}}">Prev</a>
+            {{else}}
+            Prev
+            {{end}}
         </div>
-        {{if $entry.ImageUrl}}
-        <div>
-            <a href="/entry/{{$entry.Path}}">
-            <img src="{{$entry.ImageUrl}}" class="entry-image" alt="{{$entry.Title}}">
-            </a>
+        <div class="next">
+            {{if .HasNext}}
+            <a href="/?page={{.Next}}">Next</a>
+            {{else}}
+            Next
+            {{end}}
         </div>
-        {{else}}
-        <div class="entry-text-preview"><a href="/entry/{{$entry.Path}}">{{$entry.TextPreview}}</a></div>
-        {{end}}
-        <a href="/entry/{{$entry.Path}}" class="published-date">
-            {{$entry.PublishedAt}}
-        </a>
-    </li>
-    {{end}}
-</ul>
-<div class="pager">
-    <div class="prev">
-        {{if .HasPrev}}
-        <a href="/?page={{.Prev}}">Prev</a>
-        {{else}}
-        Prev
-        {{end}}
-    </div>
-    <div class="next">
-        {{if .HasNext}}
-        <a href="/?page={{.Next}}">Next</a>
-        {{else}}
-        Next
-        {{end}}
     </div>
 </div>
 <footer>
