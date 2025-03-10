@@ -123,9 +123,17 @@ ul.card-container {
         line-height: 1.6;
     }
 
+    /* 基本的なリンクスタイルの改善 */
     a {
-        color: #99ff99;
-        text-decoration: none;
+        color: #00ff00; /* より明るい緑色 */
+        text-decoration: underline; /* 下線を追加 */
+        transition: all 0.3s ease; /* スムーズな遷移効果 */
+        /* ホバー時の効果を強化 */
+        &:hover {
+            color: #ffffff; /* ホバー時に白色に変更 */
+            text-decoration: underline; /* 下線を維持 */
+            text-shadow: 0 0 5px #00ff00; /* 緑色の光る効果を追加 */
+        }
     }
 
     .asin {
