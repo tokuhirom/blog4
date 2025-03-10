@@ -155,12 +155,12 @@ async function uploadImage(file: File): Promise<string> {
 	formData.append("file", file);
 
 	try {
-		const data = await api.uploadPost({
+		const data = await api.uploadFile({
 			file,
 		});
 		return data.url;
 	} catch (e) {
-		throw new Error("Failed to upload image");
+		throw new Error("Failed to upload image: ${e}");
 	}
 }
 
