@@ -12,7 +12,7 @@ require (
 	github.com/goark/pa-api v0.12.7
 	github.com/gorilla/feeds v1.2.0
 	github.com/joho/godotenv v1.5.1
-	github.com/minio/minio-go/v7 v7.0.87
+	github.com/minio/minio-go/v7 v7.0.88
 	github.com/ogen-go/ogen v1.10.0
 	github.com/yuin/goldmark v1.7.8
 	github.com/yuin/goldmark-highlighting/v2 v2.0.0-20230729083705-37449abec8cc
