@@ -184,6 +184,8 @@ github.com/minio/minio-go/v7 v7.0.88 h1:v8MoIJjwYxOkehp+eiLIuvXk87P2raUtoU5klrAA
 github.com/minio/minio-go/v7 v7.0.88/go.mod h1:33+O8h0tO7pCeCWwBVa07RhVVfB/3vS4kEX7rwYKmIg=
 github.com/minio/minio-go/v7 v7.0.89 h1:hx4xV5wwTUfyv8LarhJAwNecnXpoTsj9v3f3q/ZkiJU=
 github.com/minio/minio-go/v7 v7.0.89/go.mod h1:2rFnGAp02p7Dddo1Fq4S2wYOfpF0MUTSeLTRC90I204=
+github.com/minio/minio-go/v7 v7.0.90 h1:TmSj1083wtAD0kEYTx7a5pFsv3iRYMsOJ6A4crjA1lE=
+github.com/minio/minio-go/v7 v7.0.90/go.mod h1:uvMUcGrpgeSAAI6+sD3818508nUyMULw94j2Nxku/Go=
 github.com/mitchellh/hashstructure/v2 v2.0.2 h1:vGKWl0YJqUNxE8d+h8f6NJLcCJrgbhC4NcD46KavDd4=
 github.com/mitchellh/hashstructure/v2 v2.0.2/go.mod h1:MG3aRVU/N29oo/V/IhBX8GR/zz4kQkprJgF2EVszyDE=
 github.com/muesli/cancelreader v0.2.2 h1:3I4Kt4BQjOR54NavqnDogx/MIoWBFa0StPA8ELUXHmA=
@@ -321,6 +323,8 @@ golang.org/x/net v0.35.0 h1:T5GQRQb2y08kTAByq9L4/bz8cipCdA8FbRTXewonqY8=
 golang.org/x/net v0.35.0/go.mod h1:EglIi67kWsHKlRzzVMUD93VMSWGFOMSZgxFjparz1Qk=
 golang.org/x/net v0.37.0 h1:1zLorHbz+LYj7MQlSf1+2tPIIgibq2eL5xkrGk6f+2c=
 golang.org/x/net v0.37.0/go.mod h1:ivrbrMbzFq5J41QOQh0siUuly180yBYtLp+CKbEaFx8=
+golang.org/x/net v0.38.0 h1:vRMAPTMaeGqVhG5QyLJHqNDwecKTomGeqbnfZyKlBI8=
+golang.org/x/net v0.38.0/go.mod h1:ivrbrMbzFq5J41QOQh0siUuly180yBYtLp+CKbEaFx8=
 golang.org/x/sync v0.0.0-20190423024810-112230192c58/go.mod h1:RxMgew5VJxzue5/jJTE5uejpjVlOe/izrB70Jof72aM=
 golang.org/x/sync v0.11.0 h1:GGz8+XQP4FvTTrjZPzNKTMFtSXH80RAzG+5ghFPgK9w=
 golang.org/x/sync v0.11.0/go.mod h1:Czt+wKu1gCyEFDUtn0jG5QVvpJ6rzVqr5aXyt9drQfk=
