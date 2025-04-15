@@ -16,7 +16,7 @@ require (
 	github.com/joho/godotenv v1.5.1
 	github.com/minio/minio-go/v7 v7.0.90
 	github.com/ogen-go/ogen v1.10.1
-	github.com/yuin/goldmark v1.7.9
+	github.com/yuin/goldmark v1.7.10
 	github.com/yuin/goldmark-highlighting/v2 v2.0.0-20230729083705-37449abec8cc
 	github.com/zeebo/assert v1.3.1
 	go.opentelemetry.io/otel v1.35.0
