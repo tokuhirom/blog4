@@ -56,7 +56,7 @@ require (
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-task/slim-sprig/v3 v3.0.0 // indirect
-	github.com/go-task/task/v3 v3.43.1 // indirect
+	github.com/go-task/task/v3 v3.43.2 // indirect
 	github.com/go-task/template v0.1.0 // indirect
 	github.com/goark/errs v1.3.2 // indirect
 	github.com/goark/fetch v0.4.1 // indirect
