@@ -115,6 +115,7 @@ github.com/go-task/task/v3 v3.41.0/go.mod h1:rwtv3cTPZvGhWaaG2TyPkEtC/fxHPMR/LJV
 github.com/go-task/task/v3 v3.42.1/go.mod h1:q9a3NGSYIQL6GdI920pypRSj0rcfKZ0gV/3sHtMxzds=
 github.com/go-task/task/v3 v3.43.1/go.mod h1:EHa6zF2EjQJTVblOe4vXld/jM22JIoC5VwNrftmTF4g=
 github.com/go-task/task/v3 v3.43.2/go.mod h1:EHa6zF2EjQJTVblOe4vXld/jM22JIoC5VwNrftmTF4g=
+github.com/go-task/task/v3 v3.43.3/go.mod h1:EHa6zF2EjQJTVblOe4vXld/jM22JIoC5VwNrftmTF4g=
 github.com/go-task/template v0.1.0 h1:ym/r2G937RZA1bsgiWedNnY9e5kxDT+3YcoAnuIetTE=
 github.com/go-task/template v0.1.0/go.mod h1:RgwRaZK+kni/hJJ7/AaOE2lPQFPbAdji/DyhC6pxo4k=
 github.com/goark/errs v1.3.2 h1:ifccNe1aK7Xezt4XVYwHUqalmnfhuphnEvh3FshCReQ=
