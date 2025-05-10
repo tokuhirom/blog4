@@ -20,7 +20,7 @@
     "@typespec/compiler": "^0.67.0"
   },
   "dependencies": {
-    "@typespec/http": "^0.67.0",
+    "@typespec/http": "^1.0.0",
     "@typespec/openapi3": "^0.67.0",
     "@typespec/rest": "^0.70.0"
   }
