@@ -17,7 +17,7 @@
   },
   "homepage": "https://github.com/tokuhirom/blog4#readme",
   "devDependencies": {
-    "@typespec/compiler": "^0.67.0"
+    "@typespec/compiler": "^1.0.0"
   },
   "dependencies": {
     "@typespec/http": "^1.0.0",
