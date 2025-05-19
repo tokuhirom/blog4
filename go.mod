@@ -14,7 +14,7 @@ require (
 	github.com/goark/pa-api v0.12.7
 	github.com/gorilla/feeds v1.2.0
 	github.com/joho/godotenv v1.5.1
-	github.com/minio/minio-go/v7 v7.0.91
+	github.com/minio/minio-go/v7 v7.0.92
 	github.com/ogen-go/ogen v1.12.0
 	github.com/yuin/goldmark v1.7.12
 	github.com/yuin/goldmark-highlighting/v2 v2.0.0-20230729083705-37449abec8cc
@@ -83,6 +83,7 @@ require (
 	github.com/muesli/cancelreader v0.2.2 // indirect
 	github.com/ncruces/go-strftime v0.1.9 // indirect
 	github.com/pganalyze/pg_query_go/v5 v5.1.0 // indirect
+	github.com/philhofer/fwd v1.1.3-0.20240916144458-20a13a1f6b7c // indirect
 	github.com/pingcap/errors v0.11.5-0.20240311024730-e056997136bb // indirect
 	github.com/pingcap/failpoint v0.0.0-20240528011301-b51a646c7c86 // indirect
 	github.com/pingcap/log v1.1.0 // indirect
@@ -101,6 +102,7 @@ require (
 	github.com/sqlc-dev/sqlc v1.29.0 // indirect
 	github.com/stoewer/go-strcase v1.2.0 // indirect
 	github.com/tetratelabs/wazero v1.9.0 // indirect
+	github.com/tinylib/msgp v1.3.0 // indirect
 	github.com/wasilibs/go-pgquery v0.0.0-20250409022910-10ac41983c07 // indirect
 	github.com/wasilibs/wazero-helpers v0.0.0-20240620070341-3dff1577cd52 // indirect
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
