@@ -1,5 +1,7 @@
 # blog4
 
+tokuhirom の個人的なブログサービスです｡
+
 `brew install go-task`
 
 ```sh
