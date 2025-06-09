@@ -23,6 +23,8 @@ github.com/alecthomas/chroma/v2 v2.15.0 h1:LxXTQHFoYrstG2nnV9y2X5O94sOBzf0CIUpST
 github.com/alecthomas/chroma/v2 v2.15.0/go.mod h1:gUhVLrPDXPtp/f+L1jo9xepo9gL4eLwRuGAunSZMkio=
 github.com/alecthomas/chroma/v2 v2.16.0 h1:QC5ZMizk67+HzxFDjQ4ASjni5kWBTGiigRG1u23IGvA=
 github.com/alecthomas/chroma/v2 v2.16.0/go.mod h1:RVX6AvYm4VfYe/zsk7mjHueLDZor3aWCNE14TFlepBk=
+github.com/alecthomas/chroma/v2 v2.18.0 h1:6h53Q4hW83SuF+jcsp7CVhLsMozzvQvO8HBbKQW+gn4=
+github.com/alecthomas/chroma/v2 v2.18.0/go.mod h1:RVX6AvYm4VfYe/zsk7mjHueLDZor3aWCNE14TFlepBk=
 github.com/alecthomas/repr v0.0.0-20220113201626-b1b626ac65ae/go.mod h1:2kn6fqh/zIyPLmm3ugklbEi5hg5wS435eygvNfaDQL8=
 github.com/alecthomas/repr v0.4.0 h1:GhI2A8MACjfegCPVq9f1FLvIBS+DrQ2KQBFZP1iFzXc=
 github.com/alecthomas/repr v0.4.0/go.mod h1:Fr0507jx4eOXV7AlPV6AVZLYrLIuIeSOWtW57eE/O/4=
@@ -116,6 +118,7 @@ github.com/go-task/task/v3 v3.42.1/go.mod h1:q9a3NGSYIQL6GdI920pypRSj0rcfKZ0gV/3
 github.com/go-task/task/v3 v3.43.1/go.mod h1:EHa6zF2EjQJTVblOe4vXld/jM22JIoC5VwNrftmTF4g=
 github.com/go-task/task/v3 v3.43.2/go.mod h1:EHa6zF2EjQJTVblOe4vXld/jM22JIoC5VwNrftmTF4g=
 github.com/go-task/task/v3 v3.43.3/go.mod h1:EHa6zF2EjQJTVblOe4vXld/jM22JIoC5VwNrftmTF4g=
+github.com/go-task/task/v3 v3.44.0/go.mod h1:AZfZOsFva6BYDpHSphm14OiD052XXWy+pvRe7Eprt3A=
 github.com/go-task/template v0.1.0 h1:ym/r2G937RZA1bsgiWedNnY9e5kxDT+3YcoAnuIetTE=
 github.com/go-task/template v0.1.0/go.mod h1:RgwRaZK+kni/hJJ7/AaOE2lPQFPbAdji/DyhC6pxo4k=
 github.com/goark/errs v1.3.2 h1:ifccNe1aK7Xezt4XVYwHUqalmnfhuphnEvh3FshCReQ=
