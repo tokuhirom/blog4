@@ -205,6 +205,8 @@ github.com/minio/minio-go/v7 v7.0.91 h1:tWLZnEfo3OZl5PoXQwcwTAPNNrjyWwOh6cbZitW5
 github.com/minio/minio-go/v7 v7.0.91/go.mod h1:uvMUcGrpgeSAAI6+sD3818508nUyMULw94j2Nxku/Go=
 github.com/minio/minio-go/v7 v7.0.92 h1:jpBFWyRS3p8P/9tsRc+NuvqoFi7qAmTCFPoRFmobbVw=
 github.com/minio/minio-go/v7 v7.0.92/go.mod h1:vTIc8DNcnAZIhyFsk8EB90AbPjj3j68aWIEQCiPj7d0=
+github.com/minio/minio-go/v7 v7.0.93 h1:lAB4QJp8Nq3vDMOU0eKgMuyBiEGMNlXQ5Glc8qAxqSU=
+github.com/minio/minio-go/v7 v7.0.93/go.mod h1:71t2CqDt3ThzESgZUlU1rBN54mksGGlkLcFgguDnnAc=
 github.com/mitchellh/hashstructure/v2 v2.0.2 h1:vGKWl0YJqUNxE8d+h8f6NJLcCJrgbhC4NcD46KavDd4=
 github.com/mitchellh/hashstructure/v2 v2.0.2/go.mod h1:MG3aRVU/N29oo/V/IhBX8GR/zz4kQkprJgF2EVszyDE=
 github.com/muesli/cancelreader v0.2.2 h1:3I4Kt4BQjOR54NavqnDogx/MIoWBFa0StPA8ELUXHmA=
