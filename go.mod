@@ -10,7 +10,7 @@ require (
 	github.com/go-chi/cors v1.2.1
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.1.0
-	github.com/go-sql-driver/mysql v1.9.2
+	github.com/go-sql-driver/mysql v1.9.3
 	github.com/goark/pa-api v0.12.7
 	github.com/gorilla/feeds v1.2.0
 	github.com/joho/godotenv v1.5.1
