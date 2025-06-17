@@ -133,9 +133,18 @@ func (r *AsinRenderer) enter(w util.BufWriter, n *AsinNode, src []byte) (ast.Wal
 		} else {
 			slog.Error("Failed to query ASIN", slog.String("asin", string(n.Target)), slog.Any("error", err))
 		}
-		w.WriteString("[asin:")
-		w.Write(n.Target)
-		w.WriteString(":detail]")
+
+		// Build fallback text
+		var buf bytes.Buffer
+		buf.WriteString("[asin:")
+		buf.Write(n.Target)
+		buf.WriteString(":detail]")
+
+		// Write the complete string at once
+		if _, err := w.Write(buf.Bytes()); err != nil {
+			return 0, fmt.Errorf("failed to write ASIN fallback text: %w", err)
+		}
+
 		return ast.WalkSkipChildren, nil
 	}
 
