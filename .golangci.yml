@@ -1,25 +1,30 @@
+version: "2"
 linters:
-  enable:
-    - goimports
-    - gofmt
-    - govet
-    - errcheck
-    - staticcheck
-    - gosimple
-    - ineffassign
-    - unused
-
-linters-settings:
-  goimports:
-    # Put imports beginning with prefix after 3rd-party packages
-    local-prefixes: github.com/tokuhirom/blog4
-
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
 issues:
-  # Don't limit the number of issues per linter
   max-issues-per-linter: 0
-  # Don't limit the number of times a same issue is reported
   max-same-issues: 0
-
-run:
-  # Timeout for analysis
-  timeout: 5m
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/tokuhirom/blog4
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
