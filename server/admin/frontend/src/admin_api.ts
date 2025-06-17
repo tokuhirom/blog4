@@ -17,9 +17,9 @@ export interface DefaultApi {
 		request: api.UpdateEntryBodyRequest,
 	): Promise<api.EmptyResponse>;
 	getLinkPallet(params: { path: string }): Promise<api.LinkPalletData>;
-	getLinkedEntryPaths(params: { path: string }): Promise<
-		Record<string, string>
-	>;
+	getLinkedEntryPaths(params: {
+		path: string;
+	}): Promise<Record<string, string>>;
 	regenerateEntryImage(params: { path: string }): Promise<api.EmptyResponse>;
 	updateEntryTitle(
 		params: { path: string },

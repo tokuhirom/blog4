@@ -15,7 +15,7 @@
 		"generate-client": "orval"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "1.9.4",
+		"@biomejs/biome": "^2.0.0",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@tsconfig/svelte": "^5.0.4",
 		"autoprefixer": "^10.4.20",
