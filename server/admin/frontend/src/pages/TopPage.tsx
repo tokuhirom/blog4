@@ -1,3 +1,4 @@
+import { format } from "date-fns";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { createAdminApiClient } from "../admin_api";
@@ -99,9 +100,7 @@ export default function TopPage() {
 			try {
 				// Generate a placeholder title with current date/time
 				const now = new Date();
-				const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
-				const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-'); // HH-MM-SS
-				const placeholderTitle = `New Entry ${dateStr} ${timeStr}`;
+				const placeholderTitle = format(now, "'New Entry' yyyy-MM-dd HH-mm-ss");
 				
 				const data = await api.createEntry({ title: placeholderTitle });
 				console.log(`New entry created: ${data.Path}`);
