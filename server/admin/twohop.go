@@ -4,10 +4,11 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"github.com/tokuhirom/blog4/db/admin/admindb"
-	"github.com/tokuhirom/blog4/server/admin/openapi"
 	"log/slog"
 	"strings"
+
+	"github.com/tokuhirom/blog4/db/admin/admindb"
+	"github.com/tokuhirom/blog4/server/admin/openapi"
 )
 
 func getLinkPalletData(ctx context.Context, db *sql.DB, queries *admindb.Queries, targetPath string, targetTitle string) (*openapi.LinkPalletData, error) {
@@ -20,7 +21,7 @@ func getLinkPalletData(ctx context.Context, db *sql.DB, queries *admindb.Queries
 	// このエントリにリンクしているページのリストを取得
 	reverseLinks, err := queries.GetEntriesByLinkedTitle(ctx, targetTitle)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get entries by linked title %s: %w", targetTitle, err)
 	}
 
 	// links の指す先のタイトルにリンクしているエントリのリストを取得
