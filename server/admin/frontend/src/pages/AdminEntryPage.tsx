@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { createAdminApiClient } from "../admin_api";
 import LinkPallet from "../components/LinkPallet";
@@ -33,6 +33,17 @@ export default function AdminEntryPage() {
 	const [, setMessageType] = useState<"success" | "error" | "">("");
 	const [updatedMessage, setUpdatedMessage] = useState("");
 	const [, setIsDirty] = useState(false);
+	const titleRef = useRef(title);
+	const bodyRef = useRef(body);
+
+	// Update refs when state changes
+	useEffect(() => {
+		titleRef.current = title;
+	}, [title]);
+
+	useEffect(() => {
+		bodyRef.current = body;
+	}, [body]);
 
 	const showUpdatedMessage = React.useCallback((text: string) => {
 		setUpdatedMessage(text);
@@ -109,7 +120,8 @@ export default function AdminEntryPage() {
 	const handleUpdateBody = React.useCallback(async () => {
 		clearMessage();
 
-		if (body === "") {
+		const currentBody = bodyRef.current;
+		if (currentBody === "") {
 			showMessage("error", "Body cannot be empty");
 			return;
 		}
@@ -118,7 +130,7 @@ export default function AdminEntryPage() {
 			await api.updateEntryBody(
 				{ path: encodeURIComponent(path) },
 				{
-					body: body,
+					body: currentBody,
 				},
 			);
 
@@ -128,11 +140,12 @@ export default function AdminEntryPage() {
 			showMessage("error", "Failed to update entry body");
 			console.error("Failed to update entry body:", e);
 		}
-	}, [body, path, clearMessage, showMessage, showUpdatedMessage]);
+	}, [path, clearMessage, showMessage, showUpdatedMessage]);
 
 	const handleUpdateTitle = React.useCallback(async () => {
 		clearMessage();
-		if (title === "") {
+		const currentTitle = titleRef.current;
+		if (currentTitle === "") {
 			showMessage("error", "Title cannot be empty");
 			return;
 		}
@@ -141,25 +154,25 @@ export default function AdminEntryPage() {
 			await api.updateEntryTitle(
 				{ path: encodeURIComponent(path) },
 				{
-					title,
+					title: currentTitle,
 				},
 			);
 
-			showMessage("success", "Entry updated successfully");
+			showUpdatedMessage("Updated");
 			setIsDirty(false);
 		} catch (e) {
 			showMessage("error", "Failed to update entry title");
 			console.error("Failed to update entry title:", e);
 		}
-	}, [title, path, clearMessage, showMessage]);
+	}, [path, clearMessage, showMessage, showUpdatedMessage]);
 
 	const debouncedUpdateBody = React.useMemo(
-		() => debounce(() => handleUpdateBody(), 800),
+		() => debounce(handleUpdateBody, 800),
 		[handleUpdateBody],
 	);
 
 	const debouncedTitleUpdate = React.useMemo(
-		() => debounce(() => handleUpdateTitle(), 500),
+		() => debounce(handleUpdateTitle, 500),
 		[handleUpdateTitle],
 	);
 
