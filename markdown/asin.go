@@ -3,7 +3,10 @@ package markdown
 import (
 	"bytes"
 	"context"
+	"database/sql"
+	"errors"
 	"fmt"
+	"log/slog"
 
 	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/yuin/goldmark"
@@ -123,7 +126,16 @@ func (r *AsinRenderer) Render(writer util.BufWriter, source []byte, node ast.Nod
 func (r *AsinRenderer) enter(w util.BufWriter, n *AsinNode, src []byte) (ast.WalkStatus, error) {
 	asin, err := r.Queries.GetAsin(r.Context, string(n.Target))
 	if err != nil {
-		return 0, fmt.Errorf("failed to get ASIN %s: %w", n.Target, err)
+		// If ASIN not found, render a placeholder or the raw ASIN link
+		if errors.Is(err, sql.ErrNoRows) {
+			slog.Warn("ASIN not found in database, rendering as plain text", slog.String("asin", string(n.Target)))
+		} else {
+			slog.Error("Failed to query ASIN", slog.String("asin", string(n.Target)), slog.Any("error", err))
+		}
+		w.WriteString("[asin:")
+		w.Write(n.Target)
+		w.WriteString(":detail]")
+		return ast.WalkSkipChildren, nil
 	}
 	w.WriteString("<div style='display: flex;' class='asin'>")
 	w.WriteString("<p>")
