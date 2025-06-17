@@ -9,7 +9,7 @@ import (
 	"github.com/tokuhirom/blog4/server/admin"
 	middleware2 "github.com/tokuhirom/blog4/server/middleware"
 	"github.com/tokuhirom/blog4/server/sobs"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 )
@@ -20,7 +20,7 @@ func BuildRouter(cfg server.Config, sqlDB *sql.DB, sobsClient *sobs.SobsClient) 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 	if cfg.WebAccelGuard != "" {
-		log.Printf("CheckWebAccelHeader validation enabled")
+		slog.Info("CheckWebAccelHeader validation enabled")
 		r.Use(middleware2.CheckWebAccelHeader(cfg.WebAccelGuard))
 	}
 
@@ -35,7 +35,7 @@ func HealthzHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, err := w.Write([]byte("ok"))
 	if err != nil {
-		log.Printf("failed to write response: %v", err)
+		slog.Error("failed to write healthz response", slog.Any("error", err))
 	}
 }
 
@@ -48,6 +48,6 @@ func GitHashHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	_, err := w.Write([]byte(gitHash))
 	if err != nil {
-		log.Printf("failed to write response: %v", err)
+		slog.Error("failed to write git hash response", slog.Any("error", err))
 	}
 }

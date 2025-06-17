@@ -6,7 +6,7 @@ import (
 	paapi5 "github.com/goark/pa-api"
 	"github.com/goark/pa-api/entity"
 	"github.com/goark/pa-api/query"
-	"log"
+	"log/slog"
 )
 
 type PAAPIClient struct {
@@ -33,10 +33,10 @@ type AmazonProductDetail struct {
 // https://webservices.amazon.com/paapi5/documentation/get-items.html
 func (c *PAAPIClient) FetchAmazonProductDetails(ctx context.Context, asins []string) ([]AmazonProductDetail, error) {
 	if len(asins) > 10 {
-		return nil, fmt.Errorf("too many ASINs")
+		return nil, fmt.Errorf("too many ASINs: got %d, maximum is 10", len(asins))
 	}
 
-	log.Printf("Fetching Amazon product details by ASINs: %v", asins)
+	slog.Info("Fetching Amazon product details by ASINs", slog.Any("asins", asins))
 
 	client := paapi5.New(
 		paapi5.WithMarketplace(paapi5.LocaleJapan),
@@ -63,7 +63,7 @@ func (c *PAAPIClient) FetchAmazonProductDetails(ctx context.Context, asins []str
 	if err != nil {
 		return nil, fmt.Errorf("failed to decode response: %w", err)
 	}
-	fmt.Println(res.String())
+	slog.Debug("PA-API response", slog.String("response", res.String()))
 
 	if len(res.ItemsResult.Items) == 0 {
 		return nil, fmt.Errorf("no items found in PA-API response")
@@ -71,9 +71,10 @@ func (c *PAAPIClient) FetchAmazonProductDetails(ctx context.Context, asins []str
 
 	var productDetails []AmazonProductDetail
 	for _, item := range res.ItemsResult.Items {
-		fmt.Printf("ASIN: %s\n", item.ASIN)
-		fmt.Printf("Title: %s\n", item.ItemInfo.Title.DisplayValue)
-		fmt.Printf("URL: %s\n", item.DetailPageURL)
+		slog.Debug("Processing Amazon item", 
+			slog.String("asin", item.ASIN),
+			slog.String("title", item.ItemInfo.Title.DisplayValue),
+			slog.String("url", item.DetailPageURL))
 		productDetails = append(productDetails, AmazonProductDetail{
 			ASIN:           item.ASIN,
 			Title:          item.ItemInfo.Title.DisplayValue,
@@ -81,6 +82,6 @@ func (c *PAAPIClient) FetchAmazonProductDetails(ctx context.Context, asins []str
 			Link:           item.DetailPageURL,
 		})
 	}
-	log.Printf("Fetched Amazon product details: %v", productDetails)
+	slog.Info("Fetched Amazon product details", slog.Int("count", len(productDetails)))
 	return productDetails, nil
 }

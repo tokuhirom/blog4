@@ -5,7 +5,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/tokuhirom/blog4/server/sobs"
-	"log"
+	"log/slog"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -17,7 +17,7 @@ const (
 )
 
 func StartBackup(encryptionKey string, s3client *sobs.SobsClient) {
-	log.Printf("Start taking backup")
+	slog.Info("Start taking backup")
 	time.AfterFunc(1*time.Second, func() {
 		takeBackup(encryptionKey, s3client)
 	})
@@ -32,13 +32,13 @@ func StartBackup(encryptionKey string, s3client *sobs.SobsClient) {
 }
 
 func takeBackup(encryptionKey string, s3client *sobs.SobsClient) {
-	log.Print("takeBackup")
+	slog.Info("takeBackup")
 
 	// Generate dump file path
 	date := time.Now()
 	dumpFileName := fmt.Sprintf("/tmp/blog3-backup-%s.sql", date.Format("2006-01-02T15-04-05"))
 	encryptedFileName := dumpFileName + ".enc"
-	fmt.Println("mysqldump file name:", dumpFileName)
+	slog.Info("mysqldump file name", slog.String("filename", dumpFileName))
 
 	// Execute mysqldump command
 	err := execCommand(fmt.Sprintf(
@@ -51,12 +51,13 @@ func takeBackup(encryptionKey string, s3client *sobs.SobsClient) {
 		dumpFileName,
 	))
 	if err != nil {
-		log.Fatalf("Error taking database dump: %v", err)
+		slog.Error("Error taking database dump", slog.Any("error", err))
+		return
 	}
 	defer func(name string) {
 		err := os.Remove(name)
 		if err != nil {
-			log.Printf("Error removing dump file: %s, %v", name, err)
+			slog.Error("Error removing dump file", slog.String("file", name), slog.Any("error", err))
 		}
 	}(dumpFileName)
 
@@ -68,21 +69,23 @@ func takeBackup(encryptionKey string, s3client *sobs.SobsClient) {
 		encryptionKey,
 	))
 	if err != nil {
-		log.Fatalf("Error encrypting dump file: %v", err)
+		slog.Error("Error encrypting dump file", slog.Any("error", err))
+		return
 	}
-	fmt.Printf("Encrypted file created: %s\n", encryptedFileName)
+	slog.Info("Encrypted file created", slog.String("file", encryptedFileName))
 	defer func(name string) {
 		err := os.Remove(name)
 		if err != nil {
-			log.Printf("Error removing encrypted file: %s, %v", name, err)
+			slog.Error("Error removing encrypted file", slog.String("file", name), slog.Any("error", err))
 		}
 	}(encryptedFileName)
 
 	// Upload file to S3
-	fmt.Printf("Uploading file to S3: %s\n", encryptedFileName)
+	slog.Info("Uploading file to S3", slog.String("file", encryptedFileName))
 	fileContent, err := os.ReadFile(encryptedFileName)
 	if err != nil {
-		log.Fatalf("Error reading encrypted file: %v", err)
+		slog.Error("Error reading encrypted file", slog.Any("error", err))
+		return
 	}
 
 	// TODO remove old back up files
@@ -93,12 +96,13 @@ func takeBackup(encryptionKey string, s3client *sobs.SobsClient) {
 		int64(len(fileContent)),
 		bytes.NewReader(fileContent))
 	if err != nil {
-		log.Printf("Error uploading file to S3: %v", err)
+		slog.Error("Error uploading file to S3", slog.Any("error", err))
+		return
 	}
-	fmt.Printf("File uploaded to S3: %s\n", encryptedFileName)
+	slog.Info("File uploaded to S3", slog.String("file", encryptedFileName))
 
 	// Clean up temporary files
-	fmt.Printf("Removing temporary files: %s, %s\n", dumpFileName, encryptedFileName)
+	slog.Info("Removing temporary files", slog.String("dump_file", dumpFileName), slog.String("encrypted_file", encryptedFileName))
 }
 
 func execCommand(command string) error {

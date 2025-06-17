@@ -3,8 +3,9 @@ package server
 import (
 	"context"
 	"database/sql"
+	"fmt"
 	"github.com/tokuhirom/blog4/db/admin/admindb"
-	"log"
+	"log/slog"
 	"regexp"
 	"strings"
 )
@@ -24,29 +25,29 @@ func (w *EntryImageService) GetEntryImageNotProcessedEntries(ctx context.Context
 }
 
 func (w *EntryImageService) ProcessEntry(ctx context.Context, entry admindb.Entry) error {
-	log.Printf("Processing entry: %v", entry)
+	slog.Info("Processing entry", slog.String("path", entry.Path), slog.String("title", entry.Title))
 
 	image, err := w.getImageFromEntry(ctx, entry)
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to get image from entry %s: %w", entry.Path, err)
 	}
 
 	if image == nil {
 		if strings.Contains(entry.Body, "[asin:") {
-			log.Printf("image is not available. skip it. maybe ASIN processing is delayed: %v", entry)
+			slog.Warn("image is not available, maybe ASIN processing is delayed", slog.String("path", entry.Path))
 			return nil
 		} else {
-			log.Printf("[ERROR] image is not available. skip it: %v", entry)
+			slog.Error("image is not available", slog.String("path", entry.Path))
 			return nil
 		}
 	} else {
-		log.Printf("image is available for %s:%s: %v", entry.Path, entry.Title, *image)
+		slog.Info("image is available", slog.String("path", entry.Path), slog.String("title", entry.Title), slog.String("image", *image))
 		_, err := w.queries.InsertEntryImage(ctx, admindb.InsertEntryImageParams{
 			Path: entry.Path,
 			Url:  sql.NullString{String: *image, Valid: true},
 		})
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to insert entry image for path %s: %w", entry.Path, err)
 		}
 		return nil
 	}
@@ -92,7 +93,7 @@ func (w *EntryImageService) getImageFromEntry(ctx context.Context, entry admindb
 		asin := asinMatch[1]
 		row, err := w.queries.GetAmazonImageUrlByAsin(ctx, asin)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to get Amazon image URL for ASIN %s: %w", asin, err)
 		}
 		return &row.String, nil
 	}

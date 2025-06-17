@@ -1,23 +1,23 @@
 package server
 
 import (
-	"log"
+	"log/slog"
 	"net/http"
 	"time"
 )
 
 // KeepAlive apprun が今 min-scale 0 なので､寝ないように自分で自分を起こし続ける
 func KeepAlive(url string) {
-	log.Printf("Starting keep-alive process for %s...", url)
+	slog.Info("Starting keep-alive process", slog.String("url", url))
 	for {
 		time.Sleep(10 * time.Second)
 		resp, err := http.Get(url)
 		if err != nil {
-			log.Printf("failed to request %s: %v", url, err)
+			slog.Error("failed to request keep-alive URL", slog.String("url", url), slog.Any("error", err))
 			continue
 		}
 		if resp.StatusCode != http.StatusOK {
-			log.Printf("unexpected status code: %d", resp.StatusCode)
+			slog.Warn("unexpected keep-alive status code", slog.Int("status", resp.StatusCode), slog.String("url", url))
 		}
 		_ = resp.Body.Close()
 	}
