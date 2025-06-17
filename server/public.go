@@ -237,8 +237,8 @@ func getRelatedEntries(context context.Context, queries *publicdb.Queries, entry
 	for _, entry := range uniqueEntriesMap {
 		if entry.Visibility != "public" {
 			// 保険的にvisibilityがpublicでないエントリは除外
-			slog.Error("visibility is not public", slog.String("path", entry.Path), slog.String("visibility", string(entry.Visibility)))
-			os.Exit(1)
+			slog.Error("unexpected non-public entry in related entries", slog.String("path", entry.Path), slog.String("visibility", string(entry.Visibility)))
+			continue // Skip this entry instead of exiting
 		}
 		uniqueEntries = append(uniqueEntries, entry)
 	}
