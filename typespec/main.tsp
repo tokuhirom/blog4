@@ -20,10 +20,10 @@ import "./routes/upload.tsp";
 using Http;
 using OpenAPI;
 
-@service({
+@service(#{
   title: "Admin API",
 })
-@info({
+@info(#{
   version: "1.0.0",
 })
 namespace AdminAPI;
