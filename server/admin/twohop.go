@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server/admin/openapi"
-	"log"
+	"log/slog"
 	"strings"
 )
 
@@ -14,7 +14,7 @@ func getLinkPalletData(ctx context.Context, db *sql.DB, queries *admindb.Queries
 	// このエントリがリンクしているページのリストを取得
 	links, err := queries.GetLinkedEntries(ctx, targetPath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get linked entries for path %s: %w", targetPath, err)
 	}
 
 	// このエントリにリンクしているページのリストを取得
@@ -91,7 +91,7 @@ func getEntriesByLinkedTitles(ctx context.Context, db *sql.DB, targetPath string
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
-			log.Printf("Cannot close: %v", err)
+			slog.Error("Cannot close rows", slog.Any("error", err))
 		}
 	}(rows)
 

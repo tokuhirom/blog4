@@ -4,10 +4,11 @@ import (
 	"bytes"
 	"context"
 	"embed"
+	"fmt"
 	"github.com/go-chi/chi/v5"
 	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"html/template"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"regexp"
@@ -74,7 +75,7 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Que
 	if pageStr := r.URL.Query().Get("page"); pageStr != "" {
 		page, err = strconv.Atoi(pageStr)
 		if err != nil {
-			log.Printf("failed to parse page number: %v", err)
+			slog.Error("failed to parse page number", slog.String("page", pageStr), slog.Any("error", err))
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
@@ -88,7 +89,7 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Que
 		Offset: int32(offset),
 	})
 	if err != nil {
-		log.Printf("failed to search entries: %v", err)
+		slog.Error("failed to search entries", slog.Int("page", page), slog.Any("error", err))
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -108,7 +109,7 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Que
 		if entry.PublishedAt.Valid {
 			formattedDate = entry.PublishedAt.Time.Format("2006-01-02(Mon)")
 		} else {
-			log.Printf("published_at is invalid: path=%s, published_at=%v", entry.Path, entry.PublishedAt)
+			slog.Error("published_at is invalid", slog.String("path", entry.Path), slog.Any("published_at", entry.PublishedAt))
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return
 		}
@@ -141,10 +142,10 @@ func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Q
 
 	md := markdown.NewMarkdown(r.Context(), queries)
 
-	log.Printf("path: %s", extractedPath)
+	slog.Info("rendering entry page", slog.String("path", extractedPath))
 	entry, err := queries.GetEntryByPath(r.Context(), extractedPath)
 	if err != nil {
-		log.Printf("failed to get entry by path: %v", err)
+		slog.Error("failed to get entry by path", slog.String("path", extractedPath), slog.Any("error", err))
 		http.NotFound(w, r)
 		return
 	}
@@ -154,21 +155,21 @@ func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Q
 	if entry.PublishedAt.Valid {
 		formattedDate = formatDateTime(entry.PublishedAt.Time)
 	} else {
-		log.Printf("published_at is invalid: path=%s, published_at=%v", entry.Path, entry.PublishedAt)
+		slog.Error("published_at is invalid", slog.String("path", entry.Path), slog.Any("published_at", entry.PublishedAt))
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	body, err := md.Render(entry.Body)
 	if err != nil {
-		log.Printf("failed to render markdown: %v", err)
+		slog.Error("failed to render markdown", slog.String("path", entry.Path), slog.Any("error", err))
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
 
 	relatedEntries, err := getRelatedEntries(r.Context(), queries, entry)
 	if err != nil {
-		log.Printf("failed to get related entries: %v", err)
+		slog.Error("failed to get related entries", slog.String("path", entry.Path), slog.Any("error", err))
 	}
 
 	data := struct {
@@ -202,16 +203,16 @@ func getRelatedEntries(context context.Context, queries *publicdb.Queries, entry
 	// 現在表示しているエントリがリンクしているページ
 	entries1, err := queries.GetRelatedEntries1(context, entry.Path)
 	if err != nil {
-		return []publicdb.Entry{}, err
+		return []publicdb.Entry{}, fmt.Errorf("failed to get related entries1 for path %s: %w", entry.Path, err)
 	}
 	// 現在表示しているページにリンクしているページ
 	entries2, err := queries.GetRelatedEntries2(context, entry.Title)
 	if err != nil {
-		return []publicdb.Entry{}, err
+		return []publicdb.Entry{}, fmt.Errorf("failed to get related entries2 for title %s: %w", entry.Title, err)
 	}
 	entries3, err := queries.GetRelatedEntries3(context, entry.Title)
 	if err != nil {
-		return []publicdb.Entry{}, err
+		return []publicdb.Entry{}, fmt.Errorf("failed to get related entries3 for title %s: %w", entry.Title, err)
 	}
 
 	// Use a map to track unique paths
@@ -236,7 +237,8 @@ func getRelatedEntries(context context.Context, queries *publicdb.Queries, entry
 	for _, entry := range uniqueEntriesMap {
 		if entry.Visibility != "public" {
 			// 保険的にvisibilityがpublicでないエントリは除外
-			log.Fatalf("visibility is not public: %v", entry)
+			slog.Error("visibility is not public", slog.String("path", entry.Path), slog.String("visibility", string(entry.Visibility)))
+			os.Exit(1)
 		}
 		uniqueEntries = append(uniqueEntries, entry)
 	}
@@ -250,7 +252,7 @@ func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *publ
 		Offset: 0,
 	})
 	if err != nil {
-		log.Printf("failed to search entries: %v", err)
+		slog.Error("failed to search entries for feed", slog.Any("error", err))
 		http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -267,7 +269,7 @@ func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *publ
 	for _, entry := range entries {
 		render, err := md.Render(entry.Body)
 		if err != nil {
-			log.Printf("failed to render markdown: %v, %s", err, entry.Path)
+			slog.Error("failed to render markdown for feed", slog.String("path", entry.Path), slog.Any("error", err))
 			// skip this entry
 			continue
 		}
@@ -283,7 +285,7 @@ func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *publ
 
 	rss, err := feed.ToRss()
 	if err != nil {
-		log.Printf("failed to generate RSS: %v", err)
+		slog.Error("failed to generate RSS", slog.Any("error", err))
 		http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
@@ -292,7 +294,7 @@ func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *publ
 	writer.WriteHeader(http.StatusOK)
 	_, err = writer.Write([]byte(rss))
 	if err != nil {
-		log.Printf("failed to write response: %v", err)
+		slog.Error("failed to write RSS response", slog.Any("error", err))
 		http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
 		return
 	}
