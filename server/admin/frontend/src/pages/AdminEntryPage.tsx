@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { createAdminApiClient } from "../admin_api";
 import LinkPallet from "../components/LinkPallet";
 import MarkdownEditor from "../components/MarkdownEditor";
@@ -14,6 +14,7 @@ const api = createAdminApiClient();
 
 export default function AdminEntryPage() {
 	const location = useLocation();
+	const navigate = useNavigate();
 	const path = location.pathname.replace("/admin/entry/", "");
 
 	const [entry, setEntry] = useState<GetLatestEntriesRow>(
@@ -89,20 +90,22 @@ export default function AdminEntryPage() {
 			clearMessage();
 
 			try {
+				console.log("Deleting entry:", entry.Path);
 				await api.deleteEntry({
 					path: encodeURIComponent(entry.Path),
 				});
+				console.log("Entry deleted:", entry.Path);
 				showMessage("success", "Entry deleted successfully");
 				// Small delay to ensure the message is shown
 				setTimeout(() => {
-					location.href = "/admin/";
+					navigate("/admin/");
 				}, 500);
 			} catch (e) {
 				console.log(e);
 				showMessage("error", "Failed to delete entry");
 			}
 		}
-	}, [entry.Path, title, clearMessage, showMessage]);
+	}, [entry.Path, title, clearMessage, showMessage, navigate]);
 
 	const handleRegenerateEntryImage = React.useCallback(async (event: React.MouseEvent) => {
 		event.preventDefault();
@@ -266,7 +269,7 @@ export default function AdminEntryPage() {
 			} catch (e) {
 				console.error("Failed to get entry:", e);
 				if (e instanceof Error && e.message.includes("404")) {
-					location.href = "/admin/";
+					navigate("/admin/");
 				}
 			}
 		};
@@ -274,7 +277,7 @@ export default function AdminEntryPage() {
 		loadEntry();
 		api.getLinkedEntryPaths({ path: encodeURIComponent(path) }).then(setLinks);
 		loadLinks();
-	}, [path, loadLinks, location]);
+	}, [path, loadLinks, navigate]);
 
 	const styles = {
 		parent: {},
