@@ -95,23 +95,17 @@ export default function TopPage() {
 			event.preventDefault();
 			event.stopPropagation();
 			try {
-				const response = await fetch("/admin/api/entry", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json",
-					},
-					body: JSON.stringify({}),
-				});
-				if (response.ok) {
-					const data = await response.json();
-					location.href = `/admin/entry/${data.path}`;
-				} else {
-					alert(
-						`Failed to create new entry: ${response.status} ${response.statusText}`,
-					);
-				}
+				// Generate a placeholder title with current date/time
+				const now = new Date();
+				const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+				const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-'); // HH-MM-SS
+				const placeholderTitle = `New Entry ${dateStr} ${timeStr}`;
+				
+				const data = await api.createEntry({ title: placeholderTitle });
+				console.log(`New entry created: ${data.Path}`);
+				location.href = `/admin/entry/${data.Path}`;
 			} catch (err) {
-				console.error(err);
+				console.error("Error creating new entry:", err);
 				alert(`Failed to create new entry: ${err}`);
 			}
 		}

@@ -5,7 +5,13 @@ const api = createAdminApiClient();
 export default function AdminHeader() {
 	async function handleNewEntry() {
 		try {
-			const data = await api.createEntry({ createEntryRequest: {} });
+			// Generate a placeholder title with current date/time
+			const now = new Date();
+			const dateStr = now.toISOString().split('T')[0]; // YYYY-MM-DD
+			const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '-'); // HH-MM-SS
+			const placeholderTitle = `New Entry ${dateStr} ${timeStr}`;
+			
+			const data = await api.createEntry({ title: placeholderTitle });
 			console.log(`New entry created: ${data.Path}`);
 			location.href = `/admin/entry/${data.Path}`;
 		} catch (e) {
