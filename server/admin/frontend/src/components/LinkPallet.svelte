@@ -1,8 +1,8 @@
 <script lang="ts">
+import { createAdminApiClient } from "../admin_api";
+import type { LinkPalletData } from "../generated-client/model";
 import AdminEntryCardItem from "./AdminEntryCardItem.svelte";
 import CardItem from "./CardItem.svelte";
-import type { LinkPalletData } from "../generated-client";
-import { createAdminApiClient } from "../admin_api";
 
 const { linkPallet }: { linkPallet: LinkPalletData } = $props();
 
@@ -14,7 +14,7 @@ function createNewEntry(title: string) {
 			createEntryRequest: { title },
 		})
 		.then((data) => {
-			location.href = `/admin/entry/${data.path}`;
+			location.href = `/admin/entry/${data.Path}`;
 		})
 		.catch((err) => {
 			console.error("Error creating new entry:", err);
@@ -31,7 +31,7 @@ function createNewEntry(title: string) {
 	</div>
 	{#each linkPallet.twohops as twohops}
 		<div class="two-hop-link">
-			{#if twohops.src.title}
+			{#if twohops.src.Title}
 				<AdminEntryCardItem entry={twohops.src} backgroundColor={'yellowgreen'} />
 			{:else}
 				<CardItem

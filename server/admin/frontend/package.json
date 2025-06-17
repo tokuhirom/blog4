@@ -11,17 +11,18 @@
 		"lint": "biome lint .",
 		"test:unit": "vitest",
 		"test": "npm run test:unit -- --run",
-		"prepare": "husky"
+		"prepare": "husky",
+		"generate-client": "orval"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "1.9.4",
-		"@openapitools/openapi-generator-cli": "^2.16.3",
 		"@sveltejs/vite-plugin-svelte": "^5.0.3",
 		"@tsconfig/svelte": "^5.0.4",
 		"autoprefixer": "^10.4.20",
 		"globals": "^16.0.0",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.0.0",
+		"orval": "^7.10.0",
 		"svelte": "^5.15.0",
 		"svelte-check": "^4.1.1",
 		"typescript": "^5.7.2",

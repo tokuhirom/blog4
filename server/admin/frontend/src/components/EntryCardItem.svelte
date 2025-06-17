@@ -1,10 +1,10 @@
 <script lang="ts">
+import type { GetLatestEntriesRow } from "../generated-client/model";
 import CardItem from "./CardItem.svelte";
-import type { GetLatestEntriesRow } from "../generated-client";
 
 const {
 	entry,
-	backgroundColor = entry.visibility === "private" ? "#cccccc" : "#f6f6f6",
+	backgroundColor = entry.Visibility === "private" ? "#cccccc" : "#f6f6f6",
 	color = "#0f0f0f",
 	onClick,
 }: {
@@ -26,11 +26,11 @@ function simplifyMarkdown(text: string): string {
 		.trim();
 }
 
-const title = entry.title;
-const content = entry.body
-	? `${simplifyMarkdown(entry.body).slice(0, 100)}...`
+const title = entry.Title;
+const content = entry.Body
+	? `${simplifyMarkdown(entry.Body).slice(0, 100)}...`
 	: "";
-const imgSrc = entry.imageUrl;
+const imgSrc = entry.ImageUrl;
 </script>
 
 <CardItem {onClick} {backgroundColor} {color} {title} {content} {imgSrc} />

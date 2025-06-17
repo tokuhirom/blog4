@@ -1,19 +1,19 @@
 <script lang="ts">
-import { onMount } from "svelte";
-import { EditorView, keymap } from "@codemirror/view";
-import { EditorState, Transaction } from "@codemirror/state";
-import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
-import { history, historyKeymap, indentWithTab } from "@codemirror/commands";
-import { languages } from "@codemirror/language-data";
-import { oneDarkHighlightStyle } from "@codemirror/theme-one-dark";
-import { syntaxHighlighting } from "@codemirror/language";
-import { defaultKeymap } from "@codemirror/commands";
-import { internalLinkPlugin } from "./markdown/InternalLink";
 import {
-	autocompletion,
 	type CompletionContext,
+	autocompletion,
 } from "@codemirror/autocomplete";
+import { history, historyKeymap, indentWithTab } from "@codemirror/commands";
+import { defaultKeymap } from "@codemirror/commands";
+import { markdown, markdownLanguage } from "@codemirror/lang-markdown";
+import { syntaxHighlighting } from "@codemirror/language";
+import { languages } from "@codemirror/language-data";
+import { EditorState, Transaction } from "@codemirror/state";
+import { oneDarkHighlightStyle } from "@codemirror/theme-one-dark";
+import { EditorView, keymap } from "@codemirror/view";
+import { onMount } from "svelte";
 import { createAdminApiClient } from "../admin_api";
+import { internalLinkPlugin } from "./markdown/InternalLink";
 
 let container: HTMLDivElement;
 
@@ -155,12 +155,10 @@ async function uploadImage(file: File): Promise<string> {
 	formData.append("file", file);
 
 	try {
-		const data = await api.uploadFile({
-			file,
-		});
+		const data = await api.uploadFile(formData);
 		return data.url;
 	} catch (e) {
-		throw new Error("Failed to upload image: ${e}");
+		throw new Error(`Failed to upload image: ${e}`);
 	}
 }
 

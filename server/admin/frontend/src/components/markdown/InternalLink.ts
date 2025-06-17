@@ -1,3 +1,4 @@
+import { type Extension, RangeSetBuilder } from "@codemirror/state";
 import {
 	Decoration,
 	type DecorationSet,
@@ -5,7 +6,6 @@ import {
 	ViewPlugin,
 	type ViewUpdate,
 } from "@codemirror/view";
-import { type Extension, RangeSetBuilder } from "@codemirror/state";
 
 export function internalLinkPlugin(
 	existsEntryByTitle: (pageName: string) => boolean,
