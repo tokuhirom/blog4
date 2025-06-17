@@ -36,7 +36,7 @@ func NotifyHub(hubURL string, feedURL string) error {
 	if resp.StatusCode < 200 || resp.StatusCode >= 300 {
 		err := fmt.Errorf("hub notification failed: %d %s", resp.StatusCode, resp.Status)
 		slog.Error("Failed to notify Hub", slog.String("hub_url", hubURL), slog.Int("status_code", resp.StatusCode), slog.String("status", resp.Status))
-		return err
+		return fmt.Errorf("hub notification failed: %w", err)
 	}
 
 	slog.Info("Notification sent to Hub", slog.String("hub_url", hubURL), slog.String("feed_url", feedURL))

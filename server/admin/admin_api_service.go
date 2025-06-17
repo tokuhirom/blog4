@@ -6,16 +6,17 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/tokuhirom/blog4/db/admin/admindb"
-	"github.com/tokuhirom/blog4/server"
-	"github.com/tokuhirom/blog4/server/admin/openapi"
-	"github.com/tokuhirom/blog4/server/sobs"
 	"io"
 	"log/slog"
 	"net/url"
 	"regexp"
 	"strings"
 	"time"
+
+	"github.com/tokuhirom/blog4/db/admin/admindb"
+	"github.com/tokuhirom/blog4/server"
+	"github.com/tokuhirom/blog4/server/admin/openapi"
+	"github.com/tokuhirom/blog4/server/sobs"
 )
 
 type adminApiService struct {
@@ -45,7 +46,7 @@ func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.G
 		Limit:        100,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get latest entries: %w", err)
 	}
 
 	var result []openapi.GetLatestEntriesRow
@@ -71,7 +72,7 @@ func (p *adminApiService) GetEntryByDynamicPath(ctx context.Context, params open
 	entry, err := p.queries.AdminGetEntryByPath(ctx, params.Path)
 	if err != nil {
 		slog.Error("GetEntryByDynamicPath failed", slog.String("error", err.Error()))
-		return nil, err
+		return nil, fmt.Errorf("failed to get entry by path %s: %w", params.Path, err)
 	}
 
 	return &openapi.GetLatestEntriesRow{
@@ -91,12 +92,12 @@ func (p *adminApiService) GetEntryByDynamicPath(ctx context.Context, params open
 func (p *adminApiService) GetLinkPallet(ctx context.Context, params openapi.GetLinkPalletParams) (openapi.GetLinkPalletRes, error) {
 	entry, err := p.queries.AdminGetEntryByPath(ctx, params.Path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get entry by path %s: %w", params.Path, err)
 	}
 
 	linkPallet, err := getLinkPalletData(ctx, p.db, p.queries, params.Path, entry.Title)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get link pallet data for path %s: %w", params.Path, err)
 	}
 
 	return linkPallet, nil
@@ -105,7 +106,7 @@ func (p *adminApiService) GetLinkPallet(ctx context.Context, params openapi.GetL
 func (p *adminApiService) GetLinkedEntryPaths(ctx context.Context, params openapi.GetLinkedEntryPathsParams) (openapi.GetLinkedEntryPathsRes, error) {
 	links, err := p.queries.GetLinkedEntries(ctx, params.Path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get linked entries for path %s: %w", params.Path, err)
 	}
 
 	result := make(openapi.LinkedEntryPathsResponse)
@@ -137,7 +138,7 @@ func (p *adminApiService) UpdateEntryBody(ctx context.Context, req *openapi.Upda
 		Body: req.Body,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to update entry body for path %s: %w", params.Path, err)
 	}
 	if affectedRows == 0 {
 		return nil, fmt.Errorf("entry not found")
@@ -145,11 +146,11 @@ func (p *adminApiService) UpdateEntryBody(ctx context.Context, req *openapi.Upda
 
 	newEntry, err := qtx.AdminGetEntryByPath(ctx, params.Path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get entry by path %s: %w", params.Path, err)
 	}
 
 	if err := updateEntryLink(ctx, tx, qtx, params.Path, newEntry.Title, req.Body); err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to update entry links for path %s: %w", params.Path, err)
 	}
 
 	if err = tx.Commit(); err != nil {
@@ -199,7 +200,7 @@ func updateEntryLink(ctx context.Context, tx *sql.Tx, qtx *admindb.Queries, path
 
 	// Delete current links for the given path.
 	if _, err := qtx.DeleteEntryLinkByPath(ctx, path); err != nil {
-		return err
+		return fmt.Errorf("failed to delete existing links for path %s: %w", path, err)
 	}
 
 	// Insert new links into the entry_link table.
@@ -214,7 +215,7 @@ func updateEntryLink(ctx context.Context, tx *sql.Tx, qtx *admindb.Queries, path
 			INSERT INTO entry_link (src_path, dst_title)
 			VALUES ` + strings.Join(placeholders, ", ")
 		if _, err := tx.ExecContext(ctx, query, values...); err != nil {
-			return err
+			return fmt.Errorf("failed to insert new links for path %s: %w", path, err)
 		}
 	}
 
@@ -227,7 +228,7 @@ func (p *adminApiService) UpdateEntryTitle(ctx context.Context, req *openapi.Upd
 		Title: req.Title,
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to update entry title for path %s: %w", params.Path, err)
 	}
 	return &openapi.EmptyResponse{}, nil
 }
@@ -235,7 +236,7 @@ func (p *adminApiService) UpdateEntryTitle(ctx context.Context, req *openapi.Upd
 func (p *adminApiService) GetAllEntryTitles(ctx context.Context) (openapi.GetAllEntryTitlesRes, error) {
 	titles, err := p.queries.GetAllEntryTitles(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get all entry titles: %w", err)
 	}
 
 	resp := openapi.EntryTitlesResponse(titles)
@@ -255,7 +256,7 @@ func (p *adminApiService) CreateEntry(ctx context.Context, req *openapi.CreateEn
 		Title: req.Title.Or(getDefaultTitle()),
 	})
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to create entry: %w", err)
 	}
 	return &openapi.CreateEntryResponse{
 		Path: path,
@@ -265,7 +266,7 @@ func (p *adminApiService) CreateEntry(ctx context.Context, req *openapi.CreateEn
 func (p *adminApiService) DeleteEntry(ctx context.Context, params openapi.DeleteEntryParams) (openapi.DeleteEntryRes, error) {
 	_, err := p.queries.DeleteEntry(ctx, params.Path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to delete entry for path %s: %w", params.Path, err)
 	}
 	return &openapi.EmptyResponse{}, nil
 }
@@ -315,7 +316,7 @@ func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openap
 	// ここで body に amzn.to の短縮URLがあれば､amazon の商品情報を取得してキャッシュします｡
 	newEntry, err := qtx.AdminGetEntryByPath(ctx, params.Path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get entry by path %s: %w", params.Path, err)
 	}
 	rewroteBody := rewriteAmazonShortUrlInMarkdown(newEntry.Body)
 	if rewroteBody != newEntry.Body {
@@ -323,7 +324,7 @@ func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openap
 			Path: params.Path,
 			Body: rewroteBody,
 		}); err != nil {
-			return nil, err
+			return nil, fmt.Errorf("failed to update entry body for path %s: %w", params.Path, err)
 		}
 	}
 
@@ -371,7 +372,7 @@ func (p *adminApiService) getAmazonCache(markdown string, ctx context.Context) e
 		asin := match[1]
 		count, err := p.queries.CountAmazonCacheByAsin(ctx, asin)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to count amazon cache for ASIN %s: %w", asin, err)
 		}
 		if count > 0 {
 			slog.Info("ASIN is already cached", slog.String("asin", asin))
@@ -402,7 +403,7 @@ func (p *adminApiService) getAmazonCache(markdown string, ctx context.Context) e
 		productDetails, err := p.paapiClient.FetchAmazonProductDetails(ctx, currentBatch)
 		if err != nil {
 			slog.Error("failed to fetch amazon product details", slog.String("error", err.Error()))
-			return err
+			return fmt.Errorf("failed to fetch amazon product details: %w", err)
 		}
 
 		for _, productDetail := range productDetails {
@@ -414,7 +415,7 @@ func (p *adminApiService) getAmazonCache(markdown string, ctx context.Context) e
 				Link:           productDetail.Link,
 			})
 			if err != nil {
-				return err
+				return fmt.Errorf("failed to insert amazon product detail for ASIN %s: %w", productDetail.ASIN, err)
 			}
 		}
 
@@ -506,19 +507,19 @@ func (p *adminApiService) NewError(_ context.Context, err error) *openapi.ErrorR
 func (p *adminApiService) RegenerateEntryImage(ctx context.Context, params openapi.RegenerateEntryImageParams) (openapi.RegenerateEntryImageRes, error) {
 	_, err := p.queries.DeleteEntryImageByPath(ctx, params.Path)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to delete entry image for path %s: %w", params.Path, err)
 	}
 
 	service := server.NewEntryImageService(p.queries)
 	entries, err := service.GetEntryImageNotProcessedEntries(ctx)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get entry image not processed entries: %w", err)
 	}
 	for _, entry := range entries {
 		if entry.Path == params.Path {
 			err = service.ProcessEntry(ctx, entry)
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("failed to process entry image for path %s: %w", params.Path, err)
 			}
 		}
 	}
