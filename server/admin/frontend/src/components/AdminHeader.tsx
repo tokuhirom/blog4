@@ -14,8 +14,8 @@ export default function AdminHeader() {
 			const placeholderTitle = format(now, "'New Entry' yyyy-MM-dd HH-mm-ss");
 			
 			const data = await api.createEntry({ title: placeholderTitle });
-			console.log(`New entry created: ${data.Path}`);
-			navigate(`/admin/entry/${data.Path}`);
+			console.log(`New entry created: ${data.path}`);
+			navigate(`/admin/entry/${data.path}`);
 		} catch (e) {
 			console.error("Error creating new entry:", e);
 			alert("Failed to create new entry");
