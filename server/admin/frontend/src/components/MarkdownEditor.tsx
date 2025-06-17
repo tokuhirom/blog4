@@ -49,6 +49,39 @@ export default function MarkdownEditor({
 					}
 				}),
 				EditorView.domEventHandlers({
+					paste: (event, view) => {
+						console.log("Paste event triggered", event);
+						const items = event.clipboardData?.items;
+						if (!items) return false;
+
+						const files: File[] = [];
+						for (let i = 0; i < items.length; i++) {
+							const item = items[i];
+							console.log("Clipboard item:", item.type);
+							if (item.type.indexOf('image') !== -1) {
+								const file = item.getAsFile();
+								if (file) {
+									files.push(file);
+								}
+							}
+						}
+
+						if (files.length > 0 && onDropFilesRef.current) {
+							event.preventDefault();
+							const pos = view.state.selection.main.head;
+							onDropFilesRef.current(files).then((urls) => {
+								const text = urls.map(url => `![image](${url})`).join('\n');
+								view.dispatch({
+									changes: { from: pos, insert: text },
+									selection: { anchor: pos + text.length }
+								});
+							}).catch(err => {
+								console.error('Failed to upload files:', err);
+							});
+							return true;
+						}
+						return false;
+					},
 					drop: (event, view) => {
 						event.preventDefault();
 						const files = Array.from(event.dataTransfer?.files || []);
