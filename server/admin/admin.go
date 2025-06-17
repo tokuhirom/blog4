@@ -10,7 +10,7 @@ import (
 	"github.com/tokuhirom/blog4/server"
 	"github.com/tokuhirom/blog4/server/admin/openapi"
 	"github.com/tokuhirom/blog4/server/sobs"
-	"log"
+	"log/slog"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -19,16 +19,16 @@ import (
 
 func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) *chi.Mux {
 	if cfg.AdminUser == "" {
-		println("AdminUser is not set")
+		slog.Warn("AdminUser is not set")
 	}
 	if cfg.AdminPassword == "" {
-		println("AdminPassword is not set")
+		slog.Warn("AdminPassword is not set")
 	}
 
 	r := chi.NewRouter()
 	//r.Use(middleware.BasicAuth("admin", map[string]string{cfg.AdminUser: cfg.AdminPassword}))
 	if cfg.LocalDev {
-		log.Print("LocalDevelopment mode enabled. CORS is allowed for http://localhost:5173")
+		slog.Info("LocalDevelopment mode enabled. CORS is allowed", slog.String("origin", "http://localhost:5173"))
 		r.Use(cors.Handler(cors.Options{
 			AllowedOrigins:   []string{"http://localhost:5173"},
 			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
@@ -37,8 +37,7 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) *chi.Mux
 			MaxAge:           300,
 		}))
 	} else {
-		log.Printf("LocalDevelopment mode disabled. CORS is not allowed... And enable BasicAuth for %s",
-			cfg.AdminUser)
+		slog.Info("LocalDevelopment mode disabled. CORS is not allowed. BasicAuth enabled", slog.String("admin_user", cfg.AdminUser))
 		r.Use(middleware.BasicAuth(
 			"admin",
 			map[string]string{
@@ -50,6 +49,7 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) *chi.Mux
 	indexHtmlHandler := func(w http.ResponseWriter, r *http.Request) {
 		file, err := os.ReadFile(filepath.Join("server/admin/frontend/dist/index.html"))
 		if err != nil {
+			slog.Error("failed to read index.html", slog.Any("error", err))
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 			return // 404
 		}
@@ -73,7 +73,8 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) *chi.Mux
 		return nil
 	}
 	if cfg.AdminPassword == "" {
-		log.Fatalf("Missing AdminPassword")
+		slog.Error("Missing AdminPassword")
+		os.Exit(1)
 	}
 	r.Mount("/api/", adminApiHandler)
 

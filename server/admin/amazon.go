@@ -1,10 +1,9 @@
 package admin
 
 import (
-	"errors"
 	"fmt"
 	"io"
-	"log"
+	"log/slog"
 	"net/http"
 	"regexp"
 )
@@ -19,7 +18,7 @@ func rewriteAmazonShortUrlInMarkdown(markdown string) string {
 	return re.ReplaceAllStringFunc(markdown, func(url string) string {
 		asin, err := amazonShortUrlToAsin(url)
 		if err != nil {
-			log.Printf("failed to rewrite amazon short URL: %v", err)
+			slog.Error("failed to rewrite amazon short URL", slog.String("url", url), slog.Any("error", err))
 			return url
 		}
 		return fmt.Sprintf("[asin:%s:detail]", asin)
@@ -43,21 +42,21 @@ func amazonShortUrlToAsin(url string) (string, error) {
 	defer func(Body io.ReadCloser) {
 		err := Body.Close()
 		if err != nil {
-			log.Println("Error closing response body:", err)
+			slog.Error("Error closing response body", slog.Any("error", err))
 		}
 	}(resp.Body)
 
 	// Get the Location header from the response
 	location := resp.Header.Get("Location")
 	if location == "" {
-		return "", errors.New("location header not found in the response")
+		return "", fmt.Errorf("location header not found in the response for URL: %s", url)
 	}
 
 	// Regular expression to find the ASIN in the URL
 	re := regexp.MustCompile(`/((?:dp|product)/([A-Z0-9]{10}))`)
 	matches := re.FindStringSubmatch(location)
 	if len(matches) < 2 {
-		return "", errors.New("ASIN not found in the Location URL")
+		return "", fmt.Errorf("ASIN not found in the Location URL: %s", location)
 	}
 
 	// Return the extracted ASIN

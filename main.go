@@ -5,7 +5,7 @@ import (
 	"github.com/tokuhirom/blog4/server"
 	"github.com/tokuhirom/blog4/server/router"
 	"github.com/tokuhirom/blog4/server/sobs"
-	"log"
+	"log/slog"
 	"net"
 	"net/http"
 	"os"
@@ -21,18 +21,20 @@ import (
 
 func main() {
 	if _, err := os.Stat(".env"); err == nil {
-		log.Printf("loading .env file")
+		slog.Info("loading .env file")
 		err := godotenv.Load()
 		if err != nil {
-			log.Fatalf("failed to load .env: %v", err)
+			slog.Error("failed to load .env", slog.Any("error", err))
+			os.Exit(1)
 		}
 	} else {
-		log.Printf(".env file not found")
+		slog.Info(".env file not found")
 	}
 
 	cfg, err := env.ParseAs[server.Config]()
 	if err != nil {
-		log.Fatalf("failed to parse Config: %v", err)
+		slog.Error("failed to parse Config", slog.Any("error", err))
+		os.Exit(1)
 	}
 
 	mysqlConfig := mysql.Config{
@@ -47,10 +49,12 @@ func main() {
 	}
 	sqlDB, err := sql.Open("mysql", mysqlConfig.FormatDSN())
 	if err != nil {
-		log.Fatalf("failed to open DB: %v", err)
+		slog.Error("failed to open DB", slog.Any("error", err))
+		os.Exit(1)
 	}
 	if err := sqlDB.Ping(); err != nil {
-		log.Fatalf("failed to ping DB: %v", err)
+		slog.Error("failed to ping DB", slog.Any("error", err))
+		os.Exit(1)
 	}
 
 	sobsClient := sobs.NewSobsClient(cfg.S3AccessKeyId, cfg.S3SecretAccessKey, cfg.S3Region, cfg.S3AttachmentsBucketName, cfg.S3BackupBucketName, cfg.S3Endpoint)
@@ -58,7 +62,7 @@ func main() {
 	r := router.BuildRouter(cfg, sqlDB, sobsClient)
 
 	go (func() {
-		log.Printf("Starting backup process...")
+		slog.Info("Starting backup process")
 		server.StartBackup(cfg.BackupEncryptionKey, sobsClient)
 	})()
 
@@ -68,9 +72,10 @@ func main() {
 	}
 
 	// Start the server
-	log.Println("Starting server on http://localhost:8181/")
+	slog.Info("Starting server", slog.String("url", "http://localhost:8181/"))
 	err = http.ListenAndServe(":8181", r)
 	if err != nil {
-		log.Fatalf("Server failed to start: %v", err)
+		slog.Error("Server failed to start", slog.Any("error", err))
+		os.Exit(1)
 	}
 }
