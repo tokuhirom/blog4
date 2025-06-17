@@ -188,6 +188,30 @@ export default function AdminEntryPage() {
 		}
 	}, [body, currentLinks, debouncedUpdateBody, loadLinks]);
 
+	const handleDropFiles = React.useCallback(async (files: File[]): Promise<string[]> => {
+		console.log("Uploading files:", files);
+		const urls: string[] = [];
+		
+		for (const file of files) {
+			try {
+				const formData = new FormData();
+				formData.append("file", file);
+				
+				const response = await api.uploadFile(formData);
+				console.log("Upload response:", response);
+				
+				if (response.url) {
+					urls.push(response.url);
+				}
+			} catch (err) {
+				console.error("Failed to upload file:", file.name, err);
+				showMessage("error", `Failed to upload ${file.name}`);
+			}
+		}
+		
+		return urls;
+	}, [showMessage]);
+
 	function toggleVisibility(event: React.MouseEvent) {
 		event.preventDefault();
 		event.stopPropagation();
@@ -356,6 +380,7 @@ export default function AdminEntryPage() {
 										setBody(text);
 										handleInputBody();
 									}}
+									onDropFiles={handleDropFiles}
 								/>
 							</div>
 						</div>

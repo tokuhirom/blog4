@@ -17,15 +17,21 @@ interface MarkdownEditorProps {
 export default function MarkdownEditor({
 	initialContent = "",
 	onUpdateText,
+	onDropFiles,
 }: MarkdownEditorProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const editorRef = useRef<EditorView | null>(null);
 	const onUpdateTextRef = useRef(onUpdateText);
+	const onDropFilesRef = useRef(onDropFiles);
 
-	// Update the ref when onUpdateText changes
+	// Update the refs when callbacks change
 	useEffect(() => {
 		onUpdateTextRef.current = onUpdateText;
 	}, [onUpdateText]);
+
+	useEffect(() => {
+		onDropFilesRef.current = onDropFiles;
+	}, [onDropFiles]);
 
 	// Initialize editor only once
 	useEffect(() => {
@@ -40,6 +46,31 @@ export default function MarkdownEditor({
 				EditorView.updateListener.of((update) => {
 					if (update.docChanged && onUpdateTextRef.current) {
 						onUpdateTextRef.current(update.state.doc.toString());
+					}
+				}),
+				EditorView.domEventHandlers({
+					drop: (event, view) => {
+						event.preventDefault();
+						const files = Array.from(event.dataTransfer?.files || []);
+						if (files.length > 0 && onDropFilesRef.current) {
+							const pos = view.posAtCoords({ x: event.clientX, y: event.clientY });
+							if (pos !== null) {
+								onDropFilesRef.current(files).then((urls) => {
+									const text = urls.map(url => `![image](${url})`).join('\n');
+									view.dispatch({
+										changes: { from: pos, insert: text },
+										selection: { anchor: pos + text.length }
+									});
+								}).catch(err => {
+									console.error('Failed to upload files:', err);
+								});
+							}
+						}
+						return true;
+					},
+					dragover: (event) => {
+						event.preventDefault();
+						return true;
 					}
 				}),
 			],
