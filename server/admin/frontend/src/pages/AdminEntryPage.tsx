@@ -46,6 +46,7 @@ export default function AdminEntryPage() {
 	}, [body]);
 
 	const showUpdatedMessage = React.useCallback((text: string) => {
+		console.log("Showing updated message:", text);
 		setUpdatedMessage(text);
 		setTimeout(() => {
 			setUpdatedMessage("");
@@ -319,6 +320,8 @@ export default function AdminEntryPage() {
 			color: "white",
 			padding: "0.5rem 1rem",
 			borderRadius: "0.25rem",
+			zIndex: 1000,
+			boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
 		},
 	};
 
@@ -396,15 +399,16 @@ export default function AdminEntryPage() {
 						</div>
 					)}
 
-					{updatedMessage !== "" && (
-						<div style={styles.updatedMessage}>{updatedMessage}</div>
-					)}
 				</div>
 
 				<div style={styles.rightPane}>
 					<LinkPallet linkPallet={linkPallet} />
 				</div>
 			</div>
+			
+			{updatedMessage !== "" && (
+				<div style={styles.updatedMessage}>{updatedMessage}</div>
+			)}
 		</div>
 	);
 }
