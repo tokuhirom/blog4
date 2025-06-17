@@ -12,6 +12,8 @@ export default function TopPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [hasMore, setHasMore] = useState(true);
 	const loadIntervalRef = useRef<NodeJS.Timeout | null>(null);
+	const isLoadingRef = useRef(false);
+	const hasMoreRef = useRef(true);
 
 	const filteredEntries = React.useMemo(() => {
 		if (searchKeyword === "") {
@@ -36,9 +38,10 @@ export default function TopPage() {
 			return;
 		}
 		console.log(`loadMoreEntries ${isLoading} ${hasMore} ${allEntries.length}`);
-		if (isLoading || !hasMore) return;
+		if (isLoadingRef.current || !hasMoreRef.current) return;
 
 		setIsLoading(true);
+		isLoadingRef.current = true;
 
 		const last_last_edited_at = allEntries[allEntries.length - 1]?.LastEditedAt;
 		if (allEntries.length > 0 && !last_last_edited_at) {
@@ -65,6 +68,7 @@ export default function TopPage() {
 					`No more entries to load... stopping loading more entries. last_last_edited_at=${last_last_edited_at}`,
 				);
 				setHasMore(false);
+				hasMoreRef.current = false;
 			} else {
 				const existingPaths = allEntries.map((entry) => entry.Path);
 				const addingNewEntries = newEntries.filter(
@@ -75,6 +79,7 @@ export default function TopPage() {
 						`All entries are duplicated... stopping loading more entries. last_last_edited_at=${last_last_edited_at}, newEntries=${newEntries.map((entry) => entry.Title)}`,
 					);
 					setHasMore(false);
+					hasMoreRef.current = false;
 				} else {
 					console.log(
 						`Adding new entries... last_last_edited_at=${last_last_edited_at}, newEntries=${newEntries.map((entry) => entry.Title)}`,
@@ -84,9 +89,11 @@ export default function TopPage() {
 			}
 		} catch (err) {
 			setHasMore(false);
+			hasMoreRef.current = false;
 			console.error(err);
 		} finally {
 			setIsLoading(false);
+			isLoadingRef.current = false;
 		}
 	}, [allEntries, isLoading, hasMore]);
 
@@ -139,7 +146,7 @@ export default function TopPage() {
 				console.log("Start loading more entries...");
 				// start loading more entries
 				loadIntervalRef.current = setInterval(() => {
-					if (!isLoading && hasMore) {
+					if (!isLoadingRef.current && hasMoreRef.current) {
 						loadMoreEntries();
 					}
 				}, 10);
