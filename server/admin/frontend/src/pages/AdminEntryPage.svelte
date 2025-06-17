@@ -118,20 +118,20 @@ async function handleDelete(event: Event) {
 }
 
 async function handleRegenerateEntryImage(event: Event) {
-    event.preventDefault();
+	event.preventDefault();
 
-    clearMessage();
+	clearMessage();
 
-    try {
-        await api.regenerateEntryImage({
-            "path": entry.path,
-        });
-        showMessage("success", "Entry image regenerated successfully");
-        location.href = "/admin/";
-    } catch (e) {
-        console.log(e);
-        showMessage("error", "Failed to regenerate entry image");
-    }
+	try {
+		await api.regenerateEntryImage({
+			path: entry.path,
+		});
+		showMessage("success", "Entry image regenerated successfully");
+		location.href = "/admin/";
+	} catch (e) {
+		console.log(e);
+		showMessage("error", "Failed to regenerate entry image");
+	}
 }
 
 async function handleUpdateBody() {

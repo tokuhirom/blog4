@@ -94,6 +94,7 @@ Key points:
 
 ### Code Formatting
 
+#### Go Code
 This project uses `goimports` for consistent Go code formatting:
 
 ```bash
@@ -111,6 +112,25 @@ Import ordering follows `goimports` style:
 1. Standard library imports
 2. Third-party imports
 3. Local imports (github.com/tokuhirom/blog4)
+
+#### Frontend Code
+This project uses Biome for frontend formatting and linting:
+
+```bash
+# Format frontend code
+task biome-format
+
+# Lint frontend code
+task biome-lint
+
+# Run both format and lint
+task frontend-fmt
+
+# Or use npm directly in the frontend directory
+cd server/admin/frontend
+npm run format  # Format code
+npm run lint    # Lint code
+```
 
 ### Testing
 
