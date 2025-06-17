@@ -2,6 +2,7 @@ package admin
 
 import (
 	"bytes"
+	"context"
 	"database/sql"
 	"log/slog"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
+	"github.com/ogen-go/ogen/ogenerrors"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server"
@@ -70,7 +72,17 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) *chi.Mux
 		paapiClient: NewPAAPIClient(cfg.AmazonPaapi5AccessKey, cfg.AmazonPaapi5SecretKey),
 		S3Client:    sobsClient,
 	}
-	adminApiHandler, err := openapi.NewServer(&apiService, openapi.WithPathPrefix("/admin/api"))
+	adminApiHandler, err := openapi.NewServer(&apiService,
+		openapi.WithPathPrefix("/admin/api"),
+		openapi.WithErrorHandler(func(ctx context.Context, w http.ResponseWriter, r *http.Request, err error) {
+			slog.Error("API error",
+				slog.String("method", r.Method),
+				slog.String("path", r.URL.Path),
+				slog.Any("error", err))
+			// Use ogen's default error handler to properly format the response
+			ogenerrors.DefaultErrorHandler(ctx, w, r, err)
+		}),
+	)
 	if err != nil {
 		return nil
 	}
