@@ -40,11 +40,9 @@ onMount(async () => {
 		currentLinks = extractLinks(entry.Body);
 	} catch (e) {
 		console.error("Failed to get entry:", e);
-		if (e instanceof ResponseError) {
-			if (e.response.status === 404) {
-				// maybe entry was deleted
-				location.href = "/admin/";
-			}
+		if (e instanceof Error && e.message.includes("404")) {
+			// maybe entry was deleted
+			location.href = "/admin/";
 		}
 	}
 
