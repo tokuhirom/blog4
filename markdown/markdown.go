@@ -6,11 +6,12 @@ import (
 	"fmt"
 	"html/template"
 
-	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/yuin/goldmark"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/renderer/html"
+
+	"github.com/tokuhirom/blog4/db/public/publicdb"
 )
 
 type Markdown struct {

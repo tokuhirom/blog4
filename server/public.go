@@ -5,8 +5,6 @@ import (
 	"context"
 	"embed"
 	"fmt"
-	"github.com/go-chi/chi/v5"
-	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"html/template"
 	"log/slog"
 	"net/http"
@@ -16,7 +14,12 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"github.com/go-chi/chi/v5"
+
+	"github.com/tokuhirom/blog4/db/public/publicdb"
+
 	"github.com/gorilla/feeds"
+
 	"github.com/tokuhirom/blog4/markdown"
 )
 

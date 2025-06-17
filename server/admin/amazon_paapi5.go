@@ -3,10 +3,11 @@ package admin
 import (
 	"context"
 	"fmt"
+	"log/slog"
+
 	paapi5 "github.com/goark/pa-api"
 	"github.com/goark/pa-api/entity"
 	"github.com/goark/pa-api/query"
-	"log/slog"
 )
 
 type PAAPIClient struct {
@@ -71,7 +72,7 @@ func (c *PAAPIClient) FetchAmazonProductDetails(ctx context.Context, asins []str
 
 	var productDetails []AmazonProductDetail
 	for _, item := range res.ItemsResult.Items {
-		slog.Debug("Processing Amazon item", 
+		slog.Debug("Processing Amazon item",
 			slog.String("asin", item.ASIN),
 			slog.String("title", item.ItemInfo.Title.DisplayValue),
 			slog.String("url", item.DetailPageURL))

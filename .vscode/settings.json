@@ -1,0 +1,31 @@
+{
+  // Go settings
+  "go.formatTool": "goimports",
+  "go.lintTool": "golangci-lint",
+  "go.lintOnSave": "package",
+  "go.formatFlags": [
+    "-local",
+    "github.com/tokuhirom/blog4"
+  ],
+  
+  // Editor settings
+  "[go]": {
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+  
+  // File associations
+  "files.associations": {
+    "*.tsp": "typespec"
+  },
+  
+  // Exclude patterns
+  "files.exclude": {
+    "**/.git": true,
+    "**/.task": true,
+    "**/node_modules": true,
+    "blog4": true
+  }
+}
