@@ -2,10 +2,104 @@
 
 tokuhirom の個人的なブログサービスです｡
 
-`brew install go-task`
+## Quick Start
 
-```sh
-task --watch gen
+```bash
+# Install dependencies
+brew install go-task
+
+# One-time setup
+task gen
+cd server/admin/frontend && npm install
+
+# Run development servers
+task dev
 ```
 
-to generate the sql related files by using the taskfile.yml
+## Development Guide
+
+### Prerequisites
+- Go 1.21+
+- Node.js 18+
+- MySQL/MariaDB
+- go-task (install with `brew install go-task`)
+
+### Common Commands
+
+```bash
+# Generate all code (TypeSpec, SQLC, OpenAPI)
+task gen
+
+# Watch mode for code generation
+task --watch gen
+
+# Run all dev servers
+task dev
+
+# Frontend development only
+task frontend
+
+# Build production assets
+task frontend-build
+go build .
+
+# Docker operations
+task docker-build
+task docker-run
+```
+
+### Project Structure
+
+```
+blog4/
+├── db/               # Database schemas and queries
+│   ├── admin/       # Admin database (write operations)
+│   └── public/      # Public database (read operations)
+├── server/
+│   ├── admin/       # Admin API server
+│   │   └── frontend/  # Svelte admin UI
+│   └── public/      # Public API server
+├── typespec/        # API definitions
+├── markdown/        # Markdown processing
+└── workers/         # Background jobs
+```
+
+### Making Changes
+
+For detailed development instructions, see [CLAUDE.md](./CLAUDE.md).
+
+Key points:
+- API changes: Edit TypeSpec files in `/typespec/`
+- Database queries: Add SQL to `/db/*/queries/`
+- Frontend: Svelte components in `/server/admin/frontend/`
+- All code is auto-generated from TypeSpec and SQL files
+
+### Testing
+
+```bash
+# Run all tests
+go test ./...
+
+# Run specific test
+go test -run TestFunctionName ./path/to/package
+
+# Run with race detector
+go test -race ./...
+```
+
+### Contributing
+
+1. Create a feature branch
+2. Make your changes
+3. Run tests and linters
+4. Create a pull request
+
+For AI-assisted development with Claude Code, refer to [CLAUDE.md](./CLAUDE.md) for specific workflow instructions.
+
+## Deployment
+
+The application is deployed on Sakura Cloud App Run using Docker. See `Dockerfile` for the build configuration.
+
+## License
+
+Personal project - not open for external contributions.
