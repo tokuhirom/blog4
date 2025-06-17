@@ -19,8 +19,6 @@ type Markdown struct {
 }
 
 type WikiLinkResolver struct {
-	ctx context.Context
-	db  *publicdb.Queries
 }
 
 func NewMarkdown(ctx context.Context, queries *publicdb.Queries) *Markdown {

@@ -13,10 +13,6 @@ import (
 	"github.com/tokuhirom/blog4/server/sobs"
 )
 
-const (
-	backupBucketName = "your-backup-bucket-name" // Replace with your bucket name
-)
-
 func StartBackup(encryptionKey string, s3client *sobs.SobsClient) {
 	slog.Info("Start taking backup")
 	time.AfterFunc(1*time.Second, func() {
@@ -24,11 +20,8 @@ func StartBackup(encryptionKey string, s3client *sobs.SobsClient) {
 	})
 	ticker := time.NewTicker(24 * time.Hour)
 	defer ticker.Stop()
-	for {
-		select {
-		case <-ticker.C:
-			takeBackup(encryptionKey, s3client)
-		}
+	for range ticker.C {
+		takeBackup(encryptionKey, s3client)
 	}
 }
 

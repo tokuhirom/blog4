@@ -138,24 +138,32 @@ func (r *AsinRenderer) enter(w util.BufWriter, n *AsinNode, src []byte) (ast.Wal
 		w.WriteString(":detail]")
 		return ast.WalkSkipChildren, nil
 	}
-	w.WriteString("<div style='display: flex;' class='asin'>")
-	w.WriteString("<p>")
-	w.WriteString("<a href=\"")
-	w.WriteString(asin.Link)
-	w.WriteString("\">")
-	w.WriteString("<img src=\"")
-	w.WriteString(asin.ImageMediumUrl.String)
-	w.WriteString("\" style='max-width: 100px;max-height: 100px;border-radius: 4px;'>")
-	w.WriteString("</a>")
-	w.WriteString("</p>")
-	w.WriteString("<p>")
-	w.WriteString("<a href=\"")
-	w.WriteString(asin.Link)
-	w.WriteString("\">")
-	w.WriteString(asin.Title.String)
-	w.WriteString("</a>")
-	w.WriteString("</p>")
-	w.WriteString("</div>")
+
+	// Build HTML string
+	var buf bytes.Buffer
+	buf.WriteString("<div style='display: flex;' class='asin'>")
+	buf.WriteString("<p>")
+	buf.WriteString("<a href=\"")
+	buf.WriteString(asin.Link)
+	buf.WriteString("\">")
+	buf.WriteString("<img src=\"")
+	buf.WriteString(asin.ImageMediumUrl.String)
+	buf.WriteString("\" style='max-width: 100px;max-height: 100px;border-radius: 4px;'>")
+	buf.WriteString("</a>")
+	buf.WriteString("</p>")
+	buf.WriteString("<p>")
+	buf.WriteString("<a href=\"")
+	buf.WriteString(asin.Link)
+	buf.WriteString("\">")
+	buf.WriteString(asin.Title.String)
+	buf.WriteString("</a>")
+	buf.WriteString("</p>")
+	buf.WriteString("</div>")
+
+	// Write the complete string at once
+	if _, err := w.Write(buf.Bytes()); err != nil {
+		return 0, fmt.Errorf("failed to write ASIN HTML: %w", err)
+	}
 
 	return ast.WalkSkipChildren, nil
 }
