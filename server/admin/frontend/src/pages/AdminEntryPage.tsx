@@ -79,7 +79,7 @@ export default function AdminEntryPage() {
 			});
 	}, [path]);
 
-	async function handleDelete(event: React.MouseEvent) {
+	const handleDelete = React.useCallback(async (event: React.MouseEvent) => {
 		event.preventDefault();
 
 		const confirmed = confirm(
@@ -99,10 +99,16 @@ export default function AdminEntryPage() {
 				showMessage("error", "Failed to delete entry");
 			}
 		}
-	}
+	}, [entry.Path, title, clearMessage, showMessage]);
 
-	async function handleRegenerateEntryImage(event: React.MouseEvent) {
+	const handleRegenerateEntryImage = React.useCallback(async (event: React.MouseEvent) => {
 		event.preventDefault();
+		console.log("Regenerating entry image for:", entry.Path);
+
+		if (!entry.Path) {
+			showMessage("error", "No entry path available");
+			return;
+		}
 
 		clearMessage();
 
@@ -110,13 +116,14 @@ export default function AdminEntryPage() {
 			await api.regenerateEntryImage({
 				path: encodeURIComponent(entry.Path),
 			});
-			showMessage("success", "Entry image regenerated successfully");
-			location.href = "/admin/";
+			showUpdatedMessage("Entry image regenerated successfully");
+			// Don't redirect, just show the message
+			// location.href = "/admin/";
 		} catch (e) {
-			console.log(e);
+			console.error("Failed to regenerate entry image:", e);
 			showMessage("error", "Failed to regenerate entry image");
 		}
-	}
+	}, [entry.Path, clearMessage, showMessage, showUpdatedMessage]);
 
 	const handleUpdateBody = React.useCallback(async () => {
 		clearMessage();
@@ -401,14 +408,14 @@ export default function AdminEntryPage() {
 
 					<div style={styles.buttonContainer}>
 						<button
-							type="submit"
+							type="button"
 							style={styles.deleteButton}
 							onClick={handleDelete}
 						>
 							Delete
 						</button>
 						<button
-							type="submit"
+							type="button"
 							style={styles.regenerateButton}
 							onClick={handleRegenerateEntryImage}
 						>
