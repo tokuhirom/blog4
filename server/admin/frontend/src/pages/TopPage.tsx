@@ -46,12 +46,12 @@ export default function TopPage() {
 				console.error("No entries loaded yet, loading initial entries");
 				return;
 			}
-			const lastEditedAt = lastEntry?.LastEditedAt;
+			const lastEditedAt = lastEntry.LastEditedAt;
 
-			console.log(`Loading more entries... last_last_edited_at=${lastEditedAt}`);
+			console.log(`Loading more entries... last_last_edited_at=${lastEditedAt} title=${lastEntry.Title}`);
 
 			const rawEntries = await api.getLatestEntries(
-				lastEditedAt ? { lastLastEditedAt: lastEditedAt } : {}
+				{ last_last_edited_at: lastEditedAt }
 			);
 
 			// Filter out any entries without a Path
@@ -68,7 +68,7 @@ export default function TopPage() {
 				);
 
 				if (uniqueNewEntries.length === 0) {
-					console.log("All entries are duplicates, no more to load");
+					console.log(`All entries are duplicates, no more to load: ${newEntries.length}, ${newEntries[0].Title}`);
 					setHasMore(false);
 				} else {
 					console.log(`Adding ${uniqueNewEntries.length} new entries`);
