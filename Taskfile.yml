@@ -128,3 +128,28 @@ tasks:
     cmds:
       - goimports -d -local github.com/tokuhirom/blog4 .
       - go vet ./...
+
+  biome-format:
+    desc: "Format frontend code with Biome"
+    dir: ./server/admin/frontend
+    cmds:
+      - npm run format
+    sources:
+      - 'src/**/*.{js,ts,jsx,tsx,svelte,json,jsonc}'
+      - '*.{js,ts,json,jsonc}'
+
+  biome-lint:
+    desc: "Lint frontend code with Biome"
+    dir: ./server/admin/frontend
+    cmds:
+      - npm run lint
+
+  biome-check:
+    desc: "Check frontend code with Biome (format and lint)"
+    dir: ./server/admin/frontend
+    cmds:
+      - npx biome check .
+
+  frontend-fmt:
+    desc: "Format and lint frontend code"
+    deps: [biome-format, biome-lint]
