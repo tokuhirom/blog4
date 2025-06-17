@@ -20,7 +20,14 @@ export default function MarkdownEditor({
 }: MarkdownEditorProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const editorRef = useRef<EditorView | null>(null);
+	const onUpdateTextRef = useRef(onUpdateText);
 
+	// Update the ref when onUpdateText changes
+	useEffect(() => {
+		onUpdateTextRef.current = onUpdateText;
+	}, [onUpdateText]);
+
+	// Initialize editor only once
 	useEffect(() => {
 		if (!containerRef.current) return;
 
@@ -31,8 +38,8 @@ export default function MarkdownEditor({
 				keymap.of([...defaultKeymap, indentWithTab]),
 				syntaxHighlighting(oneDarkHighlightStyle),
 				EditorView.updateListener.of((update) => {
-					if (update.docChanged && onUpdateText) {
-						onUpdateText(update.state.doc.toString());
+					if (update.docChanged && onUpdateTextRef.current) {
+						onUpdateTextRef.current(update.state.doc.toString());
 					}
 				}),
 			],
@@ -48,7 +55,23 @@ export default function MarkdownEditor({
 		return () => {
 			view.destroy();
 		};
-	}, [initialContent, onUpdateText]);
+	}, []); // Empty dependency array - only run once on mount
+
+	// Update editor content when initialContent changes (without recreating the editor)
+	useEffect(() => {
+		if (editorRef.current && initialContent !== undefined) {
+			const currentContent = editorRef.current.state.doc.toString();
+			if (currentContent !== initialContent) {
+				editorRef.current.dispatch({
+					changes: {
+						from: 0,
+						to: currentContent.length,
+						insert: initialContent,
+					},
+				});
+			}
+		}
+	}, [initialContent]);
 
 	return (
 		<div
