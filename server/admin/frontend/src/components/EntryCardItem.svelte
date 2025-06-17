@@ -1,6 +1,6 @@
 <script lang="ts">
-import CardItem from "./CardItem.svelte";
 import type { GetLatestEntriesRow } from "../generated-client/model";
+import CardItem from "./CardItem.svelte";
 
 const {
 	entry,

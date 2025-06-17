@@ -3,13 +3,13 @@ import { onMount } from "svelte";
 import MarkdownEditor from "../components/MarkdownEditor.svelte";
 
 import { createAdminApiClient } from "../admin_api";
+import LinkPallet from "../components/LinkPallet.svelte";
+import { extractLinks } from "../extractLinks";
 import type {
 	GetLatestEntriesRow,
 	LinkPalletData,
 } from "../generated-client/model";
-import { extractLinks } from "../extractLinks";
 import { debounce } from "../utils";
-import LinkPallet from "../components/LinkPallet.svelte";
 
 const { path } = $props();
 const api = createAdminApiClient();
@@ -31,7 +31,7 @@ let linkPallet: LinkPalletData = $state({
 onMount(async () => {
 	try {
 		entry = await api.getEntryByDynamicPath({
-			path: path,
+			path: encodeURIComponent(path),
 		});
 
 		title = entry.Title;
@@ -46,7 +46,7 @@ onMount(async () => {
 		}
 	}
 
-	links = await api.getLinkedEntryPaths({ path });
+	links = await api.getLinkedEntryPaths({ path: encodeURIComponent(path) });
 	loadLinks();
 });
 
@@ -56,7 +56,7 @@ let isDirty = false;
 
 function loadLinks() {
 	api
-		.getLinkPallet({ path })
+		.getLinkPallet({ path: encodeURIComponent(path) })
 		.then((data) => {
 			console.log("Got link pallet data", data);
 			linkPallet = data;
@@ -103,7 +103,7 @@ async function handleDelete(event: Event) {
 
 		try {
 			await api.deleteEntry({
-				path: entry.Path,
+				path: encodeURIComponent(entry.Path),
 			});
 			showMessage("success", "Entry deleted successfully");
 			location.href = "/admin/";
@@ -121,7 +121,7 @@ async function handleRegenerateEntryImage(event: Event) {
 
 	try {
 		await api.regenerateEntryImage({
-			path: entry.Path,
+			path: encodeURIComponent(entry.Path),
 		});
 		showMessage("success", "Entry image regenerated successfully");
 		location.href = "/admin/";
@@ -140,12 +140,12 @@ async function handleUpdateBody() {
 	}
 
 	try {
-		await api.updateEntryBody({
-			path: path,
-			updateEntryBodyRequest: {
+		await api.updateEntryBody(
+			{ path: encodeURIComponent(path) },
+			{
 				body: body,
 			},
-		});
+		);
 
 		showUpdatedMessage("Updated");
 		isDirty = false; // Reset dirty flag on successful update
@@ -163,12 +163,12 @@ async function handleUpdateTitle() {
 	}
 
 	try {
-		await api.updateEntryTitle({
-			path: path,
-			updateEntryTitleRequest: {
+		await api.updateEntryTitle(
+			{ path: encodeURIComponent(path) },
+			{
 				title,
 			},
-		});
+		);
 
 		showMessage("success", "Entry updated successfully");
 		isDirty = false; // Reset dirty flag on successful update
@@ -239,12 +239,12 @@ function toggleVisibility(event: Event) {
 	console.log("Updating visibility to", newVisibility);
 
 	api
-		.updateEntryVisibility({
-			path: entry.Path,
-			updateVisibilityRequest: {
+		.updateEntryVisibility(
+			{ path: encodeURIComponent(entry.Path) },
+			{
 				visibility: newVisibility,
 			},
-		})
+		)
 		.then((data) => {
 			visibility = data.Visibility;
 		})
@@ -332,7 +332,7 @@ function selectIfPlaceholder(target: HTMLInputElement) {
 </script>
 
 <div class="parent">
-    <div class="container {entry.visibility === 'private' ? 'private' : ''}">
+    <div class="container {entry.Visibility === 'private' ? 'private' : ''}">
         <div class="left-pane">
             <form class="form">
                 <div class="title-container">
@@ -390,7 +390,7 @@ function selectIfPlaceholder(target: HTMLInputElement) {
             <!-- link to the user side page -->
             {#if visibility === 'public'}
                 <div class="link-container">
-                    <a href="/entry/{entry.path}" class="link">Go to User Side Page</a>
+                    <a href="/entry/{entry.Path}" class="link">Go to User Side Page</a>
                 </div>
             {/if}
 

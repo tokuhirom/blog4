@@ -1,9 +1,9 @@
 <script lang="ts">
-import SearchBox from "../components/SearchBox.svelte";
 import { onDestroy, onMount } from "svelte";
-import AdminEntryCardItem from "../components/AdminEntryCardItem.svelte";
-import type { GetLatestEntriesRow } from "../generated-client/model";
 import { createAdminApiClient } from "../admin_api";
+import AdminEntryCardItem from "../components/AdminEntryCardItem.svelte";
+import SearchBox from "../components/SearchBox.svelte";
+import type { GetLatestEntriesRow } from "../generated-client/model";
 
 const api = createAdminApiClient();
 
@@ -59,7 +59,7 @@ async function loadMoreEntries() {
 				: {},
 		);
 		// Filter out any entries without a Path (note: PascalCase from API)
-		const newEntries = (rawEntries || []).filter(entry => entry?.Path);
+		const newEntries = (rawEntries || []).filter((entry) => entry?.Path);
 
 		if (newEntries.length === 0) {
 			console.log(
@@ -135,7 +135,7 @@ onMount(() => {
 		api.getLatestEntries().then((entries) => {
 			console.log("Loaded entries", entries);
 			// Filter out any entries without a Path (note: PascalCase from API)
-			allEntries = (entries || []).filter(entry => entry?.Path);
+			allEntries = (entries || []).filter((entry) => entry?.Path);
 			isLoading = false;
 
 			console.log("Start loading more entries...");

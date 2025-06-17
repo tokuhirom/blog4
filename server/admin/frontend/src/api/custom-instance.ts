@@ -59,11 +59,11 @@ export const customInstance = async <T>(
 	}
 
 	const jsonData = await response.json();
-	
+
 	// Orval expects response in format { data: T, status: number }
 	return {
 		data: jsonData,
 		status: response.status,
-		headers: response.headers
+		headers: response.headers,
 	} as T;
 };
