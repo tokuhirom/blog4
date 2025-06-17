@@ -3,18 +3,20 @@ package admin
 import (
 	"bytes"
 	"database/sql"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/cors"
-	"github.com/tokuhirom/blog4/db/admin/admindb"
-	"github.com/tokuhirom/blog4/server"
-	"github.com/tokuhirom/blog4/server/admin/openapi"
-	"github.com/tokuhirom/blog4/server/sobs"
 	"log/slog"
 	"net/http"
 	"os"
 	"path/filepath"
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
+	"github.com/go-chi/cors"
+
+	"github.com/tokuhirom/blog4/db/admin/admindb"
+	"github.com/tokuhirom/blog4/server"
+	"github.com/tokuhirom/blog4/server/admin/openapi"
+	"github.com/tokuhirom/blog4/server/sobs"
 )
 
 func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) *chi.Mux {

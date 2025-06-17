@@ -8,13 +8,14 @@ import (
 	"fmt"
 	"log/slog"
 
-	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
 	"github.com/yuin/goldmark/parser"
 	"github.com/yuin/goldmark/renderer"
 	"github.com/yuin/goldmark/text"
 	"github.com/yuin/goldmark/util"
+
+	"github.com/tokuhirom/blog4/db/public/publicdb"
 )
 
 type AsinLink struct {
@@ -132,29 +133,46 @@ func (r *AsinRenderer) enter(w util.BufWriter, n *AsinNode, src []byte) (ast.Wal
 		} else {
 			slog.Error("Failed to query ASIN", slog.String("asin", string(n.Target)), slog.Any("error", err))
 		}
-		w.WriteString("[asin:")
-		w.Write(n.Target)
-		w.WriteString(":detail]")
+
+		// Build fallback text
+		var buf bytes.Buffer
+		buf.WriteString("[asin:")
+		buf.Write(n.Target)
+		buf.WriteString(":detail]")
+
+		// Write the complete string at once
+		if _, err := w.Write(buf.Bytes()); err != nil {
+			return 0, fmt.Errorf("failed to write ASIN fallback text: %w", err)
+		}
+
 		return ast.WalkSkipChildren, nil
 	}
-	w.WriteString("<div style='display: flex;' class='asin'>")
-	w.WriteString("<p>")
-	w.WriteString("<a href=\"")
-	w.WriteString(asin.Link)
-	w.WriteString("\">")
-	w.WriteString("<img src=\"")
-	w.WriteString(asin.ImageMediumUrl.String)
-	w.WriteString("\" style='max-width: 100px;max-height: 100px;border-radius: 4px;'>")
-	w.WriteString("</a>")
-	w.WriteString("</p>")
-	w.WriteString("<p>")
-	w.WriteString("<a href=\"")
-	w.WriteString(asin.Link)
-	w.WriteString("\">")
-	w.WriteString(asin.Title.String)
-	w.WriteString("</a>")
-	w.WriteString("</p>")
-	w.WriteString("</div>")
+
+	// Build HTML string
+	var buf bytes.Buffer
+	buf.WriteString("<div style='display: flex;' class='asin'>")
+	buf.WriteString("<p>")
+	buf.WriteString("<a href=\"")
+	buf.WriteString(asin.Link)
+	buf.WriteString("\">")
+	buf.WriteString("<img src=\"")
+	buf.WriteString(asin.ImageMediumUrl.String)
+	buf.WriteString("\" style='max-width: 100px;max-height: 100px;border-radius: 4px;'>")
+	buf.WriteString("</a>")
+	buf.WriteString("</p>")
+	buf.WriteString("<p>")
+	buf.WriteString("<a href=\"")
+	buf.WriteString(asin.Link)
+	buf.WriteString("\">")
+	buf.WriteString(asin.Title.String)
+	buf.WriteString("</a>")
+	buf.WriteString("</p>")
+	buf.WriteString("</div>")
+
+	// Write the complete string at once
+	if _, err := w.Write(buf.Bytes()); err != nil {
+		return 0, fmt.Errorf("failed to write ASIN HTML: %w", err)
+	}
 
 	return ast.WalkSkipChildren, nil
 }

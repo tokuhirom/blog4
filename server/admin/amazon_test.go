@@ -1,8 +1,9 @@
 package admin
 
 import (
-	"github.com/zeebo/assert"
 	"testing"
+
+	"github.com/zeebo/assert"
 )
 
 func Test_rewriteAmazonShortUrlInMarkdown(t *testing.T) {

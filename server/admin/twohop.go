@@ -31,6 +31,9 @@ func getLinkPalletData(ctx context.Context, db *sql.DB, queries *admindb.Queries
 		targetPath,
 		links,
 	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get entries by linked titles: %w", err)
+	}
 
 	return buildLinkPalletData(links, reverseLinks, twohopEntries, targetPath), nil
 }

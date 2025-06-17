@@ -2,15 +2,16 @@ package main
 
 import (
 	"database/sql"
-	"github.com/tokuhirom/blog4/server"
-	"github.com/tokuhirom/blog4/server/router"
-	"github.com/tokuhirom/blog4/server/sobs"
 	"log/slog"
 	"net"
 	"net/http"
 	"os"
 	"strconv"
 	"time"
+
+	"github.com/tokuhirom/blog4/server"
+	"github.com/tokuhirom/blog4/server/router"
+	"github.com/tokuhirom/blog4/server/sobs"
 
 	"github.com/caarlos0/env/v11"
 	"github.com/go-sql-driver/mysql"

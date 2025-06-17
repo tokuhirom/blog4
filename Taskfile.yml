@@ -114,3 +114,17 @@ tasks:
   docker-run:
     cmds:
       - docker run --rm -it --env-file .env -p 8080:8080 blog4
+
+  fmt:
+    desc: "Format Go code with goimports"
+    cmds:
+      - go fmt ./...
+      - goimports -w -local github.com/tokuhirom/blog4 .
+    sources:
+      - '**/*.go'
+
+  lint:
+    desc: "Run linters"
+    cmds:
+      - goimports -d -local github.com/tokuhirom/blog4 .
+      - go vet ./...

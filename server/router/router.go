@@ -2,16 +2,18 @@ package router
 
 import (
 	"database/sql"
+	"log/slog"
+	"net/http"
+	"os"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+
 	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/tokuhirom/blog4/server"
 	"github.com/tokuhirom/blog4/server/admin"
 	middleware2 "github.com/tokuhirom/blog4/server/middleware"
 	"github.com/tokuhirom/blog4/server/sobs"
-	"log/slog"
-	"net/http"
-	"os"
 )
 
 func BuildRouter(cfg server.Config, sqlDB *sql.DB, sobsClient *sobs.SobsClient) *chi.Mux {

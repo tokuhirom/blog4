@@ -193,7 +193,7 @@ func updateEntryLink(ctx context.Context, tx *sql.Tx, qtx *admindb.Queries, path
 	links := extractLinks(body)
 	var filteredLinks []string
 	for _, link := range links {
-		if strings.ToLower(link) != strings.ToLower(title) {
+		if !strings.EqualFold(link, title) {
 			filteredLinks = append(filteredLinks, link)
 		}
 	}

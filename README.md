@@ -92,6 +92,26 @@ Key points:
 - Frontend: Svelte components in `/server/admin/frontend/`
 - All code is auto-generated from TypeSpec and SQL files
 
+### Code Formatting
+
+This project uses `goimports` for consistent Go code formatting:
+
+```bash
+# Format all Go files
+task fmt
+
+# Check formatting without making changes
+task lint
+
+# Install pre-commit hooks (optional)
+pre-commit install
+```
+
+Import ordering follows `goimports` style:
+1. Standard library imports
+2. Third-party imports
+3. Local imports (github.com/tokuhirom/blog4)
+
 ### Testing
 
 ```bash
