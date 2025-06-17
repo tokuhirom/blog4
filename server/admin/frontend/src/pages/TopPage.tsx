@@ -12,11 +12,8 @@ export default function TopPage() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [hasMore, setHasMore] = useState(true);
 	const [isInitialized, setIsInitialized] = useState(false);
+	const loadingRef = useRef(false);
 	
-	// Use refs to track if we're currently loading to prevent duplicate calls
-	const isLoadingRef = useRef(false);
-	const isMountedRef = useRef(true);
-
 	const filteredEntries = React.useMemo(() => {
 		if (searchKeyword === "") {
 			return allEntries;
@@ -36,15 +33,19 @@ export default function TopPage() {
 
 	const loadMoreEntries = React.useCallback(async () => {
 		// Prevent concurrent loads
-		if (isLoadingRef.current || !hasMore || !isMountedRef.current) {
+		if (loadingRef.current || !hasMore) {
 			return;
 		}
 
-		isLoadingRef.current = true;
+		loadingRef.current = true;
 		setIsLoading(true);
 
 		try {
 			const lastEntry = allEntries[allEntries.length - 1];
+			if (!lastEntry) {
+				console.error("No entries loaded yet, loading initial entries");
+				return;
+			}
 			const lastEditedAt = lastEntry?.LastEditedAt;
 
 			console.log(`Loading more entries... last_last_edited_at=${lastEditedAt}`);
@@ -52,8 +53,6 @@ export default function TopPage() {
 			const rawEntries = await api.getLatestEntries(
 				lastEditedAt ? { lastLastEditedAt: lastEditedAt } : {}
 			);
-
-			if (!isMountedRef.current) return;
 
 			// Filter out any entries without a Path
 			const newEntries = (rawEntries || []).filter((entry) => entry?.Path);
@@ -80,7 +79,7 @@ export default function TopPage() {
 			console.error("Failed to load more entries:", err);
 			setHasMore(false);
 		} finally {
-			isLoadingRef.current = false;
+			loadingRef.current = false;
 			setIsLoading(false);
 		}
 	}, [allEntries, hasMore]);
@@ -121,20 +120,20 @@ export default function TopPage() {
 	// Initial load effect
 	useEffect(() => {
 		if (isInitialized) return;
+		setIsInitialized(true);
 
 		const loadInitial = async () => {
-			if (isLoadingRef.current) return;
-			
+			if (isLoading) return;
+
 			console.log("Loading initial entries...");
-			isLoadingRef.current = true;
 			setIsLoading(true);
 
 			try {
 				const entries = await api.getLatestEntries();
-				if (!isMountedRef.current) return;
 
 				console.log(`Loaded ${entries?.length || 0} initial entries`);
 				const validEntries = (entries || []).filter((entry) => entry?.Path);
+				console.log(`number of valid entries: ${validEntries?.length || 0} initial entries`);
 				setAllEntries(validEntries);
 				setIsInitialized(true);
 				
@@ -143,12 +142,9 @@ export default function TopPage() {
 				setHasMore(validEntries.length >= 20);
 			} catch (err) {
 				console.error("Failed to load initial entries:", err);
-				if (isMountedRef.current) {
-					setIsInitialized(true);
-					setHasMore(false);
-				}
+				setIsInitialized(true);
+				setHasMore(false);
 			} finally {
-				isLoadingRef.current = false;
 				setIsLoading(false);
 			}
 		};
@@ -156,41 +152,20 @@ export default function TopPage() {
 		loadInitial();
 	}, [isInitialized]);
 
-	// Auto-load more entries when scrolling near bottom
+	// Load more entries using timeout
 	useEffect(() => {
-		if (!isInitialized || !hasMore || isLoading) return;
+		if (!isInitialized || !hasMore || loadingRef.current) return;
 
-		const handleScroll = () => {
-			const scrollHeight = document.documentElement.scrollHeight;
-			const scrollTop = document.documentElement.scrollTop;
-			const clientHeight = document.documentElement.clientHeight;
-
-			// Load more when user scrolls to within 200px of bottom
-			if (scrollHeight - scrollTop - clientHeight < 200) {
+		const timeoutId = setTimeout(() => {
+			if (hasMore && !loadingRef.current) {
 				loadMoreEntries();
 			}
-		};
-
-		// Also check immediately in case content doesn't fill the page
-		const checkIfNeedMore = () => {
-			const scrollHeight = document.documentElement.scrollHeight;
-			const clientHeight = document.documentElement.clientHeight;
-			
-			if (scrollHeight <= clientHeight && hasMore && !isLoading) {
-				loadMoreEntries();
-			}
-		};
-
-		window.addEventListener("scroll", handleScroll);
-		
-		// Check after a short delay to let the DOM settle
-		const timeoutId = setTimeout(checkIfNeedMore, 100);
+		}, 100);
 
 		return () => {
-			window.removeEventListener("scroll", handleScroll);
 			clearTimeout(timeoutId);
 		};
-	}, [isInitialized, hasMore, isLoading, loadMoreEntries, allEntries.length]);
+	}, [isInitialized, hasMore, allEntries, loadMoreEntries]);
 
 	// Keyboard shortcuts
 	useEffect(() => {
@@ -199,13 +174,6 @@ export default function TopPage() {
 			window.removeEventListener("keydown", handleKeydown);
 		};
 	}, [handleKeydown]);
-
-	// Cleanup on unmount
-	useEffect(() => {
-		return () => {
-			isMountedRef.current = false;
-		};
-	}, []);
 
 	const styles = {
 		container: {
