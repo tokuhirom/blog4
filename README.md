@@ -48,6 +48,24 @@ task docker-build
 task docker-run
 ```
 
+### Running the Server
+
+```bash
+# Run the main server (includes both public and admin)
+go run main.go
+
+# The server starts on http://localhost:8181/
+# - Public blog: http://localhost:8181/
+# - Admin panel: http://localhost:8181/admin
+
+# Debug with Delve
+dlv debug main.go
+
+# Build and run
+go build -o blog4
+./blog4
+```
+
 ### Project Structure
 
 ```
