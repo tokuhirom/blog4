@@ -16,6 +16,40 @@
     }
   },
   
+  // JavaScript/TypeScript settings
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "quickfix.biome": "explicit",
+      "source.organizeImports.biome": "explicit"
+    }
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "quickfix.biome": "explicit",
+      "source.organizeImports.biome": "explicit"
+    }
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true
+  },
+  "[svelte]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "quickfix.biome": "explicit",
+      "source.organizeImports.biome": "explicit"
+    }
+  },
+  
   // File associations
   "files.associations": {
     "*.tsp": "typespec"
