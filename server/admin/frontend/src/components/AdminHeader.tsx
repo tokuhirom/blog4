@@ -1,8 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import { createAdminApiClient } from "../admin_api";
 
 const api = createAdminApiClient();
 
 export default function AdminHeader() {
+	const navigate = useNavigate();
+	
 	async function handleNewEntry() {
 		try {
 			// Generate a placeholder title with current date/time
@@ -13,7 +16,7 @@ export default function AdminHeader() {
 			
 			const data = await api.createEntry({ title: placeholderTitle });
 			console.log(`New entry created: ${data.Path}`);
-			location.href = `/admin/entry/${data.Path}`;
+			navigate(`/admin/entry/${data.Path}`);
 		} catch (e) {
 			console.error("Error creating new entry:", e);
 			alert("Failed to create new entry");

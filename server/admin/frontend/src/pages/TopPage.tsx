@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { createAdminApiClient } from "../admin_api";
 import AdminEntryCardItem from "../components/AdminEntryCardItem";
 import SearchBox from "../components/SearchBox";
@@ -7,6 +8,7 @@ import type { GetLatestEntriesRow } from "../generated-client/model";
 const api = createAdminApiClient();
 
 export default function TopPage() {
+	const navigate = useNavigate();
 	const [searchKeyword, setSearchKeyword] = useState("");
 	const [allEntries, setAllEntries] = useState<GetLatestEntriesRow[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
@@ -103,13 +105,13 @@ export default function TopPage() {
 				
 				const data = await api.createEntry({ title: placeholderTitle });
 				console.log(`New entry created: ${data.Path}`);
-				location.href = `/admin/entry/${data.Path}`;
+				navigate(`/admin/entry/${data.Path}`);
 			} catch (err) {
 				console.error("Error creating new entry:", err);
 				alert(`Failed to create new entry: ${err}`);
 			}
 		}
-	}, []);
+	}, [navigate]);
 
 	// Initial load effect
 	useEffect(() => {

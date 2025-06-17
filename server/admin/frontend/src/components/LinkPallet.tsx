@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import type { LinkPalletData } from "../generated-client/model";
 import AdminEntryCardItem from "./AdminEntryCardItem";
 import CardItem from "./CardItem";
@@ -10,13 +11,13 @@ interface LinkPalletProps {
 const api = createAdminApiClient();
 
 export default function LinkPallet({ linkPallet }: LinkPalletProps) {
+	const navigate = useNavigate();
+	
 	function createNewEntry(title: string) {
 		api
-			.createEntry({
-				createEntryRequest: { title },
-			})
+			.createEntry({ title })
 			.then((data) => {
-				location.href = `/admin/entry/${data.Path}`;
+				navigate(`/admin/entry/${data.Path}`);
 			})
 			.catch((err) => {
 				console.error("Error creating new entry:", err);
