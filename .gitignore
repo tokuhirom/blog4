@@ -5,3 +5,6 @@ deploy.json
 app.jsonnet
 app.json
 node_modules/
+
+# Binary
+/blog4
