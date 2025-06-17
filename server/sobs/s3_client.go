@@ -7,7 +7,6 @@ import (
 	"github.com/minio/minio-go/v7/pkg/credentials"
 	"io"
 	"log/slog"
-	"os"
 )
 
 type SobsClient struct {
@@ -16,10 +15,9 @@ type SobsClient struct {
 	s3BackupBucketName      string
 }
 
-func NewSobsClient(s3AccessKeyId, s3SecretAccessKey, s3Region, s3AttachmentsBucketName, s3BackupBucketName, s3Endpoint string) *SobsClient {
+func NewSobsClient(s3AccessKeyId, s3SecretAccessKey, s3Region, s3AttachmentsBucketName, s3BackupBucketName, s3Endpoint string) (*SobsClient, error) {
 	if s3AccessKeyId == "" || s3SecretAccessKey == "" {
-		slog.Error("S3 credentials are not set")
-		os.Exit(1)
+		return nil, fmt.Errorf("S3 credentials are not set: access key ID or secret access key is empty")
 	}
 
 	slog.Info("Creating S3 client", slog.String("endpoint", s3Endpoint))
@@ -31,15 +29,14 @@ func NewSobsClient(s3AccessKeyId, s3SecretAccessKey, s3Region, s3AttachmentsBuck
 		Region: s3Region,
 	})
 	if err != nil {
-		slog.Error("unable to initialize minio client", slog.Any("error", err))
-		os.Exit(1)
+		return nil, fmt.Errorf("unable to initialize minio client for endpoint %s: %w", s3Endpoint, err)
 	}
 
 	return &SobsClient{
 		minioClient:             minioClient,
 		s3AttachmentsBucketName: s3AttachmentsBucketName,
 		s3BackupBucketName:      s3BackupBucketName,
-	}
+	}, nil
 }
 
 func (c *SobsClient) PutObjectToAttachmentBucket(ctx context.Context, key string, contentType string, contentLength int64, body io.Reader) error {

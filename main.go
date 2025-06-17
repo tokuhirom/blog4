@@ -57,7 +57,11 @@ func main() {
 		os.Exit(1)
 	}
 
-	sobsClient := sobs.NewSobsClient(cfg.S3AccessKeyId, cfg.S3SecretAccessKey, cfg.S3Region, cfg.S3AttachmentsBucketName, cfg.S3BackupBucketName, cfg.S3Endpoint)
+	sobsClient, err := sobs.NewSobsClient(cfg.S3AccessKeyId, cfg.S3SecretAccessKey, cfg.S3Region, cfg.S3AttachmentsBucketName, cfg.S3BackupBucketName, cfg.S3Endpoint)
+	if err != nil {
+		slog.Error("failed to create S3 client", slog.Any("error", err))
+		os.Exit(1)
+	}
 
 	r := router.BuildRouter(cfg, sqlDB, sobsClient)
 
