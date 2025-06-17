@@ -14,7 +14,7 @@ function createNewEntry(title: string) {
 			createEntryRequest: { title },
 		})
 		.then((data) => {
-			location.href = `/admin/entry/${data.path}`;
+			location.href = `/admin/entry/${data.Path}`;
 		})
 		.catch((err) => {
 			console.error("Error creating new entry:", err);
@@ -31,7 +31,7 @@ function createNewEntry(title: string) {
 	</div>
 	{#each linkPallet.twohops as twohops}
 		<div class="two-hop-link">
-			{#if twohops.src.title}
+			{#if twohops.src.Title}
 				<AdminEntryCardItem entry={twohops.src} backgroundColor={'yellowgreen'} />
 			{:else}
 				<CardItem

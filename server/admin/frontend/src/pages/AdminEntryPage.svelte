@@ -34,10 +34,10 @@ onMount(async () => {
 			path: path,
 		});
 
-		title = entry.title;
-		body = entry.body;
-		visibility = entry.visibility;
-		currentLinks = extractLinks(entry.body);
+		title = entry.Title;
+		body = entry.Body;
+		visibility = entry.Visibility;
+		currentLinks = extractLinks(entry.Body);
 	} catch (e) {
 		console.error("Failed to get entry:", e);
 		if (e instanceof ResponseError) {
@@ -105,7 +105,7 @@ async function handleDelete(event: Event) {
 
 		try {
 			await api.deleteEntry({
-				path: entry.path,
+				path: entry.Path,
 			});
 			showMessage("success", "Entry deleted successfully");
 			location.href = "/admin/";
@@ -123,7 +123,7 @@ async function handleRegenerateEntryImage(event: Event) {
 
 	try {
 		await api.regenerateEntryImage({
-			path: entry.path,
+			path: entry.Path,
 		});
 		showMessage("success", "Entry image regenerated successfully");
 		location.href = "/admin/";
@@ -189,7 +189,7 @@ async function createNewEntry(title: string): Promise<void> {
 				title,
 			},
 		});
-		location.href = `/admin/entry/${data.path}`;
+		location.href = `/admin/entry/${data.Path}`;
 	} catch (error) {
 		console.error("Failed to create new entry:", error);
 		showMessage(
@@ -242,13 +242,13 @@ function toggleVisibility(event: Event) {
 
 	api
 		.updateEntryVisibility({
-			path: entry.path,
+			path: entry.Path,
 			updateVisibilityRequest: {
 				visibility: newVisibility,
 			},
 		})
 		.then((data) => {
-			visibility = data.visibility;
+			visibility = data.Visibility;
 		})
 		.catch((error) => {
 			console.error("Failed to update visibility:", error);
@@ -295,13 +295,13 @@ function getEditDistance(a: string, b: string): number {
 function checkOtherUsersUpdate() {
 	api
 		.getEntryByDynamicPath({
-			path: entry.path,
+			path: entry.Path,
 		})
 		.then((data) => {
 			// 本文が短いときは消えてもダメージ少ないので無視
-			if (data.body && data.body.length > 100 && !isDirty) {
-				const threshold = Math.max(body.length, data.body.length) * 0.1; // 10%以上の変更で判定
-				const editDistance = getEditDistance(body, data.body);
+			if (data.Body && data.Body.length > 100 && !isDirty) {
+				const threshold = Math.max(body.length, data.Body.length) * 0.1; // 10%以上の変更で判定
+				const editDistance = getEditDistance(body, data.Body);
 				if (editDistance > threshold) {
 					if (
 						confirm(

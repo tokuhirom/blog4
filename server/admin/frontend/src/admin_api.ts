@@ -1,17 +1,34 @@
 import * as api from "./generated-client";
 
 export interface DefaultApi {
-	getLatestEntries(params?: api.GetLatestEntriesParams): Promise<api.GetLatestEntriesRow[]>;
-	createEntry(request: api.CreateEntryRequest): Promise<api.CreateEntryResponse>;
+	getLatestEntries(
+		params?: api.GetLatestEntriesParams,
+	): Promise<api.GetLatestEntriesRow[]>;
+	createEntry(
+		request: api.CreateEntryRequest,
+	): Promise<api.CreateEntryResponse>;
 	getAllEntryTitles(): Promise<string[]>;
 	deleteEntry(params: { path: string }): Promise<api.EmptyResponse>;
-	getEntryByDynamicPath(params: { path: string }): Promise<api.GetLatestEntriesRow>;
-	updateEntryBody(params: { path: string }, request: api.UpdateEntryBodyRequest): Promise<api.EmptyResponse>;
+	getEntryByDynamicPath(params: {
+		path: string;
+	}): Promise<api.GetLatestEntriesRow>;
+	updateEntryBody(
+		params: { path: string },
+		request: api.UpdateEntryBodyRequest,
+	): Promise<api.EmptyResponse>;
 	getLinkPallet(params: { path: string }): Promise<api.LinkPalletData>;
-	getLinkedEntryPaths(params: { path: string }): Promise<Record<string, string>>;
+	getLinkedEntryPaths(params: { path: string }): Promise<
+		Record<string, string>
+	>;
 	regenerateEntryImage(params: { path: string }): Promise<api.EmptyResponse>;
-	updateEntryTitle(params: { path: string }, request: api.UpdateEntryTitleRequest): Promise<api.EmptyResponse>;
-	updateEntryVisibility(params: { path: string }, request: api.UpdateVisibilityRequest): Promise<api.UpdateVisibilityResponse>;
+	updateEntryTitle(
+		params: { path: string },
+		request: api.UpdateEntryTitleRequest,
+	): Promise<api.EmptyResponse>;
+	updateEntryVisibility(
+		params: { path: string },
+		request: api.UpdateVisibilityRequest,
+	): Promise<api.UpdateVisibilityResponse>;
 	uploadFile(request: FormData): Promise<api.UploadFileResponse>;
 }
 
@@ -63,9 +80,9 @@ export function createAdminApiClient(): DefaultApi {
 		},
 		async uploadFile(formData) {
 			// Extract file from FormData
-			const file = formData.get('file') as File;
+			const file = formData.get("file") as File;
 			if (!file) {
-				throw new Error('No file provided');
+				throw new Error("No file provided");
 			}
 			const response = await api.uploadFile({ file });
 			return response.data;

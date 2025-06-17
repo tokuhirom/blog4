@@ -10,12 +10,13 @@ export default defineConfig({
 			target: "./src/generated-client/index.ts",
 			schemas: "./src/generated-client/model",
 			client: "fetch",
-			baseUrl: "import.meta.env.VITE_API_BASE_URL || ''",
 			override: {
 				mutator: {
 					path: "./src/api/custom-instance.ts",
 					name: "customInstance",
 				},
+				useDates: false,
+				useNamedParameters: true,
 			},
 		},
 		hooks: {

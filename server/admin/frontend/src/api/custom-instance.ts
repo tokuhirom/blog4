@@ -1,22 +1,19 @@
-const baseUrl = import.meta.env.VITE_API_BASE_URL || "";
+const baseUrl =
+	import.meta.env.VITE_API_BASE_URL || "http://localhost:8181/admin/api";
 
-export const customInstance = async <T>({
-	url,
-	method,
-	params,
-	data,
-	headers,
-	signal,
-	body,
-}: {
-	url: string;
-	method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
-	params?: Record<string, any>;
-	data?: any;
-	body?: any;
-	headers?: Record<string, string>;
-	signal?: AbortSignal;
-}): Promise<T> => {
+export const customInstance = async <T>(
+	url: string,
+	options: {
+		method: "GET" | "POST" | "PUT" | "DELETE" | "PATCH";
+		params?: Record<string, unknown>;
+		data?: unknown;
+		body?: unknown;
+		headers?: Record<string, string>;
+		signal?: AbortSignal;
+	},
+): Promise<T> => {
+	const { method, params, data, body, headers, signal } = options;
+
 	// Build query string if params exist
 	const queryString = params
 		? `?${new URLSearchParams(params).toString()}`
@@ -25,11 +22,14 @@ export const customInstance = async <T>({
 	const fullUrl = `${baseUrl}${url}${queryString}`;
 
 	// Determine headers and body
-	let requestHeaders = { ...headers };
-	let requestBody: any;
+	const requestHeaders = { ...headers };
+	let requestBody: BodyInit | undefined;
 
 	if (body instanceof FormData) {
 		// Don't set Content-Type for FormData, let browser set it with boundary
+		requestBody = body;
+	} else if (body) {
+		// Use body if provided (already stringified by Orval)
 		requestBody = body;
 	} else if (data) {
 		requestHeaders["Content-Type"] = "application/json";
@@ -58,5 +58,12 @@ export const customInstance = async <T>({
 		return {} as T;
 	}
 
-	return response.json();
+	const jsonData = await response.json();
+	
+	// Orval expects response in format { data: T, status: number }
+	return {
+		data: jsonData,
+		status: response.status,
+		headers: response.headers
+	} as T;
 };

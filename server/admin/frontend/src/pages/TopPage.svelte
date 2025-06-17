@@ -18,8 +18,8 @@ const filteredEntries: GetLatestEntriesRow[] = $derived.by(() => {
 	const lowerKeyword = searchKeyword.toLowerCase();
 	return allEntries.filter(
 		(entry) =>
-			entry.title?.toLowerCase()?.includes(lowerKeyword) ||
-			entry.body?.toLowerCase()?.includes(lowerKeyword),
+			entry.Title?.toLowerCase()?.includes(lowerKeyword) ||
+			entry.Body?.toLowerCase()?.includes(lowerKeyword),
 	);
 });
 
@@ -32,12 +32,16 @@ function handleSearch(keyword: string) {
 }
 
 async function loadMoreEntries() {
+	if (!allEntries) {
+		console.log("allEntries is not initialized yet");
+		return;
+	}
 	console.log(`loadMoreEntries ${isLoading} ${hasMore} ${allEntries.length}`);
 	if (isLoading || !hasMore) return;
 
 	isLoading = true;
 
-	const last_last_edited_at = allEntries[allEntries.length - 1]?.lastEditedAt;
+	const last_last_edited_at = allEntries[allEntries.length - 1]?.LastEditedAt;
 	if (allEntries.length > 0 && !last_last_edited_at) {
 		isLoading = false;
 		hasMore = false;
@@ -47,13 +51,15 @@ async function loadMoreEntries() {
 	try {
 		console.log(`loadMoreEntries ${last_last_edited_at}`);
 		console.log(allEntries);
-		const newEntries = await api.getLatestEntries(
+		const rawEntries = await api.getLatestEntries(
 			last_last_edited_at
 				? {
 						lastLastEditedAt: last_last_edited_at,
 					}
 				: {},
 		);
+		// Filter out any entries without a Path (note: PascalCase from API)
+		const newEntries = (rawEntries || []).filter(entry => entry?.Path);
 
 		if (newEntries.length === 0) {
 			console.log(
@@ -61,18 +67,18 @@ async function loadMoreEntries() {
 			);
 			hasMore = false;
 		} else {
-			const existingPaths = allEntries.map((entry) => entry.path);
+			const existingPaths = allEntries.map((entry) => entry.Path);
 			const addingNewEntries = newEntries.filter(
-				(entry) => !existingPaths.includes(entry.path),
+				(entry) => !existingPaths.includes(entry.Path),
 			);
 			if (addingNewEntries.length === 0) {
 				console.log(
-					`All entries are duplicated... stopping loading more entries. last_last_edited_at=${last_last_edited_at}, newEntries=${newEntries.map((entry) => entry.title)}`,
+					`All entries are duplicated... stopping loading more entries. last_last_edited_at=${last_last_edited_at}, newEntries=${newEntries.map((entry) => entry.Title)}`,
 				);
 				hasMore = false;
 			} else {
 				console.log(
-					`Adding new entries... last_last_edited_at=${last_last_edited_at}, newEntries=${newEntries.map((entry) => entry.title)}`,
+					`Adding new entries... last_last_edited_at=${last_last_edited_at}, newEntries=${newEntries.map((entry) => entry.Title)}`,
 				);
 				allEntries = [...allEntries, ...addingNewEntries];
 			}
@@ -127,8 +133,9 @@ onMount(() => {
 		console.log("Loading entries...");
 		isLoading = true;
 		api.getLatestEntries().then((entries) => {
-			console.log("Loaded entries");
-			allEntries = entries;
+			console.log("Loaded entries", entries);
+			// Filter out any entries without a Path (note: PascalCase from API)
+			allEntries = (entries || []).filter(entry => entry?.Path);
 			isLoading = false;
 
 			console.log("Start loading more entries...");
@@ -163,7 +170,7 @@ onDestroy(() => {
     <SearchBox onSearch={handleSearch} />
 
     <div class="entry-list">
-        {#each filteredEntries as entry (entry.path)}
+        {#each filteredEntries as entry, index (entry.Path || `index-${index}`)}
             <AdminEntryCardItem {entry} />
         {/each}
     </div>

@@ -61,7 +61,7 @@ export const getGetLatestEntriesUrl = (params?: GetLatestEntriesParams,) => {
 
   const stringifiedParams = normalizedParams.toString();
 
-  return stringifiedParams.length > 0 ? `import.meta.env.VITE_API_BASE_URL || ''/entries?${stringifiedParams}` : `import.meta.env.VITE_API_BASE_URL || ''/entries`
+  return stringifiedParams.length > 0 ? `/entries?${stringifiedParams}` : `/entries`
 }
 
 export const getLatestEntries = async (params?: GetLatestEntriesParams, options?: RequestInit): Promise<getLatestEntriesResponse> => {
@@ -101,7 +101,7 @@ export const getCreateEntryUrl = () => {
 
   
 
-  return `import.meta.env.VITE_API_BASE_URL || ''/entries`
+  return `/entries`
 }
 
 export const createEntry = async (createEntryRequest: CreateEntryRequest, options?: RequestInit): Promise<createEntryResponse> => {
@@ -142,7 +142,7 @@ export const getGetAllEntryTitlesUrl = () => {
 
   
 
-  return `import.meta.env.VITE_API_BASE_URL || ''/entries/titles`
+  return `/entries/titles`
 }
 
 export const getAllEntryTitles = async ( options?: RequestInit): Promise<getAllEntryTitlesResponse> => {
@@ -182,7 +182,7 @@ export const getDeleteEntryUrl = (path: string,) => {
 
   
 
-  return `import.meta.env.VITE_API_BASE_URL || ''/entries/${path}`
+  return `/entries/${path}`
 }
 
 export const deleteEntry = async (path: string, options?: RequestInit): Promise<deleteEntryResponse> => {
@@ -222,7 +222,7 @@ export const getGetEntryByDynamicPathUrl = (path: string,) => {
 
   
 
-  return `import.meta.env.VITE_API_BASE_URL || ''/entries/${path}`
+  return `/entries/${path}`
 }
 
 export const getEntryByDynamicPath = async (path: string, options?: RequestInit): Promise<getEntryByDynamicPathResponse> => {
@@ -262,7 +262,7 @@ export const getUpdateEntryBodyUrl = (path: string,) => {
 
   
 
-  return `import.meta.env.VITE_API_BASE_URL || ''/entries/${path}/body`
+  return `/entries/${path}/body`
 }
 
 export const updateEntryBody = async (path: string,
@@ -304,7 +304,7 @@ export const getGetLinkPalletUrl = (path: string,) => {
 
   
 
-  return `import.meta.env.VITE_API_BASE_URL || ''/entries/${path}/link-pallet`
+  return `/entries/${path}/link-pallet`
 }
 
 export const getLinkPallet = async (path: string, options?: RequestInit): Promise<getLinkPalletResponse> => {
@@ -344,7 +344,7 @@ export const getGetLinkedEntryPathsUrl = (path: string,) => {
 
   
 
-  return `import.meta.env.VITE_API_BASE_URL || ''/entries/${path}/linked-paths`
+  return `/entries/${path}/linked-paths`
 }
 
 export const getLinkedEntryPaths = async (path: string, options?: RequestInit): Promise<getLinkedEntryPathsResponse> => {
@@ -384,7 +384,7 @@ export const getRegenerateEntryImageUrl = (path: string,) => {
 
   
 
-  return `import.meta.env.VITE_API_BASE_URL || ''/entries/${path}/regenerate-image`
+  return `/entries/${path}/regenerate-image`
 }
 
 export const regenerateEntryImage = async (path: string, options?: RequestInit): Promise<regenerateEntryImageResponse> => {
@@ -424,7 +424,7 @@ export const getUpdateEntryTitleUrl = (path: string,) => {
 
   
 
-  return `import.meta.env.VITE_API_BASE_URL || ''/entries/${path}/title`
+  return `/entries/${path}/title`
 }
 
 export const updateEntryTitle = async (path: string,
@@ -466,7 +466,7 @@ export const getUpdateEntryVisibilityUrl = (path: string,) => {
 
   
 
-  return `import.meta.env.VITE_API_BASE_URL || ''/entry/${path}/visibility`
+  return `/entry/${path}/visibility`
 }
 
 export const updateEntryVisibility = async (path: string,
@@ -505,7 +505,7 @@ export const getUploadFileUrl = () => {
 
   
 
-  return `import.meta.env.VITE_API_BASE_URL || ''/upload`
+  return `/upload`
 }
 
 export const uploadFile = async (uploadFileBody: UploadFileBody, options?: RequestInit): Promise<uploadFileResponse> => {
