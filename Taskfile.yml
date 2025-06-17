@@ -7,7 +7,6 @@ tasks:
     cmds:
       - tsp compile main.tsp --emit @typespec/openapi3
     dir: ./typespec/
-    watch: true
     sources:
       - typespec/**/*.tsp
     generates:
@@ -35,7 +34,6 @@ tasks:
     desc: "Build the frontend"
 
   sqlc-admin:
-    watch: true
     cmds:
       - go tool sqlc generate -f ./db/admin/sqlc-admin.yml
     sources:
@@ -50,7 +48,6 @@ tasks:
     desc: "Generate SQLC code for admin database"
 
   sqlc-public:
-    watch: true
     cmds:
       - sqlc generate -f ./db/public/sqlc-public.yml
     sources:
@@ -73,14 +70,12 @@ tasks:
 
   gen:
     deps: [ogen, openapi-client, sqlc]
-    watch: true
     desc: "Generate OpenAPI server and client code"
 
   ogen:
     deps: ['tsp']
     cmds:
       - go generate main.go
-    watch: true
     sources:
       - typespec/tsp-output/@typespec/openapi3/openapi.yaml
       - main.go
@@ -101,7 +96,6 @@ tasks:
   openapi-client:
     ideps: [npmi, tsp]
     dir: ./server/admin/frontend
-    watch: true
     cmds:
       - npx openapi-generator-cli generate -i {{.ROOT_DIR}}/typespec/tsp-output/@typespec/openapi3/openapi.yaml -g typescript-fetch -o ./src/generated-client
     sources:
