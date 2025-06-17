@@ -93,7 +93,10 @@ export default function AdminEntryPage() {
 					path: encodeURIComponent(entry.Path),
 				});
 				showMessage("success", "Entry deleted successfully");
-				location.href = "/admin/";
+				// Small delay to ensure the message is shown
+				setTimeout(() => {
+					location.href = "/admin/";
+				}, 500);
 			} catch (e) {
 				console.log(e);
 				showMessage("error", "Failed to delete entry");
