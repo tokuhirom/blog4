@@ -2,6 +2,33 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Important Git Workflow Instructions
+
+**CRITICAL: Always follow these git workflow rules:**
+1. **Create a new branch for EVERY commit** - Never commit directly to main
+2. **Create a PR after EVERY commit** - Each commit should have its own PR
+3. **Always enable auto-merge** - Use `gh pr merge --auto --merge` for every PR
+4. **Branch naming convention** - Use descriptive names like `fix/bug-description` or `feat/feature-name`
+
+Example workflow:
+```bash
+# 1. Create new branch
+git checkout -b fix/some-bug
+
+# 2. Make changes and commit
+git add .
+git commit -m "fix: description"
+
+# 3. Push branch
+git push -u origin fix/some-bug
+
+# 4. Create PR
+gh pr create --title "fix: description" --body "..."
+
+# 5. Enable auto-merge
+gh pr merge --auto --merge <PR_NUMBER>
+```
+
 ## Project Overview
 
 Blog4 is a full-stack blog application with an admin interface, built with Go backend and TypeScript/Svelte frontend. It features wiki-style linking, Amazon product integration, and automated image generation.
