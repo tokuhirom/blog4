@@ -79,6 +79,7 @@ export default function AdminHeader() {
 				</a>
 				<nav style={styles.nav}>
 					<button
+						type="button"
 						onClick={handleNewEntry}
 						style={styles.button}
 						onMouseEnter={(e) => {

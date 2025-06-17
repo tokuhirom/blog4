@@ -30,7 +30,7 @@ export default function TopPage() {
 		setSearchKeyword(keyword);
 	}
 
-	async function loadMoreEntries() {
+	const loadMoreEntries = React.useCallback(async () => {
 		if (!allEntries) {
 			console.log("allEntries is not initialized yet");
 			return;
@@ -88,9 +88,9 @@ export default function TopPage() {
 		} finally {
 			setIsLoading(false);
 		}
-	}
+	}, [allEntries, isLoading, hasMore]);
 
-	async function handleKeydown(event: KeyboardEvent) {
+	const handleKeydown = React.useCallback(async (event: KeyboardEvent) => {
 		if (
 			event.key === "c" &&
 			!event.ctrlKey &&
@@ -121,7 +121,7 @@ export default function TopPage() {
 				alert(`Failed to create new entry: ${err}`);
 			}
 		}
-	}
+	}, []);
 
 	useEffect(() => {
 		window.addEventListener("keydown", handleKeydown);
@@ -145,7 +145,7 @@ export default function TopPage() {
 				}, 10);
 			} catch (err) {
 				console.error(err);
-				alert(`Failed to load entries: ${err}`);
+				// alert(`Failed to load entries: ${err}`);
 			}
 		};
 
@@ -157,7 +157,7 @@ export default function TopPage() {
 			}
 			window.removeEventListener("keydown", handleKeydown);
 		};
-	}, []);
+	}, [handleKeydown, hasMore, isLoading, loadMoreEntries]);
 
 	const styles = {
 		container: {

@@ -19,7 +19,7 @@ export default function AdminEntryPage() {
 	const [entry, setEntry] = useState<GetLatestEntriesRow>(
 		{} as GetLatestEntriesRow,
 	);
-	const [links, setLinks] = useState<{ [key: string]: string | null }>({});
+	const [, setLinks] = useState<{ [key: string]: string | null }>({});
 	const [title, setTitle] = useState("");
 	const [body, setBody] = useState("");
 	const [visibility, setVisibility] = useState("private");
@@ -29,33 +29,33 @@ export default function AdminEntryPage() {
 		twohops: [],
 		newLinks: [],
 	});
-	const [message, setMessage] = useState("");
-	const [messageType, setMessageType] = useState<"success" | "error" | "">("");
+	const [, setMessage] = useState("");
+	const [, setMessageType] = useState<"success" | "error" | "">("");
 	const [updatedMessage, setUpdatedMessage] = useState("");
-	const [isDirty, setIsDirty] = useState(false);
+	const [, setIsDirty] = useState(false);
 
-	function showUpdatedMessage(text: string) {
+	const showUpdatedMessage = React.useCallback((text: string) => {
 		setUpdatedMessage(text);
 		setTimeout(() => {
 			setUpdatedMessage("");
 		}, 1000);
-	}
+	}, []);
 
-	function clearMessage() {
+	const clearMessage = React.useCallback(() => {
 		setMessage("");
 		setMessageType("");
-	}
+	}, []);
 
-	function showMessage(type: "success" | "error", text: string) {
+	const showMessage = React.useCallback((type: "success" | "error", text: string) => {
 		setMessageType(type);
 		setMessage(text);
 		setTimeout(() => {
 			setMessage("");
 			setMessageType("");
 		}, 5000);
-	}
+	}, []);
 
-	function loadLinks() {
+	const loadLinks = React.useCallback(() => {
 		api
 			.getLinkPallet({ path: encodeURIComponent(path) })
 			.then((data) => {
@@ -65,7 +65,7 @@ export default function AdminEntryPage() {
 			.catch((error) => {
 				console.error("Failed to get links:", error);
 			});
-	}
+	}, [path]);
 
 	async function handleDelete(event: React.MouseEvent) {
 		event.preventDefault();
@@ -106,7 +106,7 @@ export default function AdminEntryPage() {
 		}
 	}
 
-	async function handleUpdateBody() {
+	const handleUpdateBody = React.useCallback(async () => {
 		clearMessage();
 
 		if (body === "") {
@@ -128,9 +128,9 @@ export default function AdminEntryPage() {
 			showMessage("error", "Failed to update entry body");
 			console.error("Failed to update entry body:", e);
 		}
-	}
+	}, [body, path, clearMessage, showMessage, showUpdatedMessage]);
 
-	async function handleUpdateTitle() {
+	const handleUpdateTitle = React.useCallback(async () => {
 		clearMessage();
 		if (title === "") {
 			showMessage("error", "Title cannot be empty");
@@ -151,19 +151,19 @@ export default function AdminEntryPage() {
 			showMessage("error", "Failed to update entry title");
 			console.error("Failed to update entry title:", e);
 		}
-	}
+	}, [title, path, clearMessage, showMessage]);
 
 	const debouncedUpdateBody = React.useMemo(
 		() => debounce(() => handleUpdateBody(), 800),
-		[body],
+		[handleUpdateBody],
 	);
 
 	const debouncedTitleUpdate = React.useMemo(
 		() => debounce(() => handleUpdateTitle(), 500),
-		[title],
+		[handleUpdateTitle],
 	);
 
-	function handleInputBody() {
+	const handleInputBody = React.useCallback(() => {
 		setIsDirty(true);
 		debouncedUpdateBody();
 
@@ -172,7 +172,7 @@ export default function AdminEntryPage() {
 			setCurrentLinks(newLinks);
 			loadLinks();
 		}
-	}
+	}, [body, currentLinks, debouncedUpdateBody, loadLinks]);
 
 	function toggleVisibility(event: React.MouseEvent) {
 		event.preventDefault();
@@ -226,7 +226,7 @@ export default function AdminEntryPage() {
 		loadEntry();
 		api.getLinkedEntryPaths({ path: encodeURIComponent(path) }).then(setLinks);
 		loadLinks();
-	}, [path]);
+	}, [path, loadLinks, location]);
 
 	const styles = {
 		parent: {},
@@ -316,7 +316,6 @@ export default function AdminEntryPage() {
 					<form style={styles.form}>
 						<div style={styles.titleContainer}>
 							<input
-								id="title"
 								name="title"
 								type="text"
 								style={styles.input}
@@ -349,6 +348,7 @@ export default function AdminEntryPage() {
 							<label style={styles.label}>
 								Visibility: {visibility}
 								<button
+									type="button"
 									onClick={toggleVisibility}
 									style={{ marginLeft: "1rem" }}
 								>

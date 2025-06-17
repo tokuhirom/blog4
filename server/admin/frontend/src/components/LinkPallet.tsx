@@ -1,4 +1,3 @@
-import React from "react";
 import type { LinkPalletData } from "../generated-client/model";
 import AdminEntryCardItem from "./AdminEntryCardItem";
 import CardItem from "./CardItem";
@@ -49,8 +48,8 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 					<AdminEntryCardItem key={link.Path} entry={link} />
 				))}
 			</div>
-			{linkPallet.twohops.map((twohops, index) => (
-				<div key={index} style={styles.twoHopLink}>
+			{linkPallet.twohops.map((twohops) => (
+				<div key={`${twohops.src.Path || twohops.src.dstTitle}-twohop`} style={styles.twoHopLink}>
 					{twohops.src.Title ? (
 						<AdminEntryCardItem
 							entry={twohops.src}

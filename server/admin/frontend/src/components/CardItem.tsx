@@ -1,4 +1,4 @@
-import React from "react";
+import type React from "react";
 
 interface CardItemProps {
 	title?: string;
@@ -55,7 +55,7 @@ export default function CardItem({
 	};
 
 	return (
-		<button className="card" style={styles.card} onClick={onClick}>
+		<button type="button" className="card" style={styles.card} onClick={onClick}>
 			{title && <span style={styles.title}>{title}</span>}
 			{imgSrc && <img src={imgSrc} alt="great one" style={styles.img} />}
 			{title && <span style={styles.content}>{content}</span>}

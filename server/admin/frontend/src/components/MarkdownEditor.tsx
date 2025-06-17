@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { EditorState } from "@codemirror/state";
 import { EditorView, keymap } from "@codemirror/view";
 import { markdown } from "@codemirror/lang-markdown";
@@ -17,9 +17,6 @@ interface MarkdownEditorProps {
 export default function MarkdownEditor({
 	initialContent = "",
 	onUpdateText,
-	onDropFiles,
-	existsEntryByTitle,
-	findOrCreateEntry,
 }: MarkdownEditorProps) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const editorRef = useRef<EditorView | null>(null);
@@ -51,7 +48,7 @@ export default function MarkdownEditor({
 		return () => {
 			view.destroy();
 		};
-	}, []);
+	}, [initialContent, onUpdateText]);
 
 	return (
 		<div
