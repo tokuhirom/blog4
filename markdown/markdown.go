@@ -3,12 +3,14 @@ package markdown
 import (
 	"bytes"
 	"context"
+	"fmt"
+	"html/template"
+
 	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/yuin/goldmark"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/extension"
 	"github.com/yuin/goldmark/renderer/html"
-	"html/template"
 )
 
 type Markdown struct {
@@ -50,7 +52,7 @@ func NewMarkdown(ctx context.Context, queries *publicdb.Queries) *Markdown {
 func (m *Markdown) Render(input string) (template.HTML, error) {
 	var buf bytes.Buffer
 	if err := m.md.Convert([]byte(input), &buf); err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to convert markdown: %w", err)
 	}
 	return template.HTML(buf.String()), nil
 }
