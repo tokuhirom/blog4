@@ -2,7 +2,7 @@
 import SearchBox from "../components/SearchBox.svelte";
 import { onDestroy, onMount } from "svelte";
 import AdminEntryCardItem from "../components/AdminEntryCardItem.svelte";
-import type { GetLatestEntriesRow } from "../generated-client";
+import type { GetLatestEntriesRow } from "../generated-client/model";
 import { createAdminApiClient } from "../admin_api";
 
 const api = createAdminApiClient();

@@ -94,16 +94,17 @@ tasks:
     desc: "Install npm dependencies"
 
   openapi-client:
-    ideps: [npmi, tsp]
+    deps: [npmi, tsp]
     dir: ./server/admin/frontend
     cmds:
-      - npx openapi-generator-cli generate -i {{.ROOT_DIR}}/typespec/tsp-output/@typespec/openapi3/openapi.yaml -g typescript-fetch -o ./src/generated-client
+      - npm run generate-client
     sources:
       - typespec/tsp-output/@typespec/openapi3/openapi.yaml
+      - orval.config.ts
     generates:
-      - ./src/generated-client
-      - ./src/generated-client/runtime.ts
-    desc: "Generate OpenAPI client code"
+      - ./src/generated-client/adminApi.ts
+      - ./src/generated-client/model
+    desc: "Generate OpenAPI client code with Orval"
 
   docker-build:
     cmds:

@@ -27,7 +27,7 @@ task dev
 ### Common Commands
 
 ```bash
-# Generate all code (TypeSpec, SQLC, OpenAPI)
+# Generate all code (TypeSpec, SQLC, OpenAPI client)
 task gen
 
 # Watch mode for code generation
@@ -90,6 +90,7 @@ Key points:
 - API changes: Edit TypeSpec files in `/typespec/`
 - Database queries: Add SQL to `/db/*/queries/`
 - Frontend: Svelte components in `/server/admin/frontend/`
+- API client code is generated using Orval (no Java required)
 - All code is auto-generated from TypeSpec and SQL files
 
 ### Code Formatting

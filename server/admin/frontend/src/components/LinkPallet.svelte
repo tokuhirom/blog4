@@ -1,7 +1,7 @@
 <script lang="ts">
 import AdminEntryCardItem from "./AdminEntryCardItem.svelte";
 import CardItem from "./CardItem.svelte";
-import type { LinkPalletData } from "../generated-client";
+import type { LinkPalletData } from "../generated-client/model";
 import { createAdminApiClient } from "../admin_api";
 
 const { linkPallet }: { linkPallet: LinkPalletData } = $props();

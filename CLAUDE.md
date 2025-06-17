@@ -62,7 +62,7 @@ task docker-run     # Run Docker container
 ### Code Generation Pipeline
 1. **TypeSpec** (`/typespec/*.tsp`) → OpenAPI spec
 2. **OpenAPI** → Go server code via Ogen (`go generate main.go`)
-3. **OpenAPI** → TypeScript client via openapi-generator
+3. **OpenAPI** → TypeScript client via Orval (no Java required)
 4. **SQL** (`/db/*/queries/*.sql`) → Go code via SQLC
 
 ### Database Structure
@@ -109,7 +109,7 @@ All admin endpoints are prefixed with `/api/`:
 1. Edit TypeSpec files in `/typespec/`
 2. Run `task tsp` to generate OpenAPI
 3. Run `task ogen` to generate Go server
-4. Run `task openapi-client` to generate TypeScript client
+4. Run `task openapi-client` to generate TypeScript client with Orval
 
 ### Add Database Query
 1. Add SQL query to `/db/admin/queries/*.sql` or `/db/public/queries/*.sql`

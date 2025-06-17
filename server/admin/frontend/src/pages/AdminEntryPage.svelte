@@ -3,11 +3,10 @@ import { onMount } from "svelte";
 import MarkdownEditor from "../components/MarkdownEditor.svelte";
 
 import { createAdminApiClient } from "../admin_api";
-import {
-	type GetLatestEntriesRow,
-	type LinkPalletData,
-	ResponseError,
-} from "../generated-client";
+import type {
+	GetLatestEntriesRow,
+	LinkPalletData,
+} from "../generated-client/model";
 import { extractLinks } from "../extractLinks";
 import { debounce } from "../utils";
 import LinkPallet from "../components/LinkPallet.svelte";
