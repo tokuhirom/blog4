@@ -11,9 +11,11 @@ export default function TopPage() {
 	const [allEntries, setAllEntries] = useState<GetLatestEntriesRow[]>([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [hasMore, setHasMore] = useState(true);
-	const loadIntervalRef = useRef<NodeJS.Timeout | null>(null);
+	const [isInitialized, setIsInitialized] = useState(false);
+	
+	// Use refs to track if we're currently loading to prevent duplicate calls
 	const isLoadingRef = useRef(false);
-	const hasMoreRef = useRef(true);
+	const isMountedRef = useRef(true);
 
 	const filteredEntries = React.useMemo(() => {
 		if (searchKeyword === "") {
@@ -33,69 +35,55 @@ export default function TopPage() {
 	}
 
 	const loadMoreEntries = React.useCallback(async () => {
-		if (!allEntries) {
-			console.log("allEntries is not initialized yet");
+		// Prevent concurrent loads
+		if (isLoadingRef.current || !hasMore || !isMountedRef.current) {
 			return;
 		}
-		console.log(`loadMoreEntries ${isLoading} ${hasMore} ${allEntries.length}`);
-		if (isLoadingRef.current || !hasMoreRef.current) return;
 
-		setIsLoading(true);
 		isLoadingRef.current = true;
-
-		const last_last_edited_at = allEntries[allEntries.length - 1]?.LastEditedAt;
-		if (allEntries.length > 0 && !last_last_edited_at) {
-			setIsLoading(false);
-			setHasMore(false);
-			return;
-		}
+		setIsLoading(true);
 
 		try {
-			console.log(`loadMoreEntries ${last_last_edited_at}`);
-			console.log(allEntries);
+			const lastEntry = allEntries[allEntries.length - 1];
+			const lastEditedAt = lastEntry?.LastEditedAt;
+
+			console.log(`Loading more entries... last_last_edited_at=${lastEditedAt}`);
+
 			const rawEntries = await api.getLatestEntries(
-				last_last_edited_at
-					? {
-							lastLastEditedAt: last_last_edited_at,
-						}
-					: {},
+				lastEditedAt ? { lastLastEditedAt: lastEditedAt } : {}
 			);
-			// Filter out any entries without a Path (note: PascalCase from API)
+
+			if (!isMountedRef.current) return;
+
+			// Filter out any entries without a Path
 			const newEntries = (rawEntries || []).filter((entry) => entry?.Path);
 
 			if (newEntries.length === 0) {
-				console.log(
-					`No more entries to load... stopping loading more entries. last_last_edited_at=${last_last_edited_at}`,
-				);
+				console.log("No more entries to load");
 				setHasMore(false);
-				hasMoreRef.current = false;
 			} else {
-				const existingPaths = allEntries.map((entry) => entry.Path);
-				const addingNewEntries = newEntries.filter(
-					(entry) => !existingPaths.includes(entry.Path),
+				// Filter out duplicates
+				const existingPaths = new Set(allEntries.map((entry) => entry.Path));
+				const uniqueNewEntries = newEntries.filter(
+					(entry) => !existingPaths.has(entry.Path)
 				);
-				if (addingNewEntries.length === 0) {
-					console.log(
-						`All entries are duplicated... stopping loading more entries. last_last_edited_at=${last_last_edited_at}, newEntries=${newEntries.map((entry) => entry.Title)}`,
-					);
+
+				if (uniqueNewEntries.length === 0) {
+					console.log("All entries are duplicates, no more to load");
 					setHasMore(false);
-					hasMoreRef.current = false;
 				} else {
-					console.log(
-						`Adding new entries... last_last_edited_at=${last_last_edited_at}, newEntries=${newEntries.map((entry) => entry.Title)}`,
-					);
-					setAllEntries((prev) => [...prev, ...addingNewEntries]);
+					console.log(`Adding ${uniqueNewEntries.length} new entries`);
+					setAllEntries((prev) => [...prev, ...uniqueNewEntries]);
 				}
 			}
 		} catch (err) {
+			console.error("Failed to load more entries:", err);
 			setHasMore(false);
-			hasMoreRef.current = false;
-			console.error(err);
 		} finally {
-			setIsLoading(false);
 			isLoadingRef.current = false;
+			setIsLoading(false);
 		}
-	}, [allEntries, isLoading, hasMore]);
+	}, [allEntries, hasMore]);
 
 	const handleKeydown = React.useCallback(async (event: KeyboardEvent) => {
 		if (
@@ -130,41 +118,94 @@ export default function TopPage() {
 		}
 	}, []);
 
+	// Initial load effect
 	useEffect(() => {
-		window.addEventListener("keydown", handleKeydown);
+		if (isInitialized) return;
 
-		const loadInitialEntries = async () => {
+		const loadInitial = async () => {
+			if (isLoadingRef.current) return;
+			
+			console.log("Loading initial entries...");
+			isLoadingRef.current = true;
+			setIsLoading(true);
+
 			try {
-				console.log("Loading entries...");
-				setIsLoading(true);
 				const entries = await api.getLatestEntries();
-				console.log("Loaded entries", entries);
-				// Filter out any entries without a Path (note: PascalCase from API)
-				setAllEntries((entries || []).filter((entry) => entry?.Path));
-				setIsLoading(false);
+				if (!isMountedRef.current) return;
 
-				console.log("Start loading more entries...");
-				// start loading more entries
-				loadIntervalRef.current = setInterval(() => {
-					if (!isLoadingRef.current && hasMoreRef.current) {
-						loadMoreEntries();
-					}
-				}, 10);
+				console.log(`Loaded ${entries?.length || 0} initial entries`);
+				const validEntries = (entries || []).filter((entry) => entry?.Path);
+				setAllEntries(validEntries);
+				setIsInitialized(true);
+				
+				// Only set hasMore if we got a full page of results
+				// Assuming the API returns 20-50 items per page
+				setHasMore(validEntries.length >= 20);
 			} catch (err) {
-				console.error(err);
-				// alert(`Failed to load entries: ${err}`);
+				console.error("Failed to load initial entries:", err);
+				if (isMountedRef.current) {
+					setIsInitialized(true);
+					setHasMore(false);
+				}
+			} finally {
+				isLoadingRef.current = false;
+				setIsLoading(false);
 			}
 		};
 
-		loadInitialEntries();
+		loadInitial();
+	}, [isInitialized]);
+
+	// Auto-load more entries when scrolling near bottom
+	useEffect(() => {
+		if (!isInitialized || !hasMore || isLoading) return;
+
+		const handleScroll = () => {
+			const scrollHeight = document.documentElement.scrollHeight;
+			const scrollTop = document.documentElement.scrollTop;
+			const clientHeight = document.documentElement.clientHeight;
+
+			// Load more when user scrolls to within 200px of bottom
+			if (scrollHeight - scrollTop - clientHeight < 200) {
+				loadMoreEntries();
+			}
+		};
+
+		// Also check immediately in case content doesn't fill the page
+		const checkIfNeedMore = () => {
+			const scrollHeight = document.documentElement.scrollHeight;
+			const clientHeight = document.documentElement.clientHeight;
+			
+			if (scrollHeight <= clientHeight && hasMore && !isLoading) {
+				loadMoreEntries();
+			}
+		};
+
+		window.addEventListener("scroll", handleScroll);
+		
+		// Check after a short delay to let the DOM settle
+		const timeoutId = setTimeout(checkIfNeedMore, 100);
 
 		return () => {
-			if (loadIntervalRef.current) {
-				clearInterval(loadIntervalRef.current);
-			}
+			window.removeEventListener("scroll", handleScroll);
+			clearTimeout(timeoutId);
+		};
+	}, [isInitialized, hasMore, isLoading, loadMoreEntries, allEntries.length]);
+
+	// Keyboard shortcuts
+	useEffect(() => {
+		window.addEventListener("keydown", handleKeydown);
+		return () => {
 			window.removeEventListener("keydown", handleKeydown);
 		};
-	}, [handleKeydown, hasMore, isLoading, loadMoreEntries]);
+	}, [handleKeydown]);
+
+	// Cleanup on unmount
+	useEffect(() => {
+		return () => {
+			isMountedRef.current = false;
+		};
+	}, []);
 
 	const styles = {
 		container: {
@@ -192,18 +233,24 @@ export default function TopPage() {
 			<SearchBox onSearch={handleSearch} />
 
 			<div style={styles.entryList}>
-				{filteredEntries.map((entry, index) => (
+				{filteredEntries.map((entry) => (
 					<AdminEntryCardItem
-						key={entry.Path || `index-${index}`}
+						key={entry.Path}
 						entry={entry}
 					/>
 				))}
 			</div>
-			{(isLoading || hasMore) && (
+			
+			{isLoading && (
 				<p style={styles.loadingMessage}>Loading more entries...</p>
 			)}
+			
 			{!hasMore && allEntries.length > 0 && (
 				<p style={styles.loadingMessage}>No more entries to load</p>
+			)}
+			
+			{!isLoading && allEntries.length === 0 && isInitialized && (
+				<p style={styles.loadingMessage}>No entries found</p>
 			)}
 		</div>
 	);
