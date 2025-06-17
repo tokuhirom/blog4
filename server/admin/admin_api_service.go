@@ -11,7 +11,7 @@ import (
 	"github.com/tokuhirom/blog4/server/admin/openapi"
 	"github.com/tokuhirom/blog4/server/sobs"
 	"io"
-	"log"
+	"log/slog"
 	"net/url"
 	"regexp"
 	"strings"
@@ -38,7 +38,7 @@ func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.G
 			Valid: false,
 		}
 	}
-	log.Printf("GetLatestEntries %v", lastEditedAt)
+	slog.Info("GetLatestEntries", slog.Any("lastEditedAt", lastEditedAt))
 	entries, err := p.queries.GetLatestEntries(ctx, admindb.GetLatestEntriesParams{
 		Column1:      lastEditedAt,
 		LastEditedAt: lastEditedAt,
@@ -70,7 +70,7 @@ func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.G
 func (p *adminApiService) GetEntryByDynamicPath(ctx context.Context, params openapi.GetEntryByDynamicPathParams) (openapi.GetEntryByDynamicPathRes, error) {
 	entry, err := p.queries.AdminGetEntryByPath(ctx, params.Path)
 	if err != nil {
-		log.Printf("GetEntryByDynamicPath %v", err)
+		slog.Error("GetEntryByDynamicPath failed", slog.String("error", err.Error()))
 		return nil, err
 	}
 
@@ -118,14 +118,14 @@ func (p *adminApiService) GetLinkedEntryPaths(ctx context.Context, params openap
 func (p *adminApiService) UpdateEntryBody(ctx context.Context, req *openapi.UpdateEntryBodyRequest, params openapi.UpdateEntryBodyParams) (openapi.UpdateEntryBodyRes, error) {
 	tx, err := p.db.Begin()
 	if err != nil {
-		log.Printf("failed to begin transaction: %v", err)
+		slog.Error("failed to begin transaction", slog.String("error", err.Error()))
 		return nil, fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
 	defer func() {
 		err := tx.Rollback()
 		if err != nil && !errors.Is(err, sql.ErrTxDone) {
-			log.Printf("failed to rollback transaction: %v", err)
+			slog.Error("failed to rollback transaction", slog.String("error", err.Error()))
 		}
 	}()
 
@@ -157,10 +157,10 @@ func (p *adminApiService) UpdateEntryBody(ctx context.Context, req *openapi.Upda
 	}
 
 	go func() {
-		log.Printf("Starting to generate entry_image")
+		slog.Info("Starting to generate entry_image")
 		err := NewEntryImageWorker(p.queries).processEntryImages(context.Background())
 		if err != nil {
-			log.Printf("failed to process entry images: %v", err)
+			slog.Error("failed to process entry images", slog.String("error", err.Error()))
 		}
 	}()
 
@@ -271,17 +271,17 @@ func (p *adminApiService) DeleteEntry(ctx context.Context, params openapi.Delete
 }
 
 func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openapi.UpdateVisibilityRequest, params openapi.UpdateEntryVisibilityParams) (openapi.UpdateEntryVisibilityRes, error) {
-	log.Printf("UpdateEntryVisibility %v", req)
+	slog.Info("UpdateEntryVisibility", slog.Any("request", req))
 	tx, err := p.db.Begin()
 	if err != nil {
-		log.Printf("failed to begin transaction: %v", err)
+		slog.Error("failed to begin transaction", slog.String("error", err.Error()))
 		return nil, fmt.Errorf("failed to begin transaction: %w", err)
 	}
 
 	defer func() {
 		err := tx.Rollback()
 		if err != nil && !errors.Is(err, sql.ErrTxDone) {
-			log.Printf("failed to rollback transaction: %v", err)
+			slog.Error("failed to rollback transaction", slog.String("error", err.Error()))
 		}
 	}()
 
@@ -331,16 +331,16 @@ func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openap
 	// これはバックグラウンドで処理してかまいません｡
 	go func() {
 		ctx := context.Background()
-		log.Printf("Starting to get amazon cache")
+		slog.Info("Starting to get amazon cache")
 		err := p.getAmazonCache(newEntry.Body, ctx)
 		if err != nil {
-			log.Printf("failed to get amazon cache: %v", err)
+			slog.Error("failed to get amazon cache", slog.String("error", err.Error()))
 		}
 
 		// update entry_image after that.
 		err = NewEntryImageWorker(p.queries).processEntryImages(ctx)
 		if err != nil {
-			log.Printf("failed to process entry images: %v", err)
+			slog.Error("failed to process entry images", slog.String("error", err.Error()))
 		}
 	}()
 
@@ -351,9 +351,9 @@ func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openap
 
 	// Send notification to Hub
 	for _, hubUrl := range p.hubUrls {
-		log.Printf("Notify Hub: %s", hubUrl)
+		slog.Info("Notify Hub", slog.String("hubUrl", hubUrl))
 		if err := NotifyHub(hubUrl, "https://blog.64p.org/feed"); err != nil {
-			log.Printf("Failed to notify Hub: %v", err)
+			slog.Error("Failed to notify Hub", slog.String("error", err.Error()))
 		}
 	}
 
@@ -374,14 +374,14 @@ func (p *adminApiService) getAmazonCache(markdown string, ctx context.Context) e
 			return err
 		}
 		if count > 0 {
-			log.Printf("ASIN %s is already cached", asin)
+			slog.Info("ASIN is already cached", slog.String("asin", asin))
 			continue
 		}
 
 		asins = append(asins, asin)
 	}
 
-	log.Printf("getAmazonCache: %v", asins)
+	slog.Info("getAmazonCache", slog.Any("asins", asins))
 
 	// バッチサイズは10
 	const batchSize = 10
@@ -401,12 +401,12 @@ func (p *adminApiService) getAmazonCache(markdown string, ctx context.Context) e
 		// バッチ処理を実行
 		productDetails, err := p.paapiClient.FetchAmazonProductDetails(ctx, currentBatch)
 		if err != nil {
-			log.Printf("failed to fetch amazon product details: %v", err)
+			slog.Error("failed to fetch amazon product details", slog.String("error", err.Error()))
 			return err
 		}
 
 		for _, productDetail := range productDetails {
-			log.Printf("ASIN: %s, Title: %s", productDetail.ASIN, productDetail.Title)
+			slog.Info("Amazon product detail", slog.String("asin", productDetail.ASIN), slog.String("title", productDetail.Title))
 			_, err := p.queries.InsertAmazonProductDetail(ctx, admindb.InsertAmazonProductDetailParams{
 				Asin:           productDetail.ASIN,
 				Title:          sql.NullString{String: productDetail.Title, Valid: true},
@@ -423,7 +423,7 @@ func (p *adminApiService) getAmazonCache(markdown string, ctx context.Context) e
 			time.Sleep(waitDuration)
 		}
 	}
-	log.Printf("getAmazonCache: done")
+	slog.Info("getAmazonCache: done")
 	return nil
 }
 
@@ -435,7 +435,7 @@ func (p *adminApiService) UploadFile(ctx context.Context, req *openapi.UploadFil
 	now := time.Now().UnixMilli()
 	key := fmt.Sprintf("%d-%s", now, req.File.Name)
 
-	log.Printf("UploadPost: %s, %s, %d", contentType, key, req.File.Size)
+	slog.Info("UploadPost", slog.String("contentType", contentType), slog.String("key", key), slog.Int("size", int(req.File.Size)))
 
 	// 先頭100バイトをキャプチャするためのバッファ
 	var previewBuf bytes.Buffer
@@ -452,8 +452,12 @@ func (p *adminApiService) UploadFile(ctx context.Context, req *openapi.UploadFil
 	n, _ := previewReader.Read(preview)
 	escapedPreview := url.QueryEscape(string(preview[:n]))
 
-	log.Printf("UploadPost: contentType=%s, key=%s, size=%d, preview=%s, bufSize=%d",
-		contentType, key, req.File.Size, escapedPreview, len(preview))
+	slog.Debug("UploadPost details",
+		slog.String("contentType", contentType),
+		slog.String("key", key),
+		slog.Int("size", int(req.File.Size)),
+		slog.String("preview", escapedPreview),
+		slog.Int("bufSize", len(preview)))
 
 	// S3にアップロード
 	err := p.S3Client.PutObjectToAttachmentBucket(
@@ -471,7 +475,7 @@ func (p *adminApiService) UploadFile(ctx context.Context, req *openapi.UploadFil
 	if err != nil {
 		return nil, fmt.Errorf("failed to parse URL: %w", err)
 	}
-	log.Printf("UploadPost: %s", url)
+	slog.Info("UploadPost completed", slog.String("url", url.String()))
 
 	return &openapi.UploadFileResponse{
 		URL: *url,
@@ -479,7 +483,7 @@ func (p *adminApiService) UploadFile(ctx context.Context, req *openapi.UploadFil
 }
 
 func (p *adminApiService) NewError(_ context.Context, err error) *openapi.ErrorResponseStatusCode {
-	log.Printf("NewError %v", err)
+	slog.Error("NewError", slog.String("error", err.Error()))
 	if errors.Is(err, sql.ErrNoRows) {
 		return &openapi.ErrorResponseStatusCode{
 			StatusCode: 404,

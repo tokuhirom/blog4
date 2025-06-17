@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+
 	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/yuin/goldmark"
 	"github.com/yuin/goldmark/ast"
@@ -115,7 +116,7 @@ func (r *WikiRenderer) Render(writer util.BufWriter, source []byte, node ast.Nod
 	if entering {
 		_, err := writer.WriteString(string(n.Target))
 		if err != nil {
-			return ast.WalkStop, err
+			return ast.WalkStop, fmt.Errorf("failed to write target: %w", err)
 		}
 		return ast.WalkSkipChildren, nil
 	}

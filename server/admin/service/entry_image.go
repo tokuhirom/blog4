@@ -2,7 +2,7 @@ package service
 
 import (
 	"fmt"
-	"log"
+	"log/slog"
 	"regexp"
 )
 
@@ -46,7 +46,9 @@ func (s *EntryImageService) ProcessEntryImages() error {
 
 	for _, entry := range entries {
 		if err := s.ProcessEntry(entry); err != nil {
-			log.Printf("failed to process entry %s: %v", entry.Path, err)
+			slog.Error("failed to process entry",
+				slog.String("path", entry.Path),
+				slog.Any("error", err))
 		}
 	}
 
@@ -55,7 +57,8 @@ func (s *EntryImageService) ProcessEntryImages() error {
 
 // ProcessEntry processes a single entry.
 func (s *EntryImageService) ProcessEntry(entry Entry) error {
-	log.Printf("process entry image: %s", entry.Path)
+	slog.Info("processing entry image",
+		slog.String("path", entry.Path))
 
 	image, err := s.GetImageFromEntry(entry)
 	if err != nil {
@@ -74,19 +77,19 @@ func (s *EntryImageService) ProcessEntry(entry Entry) error {
 func (s *EntryImageService) GetImageFromEntry(entry Entry) (string, error) {
 	imageTagMatch := regexp.MustCompile(`<img[^>]*src=['"]?(https?:\/\/[^\s)]+)\.(?:jpg|png|gif)['"]?`).FindStringSubmatch(entry.Body)
 	if len(imageTagMatch) > 1 {
-		log.Printf("imageTagMatch: %s", imageTagMatch[1])
+		slog.Debug("found image tag match", slog.String("url", imageTagMatch[1]))
 		return imageTagMatch[1], nil
 	}
 
 	basicImage := regexp.MustCompile(`!\[.*?\]\((https?:\/\/[^\s)]+)\)`).FindStringSubmatch(entry.Body)
 	if len(basicImage) > 1 {
-		log.Printf("basicImage: %s", basicImage[1])
+		slog.Debug("found basic image", slog.String("url", basicImage[1]))
 		return basicImage[1], nil
 	}
 
 	gyazoImage := regexp.MustCompile(`\[!\[.*?\]\((https?:\/\/[^\s)]+)\)\]\((.*?)\)`).FindStringSubmatch(entry.Body)
 	if len(gyazoImage) > 1 {
-		log.Printf("gyazoImage: %s", gyazoImage[1])
+		slog.Debug("found gyazo image", slog.String("url", gyazoImage[1]))
 		return gyazoImage[1], nil
 	}
 
@@ -96,7 +99,7 @@ func (s *EntryImageService) GetImageFromEntry(entry Entry) (string, error) {
 		if err != nil {
 			return "", fmt.Errorf("failed to get ASIN image: %w", err)
 		}
-		log.Printf("asin: asin=%s imageUrl=%s", asin[1], imageUrl)
+		slog.Debug("found ASIN image", slog.String("asin", asin[1]), slog.String("image_url", imageUrl))
 		return imageUrl, nil
 	}
 

@@ -4,23 +4,24 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log/slog"
+	"strings"
+
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server/admin/openapi"
-	"log"
-	"strings"
 )
 
 func getLinkPalletData(ctx context.Context, db *sql.DB, queries *admindb.Queries, targetPath string, targetTitle string) (*openapi.LinkPalletData, error) {
 	// このエントリがリンクしているページのリストを取得
 	links, err := queries.GetLinkedEntries(ctx, targetPath)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get linked entries for path %s: %w", targetPath, err)
 	}
 
 	// このエントリにリンクしているページのリストを取得
 	reverseLinks, err := queries.GetEntriesByLinkedTitle(ctx, targetTitle)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to get entries by linked title %s: %w", targetTitle, err)
 	}
 
 	// links の指す先のタイトルにリンクしているエントリのリストを取得
@@ -91,7 +92,7 @@ func getEntriesByLinkedTitles(ctx context.Context, db *sql.DB, targetPath string
 	defer func(rows *sql.Rows) {
 		err := rows.Close()
 		if err != nil {
-			log.Printf("Cannot close: %v", err)
+			slog.Error("Cannot close rows", slog.Any("error", err))
 		}
 	}(rows)
 
