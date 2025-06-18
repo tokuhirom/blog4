@@ -17,8 +17,8 @@ import (
 	"github.com/ogen-go/ogen/ogenerrors"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
+	"github.com/tokuhirom/blog4/internal/admin/openapi"
 	"github.com/tokuhirom/blog4/server"
-	"github.com/tokuhirom/blog4/server/admin/openapi"
 	"github.com/tokuhirom/blog4/server/sobs"
 )
 

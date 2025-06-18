@@ -8,12 +8,13 @@
 - ✅ `main.go` を `cmd/blog4/main.go` に移動（[PR #265](https://github.com/tokuhirom/blog4/pull/265)）
 - ✅ `os.Exit()` の使用を main.go のみに限定（[PR #264](https://github.com/tokuhirom/blog4/pull/264)）
 - ✅ フロントエンドビルドツールを OpenAPI Generator から Orval に移行（Java 依存を削除）
+- ✅ `internal/` ディレクトリを作成し、プライベートパッケージを整理（admin、markdown、middleware を internal/ へ移動）
 
 ## 1. パッケージ構造の問題
 
 ### 現状の問題点
 - ~~`main.go` がルートディレクトリに直接配置されている~~ **✅ 解決済み**
-- `internal/` ディレクトリがない（プライベートパッケージの明確な分離がない）
+- ~~`internal/` ディレクトリがない（プライベートパッケージの明確な分離がない）~~ **✅ 解決済み** - internal/ ディレクトリを作成し、admin、markdown、middleware パッケージを移動
 - パッケージ名がディレクトリ構造と一致していない（例: `server/admin` ディレクトリ内のパッケージ名が `admin` のみ）
 
 ### 影響
@@ -153,7 +154,7 @@ blog4/
 2. **中優先度**
    - ~~`cmd/` ディレクトリの作成と main.go の移動~~ **✅ 解決済み**
    - フロントエンドの再配置（`web/` ディレクトリへの移動）
-   - `internal/` ディレクトリの作成とプライベートパッケージの整理
+   - ~~`internal/` ディレクトリの作成とプライベートパッケージの整理~~ **✅ 解決済み**
 
 3. **低優先度**
    - 全体的なディレクトリ構造の再編成

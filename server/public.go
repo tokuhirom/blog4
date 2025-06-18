@@ -20,7 +20,7 @@ import (
 
 	"github.com/gorilla/feeds"
 
-	"github.com/tokuhirom/blog4/markdown"
+	"github.com/tokuhirom/blog4/internal/markdown"
 )
 
 //go:embed templates/*
