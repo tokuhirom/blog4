@@ -17,7 +17,7 @@ export default function AdminEntryCardItem({
 	onClick,
 }: AdminEntryCardItemProps) {
 	const navigate = useNavigate();
-	
+
 	const handleClick = (event: React.MouseEvent) => {
 		if (onClick) {
 			onClick(event);
@@ -31,7 +31,7 @@ export default function AdminEntryCardItem({
 			}
 		}
 	};
-	
+
 	return (
 		<EntryCardItem
 			entry={entry}

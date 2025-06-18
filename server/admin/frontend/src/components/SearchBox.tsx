@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { debounce } from "../utils";
+import styles from "./SearchBox.module.css";
 
 interface SearchBoxProps {
 	onSearch: (keyword: string) => void;
@@ -22,23 +23,15 @@ export default function SearchBox({ onSearch }: SearchBoxProps) {
 		debouncedSearch(newKeyword);
 	}
 
-	const styles = {
-		searchInput: {
-			marginBottom: "1rem",
-			width: "100%",
-			borderRadius: "0.375rem",
-			border: "1px solid #d1d5db",
-			padding: "0.5rem",
-		},
-	};
-
 	return (
-		<input
-			type="text"
-			placeholder="Search entries..."
-			style={styles.searchInput}
-			value={keyword}
-			onChange={handleInput}
-		/>
+		<div className={styles.container}>
+			<input
+				type="text"
+				placeholder="Search entries..."
+				className={styles.input}
+				value={keyword}
+				onChange={handleInput}
+			/>
+		</div>
 	);
 }

@@ -1,0 +1,51 @@
+.header {
+	position: fixed;
+	left: 0;
+	top: 0;
+	z-index: 10;
+	width: 100%;
+	background-color: #d92706;
+	color: white;
+	height: 62px;
+	vertical-align: middle;
+	font-family: "Hiragino Kaku Gothic ProN", "Meiryo", sans-serif;
+}
+
+.container {
+	max-width: 1200px;
+	margin: 0 auto;
+}
+
+.link {
+	display: block;
+	float: left;
+	text-decoration: none;
+	color: white;
+	padding: 8px;
+}
+
+.link:hover {
+	text-decoration: underline;
+}
+
+.textXl {
+	font-size: 1.25rem;
+	font-weight: bold;
+}
+
+.nav {
+	float: right;
+}
+
+.button {
+	background: none;
+	border: none;
+	color: white;
+	text-decoration: none;
+	cursor: pointer;
+	font: inherit;
+}
+
+.button:hover {
+	text-decoration: underline;
+}

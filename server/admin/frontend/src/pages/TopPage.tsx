@@ -5,6 +5,7 @@ import { createAdminApiClient } from "../admin_api";
 import AdminEntryCardItem from "../components/AdminEntryCardItem";
 import SearchBox from "../components/SearchBox";
 import type { GetLatestEntriesRow } from "../generated-client/model";
+import styles from "./TopPage.module.css";
 
 const api = createAdminApiClient();
 
@@ -16,7 +17,7 @@ export default function TopPage() {
 	const [hasMore, setHasMore] = useState(true);
 	const [isInitialized, setIsInitialized] = useState(false);
 	const loadingRef = useRef(false);
-	
+
 	const filteredEntries = React.useMemo(() => {
 		if (searchKeyword === "") {
 			return allEntries;
@@ -51,11 +52,13 @@ export default function TopPage() {
 			}
 			const lastEditedAt = lastEntry.LastEditedAt;
 
-			console.log(`Loading more entries... last_last_edited_at=${lastEditedAt} title=${lastEntry.Title}`);
-
-			const rawEntries = await api.getLatestEntries(
-				{ last_last_edited_at: lastEditedAt }
+			console.log(
+				`Loading more entries... last_last_edited_at=${lastEditedAt} title=${lastEntry.Title}`,
 			);
+
+			const rawEntries = await api.getLatestEntries({
+				last_last_edited_at: lastEditedAt,
+			});
 
 			// Filter out any entries without a Path
 			const newEntries = (rawEntries || []).filter((entry) => entry?.Path);
@@ -67,11 +70,13 @@ export default function TopPage() {
 				// Filter out duplicates
 				const existingPaths = new Set(allEntries.map((entry) => entry.Path));
 				const uniqueNewEntries = newEntries.filter(
-					(entry) => !existingPaths.has(entry.Path)
+					(entry) => !existingPaths.has(entry.Path),
 				);
 
 				if (uniqueNewEntries.length === 0) {
-					console.log(`All entries are duplicates, no more to load: ${newEntries.length}, ${newEntries[0].Title}`);
+					console.log(
+						`All entries are duplicates, no more to load: ${newEntries.length}, ${newEntries[0].Title}`,
+					);
 					setHasMore(false);
 				} else {
 					console.log(`Adding ${uniqueNewEntries.length} new entries`);
@@ -87,30 +92,36 @@ export default function TopPage() {
 		}
 	}, [allEntries, hasMore]);
 
-	const handleKeydown = React.useCallback(async (event: KeyboardEvent) => {
-		if (
-			event.key === "c" &&
-			!event.ctrlKey &&
-			!event.altKey &&
-			!event.metaKey &&
-			!event.shiftKey
-		) {
-			event.preventDefault();
-			event.stopPropagation();
-			try {
-				// Generate a placeholder title with current date/time
-				const now = new Date();
-				const placeholderTitle = format(now, "'New Entry' yyyy-MM-dd HH-mm-ss");
-				
-				const data = await api.createEntry({ title: placeholderTitle });
-				console.log(`New entry created: ${data.Path}`);
-				navigate(`/admin/entry/${data.Path}`);
-			} catch (err) {
-				console.error("Error creating new entry:", err);
-				alert(`Failed to create new entry: ${err}`);
+	const handleKeydown = React.useCallback(
+		async (event: KeyboardEvent) => {
+			if (
+				event.key === "c" &&
+				!event.ctrlKey &&
+				!event.altKey &&
+				!event.metaKey &&
+				!event.shiftKey
+			) {
+				event.preventDefault();
+				event.stopPropagation();
+				try {
+					// Generate a placeholder title with current date/time
+					const now = new Date();
+					const placeholderTitle = format(
+						now,
+						"'New Entry' yyyy-MM-dd HH-mm-ss",
+					);
+
+					const data = await api.createEntry({ title: placeholderTitle });
+					console.log(`New entry created: ${data.Path}`);
+					navigate(`/admin/entry/${data.Path}`);
+				} catch (err) {
+					console.error("Error creating new entry:", err);
+					alert(`Failed to create new entry: ${err}`);
+				}
 			}
-		}
-	}, [navigate]);
+		},
+		[navigate],
+	);
 
 	// Initial load effect
 	useEffect(() => {
@@ -128,10 +139,12 @@ export default function TopPage() {
 
 				console.log(`Loaded ${entries?.length || 0} initial entries`);
 				const validEntries = (entries || []).filter((entry) => entry?.Path);
-				console.log(`number of valid entries: ${validEntries?.length || 0} initial entries`);
+				console.log(
+					`number of valid entries: ${validEntries?.length || 0} initial entries`,
+				);
 				setAllEntries(validEntries);
 				setIsInitialized(true);
-				
+
 				// Only set hasMore if we got a full page of results
 				// Assuming the API returns 20-50 items per page
 				setHasMore(validEntries.length >= 20);
@@ -170,50 +183,26 @@ export default function TopPage() {
 		};
 	}, [handleKeydown]);
 
-	const styles = {
-		container: {
-			padding: "1rem",
-			margin: "0 auto",
-			maxWidth: "1200px",
-		},
-		loadingMessage: {
-			marginTop: "1rem",
-			textAlign: "center" as const,
-			color: "#6b7280",
-		},
-		entryList: {
-			display: "flex",
-			flexWrap: "wrap" as const,
-			margin: "auto",
-			gap: "1rem",
-			justifyContent: "flex-start",
-			maxWidth: "1200px",
-		},
-	};
-
 	return (
-		<div style={styles.container}>
+		<div className={styles.container}>
 			<SearchBox onSearch={handleSearch} />
 
-			<div style={styles.entryList}>
+			<div className={styles.entryList}>
 				{filteredEntries.map((entry) => (
-					<AdminEntryCardItem
-						key={entry.Path}
-						entry={entry}
-					/>
+					<AdminEntryCardItem key={entry.Path} entry={entry} />
 				))}
 			</div>
-			
+
 			{isLoading && (
-				<p style={styles.loadingMessage}>Loading more entries...</p>
+				<p className={styles.loadingMessage}>Loading more entries...</p>
 			)}
-			
+
 			{!hasMore && allEntries.length > 0 && (
-				<p style={styles.loadingMessage}>No more entries to load</p>
+				<p className={styles.loadingMessage}>No more entries to load</p>
 			)}
-			
+
 			{!isLoading && allEntries.length === 0 && isInitialized && (
-				<p style={styles.loadingMessage}>No entries found</p>
+				<p className={styles.loadingMessage}>No entries found</p>
 			)}
 		</div>
 	);
