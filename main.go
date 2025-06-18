@@ -89,4 +89,5 @@ func DoMain() error {
 	if err != nil {
 		return fmt.Errorf("failed to start server: %w", err)
 	}
+	return nil
 }
