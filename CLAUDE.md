@@ -41,7 +41,7 @@ brew install go-task
 
 # One-time setup
 task gen          # Generate all code (TypeSpec, SQLC, OpenAPI)
-cd server/admin/frontend && npm install
+cd internal/admin/frontend && npm install
 
 # Development
 task dev          # Run all dev servers and watchers
@@ -79,7 +79,7 @@ All admin endpoints are prefixed with `/api/`:
 - `/api/upload` - File upload
 
 ### Frontend Structure
-- **Location**: `/server/admin/frontend`
+- **Location**: `/internal/admin/frontend`
 - **Framework**: Svelte 5 with TypeScript
 - **Key Components**:
   - `MarkdownEditor.svelte` - CodeMirror-based editor
@@ -139,7 +139,7 @@ Required environment variables (see `app.jsonnet` for full list):
 - Object literals in decorators must use `#{}` syntax
 
 ### Frontend Build Issues
-- Run `npm install` in `/server/admin/frontend/`
+- Run `npm install` in `/internal/admin/frontend/`
 - Check Node.js version compatibility (v18+)
 
 ## Deployment

@@ -10,7 +10,7 @@ brew install go-task
 
 # One-time setup
 task gen
-cd server/admin/frontend && npm install
+cd internal/admin/frontend && npm install
 
 # Run development servers
 task dev
@@ -91,7 +91,7 @@ For detailed development instructions, see [CLAUDE.md](./CLAUDE.md).
 Key points:
 - API changes: Edit TypeSpec files in `/typespec/`
 - Database queries: Add SQL to `/db/*/queries/`
-- Frontend: Svelte components in `/server/admin/frontend/`
+- Frontend: Svelte components in `/internal/admin/frontend/`
 - API client code is generated using Orval (no Java required)
 - All code is auto-generated from TypeSpec and SQL files
 
@@ -130,7 +130,7 @@ task biome-lint
 task frontend-fmt
 
 # Or use npm directly in the frontend directory
-cd server/admin/frontend
+cd internal/admin/frontend
 npm run format  # Format code
 npm run lint    # Lint code
 ```

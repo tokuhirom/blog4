@@ -11,9 +11,9 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 
 	"github.com/tokuhirom/blog4/db/public/publicdb"
+	"github.com/tokuhirom/blog4/internal/admin"
+	middleware2 "github.com/tokuhirom/blog4/internal/middleware"
 	"github.com/tokuhirom/blog4/server"
-	"github.com/tokuhirom/blog4/server/admin"
-	middleware2 "github.com/tokuhirom/blog4/server/middleware"
 	"github.com/tokuhirom/blog4/server/sobs"
 )
 
