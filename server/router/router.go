@@ -2,6 +2,7 @@ package router
 
 import (
 	"database/sql"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -16,7 +17,7 @@ import (
 	"github.com/tokuhirom/blog4/server/sobs"
 )
 
-func BuildRouter(cfg server.Config, sqlDB *sql.DB, sobsClient *sobs.SobsClient) *chi.Mux {
+func BuildRouter(cfg server.Config, sqlDB *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mux, error) {
 	publicQueries := publicdb.New(sqlDB)
 
 	r := chi.NewRouter()
@@ -26,11 +27,15 @@ func BuildRouter(cfg server.Config, sqlDB *sql.DB, sobsClient *sobs.SobsClient) 
 		r.Use(middleware2.CheckWebAccelHeader(cfg.WebAccelGuard))
 	}
 
-	r.Mount("/admin", admin.Router(cfg, sqlDB, sobsClient))
+	adminRouter, err := admin.Router(cfg, sqlDB, sobsClient)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create admin router: %w", err)
+	}
+	r.Mount("/admin", adminRouter)
 	r.Mount("/", server.Router(publicQueries))
 	r.Get("/healthz", HealthzHandler)
 	r.Get("/git_hash", GitHashHandler)
-	return r
+	return r, nil
 }
 
 func HealthzHandler(w http.ResponseWriter, r *http.Request) {

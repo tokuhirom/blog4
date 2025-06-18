@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 	"log/slog"
 	"net"
 	"net/http"
@@ -21,12 +22,19 @@ import (
 //go:generate go run github.com/ogen-go/ogen/cmd/ogen@latest --target ./server/admin/openapi -package openapi --clean typespec/tsp-output/@typespec/openapi3/openapi.yaml
 
 func main() {
+	if err := DoMain(); err != nil {
+		slog.Error("failed to start server", slog.Any("error", err))
+		os.Exit(1)
+	}
+	os.Exit(0)
+}
+
+func DoMain() error {
 	if _, err := os.Stat(".env"); err == nil {
 		slog.Info("loading .env file")
 		err := godotenv.Load()
 		if err != nil {
-			slog.Error("failed to load .env", slog.Any("error", err))
-			os.Exit(1)
+			return fmt.Errorf("failed to load .env file: %w", err)
 		}
 	} else {
 		slog.Info(".env file not found")
@@ -34,8 +42,7 @@ func main() {
 
 	cfg, err := env.ParseAs[server.Config]()
 	if err != nil {
-		slog.Error("failed to parse Config", slog.Any("error", err))
-		os.Exit(1)
+		return fmt.Errorf("failed to parse Config: %w", err)
 	}
 
 	mysqlConfig := mysql.Config{
@@ -50,21 +57,21 @@ func main() {
 	}
 	sqlDB, err := sql.Open("mysql", mysqlConfig.FormatDSN())
 	if err != nil {
-		slog.Error("failed to open DB", slog.Any("error", err))
-		os.Exit(1)
+		return fmt.Errorf("failed to open DB connection: %w", err)
 	}
 	if err := sqlDB.Ping(); err != nil {
-		slog.Error("failed to ping DB", slog.Any("error", err))
-		os.Exit(1)
+		return fmt.Errorf("failed to ping DB: %w", err)
 	}
 
 	sobsClient, err := sobs.NewSobsClient(cfg.S3AccessKeyId, cfg.S3SecretAccessKey, cfg.S3Region, cfg.S3AttachmentsBucketName, cfg.S3BackupBucketName, cfg.S3Endpoint)
 	if err != nil {
-		slog.Error("failed to create S3 client", slog.Any("error", err))
-		os.Exit(1)
+		return fmt.Errorf("failed to create SobsClient: %w", err)
 	}
 
-	r := router.BuildRouter(cfg, sqlDB, sobsClient)
+	r, err := router.BuildRouter(cfg, sqlDB, sobsClient)
+	if err != nil {
+		return fmt.Errorf("failed to build router: %w", err)
+	}
 
 	go (func() {
 		slog.Info("Starting backup process")
@@ -80,7 +87,6 @@ func main() {
 	slog.Info("Starting server", slog.String("url", "http://localhost:8181/"))
 	err = http.ListenAndServe(":8181", r)
 	if err != nil {
-		slog.Error("Server failed to start", slog.Any("error", err))
-		os.Exit(1)
+		return fmt.Errorf("failed to start server: %w", err)
 	}
 }
