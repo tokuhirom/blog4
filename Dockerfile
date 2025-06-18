@@ -12,7 +12,7 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . ./
-RUN go build -o /app/server .
+RUN go build -o /app/server ./cmd/blog4
 
 # Stage 3: Final stage
 FROM ubuntu:24.04

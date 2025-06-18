@@ -50,7 +50,7 @@ task --watch gen  # Watch mode for code generation
 
 # Build
 task frontend-build  # Build frontend assets
-go build .          # Build Go binary
+go build ./cmd/blog4  # Build Go binary
 
 # Docker
 task docker-build   # Build Docker image
@@ -61,7 +61,7 @@ task docker-run     # Run Docker container
 
 ### Code Generation Pipeline
 1. **TypeSpec** (`/typespec/*.tsp`) → OpenAPI spec
-2. **OpenAPI** → Go server code via Ogen (`go generate main.go`)
+2. **OpenAPI** → Go server code via Ogen (`go generate ./cmd/blog4/main.go`)
 3. **OpenAPI** → TypeScript client via Orval (no Java required)
 4. **SQL** (`/db/*/queries/*.sql`) → Go code via SQLC
 
