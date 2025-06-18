@@ -25,7 +25,7 @@
 ## 2. フロントエンドの配置
 
 ### 現状の問題点
-- Svelte フロントエンドが `server/admin/frontend/` という深い階層に配置されている
+- Svelte フロントエンドが `internal/admin/frontend/` という深い階層に配置されている
 - ~~`package.json` と `package-lock.json` がプロジェクトルートにある~~ **✅ 解決済み** - frontend ディレクトリ内に正しく配置されている
 - `node_modules` が Go のソースツリー内に存在する（ただし .gitignore で除外済み）
 

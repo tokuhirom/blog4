@@ -53,7 +53,7 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 	}
 	dir, _ := os.Getwd()
 	indexHtmlHandler := func(w http.ResponseWriter, r *http.Request) {
-		file, err := os.ReadFile(filepath.Join("server/admin/frontend/dist/index.html"))
+		file, err := os.ReadFile(filepath.Join("internal/admin/frontend/dist/index.html"))
 		if err != nil {
 			slog.Error("failed to read index.html", slog.Any("error", err))
 			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -63,7 +63,7 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 	}
 	r.Get("/", indexHtmlHandler)
 	r.HandleFunc("/entry/*", indexHtmlHandler)
-	filesDir := http.Dir(filepath.Join(dir, "server/admin/frontend/dist"))
+	filesDir := http.Dir(filepath.Join(dir, "internal/admin/frontend/dist"))
 	r.Handle("/assets/*", http.StripPrefix("/admin/", http.FileServer(filesDir)))
 
 	queries := admindb.New(db)
