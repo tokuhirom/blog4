@@ -112,7 +112,7 @@ func Test_uniqueEntries(t *testing.T) {
 			if len(got) != tt.want {
 				t.Errorf("uniqueEntries() returned %d entries, want %d", len(got), tt.want)
 			}
-			
+
 			// Check that all entries have unique paths
 			pathMap := make(map[string]bool)
 			for _, entry := range got {

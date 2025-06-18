@@ -64,34 +64,34 @@ func TestWikiParser_Parse(t *testing.T) {
 			wantNil:    true,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			parser := &WikiParser{
 				Context: context.Background(),
 			}
-			
+
 			reader := text.NewReader([]byte(tt.input))
 			node := parser.Parse(nil, reader, nil)
-			
+
 			if tt.wantNil {
 				if node != nil {
 					t.Errorf("Parse() = %v, want nil", node)
 				}
 				return
 			}
-			
+
 			if node == nil {
 				t.Errorf("Parse() = nil, want WikiNode")
 				return
 			}
-			
+
 			wikiNode, ok := node.(*WikiNode)
 			if !ok {
 				t.Errorf("Parse() returned %T, want *WikiNode", node)
 				return
 			}
-			
+
 			if string(wikiNode.Target) != tt.wantTarget {
 				t.Errorf("Parse() Target = %s, want %s", string(wikiNode.Target), tt.wantTarget)
 			}

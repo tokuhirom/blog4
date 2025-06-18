@@ -8,7 +8,7 @@ func TestEntryImageService_getImageFromEntry(t *testing.T) {
 	// Note: This test only covers the regex pattern matching logic.
 	// Database operations are not tested here as they require mocking,
 	// which will be addressed after refactoring for better testability.
-	
+
 	tests := []struct {
 		name      string
 		entryBody string
@@ -52,10 +52,10 @@ func TestEntryImageService_getImageFromEntry(t *testing.T) {
 			wantErr:   false,
 		},
 	}
-	
+
 	// Note: ASIN pattern tests are skipped as they require database access
 	// This will be addressed in the refactoring phase
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			// We need to test the regex patterns directly since getImageFromEntry

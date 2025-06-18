@@ -52,34 +52,34 @@ func TestAsinParser_Parse(t *testing.T) {
 			wantNil:  true,
 		},
 	}
-	
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			parser := &AsinParser{
 				Context: context.Background(),
 			}
-			
+
 			reader := text.NewReader([]byte(tt.input))
 			node := parser.Parse(nil, reader, nil)
-			
+
 			if tt.wantNil {
 				if node != nil {
 					t.Errorf("Parse() = %v, want nil", node)
 				}
 				return
 			}
-			
+
 			if node == nil {
 				t.Errorf("Parse() = nil, want AsinNode")
 				return
 			}
-			
+
 			asinNode, ok := node.(*AsinNode)
 			if !ok {
 				t.Errorf("Parse() returned %T, want *AsinNode", node)
 				return
 			}
-			
+
 			if string(asinNode.Target) != tt.wantASIN {
 				t.Errorf("Parse() ASIN = %s, want %s", string(asinNode.Target), tt.wantASIN)
 			}
