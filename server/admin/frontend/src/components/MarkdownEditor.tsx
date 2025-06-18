@@ -119,7 +119,7 @@ export default function MarkdownEditor({
 		return () => {
 			view.destroy();
 		};
-	}, []); // Empty dependency array - only run once on mount
+	}, [initialContent]);
 
 	// Update editor content when initialContent changes (without recreating the editor)
 	useEffect(() => {

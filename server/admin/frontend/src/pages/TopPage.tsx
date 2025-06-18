@@ -145,7 +145,7 @@ export default function TopPage() {
 		};
 
 		loadInitial();
-	}, [isInitialized]);
+	}, [isInitialized, isLoading]);
 
 	// Load more entries using timeout
 	useEffect(() => {
@@ -160,7 +160,7 @@ export default function TopPage() {
 		return () => {
 			clearTimeout(timeoutId);
 		};
-	}, [isInitialized, hasMore, allEntries, loadMoreEntries]);
+	}, [isInitialized, hasMore, loadMoreEntries]);
 
 	// Keyboard shortcuts
 	useEffect(() => {
