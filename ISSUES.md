@@ -25,7 +25,7 @@
 ## 2. フロントエンドの配置
 
 ### 現状の問題点
-- Svelte フロントエンドが `internal/admin/frontend/` という深い階層に配置されている
+- ~~Svelte フロントエンドが `internal/admin/frontend/` という深い階層に配置されている~~ **✅ 解決済み** - `web/admin/` に移動
 - ~~`package.json` と `package-lock.json` がプロジェクトルートにある~~ **✅ 解決済み** - frontend ディレクトリ内に正しく配置されている
 - `node_modules` が Go のソースツリー内に存在する（ただし .gitignore で除外済み）
 
@@ -102,7 +102,7 @@
 ## 6. 静的アセットの配置
 
 ### 現状の問題点
-- `server/static/` と `server/templates/` が server ディレクトリ内にある
+- ~~`server/static/` と `server/templates/` が server ディレクトリ内にある~~ **✅ 解決済み** - `web/` ディレクトリに移動
 - 通常は `web/` や `assets/` などのトップレベルディレクトリに配置
 
 ### 影響

@@ -3,7 +3,6 @@ package server
 import (
 	"bytes"
 	"context"
-	"embed"
 	"fmt"
 	"html/template"
 	"log/slog"
@@ -21,13 +20,8 @@ import (
 	"github.com/gorilla/feeds"
 
 	"github.com/tokuhirom/blog4/internal/markdown"
+	"github.com/tokuhirom/blog4/web"
 )
-
-//go:embed templates/*
-var templateFS embed.FS
-
-//go:embed static/*
-var staticFS embed.FS
 
 type TopPageData struct {
 	Page    int
@@ -67,7 +61,7 @@ func summarizeEntry(body string, length int) string {
 
 func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Queries) {
 	// Parse and execute the template
-	tmpl, err := template.ParseFS(templateFS, "templates/index.html")
+	tmpl, err := template.ParseFS(web.TemplateFS, "templates/index.html")
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
@@ -190,7 +184,7 @@ func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Q
 	}
 
 	// Parse and execute the template
-	tmpl, err := template.ParseFS(templateFS, "templates/entry.html")
+	tmpl, err := template.ParseFS(web.TemplateFS, "templates/entry.html")
 	if err != nil {
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
 		return
@@ -304,19 +298,19 @@ func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *publ
 }
 
 func RenderStaticMainCss(writer http.ResponseWriter, request *http.Request) {
-	// if ./server/static/main.css is available, serve it.
+	// if ./web/static/main.css is available, serve it.
 	// hot reload.
-	if _, err := os.Stat("server/static/main.css"); err == nil {
+	if _, err := os.Stat("web/static/main.css"); err == nil {
 		writer.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
 		writer.Header().Set("Pragma", "no-cache")
 		writer.Header().Set("Expires", "0")
 
-		http.ServeFile(writer, request, "server/static/main.css")
+		http.ServeFile(writer, request, "web/static/main.css")
 		return
 	}
 
 	writer.Header().Set("Content-Type", "text/css")
-	file, err := staticFS.ReadFile("static/main.css")
+	file, err := web.StaticFS.ReadFile("static/main.css")
 	if err != nil {
 		return
 	}
