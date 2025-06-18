@@ -5,6 +5,7 @@ import { markdown } from "@codemirror/lang-markdown";
 import { defaultKeymap, indentWithTab } from "@codemirror/commands";
 import { oneDarkHighlightStyle } from "@codemirror/theme-one-dark";
 import { syntaxHighlighting } from "@codemirror/language";
+import styles from "./MarkdownEditor.module.css";
 
 interface MarkdownEditorProps {
 	initialContent?: string;
@@ -58,7 +59,7 @@ export default function MarkdownEditor({
 						for (let i = 0; i < items.length; i++) {
 							const item = items[i];
 							console.log("Clipboard item:", item.type);
-							if (item.type.indexOf('image') !== -1) {
+							if (item.type.indexOf("image") !== -1) {
 								const file = item.getAsFile();
 								if (file) {
 									files.push(file);
@@ -69,15 +70,18 @@ export default function MarkdownEditor({
 						if (files.length > 0 && onDropFilesRef.current) {
 							event.preventDefault();
 							const pos = view.state.selection.main.head;
-							onDropFilesRef.current(files).then((urls) => {
-								const text = urls.map(url => `![image](${url})`).join('\n');
-								view.dispatch({
-									changes: { from: pos, insert: text },
-									selection: { anchor: pos + text.length }
+							onDropFilesRef
+								.current(files)
+								.then((urls) => {
+									const text = urls.map((url) => `![image](${url})`).join("\n");
+									view.dispatch({
+										changes: { from: pos, insert: text },
+										selection: { anchor: pos + text.length },
+									});
+								})
+								.catch((err) => {
+									console.error("Failed to upload files:", err);
 								});
-							}).catch(err => {
-								console.error('Failed to upload files:', err);
-							});
 							return true;
 						}
 						return false;
@@ -86,17 +90,25 @@ export default function MarkdownEditor({
 						event.preventDefault();
 						const files = Array.from(event.dataTransfer?.files || []);
 						if (files.length > 0 && onDropFilesRef.current) {
-							const pos = view.posAtCoords({ x: event.clientX, y: event.clientY });
+							const pos = view.posAtCoords({
+								x: event.clientX,
+								y: event.clientY,
+							});
 							if (pos !== null) {
-								onDropFilesRef.current(files).then((urls) => {
-									const text = urls.map(url => `![image](${url})`).join('\n');
-									view.dispatch({
-										changes: { from: pos, insert: text },
-										selection: { anchor: pos + text.length }
+								onDropFilesRef
+									.current(files)
+									.then((urls) => {
+										const text = urls
+											.map((url) => `![image](${url})`)
+											.join("\n");
+										view.dispatch({
+											changes: { from: pos, insert: text },
+											selection: { anchor: pos + text.length },
+										});
+									})
+									.catch((err) => {
+										console.error("Failed to upload files:", err);
 									});
-								}).catch(err => {
-									console.error('Failed to upload files:', err);
-								});
 							}
 						}
 						return true;
@@ -104,7 +116,7 @@ export default function MarkdownEditor({
 					dragover: (event) => {
 						event.preventDefault();
 						return true;
-					}
+					},
 				}),
 			],
 		});
@@ -137,10 +149,5 @@ export default function MarkdownEditor({
 		}
 	}, [initialContent]);
 
-	return (
-		<div
-			ref={containerRef}
-			style={{ height: "400px", border: "1px solid #ccc" }}
-		/>
-	);
+	return <div ref={containerRef} className={styles.editor} />;
 }

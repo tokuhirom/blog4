@@ -147,3 +147,6 @@ Required environment variables (see `app.jsonnet` for full list):
 - Deployed on Sakura Cloud App Run
 - Health check endpoint: `/healthz`
 - Backup runs daily via cron job to S3
+```
+
+- after modify tsx or ts, run biome before the commit

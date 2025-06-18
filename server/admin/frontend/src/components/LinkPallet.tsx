@@ -3,6 +3,7 @@ import type { LinkPalletData } from "../generated-client/model";
 import AdminEntryCardItem from "./AdminEntryCardItem";
 import CardItem from "./CardItem";
 import { createAdminApiClient } from "../admin_api";
+import styles from "./LinkPallet.module.css";
 
 interface LinkPalletProps {
 	linkPallet: LinkPalletData;
@@ -12,7 +13,7 @@ const api = createAdminApiClient();
 
 export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 	const navigate = useNavigate();
-	
+
 	function createNewEntry(title: string) {
 		api
 			.createEntry({ title })
@@ -25,32 +26,18 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 			});
 	}
 
-	const styles = {
-		linkPallet: {},
-		oneHopLink: {
-			display: "flex",
-			flexWrap: "wrap" as const,
-			gap: "1rem",
-			clear: "both" as const,
-		},
-		twoHopLink: {
-			display: "flex",
-			flexWrap: "wrap" as const,
-			gap: "1rem",
-			clear: "both" as const,
-			marginTop: "1rem",
-		},
-	};
-
 	return (
-		<div style={styles.linkPallet}>
-			<div style={styles.oneHopLink}>
+		<div>
+			<div className={styles.oneHopLink}>
 				{linkPallet.links.map((link) => (
 					<AdminEntryCardItem key={link.Path} entry={link} />
 				))}
 			</div>
 			{linkPallet.twohops.map((twohops) => (
-				<div key={`${twohops.src.Path || twohops.src.dstTitle}-twohop`} style={styles.twoHopLink}>
+				<div
+					key={`${twohops.src.Path || twohops.src.dstTitle}-twohop`}
+					className={styles.twoHopLink}
+				>
 					{twohops.src.Title ? (
 						<AdminEntryCardItem
 							entry={twohops.src}
@@ -71,7 +58,7 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 				</div>
 			))}
 			{linkPallet.newLinks.length > 0 && (
-				<div style={styles.oneHopLink}>
+				<div className={styles.oneHopLink}>
 					<CardItem
 						onClick={() => false}
 						title="New Item"

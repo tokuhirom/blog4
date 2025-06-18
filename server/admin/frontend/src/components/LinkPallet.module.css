@@ -1,0 +1,14 @@
+.oneHopLink {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	clear: both;
+}
+
+.twoHopLink {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	clear: both;
+	margin-top: 1rem;
+}

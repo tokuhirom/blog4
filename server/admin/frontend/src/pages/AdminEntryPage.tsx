@@ -9,6 +9,7 @@ import type {
 	LinkPalletData,
 } from "../generated-client/model";
 import { debounce } from "../utils";
+import styles from "./AdminEntryPage.module.css";
 
 const api = createAdminApiClient();
 
@@ -59,14 +60,17 @@ export default function AdminEntryPage() {
 		setMessageType("");
 	}, []);
 
-	const showMessage = React.useCallback((type: "success" | "error", text: string) => {
-		setMessageType(type);
-		setMessage(text);
-		setTimeout(() => {
-			setMessage("");
-			setMessageType("");
-		}, 5000);
-	}, []);
+	const showMessage = React.useCallback(
+		(type: "success" | "error", text: string) => {
+			setMessageType(type);
+			setMessage(text);
+			setTimeout(() => {
+				setMessage("");
+				setMessageType("");
+			}, 5000);
+		},
+		[],
+	);
 
 	const loadLinks = React.useCallback(() => {
 		api
@@ -80,56 +84,62 @@ export default function AdminEntryPage() {
 			});
 	}, [path]);
 
-	const handleDelete = React.useCallback(async (event: React.MouseEvent) => {
-		event.preventDefault();
+	const handleDelete = React.useCallback(
+		async (event: React.MouseEvent) => {
+			event.preventDefault();
 
-		const confirmed = confirm(
-			`Are you sure you want to delete the entry "${title}"?`,
-		);
-		if (confirmed) {
+			const confirmed = confirm(
+				`Are you sure you want to delete the entry "${title}"?`,
+			);
+			if (confirmed) {
+				clearMessage();
+
+				try {
+					console.log("Deleting entry:", entry.Path);
+					await api.deleteEntry({
+						path: encodeURIComponent(entry.Path),
+					});
+					console.log("Entry deleted:", entry.Path);
+					showMessage("success", "Entry deleted successfully");
+					// Small delay to ensure the message is shown
+					setTimeout(() => {
+						navigate("/admin/");
+					}, 500);
+				} catch (e) {
+					console.log(e);
+					showMessage("error", "Failed to delete entry");
+				}
+			}
+		},
+		[entry.Path, title, clearMessage, showMessage, navigate],
+	);
+
+	const handleRegenerateEntryImage = React.useCallback(
+		async (event: React.MouseEvent) => {
+			event.preventDefault();
+			console.log("Regenerating entry image for:", entry.Path);
+
+			if (!entry.Path) {
+				showMessage("error", "No entry path available");
+				return;
+			}
+
 			clearMessage();
 
 			try {
-				console.log("Deleting entry:", entry.Path);
-				await api.deleteEntry({
+				await api.regenerateEntryImage({
 					path: encodeURIComponent(entry.Path),
 				});
-				console.log("Entry deleted:", entry.Path);
-				showMessage("success", "Entry deleted successfully");
-				// Small delay to ensure the message is shown
-				setTimeout(() => {
-					navigate("/admin/");
-				}, 500);
+				showUpdatedMessage("Entry image regenerated successfully");
+				// Don't redirect, just show the message
+				// location.href = "/admin/";
 			} catch (e) {
-				console.log(e);
-				showMessage("error", "Failed to delete entry");
+				console.error("Failed to regenerate entry image:", e);
+				showMessage("error", "Failed to regenerate entry image");
 			}
-		}
-	}, [entry.Path, title, clearMessage, showMessage, navigate]);
-
-	const handleRegenerateEntryImage = React.useCallback(async (event: React.MouseEvent) => {
-		event.preventDefault();
-		console.log("Regenerating entry image for:", entry.Path);
-
-		if (!entry.Path) {
-			showMessage("error", "No entry path available");
-			return;
-		}
-
-		clearMessage();
-
-		try {
-			await api.regenerateEntryImage({
-				path: encodeURIComponent(entry.Path),
-			});
-			showUpdatedMessage("Entry image regenerated successfully");
-			// Don't redirect, just show the message
-			// location.href = "/admin/";
-		} catch (e) {
-			console.error("Failed to regenerate entry image:", e);
-			showMessage("error", "Failed to regenerate entry image");
-		}
-	}, [entry.Path, clearMessage, showMessage, showUpdatedMessage]);
+		},
+		[entry.Path, clearMessage, showMessage, showUpdatedMessage],
+	);
 
 	const handleUpdateBody = React.useCallback(async () => {
 		clearMessage();
@@ -201,29 +211,32 @@ export default function AdminEntryPage() {
 		}
 	}, [body, currentLinks, debouncedUpdateBody, loadLinks]);
 
-	const handleDropFiles = React.useCallback(async (files: File[]): Promise<string[]> => {
-		console.log("Uploading files:", files);
-		const urls: string[] = [];
-		
-		for (const file of files) {
-			try {
-				const formData = new FormData();
-				formData.append("file", file);
-				
-				const response = await api.uploadFile(formData);
-				console.log("Upload response:", response);
-				
-				if (response.url) {
-					urls.push(response.url);
+	const handleDropFiles = React.useCallback(
+		async (files: File[]): Promise<string[]> => {
+			console.log("Uploading files:", files);
+			const urls: string[] = [];
+
+			for (const file of files) {
+				try {
+					const formData = new FormData();
+					formData.append("file", file);
+
+					const response = await api.uploadFile(formData);
+					console.log("Upload response:", response);
+
+					if (response.url) {
+						urls.push(response.url);
+					}
+				} catch (err) {
+					console.error("Failed to upload file:", file.name, err);
+					showMessage("error", `Failed to upload ${file.name}`);
 				}
-			} catch (err) {
-				console.error("Failed to upload file:", file.name, err);
-				showMessage("error", `Failed to upload ${file.name}`);
 			}
-		}
-		
-		return urls;
-	}, [showMessage]);
+
+			return urls;
+		},
+		[showMessage],
+	);
 
 	function toggleVisibility(event: React.MouseEvent) {
 		event.preventDefault();
@@ -279,99 +292,21 @@ export default function AdminEntryPage() {
 		loadLinks();
 	}, [path, loadLinks, navigate]);
 
-	const styles = {
-		parent: {},
-		container: {
-			backgroundColor: entry.Visibility === "private" ? "#f3f4f6" : "white",
-			minHeight: "100vh",
-		},
-		leftPane: {
-			float: "left" as const,
-			width: "49%",
-			padding: "1rem",
-		},
-		rightPane: {
-			float: "right" as const,
-			width: "49%",
-			padding: "1rem",
-		},
-		form: {},
-		titleContainer: {
-			marginBottom: "1rem",
-		},
-		input: {
-			width: "100%",
-			padding: "0.5rem",
-			border: "1px solid #d1d5db",
-			borderRadius: "0.25rem",
-		},
-		label: {
-			display: "block",
-			marginBottom: "0.5rem",
-			fontWeight: "bold",
-		},
-		bodyContainer: {
-			marginBottom: "1rem",
-		},
-		editor: {
-			minHeight: "400px",
-			border: "1px solid #d1d5db",
-			borderRadius: "0.25rem",
-		},
-		visibilityContainer: {
-			marginBottom: "1rem",
-		},
-		buttonContainer: {
-			marginTop: "1rem",
-			display: "flex",
-			gap: "1rem",
-		},
-		deleteButton: {
-			backgroundColor: "#ef4444",
-			color: "white",
-			padding: "0.5rem 1rem",
-			border: "none",
-			borderRadius: "0.25rem",
-			cursor: "pointer",
-		},
-		regenerateButton: {
-			backgroundColor: "#3b82f6",
-			color: "white",
-			padding: "0.5rem 1rem",
-			border: "none",
-			borderRadius: "0.25rem",
-			cursor: "pointer",
-		},
-		linkContainer: {
-			marginTop: "1rem",
-		},
-		link: {
-			color: "#3b82f6",
-			textDecoration: "underline",
-		},
-		updatedMessage: {
-			position: "fixed" as const,
-			top: "20px",
-			right: "20px",
-			backgroundColor: "#10b981",
-			color: "white",
-			padding: "0.5rem 1rem",
-			borderRadius: "0.25rem",
-			zIndex: 1000,
-			boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)",
-		},
-	};
+	const containerClass =
+		entry.Visibility === "private"
+			? `${styles.container} ${styles.containerPrivate}`
+			: styles.container;
 
 	return (
-		<div style={styles.parent}>
-			<div style={styles.container}>
-				<div style={styles.leftPane}>
-					<form style={styles.form}>
-						<div style={styles.titleContainer}>
+		<div>
+			<div className={containerClass}>
+				<div className={styles.leftPane}>
+					<form>
+						<div className={styles.titleContainer}>
 							<input
 								name="title"
 								type="text"
-								style={styles.input}
+								className={styles.input}
 								value={title}
 								onChange={(e) => {
 									setTitle(e.target.value);
@@ -382,11 +317,11 @@ export default function AdminEntryPage() {
 							/>
 						</div>
 
-						<div style={styles.bodyContainer}>
-							<label htmlFor="body" style={styles.label}>
+						<div className={styles.bodyContainer}>
+							<label htmlFor="body" className={styles.label}>
 								Body
 							</label>
-							<div style={styles.editor}>
+							<div className={styles.editor}>
 								<MarkdownEditor
 									initialContent={body}
 									onUpdateText={(text) => {
@@ -398,13 +333,13 @@ export default function AdminEntryPage() {
 							</div>
 						</div>
 
-						<div style={styles.visibilityContainer}>
-							<label style={styles.label}>
+						<div className={styles.visibilityContainer}>
+							<label className={styles.label}>
 								Visibility: {visibility}
 								<button
 									type="button"
 									onClick={toggleVisibility}
-									style={{ marginLeft: "1rem" }}
+									className={styles.toggleButton}
 								>
 									Toggle
 								</button>
@@ -412,17 +347,17 @@ export default function AdminEntryPage() {
 						</div>
 					</form>
 
-					<div style={styles.buttonContainer}>
+					<div className={styles.buttonContainer}>
 						<button
 							type="button"
-							style={styles.deleteButton}
+							className={styles.deleteButton}
 							onClick={handleDelete}
 						>
 							Delete
 						</button>
 						<button
 							type="button"
-							style={styles.regenerateButton}
+							className={styles.regenerateButton}
 							onClick={handleRegenerateEntryImage}
 						>
 							Regenerate entry_image
@@ -430,22 +365,21 @@ export default function AdminEntryPage() {
 					</div>
 
 					{visibility === "public" && (
-						<div style={styles.linkContainer}>
-							<a href={`/entry/${entry.Path}`} style={styles.link}>
+						<div className={styles.linkContainer}>
+							<a href={`/entry/${entry.Path}`} className={styles.link}>
 								Go to User Side Page
 							</a>
 						</div>
 					)}
-
 				</div>
 
-				<div style={styles.rightPane}>
+				<div className={styles.rightPane}>
 					<LinkPallet linkPallet={linkPallet} />
 				</div>
 			</div>
-			
+
 			{updatedMessage !== "" && (
-				<div style={styles.updatedMessage}>{updatedMessage}</div>
+				<div className={styles.updatedMessage}>{updatedMessage}</div>
 			)}
 		</div>
 	);
