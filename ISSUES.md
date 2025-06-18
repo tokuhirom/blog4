@@ -47,12 +47,47 @@
 ## 4. テストファイルの不足
 
 ### 現状の問題点
-- テストファイルが2つしか見つからない（`server/date_test.go`、`server/admin/amazon_test.go`）
+- ~~テストファイルが2つしか見つからない（`server/date_test.go`、`server/admin/amazon_test.go`）~~ **一部改善** - 基本的なテストを追加
 - Go プロジェクトとしてはテストカバレッジが低すぎる
+- データベース依存のコードが多く、モックなしではテストが困難
 
 ### 影響
 - コードの品質保証が不十分
 - リファクタリング時のリスク増大
+
+### テストが困難な部分（リファクタリング後に対応予定）
+
+#### 1. データベース依存のコード
+- `server/entry_image_service.go` - `getImageFromEntry` メソッドがデータベースクエリに直接依存
+- `internal/admin/admin_api_service.go` - すべてのメソッドがデータベースに直接アクセス
+- `internal/admin/twohop.go` - `getLinkPalletData` と `getEntriesByLinkedTitles` がデータベースに依存
+- `internal/markdown/asin.go` と `wiki_link.go` のレンダラー - データベースクエリを実行
+
+**解決策**: インターフェースを導入してモック可能にする、またはリポジトリパターンを採用
+
+#### 2. 外部サービス依存
+- `internal/admin/amazon_paapi5.go` - Amazon API への直接依存
+- `server/backup.go` - S3 サービスへの直接依存
+- `server/keep_alive.go` - HTTP クライアントの直接使用
+- `internal/admin/pubsubhubbub.go` - 外部 Hub への HTTP POST
+
+**解決策**: HTTPクライアントをインターフェース化、外部サービスクライアントの抽象化
+
+#### 3. ファイルシステム依存
+- `internal/admin/admin.go` - 静的ファイルの直接読み込み
+- `server/public.go` - テンプレートと静的ファイルの embed
+
+**解決策**: ファイルシステムアクセスの抽象化
+
+#### 4. 時間依存
+- `server/backup.go` - 現在時刻に依存したバックアップファイル名生成
+
+**解決策**: 時刻を注入可能にする
+
+#### 5. サードパーティライブラリのインターフェース
+- `internal/markdown/wiki_link.go` と `asin.go` - Goldmark の `util.BufWriter` インターフェースを実装するモックの作成が複雑
+
+**解決策**: 統合テストの活用、またはレンダリングロジックの抽象化
 
 ## 5. 設定ファイルの配置
 
