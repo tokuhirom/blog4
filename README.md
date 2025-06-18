@@ -41,7 +41,7 @@ task frontend
 
 # Build production assets
 task frontend-build
-go build .
+go build ./cmd/blog4
 
 # Docker operations
 task docker-build
@@ -52,17 +52,17 @@ task docker-run
 
 ```bash
 # Run the main server (includes both public and admin)
-go run main.go
+go run ./cmd/blog4
 
 # The server starts on http://localhost:8181/
 # - Public blog: http://localhost:8181/
 # - Admin panel: http://localhost:8181/admin
 
 # Debug with Delve
-dlv debug main.go
+dlv debug ./cmd/blog4
 
 # Build and run
-go build -o blog4
+go build -o blog4 ./cmd/blog4
 ./blog4
 ```
 
@@ -70,6 +70,8 @@ go build -o blog4
 
 ```
 blog4/
+├── cmd/
+│   └── blog4/       # Main application entry point
 ├── db/               # Database schemas and queries
 │   ├── admin/       # Admin database (write operations)
 │   └── public/      # Public database (read operations)
