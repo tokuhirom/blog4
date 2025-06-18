@@ -36,15 +36,15 @@ jobs:
 
       - name: Install npm dependencies
         run: npm install
-        working-directory: internal/admin/frontend
+        working-directory: web/admin
 
       - name: Run biome lint
         run: npm run lint
-        working-directory: internal/admin/frontend
+        working-directory: web/admin
 
       - name: Run vitest
         run: npm run test
-        working-directory: internal/admin/frontend
+        working-directory: web/admin
 
       - name: Set up Go
         uses: actions/setup-go@v5

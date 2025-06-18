@@ -1,9 +1,9 @@
 # Stage 1: Build the frontend
 FROM node:22 AS frontend-builder
 WORKDIR /app
-COPY internal/admin/frontend/package*.json ./
+COPY web/admin/package*.json ./
 RUN npm install
-COPY internal/admin/frontend/ ./
+COPY web/admin/ ./
 RUN npm run build
 
 # Stage 2: Build the Go backend
@@ -18,8 +18,8 @@ RUN go build -o /app/server ./cmd/blog4
 FROM ubuntu:24.04
 WORKDIR /app
 COPY --from=backend-builder /app/server/blog4 /app/
-COPY --from=frontend-builder /app/dist /app/internal/admin/frontend/dist
-COPY server/static /app/server/static
+COPY --from=frontend-builder /app/dist /app/web/admin/dist
+COPY web/static /app/web/static
 RUN apt-get update && apt-get install -y tzdata mysql-client openssl ca-certificates
 
 ARG GIT_HASH

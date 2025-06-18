@@ -15,22 +15,22 @@ tasks:
   frontend:
     cmds:
       - npm run dev
-    dir: ./internal/admin/frontend
+    dir: ./web/admin
     desc: "Run the Node.js development server"
 
   frontend-build:
     deps: [npmi, openapi-client]
     watch: true
     cmds:
-      - cd ./internal/admin/frontend && npm run build
+      - cd ./web/admin && npm run build
     sources:
-      - ./internal/admin/frontend/package.json
-      - ./internal/admin/frontend/package-lock.json
-      - ./internal/admin/frontend/tsconfig.json
-      - ./internal/admin/frontend/src/**/*.svelte
+      - ./web/admin/package.json
+      - ./web/admin/package-lock.json
+      - ./web/admin/tsconfig.json
+      - ./web/admin/src/**/*.svelte
     generates:
-      - ./internal/admin/frontend/dist/index.html
-      - ./internal/admin/frontend/dist/**/*.js
+      - ./web/admin/dist/index.html
+      - ./web/admin/dist/**/*.js
     desc: "Build the frontend"
 
   sqlc-admin:
@@ -87,15 +87,15 @@ tasks:
   npmi:
     cmds:
       - npm install
-    dir: ./internal/admin/frontend
+    dir: ./web/admin
     sources:
-      - ./internal/admin/frontend/package.json
-      - ./internal/admin/frontend/package-lock.json
+      - ./web/admin/package.json
+      - ./web/admin/package-lock.json
     desc: "Install npm dependencies"
 
   openapi-client:
     deps: [npmi, tsp]
-    dir: ./internal/admin/frontend
+    dir: ./web/admin
     cmds:
       - npm run generate-client
     sources:
@@ -132,7 +132,7 @@ tasks:
 
   biome-format:
     desc: "Format frontend code with Biome"
-    dir: ./internal/admin/frontend
+    dir: ./web/admin
     cmds:
       - npm run format
     sources:
@@ -141,13 +141,13 @@ tasks:
 
   biome-lint:
     desc: "Lint frontend code with Biome"
-    dir: ./internal/admin/frontend
+    dir: ./web/admin
     cmds:
       - npm run lint
 
   biome-check:
     desc: "Check frontend code with Biome (format and lint)"
-    dir: ./internal/admin/frontend
+    dir: ./web/admin
     cmds:
       - npx biome check .
 
