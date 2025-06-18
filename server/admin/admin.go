@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"context"
 	"database/sql"
+	"fmt"
 	"log/slog"
 	"net/http"
 	"os"
@@ -21,12 +22,13 @@ import (
 	"github.com/tokuhirom/blog4/server/sobs"
 )
 
-func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) *chi.Mux {
+func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mux, error) {
 	if cfg.AdminUser == "" {
 		slog.Warn("AdminUser is not set")
 	}
 	if cfg.AdminPassword == "" {
 		slog.Warn("AdminPassword is not set")
+		return nil, fmt.Errorf("AdminPassword is not set")
 	}
 
 	r := chi.NewRouter()
@@ -84,13 +86,9 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) *chi.Mux
 		}),
 	)
 	if err != nil {
-		return nil
-	}
-	if cfg.AdminPassword == "" {
-		slog.Error("Missing AdminPassword")
-		os.Exit(1)
+		return nil, fmt.Errorf("failed to create admin API handler: %w", err)
 	}
 	r.Mount("/api/", adminApiHandler)
 
-	return r
+	return r, nil
 }
