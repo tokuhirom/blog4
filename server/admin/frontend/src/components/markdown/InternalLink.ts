@@ -31,7 +31,7 @@ export function internalLinkPlugin(
 				for (const { from, to } of view.visibleRanges) {
 					const text = view.state.doc.sliceString(from, to);
 					let match: RegExpExecArray | null;
-					// biome-ignore lint/suspicious/noAssignInExpressions: <explanation>
+					// biome-ignore lint/suspicious/noAssignInExpressions: regex exec pattern requires assignment in while condition
 					while ((match = re.exec(text))) {
 						const pos = from + match.index;
 						const exists = !!existsEntryByTitle(match[1]);

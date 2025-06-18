@@ -42,7 +42,8 @@
 	},
 	"javascript": {
 		"formatter": {
-			"quoteStyle": "double"
+			"quoteStyle": "double",
+			"jsxQuoteStyle": "double"
 		}
 	}
 }

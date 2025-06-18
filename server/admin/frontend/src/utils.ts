@@ -1,4 +1,4 @@
-// biome-ignore lint/suspicious/noExplicitAny: <explanation>
+// biome-ignore lint/suspicious/noExplicitAny: generic debounce function needs to accept any function type
 export function debounce<T extends (...args: any[]) => void>(
 	func: T,
 	wait: number,

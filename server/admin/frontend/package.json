@@ -5,8 +5,8 @@
 		"dev": "vite dev",
 		"build": "vite build",
 		"preview": "vite preview",
-		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"check": "tsc --noEmit",
+		"check:watch": "tsc --noEmit --watch",
 		"format": "biome format --write .",
 		"lint": "biome lint .",
 		"test:unit": "vitest",
@@ -16,15 +16,14 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.0.0",
-		"@sveltejs/vite-plugin-svelte": "^5.0.3",
-		"@tsconfig/svelte": "^5.0.4",
+		"@types/react": "^19.1.8",
+		"@types/react-dom": "^19.1.6",
+		"@vitejs/plugin-react": "^4.5.2",
 		"autoprefixer": "^10.4.20",
 		"globals": "^16.0.0",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.0.0",
 		"orval": "^7.10.0",
-		"svelte": "^5.15.0",
-		"svelte-check": "^4.1.1",
 		"typescript": "^5.7.2",
 		"vite": "^6.0.5",
 		"vitest": "^3.0.0"
@@ -38,6 +37,8 @@
 		"@codemirror/theme-one-dark": "^6.1.2",
 		"@codemirror/view": "^6.36.1",
 		"date-fns": "^4.1.0",
-		"svelte-routing": "^2.13.0"
+		"react": "^19.1.0",
+		"react-dom": "^19.1.0",
+		"react-router-dom": "^7.6.2"
 	}
 }
