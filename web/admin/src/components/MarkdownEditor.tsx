@@ -133,21 +133,5 @@ export default function MarkdownEditor({
 		};
 	}, [initialContent]);
 
-	// Update editor content when initialContent changes (without recreating the editor)
-	useEffect(() => {
-		if (editorRef.current && initialContent !== undefined) {
-			const currentContent = editorRef.current.state.doc.toString();
-			if (currentContent !== initialContent) {
-				editorRef.current.dispatch({
-					changes: {
-						from: 0,
-						to: currentContent.length,
-						insert: initialContent,
-					},
-				});
-			}
-		}
-	}, [initialContent]);
-
 	return <div ref={containerRef} className={styles.editor} />;
 }
