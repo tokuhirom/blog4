@@ -5,4 +5,7 @@ import { defineConfig } from "vite";
 export default defineConfig({
 	base: "/admin/",
 	plugins: [react()],
+	server: {
+		port: 6173,
+	},
 });
