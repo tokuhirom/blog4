@@ -323,7 +323,8 @@ export default function AdminEntryPage() {
 							</label>
 							<div className={styles.editor}>
 								<MarkdownEditor
-									initialContent={body}
+									key={path}
+									initialContent={entry.Body}
 									onUpdateText={(text) => {
 										setBody(text);
 										handleInputBody();
