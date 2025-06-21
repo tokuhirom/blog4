@@ -12,17 +12,17 @@ import (
 )
 
 type EntryImageService struct {
-	queries *admindb.Queries
+	store EntryImageStore
 }
 
-func NewEntryImageService(queries *admindb.Queries) *EntryImageService {
+func NewEntryImageService(store EntryImageStore) *EntryImageService {
 	return &EntryImageService{
-		queries: queries,
+		store: store,
 	}
 }
 
 func (w *EntryImageService) GetEntryImageNotProcessedEntries(ctx context.Context) ([]admindb.Entry, error) {
-	return w.queries.GetEntryImageNotProcessedEntries(ctx)
+	return w.store.GetEntryImageNotProcessedEntries(ctx)
 }
 
 func (w *EntryImageService) ProcessEntry(ctx context.Context, entry admindb.Entry) error {
@@ -43,7 +43,7 @@ func (w *EntryImageService) ProcessEntry(ctx context.Context, entry admindb.Entr
 		}
 	} else {
 		slog.Info("image is available", slog.String("path", entry.Path), slog.String("title", entry.Title), slog.String("image", *image))
-		_, err := w.queries.InsertEntryImage(ctx, admindb.InsertEntryImageParams{
+		_, err := w.store.InsertEntryImage(ctx, admindb.InsertEntryImageParams{
 			Path: entry.Path,
 			Url:  sql.NullString{String: *image, Valid: true},
 		})
@@ -92,7 +92,7 @@ func (w *EntryImageService) getImageFromEntry(ctx context.Context, entry admindb
 	// Match ASIN pattern and get image URL from the database
 	if asinMatch := asinRe.FindStringSubmatch(entry.Body); asinMatch != nil {
 		asin := asinMatch[1]
-		row, err := w.queries.GetAmazonImageUrlByAsin(ctx, asin)
+		row, err := w.store.GetAmazonImageUrlByAsin(ctx, asin)
 		if err != nil {
 			return nil, fmt.Errorf("failed to get Amazon image URL for ASIN %s: %w", asin, err)
 		}
