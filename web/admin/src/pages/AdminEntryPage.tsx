@@ -282,7 +282,7 @@ export default function AdminEntryPage() {
 	return (
 		<Box>
 			<Grid container spacing={3}>
-				<Grid item xs={12} md={8}>
+				<Grid item xs={12} md={9}>
 					<Paper
 						sx={{
 							p: 3,
@@ -312,8 +312,8 @@ export default function AdminEntryPage() {
 								variant="outlined"
 								sx={{
 									p: 0,
-									height: "500px",
-									maxHeight: "60vh",
+									height: "700px",
+									maxHeight: "70vh",
 									overflow: "hidden",
 									position: "relative",
 								}}
@@ -329,84 +329,91 @@ export default function AdminEntryPage() {
 								/>
 							</Paper>
 						</Box>
-
-						<FormControl component="fieldset" sx={{ mb: 3 }}>
-							<FormLabel component="legend">Visibility</FormLabel>
-							<RadioGroup
-								row
-								value={visibility}
-								onChange={(e) => {
-									if (
-										confirm(
-											"Are you sure you want to change the visibility of this entry?",
-										)
-									) {
-										const newVisibility = e.target.value;
-										api
-											.updateEntryVisibility(
-												{ path: encodeURIComponent(entry.Path) },
-												{ visibility: newVisibility },
-											)
-											.then((data) => {
-												setVisibility(data.Visibility);
-											})
-											.catch((error) => {
-												console.error("Failed to update visibility:", error);
-												showMessage(
-													"error",
-													`Failed to update visibility: ${error.message}`,
-												);
-											});
-									}
-								}}
-							>
-								<FormControlLabel
-									value="private"
-									control={<Radio />}
-									label="Private"
-								/>
-								<FormControlLabel
-									value="public"
-									control={<Radio />}
-									label="Public"
-								/>
-							</RadioGroup>
-						</FormControl>
-
-						<Box sx={{ display: "flex", gap: 2, mb: 3 }}>
-							<Button
-								variant="outlined"
-								color="error"
-								startIcon={<DeleteIcon />}
-								onClick={handleDelete}
-							>
-								Delete
-							</Button>
-							<Button
-								variant="outlined"
-								startIcon={<RefreshIcon />}
-								onClick={handleRegenerateEntryImage}
-							>
-								Regenerate entry_image
-							</Button>
-						</Box>
-
-						{visibility === "public" && (
-							<Box>
-								<Link
-									href={`/entry/${entry.Path}`}
-									target="_blank"
-									rel="noopener"
-								>
-									Go to User Side Page
-								</Link>
-							</Box>
-						)}
 					</Paper>
 				</Grid>
 
-				<Grid item xs={12} md={4}>
-					<LinkPallet linkPallet={linkPallet} />
+				<Grid item xs={12} md={3}>
+					<Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+						{/* Entry Controls */}
+						<Paper sx={{ p: 2 }}>
+							<FormControl component="fieldset" sx={{ width: "100%", mb: 2 }}>
+								<FormLabel component="legend">Visibility</FormLabel>
+								<RadioGroup
+									value={visibility}
+									onChange={(e) => {
+										if (
+											confirm(
+												"Are you sure you want to change the visibility of this entry?",
+											)
+										) {
+											const newVisibility = e.target.value;
+											api
+												.updateEntryVisibility(
+													{ path: encodeURIComponent(entry.Path) },
+													{ visibility: newVisibility },
+												)
+												.then((data) => {
+													setVisibility(data.Visibility);
+												})
+												.catch((error) => {
+													console.error("Failed to update visibility:", error);
+													showMessage(
+														"error",
+														`Failed to update visibility: ${error.message}`,
+													);
+												});
+										}
+									}}
+								>
+									<FormControlLabel
+										value="private"
+										control={<Radio />}
+										label="Private"
+									/>
+									<FormControlLabel
+										value="public"
+										control={<Radio />}
+										label="Public"
+									/>
+								</RadioGroup>
+							</FormControl>
+
+							<Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+								<Button
+									variant="outlined"
+									color="error"
+									startIcon={<DeleteIcon />}
+									onClick={handleDelete}
+									fullWidth
+								>
+									Delete
+								</Button>
+								<Button
+									variant="outlined"
+									startIcon={<RefreshIcon />}
+									onClick={handleRegenerateEntryImage}
+									fullWidth
+								>
+									Regenerate entry_image
+								</Button>
+							</Box>
+
+							{visibility === "public" && (
+								<Box sx={{ mt: 2 }}>
+									<Link
+										href={`/entry/${entry.Path}`}
+										target="_blank"
+										rel="noopener"
+									>
+										Go to User Side Page
+									</Link>
+								</Box>
+							)}
+						</Paper>
+
+						{/* Link Pallet */}
+						<LinkPallet linkPallet={linkPallet} />
+					</Box>
 				</Grid>
 			</Grid>
 
