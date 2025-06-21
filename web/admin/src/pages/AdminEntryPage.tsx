@@ -282,7 +282,7 @@ export default function AdminEntryPage() {
 	return (
 		<Box>
 			<Grid container spacing={3}>
-				<Grid item xs={12} md={9}>
+				<Grid size={8}>
 					<Paper
 						sx={{
 							p: 3,
@@ -332,7 +332,7 @@ export default function AdminEntryPage() {
 					</Paper>
 				</Grid>
 
-				<Grid item xs={12} md={3}>
+				<Grid size={4}>
 					<Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
 						{/* Entry Controls */}
 						<Paper sx={{ p: 2 }}>

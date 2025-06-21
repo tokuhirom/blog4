@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Box, Paper, Typography, Divider } from "@mui/material";
+import { Box, Paper, Typography, Divider, Grid } from "@mui/material";
 import type { LinkPalletData } from "../generated-client/model";
 import AdminEntryCardItem from "./AdminEntryCardItem";
 import CardItem from "./CardItem";
@@ -37,13 +37,13 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 					<Typography variant="subtitle2" color="text.secondary" gutterBottom>
 						Direct Links
 					</Typography>
-					<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+					<Grid container spacing={1} sx={{ maxWidth: "540px" }}>
 						{linkPallet.links.map((link) => (
-							<Box key={link.Path} sx={{ width: 170 }}>
+							<Grid item key={link.Path} xs={12} sm={6} md={4}>
 								<AdminEntryCardItem entry={link} />
-							</Box>
+							</Grid>
 						))}
-					</Box>
+					</Grid>
 				</Box>
 			)}
 
@@ -59,8 +59,8 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 								key={`${twohops.src.Path || twohops.src.dstTitle}-twohop`}
 								sx={{ mb: 2 }}
 							>
-								<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-									<Box sx={{ width: 170 }}>
+								<Grid container spacing={1} sx={{ maxWidth: "540px" }}>
+									<Grid item xs={12} sm={6} md={4}>
 										{twohops.src.Title ? (
 											<AdminEntryCardItem
 												entry={twohops.src}
@@ -75,13 +75,13 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 												color="gray"
 											/>
 										)}
-									</Box>
+									</Grid>
 									{twohops.links.map((link) => (
-										<Box key={link.Path} sx={{ width: 170 }}>
+										<Grid item key={link.Path} xs={12} sm={6} md={4}>
 											<AdminEntryCardItem entry={link} />
-										</Box>
+										</Grid>
 									))}
-								</Box>
+								</Grid>
 							</Box>
 						))}
 					</Box>
@@ -95,9 +95,9 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 						<Typography variant="subtitle2" color="text.secondary" gutterBottom>
 							New Links to Create
 						</Typography>
-						<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+						<Grid container spacing={1} sx={{ maxWidth: "540px" }}>
 							{linkPallet.newLinks.map((title) => (
-								<Box key={title} sx={{ width: 170 }}>
+								<Grid item key={title} xs={12} sm={6} md={4}>
 									<CardItem
 										onClick={() => createNewEntry(title)}
 										title={title}
@@ -105,9 +105,9 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 										backgroundColor="#fff3e0"
 										color="text.secondary"
 									/>
-								</Box>
+								</Grid>
 							))}
-						</Box>
+						</Grid>
 					</Box>
 				</>
 			)}
