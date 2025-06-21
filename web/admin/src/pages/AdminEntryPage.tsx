@@ -308,7 +308,16 @@ export default function AdminEntryPage() {
 							<Typography variant="h6" gutterBottom>
 								Body
 							</Typography>
-							<Paper variant="outlined" sx={{ p: 0 }}>
+							<Paper
+								variant="outlined"
+								sx={{
+									p: 0,
+									height: "500px",
+									maxHeight: "60vh",
+									overflow: "hidden",
+									position: "relative",
+								}}
+							>
 								<MarkdownEditor
 									key={path}
 									initialContent={entry.Body}
