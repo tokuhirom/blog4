@@ -6,9 +6,10 @@ import (
 	"errors"
 	"testing"
 
+	"go.uber.org/mock/gomock"
+
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server/mocks"
-	"go.uber.org/mock/gomock"
 )
 
 func TestEntryImageService_GetEntryImageNotProcessedEntries(t *testing.T) {
