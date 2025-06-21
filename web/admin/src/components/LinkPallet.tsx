@@ -34,7 +34,8 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 		api
 			.createEntry({ title })
 			.then((data) => {
-				navigate(`/admin/entry/${data.Path}`);
+				// API returns lowercase 'path'
+				navigate(`/admin/entry/${data.path}`);
 			})
 			.catch((err) => {
 				console.error("Error creating new entry:", err);
