@@ -1,6 +1,7 @@
 import React, { useState } from "react";
+import { TextField, InputAdornment } from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
 import { debounce } from "../utils";
-import styles from "./SearchBox.module.css";
 
 interface SearchBoxProps {
 	onSearch: (keyword: string) => void;
@@ -24,14 +25,21 @@ export default function SearchBox({ onSearch }: SearchBoxProps) {
 	}
 
 	return (
-		<div className={styles.container}>
-			<input
-				type="text"
-				placeholder="Search entries..."
-				className={styles.input}
-				value={keyword}
-				onChange={handleInput}
-			/>
-		</div>
+		<TextField
+			fullWidth
+			placeholder="Search entries..."
+			value={keyword}
+			onChange={handleInput}
+			variant="outlined"
+			size="small"
+			InputProps={{
+				startAdornment: (
+					<InputAdornment position="start">
+						<SearchIcon />
+					</InputAdornment>
+				),
+			}}
+			sx={{ mb: 3 }}
+		/>
 	);
 }

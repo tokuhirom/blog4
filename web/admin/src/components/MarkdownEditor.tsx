@@ -5,7 +5,6 @@ import { markdown } from "@codemirror/lang-markdown";
 import { defaultKeymap, indentWithTab } from "@codemirror/commands";
 import { oneDarkHighlightStyle } from "@codemirror/theme-one-dark";
 import { syntaxHighlighting } from "@codemirror/language";
-import styles from "./MarkdownEditor.module.css";
 
 interface MarkdownEditorProps {
 	initialContent?: string;
@@ -133,5 +132,14 @@ export default function MarkdownEditor({
 		};
 	}, [initialContent]);
 
-	return <div ref={containerRef} className={styles.editor} />;
+	return (
+		<div
+			ref={containerRef}
+			style={{
+				height: "400px",
+				border: "1px solid #e0e0e0",
+				borderRadius: "4px",
+			}}
+		/>
+	);
 }

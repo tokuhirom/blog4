@@ -1,7 +1,8 @@
 import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
+import { AppBar, Toolbar, Typography, Button, Container } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 import { createAdminApiClient } from "../admin_api";
-import styles from "./AdminHeader.module.css";
 
 const api = createAdminApiClient();
 
@@ -24,21 +25,33 @@ export default function AdminHeader() {
 	}
 
 	return (
-		<header className={styles.header}>
-			<div className={styles.container}>
-				<a href="/admin/" className={`${styles.link} ${styles.textXl}`}>
-					Blog Admin
-				</a>
-				<nav className={styles.nav}>
-					<button
-						type="button"
+		<AppBar position="fixed">
+			<Container maxWidth="xl">
+				<Toolbar disableGutters>
+					<Typography
+						variant="h6"
+						component="a"
+						href="/admin/"
+						sx={{
+							flexGrow: 1,
+							textDecoration: "none",
+							color: "inherit",
+							fontWeight: 700,
+						}}
+					>
+						Blog Admin
+					</Typography>
+					<Button
+						color="inherit"
 						onClick={handleNewEntry}
-						className={styles.button}
+						startIcon={<AddIcon />}
+						variant="outlined"
+						sx={{ borderColor: "rgba(255, 255, 255, 0.5)" }}
 					>
 						New Entry
-					</button>
-				</nav>
-			</div>
-		</header>
+					</Button>
+				</Toolbar>
+			</Container>
+		</AppBar>
 	);
 }

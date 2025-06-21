@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **CRITICAL: Always follow these git workflow rules:**
 1. **Create a new branch for EVERY commit** - Never commit directly to main
 2. **Create a PR after EVERY commit** - Each commit should have its own PR
-3. **Always enable auto-merge** - Use `gh pr merge --auto --merge` for every PR
+3. **Do NOT enable auto-merge** - Manually review and merge PRs
 4. **Branch naming convention** - Use descriptive names like `fix/bug-description` or `feat/feature-name`
 
 Example workflow:
@@ -25,8 +25,7 @@ git push -u origin fix/some-bug
 # 4. Create PR
 gh pr create --title "fix: description" --body "..."
 
-# 5. Enable auto-merge
-gh pr merge --auto --merge <PR_NUMBER>
+# 5. Manually review and merge PR
 ```
 
 ## Project Overview
