@@ -1,5 +1,23 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import {
+	Box,
+	TextField,
+	Button,
+	Paper,
+	Typography,
+	Alert,
+	Snackbar,
+	Grid,
+	FormControl,
+	FormLabel,
+	RadioGroup,
+	FormControlLabel,
+	Radio,
+	Link,
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import RefreshIcon from "@mui/icons-material/Refresh";
 import { createAdminApiClient } from "../admin_api";
 import LinkPallet from "../components/LinkPallet";
 import MarkdownEditor from "../components/MarkdownEditor";
@@ -9,7 +27,6 @@ import type {
 	LinkPalletData,
 } from "../generated-client/model";
 import { debounce } from "../utils";
-import styles from "./AdminEntryPage.module.css";
 
 const api = createAdminApiClient();
 
@@ -238,35 +255,6 @@ export default function AdminEntryPage() {
 		[showMessage],
 	);
 
-	function toggleVisibility(event: React.MouseEvent) {
-		event.preventDefault();
-		event.stopPropagation();
-
-		const newVisibility = visibility === "private" ? "public" : "private";
-
-		if (
-			!confirm("Are you sure you want to change the visibility of this entry?")
-		) {
-			return;
-		}
-
-		console.log("Updating visibility to", newVisibility);
-
-		api
-			.updateEntryVisibility(
-				{ path: encodeURIComponent(entry.Path) },
-				{
-					visibility: newVisibility,
-				},
-			)
-			.then((data) => {
-				setVisibility(data.Visibility);
-			})
-			.catch((error) => {
-				console.error("Failed to update visibility:", error);
-				showMessage("error", `Failed to update visibility: ${error.message}`);
-			});
-	}
 
 	useEffect(() => {
 		const loadEntry = async () => {
@@ -292,36 +280,36 @@ export default function AdminEntryPage() {
 		loadLinks();
 	}, [path, loadLinks, navigate]);
 
-	const containerClass =
-		entry.Visibility === "private"
-			? `${styles.container} ${styles.containerPrivate}`
-			: styles.container;
-
 	return (
-		<div>
-			<div className={containerClass}>
-				<div className={styles.leftPane}>
-					<form>
-						<div className={styles.titleContainer}>
-							<input
-								name="title"
-								type="text"
-								className={styles.input}
-								value={title}
-								onChange={(e) => {
-									setTitle(e.target.value);
-									setIsDirty(true);
-									debouncedTitleUpdate();
-								}}
-								placeholder="Entry Title"
-							/>
-						</div>
+		<Box>
+			<Grid container spacing={3}>
+				<Grid item xs={12} md={8}>
+					<Paper
+						sx={{
+							p: 3,
+							backgroundColor:
+								entry.Visibility === "private" ? "#f5f5f5" : "background.paper",
+						}}
+					>
+						<TextField
+							fullWidth
+							label="Title"
+							value={title}
+							onChange={(e) => {
+								setTitle(e.target.value);
+								setIsDirty(true);
+								debouncedTitleUpdate();
+							}}
+							placeholder="Entry Title"
+							variant="outlined"
+							sx={{ mb: 3 }}
+						/>
 
-						<div className={styles.bodyContainer}>
-							<label htmlFor="body" className={styles.label}>
+						<Box sx={{ mb: 3 }}>
+							<Typography variant="h6" gutterBottom>
 								Body
-							</label>
-							<div className={styles.editor}>
+							</Typography>
+							<Paper variant="outlined" sx={{ p: 0 }}>
 								<MarkdownEditor
 									key={path}
 									initialContent={entry.Body}
@@ -331,57 +319,99 @@ export default function AdminEntryPage() {
 									}}
 									onDropFiles={handleDropFiles}
 								/>
-							</div>
-						</div>
+							</Paper>
+						</Box>
 
-						<div className={styles.visibilityContainer}>
-							<label className={styles.label}>
-								Visibility: {visibility}
-								<button
-									type="button"
-									onClick={toggleVisibility}
-									className={styles.toggleButton}
+						<FormControl component="fieldset" sx={{ mb: 3 }}>
+							<FormLabel component="legend">Visibility</FormLabel>
+							<RadioGroup
+								row
+								value={visibility}
+								onChange={(e) => {
+									if (
+										confirm(
+											"Are you sure you want to change the visibility of this entry?",
+										)
+									) {
+										const newVisibility = e.target.value;
+										api
+											.updateEntryVisibility(
+												{ path: encodeURIComponent(entry.Path) },
+												{ visibility: newVisibility },
+											)
+											.then((data) => {
+												setVisibility(data.Visibility);
+											})
+											.catch((error) => {
+												console.error("Failed to update visibility:", error);
+												showMessage(
+													"error",
+													`Failed to update visibility: ${error.message}`,
+												);
+											});
+									}
+								}}
+							>
+								<FormControlLabel
+									value="private"
+									control={<Radio />}
+									label="Private"
+								/>
+								<FormControlLabel
+									value="public"
+									control={<Radio />}
+									label="Public"
+								/>
+							</RadioGroup>
+						</FormControl>
+
+						<Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+							<Button
+								variant="outlined"
+								color="error"
+								startIcon={<DeleteIcon />}
+								onClick={handleDelete}
+							>
+								Delete
+							</Button>
+							<Button
+								variant="outlined"
+								startIcon={<RefreshIcon />}
+								onClick={handleRegenerateEntryImage}
+							>
+								Regenerate entry_image
+							</Button>
+						</Box>
+
+						{visibility === "public" && (
+							<Box>
+								<Link
+									href={`/entry/${entry.Path}`}
+									target="_blank"
+									rel="noopener"
 								>
-									Toggle
-								</button>
-							</label>
-						</div>
-					</form>
+									Go to User Side Page
+								</Link>
+							</Box>
+						)}
+					</Paper>
+				</Grid>
 
-					<div className={styles.buttonContainer}>
-						<button
-							type="button"
-							className={styles.deleteButton}
-							onClick={handleDelete}
-						>
-							Delete
-						</button>
-						<button
-							type="button"
-							className={styles.regenerateButton}
-							onClick={handleRegenerateEntryImage}
-						>
-							Regenerate entry_image
-						</button>
-					</div>
-
-					{visibility === "public" && (
-						<div className={styles.linkContainer}>
-							<a href={`/entry/${entry.Path}`} className={styles.link}>
-								Go to User Side Page
-							</a>
-						</div>
-					)}
-				</div>
-
-				<div className={styles.rightPane}>
+				<Grid item xs={12} md={4}>
 					<LinkPallet linkPallet={linkPallet} />
-				</div>
-			</div>
+				</Grid>
+			</Grid>
 
-			{updatedMessage !== "" && (
-				<div className={styles.updatedMessage}>{updatedMessage}</div>
-			)}
-		</div>
+			<Snackbar
+				open={updatedMessage !== ""}
+				autoHideDuration={1000}
+				onClose={() => setUpdatedMessage("")}
+				anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+			>
+				<Alert severity="success" sx={{ width: "100%" }}>
+					{updatedMessage}
+				</Alert>
+			</Snackbar>
+		</Box>
 	);
 }

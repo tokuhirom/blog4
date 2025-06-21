@@ -1,11 +1,17 @@
 import { format } from "date-fns";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+	Box,
+	Grid,
+	Typography,
+	CircularProgress,
+	Alert,
+} from "@mui/material";
 import { createAdminApiClient } from "../admin_api";
 import AdminEntryCardItem from "../components/AdminEntryCardItem";
 import SearchBox from "../components/SearchBox";
 import type { GetLatestEntriesRow } from "../generated-client/model";
-import styles from "./TopPage.module.css";
 
 const api = createAdminApiClient();
 
@@ -184,26 +190,44 @@ export default function TopPage() {
 	}, [handleKeydown]);
 
 	return (
-		<div className={styles.container}>
+		<Box sx={{ width: "100%" }}>
 			<SearchBox onSearch={handleSearch} />
 
-			<div className={styles.entryList}>
+			<Grid container spacing={3}>
 				{filteredEntries.map((entry) => (
-					<AdminEntryCardItem key={entry.Path} entry={entry} />
+					<Grid item xs={12} sm={6} md={4} lg={3} key={entry.Path}>
+						<AdminEntryCardItem entry={entry} />
+					</Grid>
 				))}
-			</div>
+			</Grid>
 
 			{isLoading && (
-				<p className={styles.loadingMessage}>Loading more entries...</p>
+				<Box
+					sx={{
+						display: "flex",
+						justifyContent: "center",
+						alignItems: "center",
+						mt: 4,
+					}}
+				>
+					<CircularProgress />
+					<Typography sx={{ ml: 2 }}>Loading more entries...</Typography>
+				</Box>
 			)}
 
 			{!hasMore && allEntries.length > 0 && (
-				<p className={styles.loadingMessage}>No more entries to load</p>
+				<Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+					<Typography color="text.secondary">
+						No more entries to load
+					</Typography>
+				</Box>
 			)}
 
 			{!isLoading && allEntries.length === 0 && isInitialized && (
-				<p className={styles.loadingMessage}>No entries found</p>
+				<Box sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
+					<Alert severity="info">No entries found</Alert>
+				</Box>
 			)}
-		</div>
+		</Box>
 	);
 }
