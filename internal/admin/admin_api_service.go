@@ -15,16 +15,17 @@ import (
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/internal/admin/openapi"
-	"github.com/tokuhirom/blog4/server"
-	"github.com/tokuhirom/blog4/server/sobs"
 )
 
 type adminApiService struct {
-	queries     *admindb.Queries
-	db          *sql.DB
-	hubUrls     []string
-	paapiClient *PAAPIClient
-	S3Client    *sobs.SobsClient
+	store               AdminStore
+	txManager           TxManager
+	hubUrls             []string
+	amazonClient        AmazonClient
+	storageClient       StorageClient
+	hubNotifier         HubNotifier
+	entryImageProcessor EntryImageProcessor
+	linkPalletService   LinkPalletService
 }
 
 func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.GetLatestEntriesParams) (openapi.GetLatestEntriesRes, error) {
@@ -40,7 +41,7 @@ func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.G
 		}
 	}
 	slog.Info("GetLatestEntries", slog.Any("lastEditedAt", lastEditedAt))
-	entries, err := p.queries.GetLatestEntries(ctx, admindb.GetLatestEntriesParams{
+	entries, err := p.store.GetLatestEntries(ctx, admindb.GetLatestEntriesParams{
 		Column1:      lastEditedAt,
 		LastEditedAt: lastEditedAt,
 		Limit:        100,
@@ -69,7 +70,7 @@ func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.G
 }
 
 func (p *adminApiService) GetEntryByDynamicPath(ctx context.Context, params openapi.GetEntryByDynamicPathParams) (openapi.GetEntryByDynamicPathRes, error) {
-	entry, err := p.queries.AdminGetEntryByPath(ctx, params.Path)
+	entry, err := p.store.AdminGetEntryByPath(ctx, params.Path)
 	if err != nil {
 		slog.Error("GetEntryByDynamicPath failed", slog.String("error", err.Error()))
 		return nil, fmt.Errorf("failed to get entry by path %s: %w", params.Path, err)
@@ -90,12 +91,12 @@ func (p *adminApiService) GetEntryByDynamicPath(ctx context.Context, params open
 }
 
 func (p *adminApiService) GetLinkPallet(ctx context.Context, params openapi.GetLinkPalletParams) (openapi.GetLinkPalletRes, error) {
-	entry, err := p.queries.AdminGetEntryByPath(ctx, params.Path)
+	entry, err := p.store.AdminGetEntryByPath(ctx, params.Path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get entry by path %s: %w", params.Path, err)
 	}
 
-	linkPallet, err := getLinkPalletData(ctx, p.db, p.queries, params.Path, entry.Title)
+	linkPallet, err := p.linkPalletService.GetLinkPalletData(ctx, p.txManager, p.store, params.Path, entry.Title)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get link pallet data for path %s: %w", params.Path, err)
 	}
@@ -104,7 +105,7 @@ func (p *adminApiService) GetLinkPallet(ctx context.Context, params openapi.GetL
 }
 
 func (p *adminApiService) GetLinkedEntryPaths(ctx context.Context, params openapi.GetLinkedEntryPathsParams) (openapi.GetLinkedEntryPathsRes, error) {
-	links, err := p.queries.GetLinkedEntries(ctx, params.Path)
+	links, err := p.store.GetLinkedEntries(ctx, params.Path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get linked entries for path %s: %w", params.Path, err)
 	}
@@ -117,7 +118,7 @@ func (p *adminApiService) GetLinkedEntryPaths(ctx context.Context, params openap
 }
 
 func (p *adminApiService) UpdateEntryBody(ctx context.Context, req *openapi.UpdateEntryBodyRequest, params openapi.UpdateEntryBodyParams) (openapi.UpdateEntryBodyRes, error) {
-	tx, err := p.db.Begin()
+	tx, err := p.txManager.Begin()
 	if err != nil {
 		slog.Error("failed to begin transaction", slog.String("error", err.Error()))
 		return nil, fmt.Errorf("failed to begin transaction: %w", err)
@@ -131,7 +132,7 @@ func (p *adminApiService) UpdateEntryBody(ctx context.Context, req *openapi.Upda
 	}()
 
 	// クエリの準備
-	qtx := p.queries.WithTx(tx)
+	qtx := p.store.WithTx(tx)
 
 	affectedRows, err := qtx.UpdateEntryBody(ctx, admindb.UpdateEntryBodyParams{
 		Path: params.Path,
@@ -159,9 +160,15 @@ func (p *adminApiService) UpdateEntryBody(ctx context.Context, req *openapi.Upda
 
 	go func() {
 		slog.Info("Starting to generate entry_image")
-		err := NewEntryImageWorker(p.queries).processEntryImages(context.Background())
+		entries, err := p.entryImageProcessor.GetEntryImageNotProcessedEntries(context.Background())
 		if err != nil {
-			slog.Error("failed to process entry images", slog.String("error", err.Error()))
+			slog.Error("failed to get unprocessed entries", slog.String("error", err.Error()))
+			return
+		}
+		for _, entry := range entries {
+			if err := p.entryImageProcessor.ProcessEntry(context.Background(), entry); err != nil {
+				slog.Error("failed to process entry image", slog.String("path", entry.Path), slog.String("error", err.Error()))
+			}
 		}
 	}()
 
@@ -188,7 +195,7 @@ func extractLinks(markdown string) []string {
 }
 
 // updateEntryLink updates the entry_link table within a transaction.
-func updateEntryLink(ctx context.Context, tx *sql.Tx, qtx *admindb.Queries, path string, title string, body string) error {
+func updateEntryLink(ctx context.Context, tx *sql.Tx, qtx AdminStore, path string, title string, body string) error {
 	// Extract links from the body, filtering out the title.
 	links := extractLinks(body)
 	var filteredLinks []string
@@ -223,7 +230,7 @@ func updateEntryLink(ctx context.Context, tx *sql.Tx, qtx *admindb.Queries, path
 }
 
 func (p *adminApiService) UpdateEntryTitle(ctx context.Context, req *openapi.UpdateEntryTitleRequest, params openapi.UpdateEntryTitleParams) (openapi.UpdateEntryTitleRes, error) {
-	_, err := p.queries.UpdateEntryTitle(ctx, admindb.UpdateEntryTitleParams{
+	_, err := p.store.UpdateEntryTitle(ctx, admindb.UpdateEntryTitleParams{
 		Path:  params.Path,
 		Title: req.Title,
 	})
@@ -234,7 +241,7 @@ func (p *adminApiService) UpdateEntryTitle(ctx context.Context, req *openapi.Upd
 }
 
 func (p *adminApiService) GetAllEntryTitles(ctx context.Context) (openapi.GetAllEntryTitlesRes, error) {
-	titles, err := p.queries.GetAllEntryTitles(ctx)
+	titles, err := p.store.GetAllEntryTitles(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get all entry titles: %w", err)
 	}
@@ -251,7 +258,7 @@ func (p *adminApiService) CreateEntry(ctx context.Context, req *openapi.CreateEn
 	now := time.Now()
 	path := now.Format("2006/01/02/150405")
 
-	_, err := p.queries.CreateEmptyEntry(ctx, admindb.CreateEmptyEntryParams{
+	_, err := p.store.CreateEmptyEntry(ctx, admindb.CreateEmptyEntryParams{
 		Path:  path,
 		Title: req.Title.Or(getDefaultTitle()),
 	})
@@ -264,7 +271,7 @@ func (p *adminApiService) CreateEntry(ctx context.Context, req *openapi.CreateEn
 }
 
 func (p *adminApiService) DeleteEntry(ctx context.Context, params openapi.DeleteEntryParams) (openapi.DeleteEntryRes, error) {
-	_, err := p.queries.DeleteEntry(ctx, params.Path)
+	_, err := p.store.DeleteEntry(ctx, params.Path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to delete entry for path %s: %w", params.Path, err)
 	}
@@ -273,7 +280,7 @@ func (p *adminApiService) DeleteEntry(ctx context.Context, params openapi.Delete
 
 func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openapi.UpdateVisibilityRequest, params openapi.UpdateEntryVisibilityParams) (openapi.UpdateEntryVisibilityRes, error) {
 	slog.Info("UpdateEntryVisibility", slog.Any("request", req))
-	tx, err := p.db.Begin()
+	tx, err := p.txManager.Begin()
 	if err != nil {
 		slog.Error("failed to begin transaction", slog.String("error", err.Error()))
 		return nil, fmt.Errorf("failed to begin transaction: %w", err)
@@ -287,7 +294,7 @@ func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openap
 	}()
 
 	// クエリの準備
-	qtx := p.queries.WithTx(tx)
+	qtx := p.store.WithTx(tx)
 
 	// 現在の可視性と公開日時を取得
 	entry, err := qtx.GetEntryVisibility(ctx, params.Path)
@@ -339,9 +346,15 @@ func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openap
 		}
 
 		// update entry_image after that.
-		err = NewEntryImageWorker(p.queries).processEntryImages(ctx)
+		entries, err := p.entryImageProcessor.GetEntryImageNotProcessedEntries(ctx)
 		if err != nil {
-			slog.Error("failed to process entry images", slog.String("error", err.Error()))
+			slog.Error("failed to get unprocessed entries", slog.String("error", err.Error()))
+			return
+		}
+		for _, entry := range entries {
+			if err := p.entryImageProcessor.ProcessEntry(ctx, entry); err != nil {
+				slog.Error("failed to process entry image", slog.String("path", entry.Path), slog.String("error", err.Error()))
+			}
 		}
 	}()
 
@@ -353,7 +366,7 @@ func (p *adminApiService) UpdateEntryVisibility(ctx context.Context, req *openap
 	// Send notification to Hub
 	for _, hubUrl := range p.hubUrls {
 		slog.Info("Notify Hub", slog.String("hubUrl", hubUrl))
-		if err := NotifyHub(hubUrl, "https://blog.64p.org/feed"); err != nil {
+		if err := p.hubNotifier.NotifyHub(hubUrl, "https://blog.64p.org/feed"); err != nil {
 			slog.Error("Failed to notify Hub", slog.String("error", err.Error()))
 		}
 	}
@@ -370,7 +383,7 @@ func (p *adminApiService) getAmazonCache(markdown string, ctx context.Context) e
 	var asins []string
 	for _, match := range matches {
 		asin := match[1]
-		count, err := p.queries.CountAmazonCacheByAsin(ctx, asin)
+		count, err := p.store.CountAmazonCacheByAsin(ctx, asin)
 		if err != nil {
 			return fmt.Errorf("failed to count amazon cache for ASIN %s: %w", asin, err)
 		}
@@ -400,7 +413,7 @@ func (p *adminApiService) getAmazonCache(markdown string, ctx context.Context) e
 		currentBatch := asins[i:end]
 
 		// バッチ処理を実行
-		productDetails, err := p.paapiClient.FetchAmazonProductDetails(ctx, currentBatch)
+		productDetails, err := p.amazonClient.FetchAmazonProductDetails(ctx, currentBatch)
 		if err != nil {
 			slog.Error("failed to fetch amazon product details", slog.String("error", err.Error()))
 			return fmt.Errorf("failed to fetch amazon product details: %w", err)
@@ -408,7 +421,7 @@ func (p *adminApiService) getAmazonCache(markdown string, ctx context.Context) e
 
 		for _, productDetail := range productDetails {
 			slog.Info("Amazon product detail", slog.String("asin", productDetail.ASIN), slog.String("title", productDetail.Title))
-			_, err := p.queries.InsertAmazonProductDetail(ctx, admindb.InsertAmazonProductDetailParams{
+			_, err := p.store.InsertAmazonProductDetail(ctx, admindb.InsertAmazonProductDetailParams{
 				Asin:           productDetail.ASIN,
 				Title:          sql.NullString{String: productDetail.Title, Valid: true},
 				ImageMediumUrl: sql.NullString{String: productDetail.ImageMediumURL, Valid: true},
@@ -461,7 +474,7 @@ func (p *adminApiService) UploadFile(ctx context.Context, req *openapi.UploadFil
 		slog.Int("bufSize", len(preview)))
 
 	// S3にアップロード
-	err := p.S3Client.PutObjectToAttachmentBucket(
+	err := p.storageClient.PutObjectToAttachmentBucket(
 		ctx,
 		key,
 		contentType,
@@ -505,19 +518,18 @@ func (p *adminApiService) NewError(_ context.Context, err error) *openapi.ErrorR
 }
 
 func (p *adminApiService) RegenerateEntryImage(ctx context.Context, params openapi.RegenerateEntryImageParams) (openapi.RegenerateEntryImageRes, error) {
-	_, err := p.queries.DeleteEntryImageByPath(ctx, params.Path)
+	_, err := p.store.DeleteEntryImageByPath(ctx, params.Path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to delete entry image for path %s: %w", params.Path, err)
 	}
 
-	service := server.NewEntryImageService(p.queries)
-	entries, err := service.GetEntryImageNotProcessedEntries(ctx)
+	entries, err := p.entryImageProcessor.GetEntryImageNotProcessedEntries(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get entry image not processed entries: %w", err)
 	}
 	for _, entry := range entries {
 		if entry.Path == params.Path {
-			err = service.ProcessEntry(ctx, entry)
+			err = p.entryImageProcessor.ProcessEntry(ctx, entry)
 			if err != nil {
 				return nil, fmt.Errorf("failed to process entry image for path %s: %w", params.Path, err)
 			}

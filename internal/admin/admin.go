@@ -67,12 +67,23 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 	r.Handle("/assets/*", http.StripPrefix("/admin/", http.FileServer(filesDir)))
 
 	queries := admindb.New(db)
+	adminStore := &AdminStoreAdapter{Queries: queries}
+	txManager := NewTxManagerAdapter(db)
+	amazonClient := NewAmazonClientAdapter(NewPAAPIClient(cfg.AmazonPaapi5AccessKey, cfg.AmazonPaapi5SecretKey))
+	storageClient := NewStorageClientAdapter(sobsClient)
+	hubNotifier := NewHubNotifierAdapter()
+	entryImageProcessor := NewEntryImageProcessorAdapter(adminStore)
+	linkPalletService := NewLinkPalletServiceAdapter()
+
 	apiService := adminApiService{
-		queries:     queries,
-		db:          db,
-		hubUrls:     cfg.GetHubUrls(),
-		paapiClient: NewPAAPIClient(cfg.AmazonPaapi5AccessKey, cfg.AmazonPaapi5SecretKey),
-		S3Client:    sobsClient,
+		store:               adminStore,
+		txManager:           txManager,
+		hubUrls:             cfg.GetHubUrls(),
+		amazonClient:        amazonClient,
+		storageClient:       storageClient,
+		hubNotifier:         hubNotifier,
+		entryImageProcessor: entryImageProcessor,
+		linkPalletService:   linkPalletService,
 	}
 	adminApiHandler, err := openapi.NewServer(&apiService,
 		openapi.WithPathPrefix("/admin/api"),
