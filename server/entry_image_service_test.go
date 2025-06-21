@@ -182,11 +182,11 @@ func TestEntryImageService_ProcessEntry(t *testing.T) {
 
 func TestEntryImageService_getImageFromEntry(t *testing.T) {
 	tests := []struct {
-		name        string
-		entry       admindb.Entry
-		setupMocks  func(*mocks.MockEntryImageStore)
-		wantImage   *string
-		wantError   bool
+		name       string
+		entry      admindb.Entry
+		setupMocks func(*mocks.MockEntryImageStore)
+		wantImage  *string
+		wantError  bool
 	}{
 		{
 			name: "extract image tag",
