@@ -28,22 +28,18 @@
     <ul class="card-container">
         {{range $path, $entry := .Entries}}
         <li class="card">
-            <div class="entry-head">
-                <a href="/entry/{{$entry.Path}}" class="entry-title">
-                    {{$entry.Title}}
-                </a>
-            </div>
-            {{if $entry.ImageUrl}}
-            <div>
-                <a href="/entry/{{$entry.Path}}">
-                <img src="{{$entry.ImageUrl}}" class="entry-image" alt="{{$entry.Title}}">
-                </a>
-            </div>
-            {{else}}
-            <div class="entry-text-preview"><a href="/entry/{{$entry.Path}}">{{$entry.TextPreview}}</a></div>
-            {{end}}
-            <a href="/entry/{{$entry.Path}}" class="published-date">
-                {{$entry.PublishedAt}}
+            <a href="/entry/{{$entry.Path}}" class="card-link">
+                <div class="entry-head">
+                    <span class="entry-title">{{$entry.Title}}</span>
+                </div>
+                {{if $entry.ImageUrl}}
+                <div>
+                    <img src="{{$entry.ImageUrl}}" class="entry-image" alt="{{$entry.Title}}">
+                </div>
+                {{else}}
+                <div class="entry-text-preview">{{$entry.TextPreview}}</div>
+                {{end}}
+                <span class="published-date">{{$entry.PublishedAt}}</span>
             </a>
         </li>
         {{end}}
