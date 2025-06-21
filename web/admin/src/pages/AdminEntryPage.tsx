@@ -8,7 +8,6 @@ import {
 	Typography,
 	Alert,
 	Snackbar,
-	Grid,
 	FormControl,
 	FormLabel,
 	RadioGroup,
@@ -16,6 +15,7 @@ import {
 	Radio,
 	Link,
 } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { createAdminApiClient } from "../admin_api";

@@ -1,0 +1,90 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    
+    services:
+      mariadb:
+        image: mariadb:10.11.13
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: blog4
+          MYSQL_USER: blog4user
+          MYSQL_PASSWORD: blog4password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+          --health-start-period=10s
+
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+        
+    - name: Install dependencies
+      working-directory: ./web/admin
+      run: npm ci
+      
+    - name: Install Playwright Browsers
+      working-directory: ./web/admin
+      run: npx playwright install --with-deps
+      
+    - name: Build backend
+      run: go build ./cmd/blog4
+      
+    - name: Setup database
+      run: |
+        mysql -h 127.0.0.1 -u root -prootpassword blog4 < db/admin/schema.sql
+        mysql -h 127.0.0.1 -u root -prootpassword blog4 < db/public/schema.sql
+        
+    - name: Run backend
+      env:
+        DATABASE_USER: blog4user
+        DATABASE_PASSWORD: blog4password
+        DATABASE_HOST: 127.0.0.1
+        DATABASE_PORT: 3306
+        DATABASE_DB: blog4
+        BLOG_PORT: 8181
+        ADMIN_USER: admin
+        ADMIN_PW: admin
+        S3_ACCESS_KEY_ID: dummy
+        S3_SECRET_ACCESS_KEY: dummy
+        S3_REGION: us-east-1
+        S3_ATTACHMENTS_BUCKET_NAME: blog4-attachments
+        S3_BACKUP_BUCKET_NAME: blog4-backup
+        S3_ENDPOINT: localhost:9000
+        LOCAL_DEV: true
+      run: |
+        ./blog4 &
+        sleep 5
+        
+    - name: Run Playwright tests
+      working-directory: ./web/admin
+      run: npm run test:e2e
+      
+    - uses: actions/upload-artifact@v4
+      if: ${{ !cancelled() }}
+      with:
+        name: playwright-report
+        path: web/admin/playwright-report/
+        retention-days: 30

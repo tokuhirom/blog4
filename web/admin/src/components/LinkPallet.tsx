@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-import { Box, Paper, Typography, Divider, Grid } from "@mui/material";
+import { Box, Paper, Typography, Divider } from "@mui/material";
+import Grid from "@mui/material/Grid2";
 import type { LinkPalletData, EntryWithImage, GetLatestEntriesRow } from "../generated-client/model";
 import AdminEntryCardItem from "./AdminEntryCardItem";
 import CardItem from "./CardItem";
@@ -56,7 +57,7 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 					</Typography>
 					<Grid container spacing={1} sx={{ maxWidth: "540px" }}>
 						{linkPallet.links.map((link) => (
-							<Grid item key={link.path} xs={12} sm={6} md={4}>
+							<Grid key={link.path} size={{ xs: 12, sm: 6, md: 4 }}>
 								<AdminEntryCardItem entry={convertToGetLatestEntriesRow(link)} />
 							</Grid>
 						))}
@@ -77,7 +78,7 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 								sx={{ mb: 2 }}
 							>
 								<Grid container spacing={1} sx={{ maxWidth: "540px" }}>
-									<Grid item xs={12} sm={6} md={4}>
+									<Grid size={{ xs: 12, sm: 6, md: 4 }}>
 										{twohops.src.title ? (
 											<AdminEntryCardItem
 												entry={convertToGetLatestEntriesRow(twohops.src)}
@@ -94,7 +95,7 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 										)}
 									</Grid>
 									{twohops.links.map((link) => (
-										<Grid item key={link.path} xs={12} sm={6} md={4}>
+										<Grid key={link.path} size={{ xs: 12, sm: 6, md: 4 }}>
 											<AdminEntryCardItem entry={convertToGetLatestEntriesRow(link)} />
 										</Grid>
 									))}
@@ -114,7 +115,7 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 						</Typography>
 						<Grid container spacing={1} sx={{ maxWidth: "540px" }}>
 							{linkPallet.newLinks.map((title) => (
-								<Grid item key={title} xs={12} sm={6} md={4}>
+								<Grid key={title} size={{ xs: 12, sm: 6, md: 4 }}>
 									<CardItem
 										onClick={() => createNewEntry(title)}
 										title={title}
