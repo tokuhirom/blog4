@@ -1,13 +1,7 @@
 import { format } from "date-fns";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-	Box,
-	Grid,
-	Typography,
-	CircularProgress,
-	Alert,
-} from "@mui/material";
+import { Box, Grid, Typography, CircularProgress, Alert } from "@mui/material";
 import { createAdminApiClient } from "../admin_api";
 import AdminEntryCardItem from "../components/AdminEntryCardItem";
 import SearchBox from "../components/SearchBox";
@@ -193,9 +187,9 @@ export default function TopPage() {
 		<Box sx={{ width: "100%" }}>
 			<SearchBox onSearch={handleSearch} />
 
-			<Grid container spacing={3}>
+			<Grid container spacing={2}>
 				{filteredEntries.map((entry) => (
-					<Grid item xs={12} sm={6} md={4} lg={3} key={entry.Path}>
+					<Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={entry.Path}>
 						<AdminEntryCardItem entry={entry} />
 					</Grid>
 				))}

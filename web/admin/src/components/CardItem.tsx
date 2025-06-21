@@ -1,11 +1,5 @@
 import type React from "react";
-import {
-	Card,
-	CardActionArea,
-	CardContent,
-	CardMedia,
-	Typography,
-} from "@mui/material";
+import { Card, CardContent, Typography, Box } from "@mui/material";
 
 interface CardItemProps {
 	title?: string;
@@ -27,57 +21,77 @@ export default function CardItem({
 	return (
 		<Card
 			sx={{
-				height: "100%",
+				width: 170,
+				height: 170,
 				display: "flex",
 				flexDirection: "column",
 				backgroundColor,
 				color,
+				cursor: "pointer",
+				"&:hover": {
+					boxShadow: 3,
+				},
 			}}
+			onClick={onClick}
 		>
-			<CardActionArea onClick={onClick} sx={{ height: "100%" }}>
+			<CardContent
+				sx={{
+					height: "100%",
+					display: "flex",
+					flexDirection: "column",
+					p: 1.5,
+				}}
+			>
+				{title && (
+					<Typography
+						variant="body2"
+						component="h2"
+						sx={{
+							fontWeight: 600,
+							fontSize: "0.875rem",
+							overflow: "hidden",
+							textOverflow: "ellipsis",
+							display: "-webkit-box",
+							WebkitLineClamp: 2,
+							WebkitBoxOrient: "vertical",
+							mb: 0.5,
+						}}
+					>
+						{title}
+					</Typography>
+				)}
 				{imgSrc && (
-					<CardMedia
+					<Box
 						component="img"
-						height="140"
-						image={imgSrc}
+						src={imgSrc}
 						alt={title || "Entry image"}
-						sx={{ objectFit: "cover" }}
+						sx={{
+							width: "100%",
+							height: 60,
+							objectFit: "cover",
+							borderRadius: 1,
+							mb: 0.5,
+						}}
 					/>
 				)}
-				<CardContent>
-					{title && (
-						<Typography
-							gutterBottom
-							variant="h6"
-							component="h2"
-							sx={{
-								overflow: "hidden",
-								textOverflow: "ellipsis",
-								display: "-webkit-box",
-								WebkitLineClamp: 2,
-								WebkitBoxOrient: "vertical",
-							}}
-						>
-							{title}
-						</Typography>
-					)}
-					{content && (
-						<Typography
-							variant="body2"
-							color="text.secondary"
-							sx={{
-								overflow: "hidden",
-								textOverflow: "ellipsis",
-								display: "-webkit-box",
-								WebkitLineClamp: 3,
-								WebkitBoxOrient: "vertical",
-							}}
-						>
-							{content}
-						</Typography>
-					)}
-				</CardContent>
-			</CardActionArea>
+				{content && (
+					<Typography
+						variant="caption"
+						color="text.secondary"
+						sx={{
+							fontSize: "0.75rem",
+							overflow: "hidden",
+							textOverflow: "ellipsis",
+							display: "-webkit-box",
+							WebkitLineClamp: imgSrc ? 3 : 6,
+							WebkitBoxOrient: "vertical",
+							flexGrow: 1,
+						}}
+					>
+						{content}
+					</Typography>
+				)}
+			</CardContent>
 		</Card>
 	);
 }

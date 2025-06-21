@@ -255,7 +255,6 @@ export default function AdminEntryPage() {
 		[showMessage],
 	);
 
-
 	useEffect(() => {
 		const loadEntry = async () => {
 			try {

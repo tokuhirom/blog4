@@ -37,9 +37,11 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 					<Typography variant="subtitle2" color="text.secondary" gutterBottom>
 						Direct Links
 					</Typography>
-					<Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+					<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
 						{linkPallet.links.map((link) => (
-							<AdminEntryCardItem key={link.Path} entry={link} />
+							<Box key={link.Path} sx={{ width: 170 }}>
+								<AdminEntryCardItem entry={link} />
+							</Box>
 						))}
 					</Box>
 				</Box>
@@ -57,23 +59,25 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 								key={`${twohops.src.Path || twohops.src.dstTitle}-twohop`}
 								sx={{ mb: 2 }}
 							>
-								{twohops.src.Title ? (
-									<AdminEntryCardItem
-										entry={twohops.src}
-										backgroundColor="#c8e6c9"
-									/>
-								) : (
-									<CardItem
-										onClick={() => createNewEntry(twohops.src.dstTitle)}
-										title={twohops.src.dstTitle}
-										content=""
-										backgroundColor="#e0f2f1"
-										color="gray"
-									/>
-								)}
-								<Box sx={{ ml: 2, mt: 1 }}>
+								<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
+									<Box sx={{ width: 170 }}>
+										{twohops.src.Title ? (
+											<AdminEntryCardItem
+												entry={twohops.src}
+												backgroundColor="#c8e6c9"
+											/>
+										) : (
+											<CardItem
+												onClick={() => createNewEntry(twohops.src.dstTitle)}
+												title={twohops.src.dstTitle}
+												content=""
+												backgroundColor="#e0f2f1"
+												color="gray"
+											/>
+										)}
+									</Box>
 									{twohops.links.map((link) => (
-										<Box key={link.Path} sx={{ mb: 1 }}>
+										<Box key={link.Path} sx={{ width: 170 }}>
 											<AdminEntryCardItem entry={link} />
 										</Box>
 									))}
@@ -91,16 +95,17 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 						<Typography variant="subtitle2" color="text.secondary" gutterBottom>
 							New Links to Create
 						</Typography>
-						<Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+						<Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
 							{linkPallet.newLinks.map((title) => (
-								<CardItem
-									key={title}
-									onClick={() => createNewEntry(title)}
-									title={title}
-									content=""
-									backgroundColor="#fff3e0"
-									color="text.secondary"
-								/>
+								<Box key={title} sx={{ width: 170 }}>
+									<CardItem
+										onClick={() => createNewEntry(title)}
+										title={title}
+										content=""
+										backgroundColor="#fff3e0"
+										color="text.secondary"
+									/>
+								</Box>
 							))}
 						</Box>
 					</Box>
