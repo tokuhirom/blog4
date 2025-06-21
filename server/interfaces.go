@@ -13,5 +13,5 @@ import (
 type EntryImageStore interface {
 	GetEntryImageNotProcessedEntries(ctx context.Context) ([]admindb.Entry, error)
 	GetAmazonImageUrlByAsin(ctx context.Context, asin string) (sql.NullString, error)
-	InsertEntryImage(ctx context.Context, params admindb.InsertEntryImageParams) (sql.Result, error)
+	InsertEntryImage(ctx context.Context, params admindb.InsertEntryImageParams) (int64, error)
 }

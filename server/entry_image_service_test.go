@@ -58,7 +58,7 @@ func TestEntryImageService_ProcessEntry(t *testing.T) {
 						Path: "/test",
 						Url:  sql.NullString{String: "https://example.com/image.jpg", Valid: true},
 					}).
-					Return(nil, nil)
+					Return(int64(1), nil)
 			},
 			expectedError: false,
 		},
@@ -75,7 +75,7 @@ func TestEntryImageService_ProcessEntry(t *testing.T) {
 						Path: "/test",
 						Url:  sql.NullString{String: "https://blog-attachments.64p.org/image", Valid: true},
 					}).
-					Return(nil, nil)
+					Return(int64(1), nil)
 			},
 			expectedError: false,
 		},
@@ -92,7 +92,7 @@ func TestEntryImageService_ProcessEntry(t *testing.T) {
 						Path: "/test",
 						Url:  sql.NullString{String: "https://i.gyazo.com/abc123.jpg", Valid: true},
 					}).
-					Return(nil, nil)
+					Return(int64(1), nil)
 			},
 			expectedError: false,
 		},
@@ -112,7 +112,7 @@ func TestEntryImageService_ProcessEntry(t *testing.T) {
 						Path: "/test",
 						Url:  sql.NullString{String: "https://amazon.com/image.jpg", Valid: true},
 					}).
-					Return(nil, nil)
+					Return(int64(1), nil)
 			},
 			expectedError: false,
 		},
@@ -150,7 +150,7 @@ func TestEntryImageService_ProcessEntry(t *testing.T) {
 			setupMocks: func(mockStore *mocks.MockEntryImageStore) {
 				mockStore.EXPECT().
 					InsertEntryImage(gomock.Any(), gomock.Any()).
-					Return(nil, errors.New("database error"))
+					Return(int64(0), errors.New("database error"))
 			},
 			expectedError: true,
 		},

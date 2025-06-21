@@ -73,10 +73,10 @@ func (mr *MockEntryImageStoreMockRecorder) GetEntryImageNotProcessedEntries(ctx 
 }
 
 // InsertEntryImage mocks base method.
-func (m *MockEntryImageStore) InsertEntryImage(ctx context.Context, params admindb.InsertEntryImageParams) (sql.Result, error) {
+func (m *MockEntryImageStore) InsertEntryImage(ctx context.Context, params admindb.InsertEntryImageParams) (int64, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "InsertEntryImage", ctx, params)
-	ret0, _ := ret[0].(sql.Result)
+	ret0, _ := ret[0].(int64)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
