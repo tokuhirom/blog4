@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Box, Paper, Typography, Divider, Grid } from "@mui/material";
-import type { LinkPalletData } from "../generated-client/model";
+import type { LinkPalletData, EntryWithImage, GetLatestEntriesRow } from "../generated-client/model";
 import AdminEntryCardItem from "./AdminEntryCardItem";
 import CardItem from "./CardItem";
 import { createAdminApiClient } from "../admin_api";
@@ -10,6 +10,22 @@ interface LinkPalletProps {
 }
 
 const api = createAdminApiClient();
+
+// Convert EntryWithImage to GetLatestEntriesRow format
+function convertToGetLatestEntriesRow(entry: EntryWithImage): GetLatestEntriesRow {
+	return {
+		Path: entry.path,
+		Title: entry.title,
+		Body: entry.body,
+		Visibility: entry.visibility,
+		Format: entry.format,
+		ImageUrl: entry.imageUrl,
+		PublishedAt: null,
+		LastEditedAt: null,
+		CreatedAt: null,
+		UpdatedAt: null,
+	};
+}
 
 export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 	const navigate = useNavigate();
@@ -39,8 +55,8 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 					</Typography>
 					<Grid container spacing={1} sx={{ maxWidth: "540px" }}>
 						{linkPallet.links.map((link) => (
-							<Grid item key={link.Path} xs={12} sm={6} md={4}>
-								<AdminEntryCardItem entry={link} />
+							<Grid item key={link.path} xs={12} sm={6} md={4}>
+								<AdminEntryCardItem entry={convertToGetLatestEntriesRow(link)} />
 							</Grid>
 						))}
 					</Grid>
@@ -56,14 +72,14 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 						</Typography>
 						{linkPallet.twohops.map((twohops) => (
 							<Box
-								key={`${twohops.src.Path || twohops.src.dstTitle}-twohop`}
+								key={`${twohops.src.path || twohops.src.dstTitle}-twohop`}
 								sx={{ mb: 2 }}
 							>
 								<Grid container spacing={1} sx={{ maxWidth: "540px" }}>
 									<Grid item xs={12} sm={6} md={4}>
-										{twohops.src.Title ? (
+										{twohops.src.title ? (
 											<AdminEntryCardItem
-												entry={twohops.src}
+												entry={convertToGetLatestEntriesRow(twohops.src)}
 												backgroundColor="#c8e6c9"
 											/>
 										) : (
@@ -77,8 +93,8 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 										)}
 									</Grid>
 									{twohops.links.map((link) => (
-										<Grid item key={link.Path} xs={12} sm={6} md={4}>
-											<AdminEntryCardItem entry={link} />
+										<Grid item key={link.path} xs={12} sm={6} md={4}>
+											<AdminEntryCardItem entry={convertToGetLatestEntriesRow(link)} />
 										</Grid>
 									))}
 								</Grid>
