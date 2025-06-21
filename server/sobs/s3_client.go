@@ -16,17 +16,17 @@ type SobsClient struct {
 	s3BackupBucketName      string
 }
 
-func NewSobsClient(s3AccessKeyId, s3SecretAccessKey, s3Region, s3AttachmentsBucketName, s3BackupBucketName, s3Endpoint string) (*SobsClient, error) {
+func NewSobsClient(s3AccessKeyId, s3SecretAccessKey, s3Region, s3AttachmentsBucketName, s3BackupBucketName, s3Endpoint string, useSSL bool) (*SobsClient, error) {
 	if s3AccessKeyId == "" || s3SecretAccessKey == "" {
 		return nil, fmt.Errorf("S3 credentials are not set: access key ID or secret access key is empty")
 	}
 
-	slog.Info("Creating S3 client", slog.String("endpoint", s3Endpoint))
+	slog.Info("Creating S3 client", slog.String("endpoint", s3Endpoint), slog.Bool("useSSL", useSSL))
 
 	// Initialize minio client object.
 	minioClient, err := minio.New(s3Endpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(s3AccessKeyId, s3SecretAccessKey, ""),
-		Secure: true,
+		Secure: useSSL,
 		Region: s3Region,
 	})
 	if err != nil {

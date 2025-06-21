@@ -63,7 +63,9 @@ func DoMain() error {
 		return fmt.Errorf("failed to ping DB: %w", err)
 	}
 
-	sobsClient, err := sobs.NewSobsClient(cfg.S3AccessKeyId, cfg.S3SecretAccessKey, cfg.S3Region, cfg.S3AttachmentsBucketName, cfg.S3BackupBucketName, cfg.S3Endpoint)
+	// Use SSL for S3 connections unless in local development mode
+	useSSL := !cfg.LocalDev
+	sobsClient, err := sobs.NewSobsClient(cfg.S3AccessKeyId, cfg.S3SecretAccessKey, cfg.S3Region, cfg.S3AttachmentsBucketName, cfg.S3BackupBucketName, cfg.S3Endpoint, useSSL)
 	if err != nil {
 		return fmt.Errorf("failed to create SobsClient: %w", err)
 	}

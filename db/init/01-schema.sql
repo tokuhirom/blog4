@@ -15,7 +15,7 @@ CREATE TABLE entry
     KEY updated_at (updated_at),
     KEY published_at (published_at),
     KEY last_edited_at (last_edited_at),
-    FULLTEXT KEY idx_bigram (title, body) /*!50100 WITH PARSER ngram */
+    FULLTEXT KEY idx_bigram (title, body)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 

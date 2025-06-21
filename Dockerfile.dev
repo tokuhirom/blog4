@@ -1,0 +1,21 @@
+FROM golang:1.24-alpine
+
+# Install dependencies
+RUN apk add --no-cache git mysql-client
+
+# Install air for hot-reload
+RUN go install github.com/air-verse/air@latest
+
+# Install go tools
+RUN go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+RUN go install github.com/ogen-go/ogen/cmd/ogen@latest
+
+WORKDIR /app
+
+# Copy go mod files
+COPY go.mod go.sum ./
+RUN go mod download
+
+EXPOSE 8181
+
+CMD ["air"]
