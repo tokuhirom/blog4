@@ -264,6 +264,43 @@ ul.card-container {
         padding: 0;
         color: #e0e0e0;
     }
+    
+    /* Table styles */
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        margin: 2em 0;
+        background-color: #141414;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+    
+    table, th, td {
+        border: 1px solid rgba(74, 222, 128, 0.2);
+    }
+    
+    th {
+        background-color: #1a1a1a;
+        color: #4ade80;
+        font-weight: 600;
+        padding: 12px 16px;
+        text-align: left;
+    }
+    
+    td {
+        padding: 10px 16px;
+        color: #d0d0d0;
+    }
+    
+    tr:hover {
+        background-color: rgba(74, 222, 128, 0.05);
+    }
+    
+    /* Alternating row colors */
+    tr:nth-child(even) {
+        background-color: rgba(255, 255, 255, 0.02);
+    }
 }
 
 footer {
