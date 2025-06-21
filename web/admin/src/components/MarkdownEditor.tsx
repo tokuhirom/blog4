@@ -43,6 +43,19 @@ export default function MarkdownEditor({
 				markdown(),
 				keymap.of([...defaultKeymap, indentWithTab]),
 				syntaxHighlighting(oneDarkHighlightStyle),
+				EditorView.theme({
+					"&": {
+						height: "100%",
+					},
+					".cm-scroller": {
+						overflow: "auto",
+						height: "100%",
+						maxHeight: "100%",
+					},
+					".cm-content": {
+						minHeight: "100%",
+					},
+				}),
 				EditorView.updateListener.of((update) => {
 					if (update.docChanged && onUpdateTextRef.current) {
 						onUpdateTextRef.current(update.state.doc.toString());
@@ -136,9 +149,11 @@ export default function MarkdownEditor({
 		<div
 			ref={containerRef}
 			style={{
-				height: "400px",
-				border: "1px solid #e0e0e0",
+				height: "100%",
+				overflow: "hidden",
+				border: "none",
 				borderRadius: "4px",
+				position: "relative",
 			}}
 		/>
 	);
