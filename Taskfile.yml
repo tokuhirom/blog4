@@ -5,8 +5,7 @@ interval: 500ms
 tasks:
   tsp:
     cmds:
-      - tsp compile main.tsp --emit @typespec/openapi3
-    dir: ./typespec/
+      - npm run tsp
     sources:
       - typespec/**/*.tsp
     generates:
