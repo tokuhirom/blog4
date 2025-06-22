@@ -6,6 +6,9 @@ package openapi
 type OperationName = string
 
 const (
+	AuthCheckOperation             OperationName = "AuthCheck"
+	AuthLoginOperation             OperationName = "AuthLogin"
+	AuthLogoutOperation            OperationName = "AuthLogout"
 	CreateEntryOperation           OperationName = "CreateEntry"
 	DeleteEntryOperation           OperationName = "DeleteEntry"
 	GetAllEntryTitlesOperation     OperationName = "GetAllEntryTitles"

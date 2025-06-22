@@ -50,7 +50,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 		switch elem[0] {
 		case '/': // Prefix: "/"
-			origElem := elem
+
 			if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 				elem = elem[l:]
 			} else {
@@ -61,8 +61,96 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			switch elem[0] {
+			case 'a': // Prefix: "auth/"
+
+				if l := len("auth/"); len(elem) >= l && elem[0:l] == "auth/" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case 'c': // Prefix: "check"
+
+					if l := len("check"); len(elem) >= l && elem[0:l] == "check" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "GET":
+							s.handleAuthCheckRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "GET")
+						}
+
+						return
+					}
+
+				case 'l': // Prefix: "log"
+
+					if l := len("log"); len(elem) >= l && elem[0:l] == "log" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						break
+					}
+					switch elem[0] {
+					case 'i': // Prefix: "in"
+
+						if l := len("in"); len(elem) >= l && elem[0:l] == "in" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "POST":
+								s.handleAuthLoginRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "POST")
+							}
+
+							return
+						}
+
+					case 'o': // Prefix: "out"
+
+						if l := len("out"); len(elem) >= l && elem[0:l] == "out" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "POST":
+								s.handleAuthLogoutRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "POST")
+							}
+
+							return
+						}
+
+					}
+
+				}
+
 			case 'e': // Prefix: "entr"
-				origElem := elem
+
 				if l := len("entr"); len(elem) >= l && elem[0:l] == "entr" {
 					elem = elem[l:]
 				} else {
@@ -74,7 +162,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 				switch elem[0] {
 				case 'i': // Prefix: "ies"
-					origElem := elem
+
 					if l := len("ies"); len(elem) >= l && elem[0:l] == "ies" {
 						elem = elem[l:]
 					} else {
@@ -95,7 +183,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/"
-						origElem := elem
+
 						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
@@ -155,7 +243,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
-							origElem := elem
+
 							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 								elem = elem[l:]
 							} else {
@@ -167,7 +255,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							}
 							switch elem[0] {
 							case 'b': // Prefix: "body"
-								origElem := elem
+
 								if l := len("body"); len(elem) >= l && elem[0:l] == "body" {
 									elem = elem[l:]
 								} else {
@@ -188,9 +276,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 									return
 								}
 
-								elem = origElem
 							case 'l': // Prefix: "link"
-								origElem := elem
+
 								if l := len("link"); len(elem) >= l && elem[0:l] == "link" {
 									elem = elem[l:]
 								} else {
@@ -202,7 +289,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 								}
 								switch elem[0] {
 								case '-': // Prefix: "-pallet"
-									origElem := elem
+
 									if l := len("-pallet"); len(elem) >= l && elem[0:l] == "-pallet" {
 										elem = elem[l:]
 									} else {
@@ -223,9 +310,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 										return
 									}
 
-									elem = origElem
 								case 'e': // Prefix: "ed-paths"
-									origElem := elem
+
 									if l := len("ed-paths"); len(elem) >= l && elem[0:l] == "ed-paths" {
 										elem = elem[l:]
 									} else {
@@ -246,12 +332,10 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 										return
 									}
 
-									elem = origElem
 								}
 
-								elem = origElem
 							case 'r': // Prefix: "regenerate-image"
-								origElem := elem
+
 								if l := len("regenerate-image"); len(elem) >= l && elem[0:l] == "regenerate-image" {
 									elem = elem[l:]
 								} else {
@@ -272,9 +356,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 									return
 								}
 
-								elem = origElem
 							case 't': // Prefix: "title"
-								origElem := elem
+
 								if l := len("title"); len(elem) >= l && elem[0:l] == "title" {
 									elem = elem[l:]
 								} else {
@@ -295,18 +378,14 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 									return
 								}
 
-								elem = origElem
 							}
 
-							elem = origElem
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				case 'y': // Prefix: "y/"
-					origElem := elem
+
 					if l := len("y/"); len(elem) >= l && elem[0:l] == "y/" {
 						elem = elem[l:]
 					} else {
@@ -327,7 +406,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/visibility"
-						origElem := elem
+
 						if l := len("/visibility"); len(elem) >= l && elem[0:l] == "/visibility" {
 							elem = elem[l:]
 						} else {
@@ -348,15 +427,12 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							return
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				}
 
-				elem = origElem
 			case 'u': // Prefix: "upload"
-				origElem := elem
+
 				if l := len("upload"); len(elem) >= l && elem[0:l] == "upload" {
 					elem = elem[l:]
 				} else {
@@ -375,10 +451,8 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 
-				elem = origElem
 			}
 
-			elem = origElem
 		}
 	}
 	s.notFound(w, r)
@@ -460,7 +534,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 		}
 		switch elem[0] {
 		case '/': // Prefix: "/"
-			origElem := elem
+
 			if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 				elem = elem[l:]
 			} else {
@@ -471,8 +545,108 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				break
 			}
 			switch elem[0] {
+			case 'a': // Prefix: "auth/"
+
+				if l := len("auth/"); len(elem) >= l && elem[0:l] == "auth/" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case 'c': // Prefix: "check"
+
+					if l := len("check"); len(elem) >= l && elem[0:l] == "check" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch method {
+						case "GET":
+							r.name = AuthCheckOperation
+							r.summary = "Check if user is authenticated"
+							r.operationID = "Auth_check"
+							r.pathPattern = "/auth/check"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
+				case 'l': // Prefix: "log"
+
+					if l := len("log"); len(elem) >= l && elem[0:l] == "log" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						break
+					}
+					switch elem[0] {
+					case 'i': // Prefix: "in"
+
+						if l := len("in"); len(elem) >= l && elem[0:l] == "in" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch method {
+							case "POST":
+								r.name = AuthLoginOperation
+								r.summary = "Login with username and password"
+								r.operationID = "Auth_login"
+								r.pathPattern = "/auth/login"
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
+						}
+
+					case 'o': // Prefix: "out"
+
+						if l := len("out"); len(elem) >= l && elem[0:l] == "out" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch method {
+							case "POST":
+								r.name = AuthLogoutOperation
+								r.summary = "Logout and invalidate session"
+								r.operationID = "Auth_logout"
+								r.pathPattern = "/auth/logout"
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
+						}
+
+					}
+
+				}
+
 			case 'e': // Prefix: "entr"
-				origElem := elem
+
 				if l := len("entr"); len(elem) >= l && elem[0:l] == "entr" {
 					elem = elem[l:]
 				} else {
@@ -484,7 +658,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 				switch elem[0] {
 				case 'i': // Prefix: "ies"
-					origElem := elem
+
 					if l := len("ies"); len(elem) >= l && elem[0:l] == "ies" {
 						elem = elem[l:]
 					} else {
@@ -515,7 +689,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/"
-						origElem := elem
+
 						if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 							elem = elem[l:]
 						} else {
@@ -585,7 +759,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 						switch elem[0] {
 						case '/': // Prefix: "/"
-							origElem := elem
+
 							if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 								elem = elem[l:]
 							} else {
@@ -597,7 +771,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 							switch elem[0] {
 							case 'b': // Prefix: "body"
-								origElem := elem
+
 								if l := len("body"); len(elem) >= l && elem[0:l] == "body" {
 									elem = elem[l:]
 								} else {
@@ -620,9 +794,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									}
 								}
 
-								elem = origElem
 							case 'l': // Prefix: "link"
-								origElem := elem
+
 								if l := len("link"); len(elem) >= l && elem[0:l] == "link" {
 									elem = elem[l:]
 								} else {
@@ -634,7 +807,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								}
 								switch elem[0] {
 								case '-': // Prefix: "-pallet"
-									origElem := elem
+
 									if l := len("-pallet"); len(elem) >= l && elem[0:l] == "-pallet" {
 										elem = elem[l:]
 									} else {
@@ -657,9 +830,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 										}
 									}
 
-									elem = origElem
 								case 'e': // Prefix: "ed-paths"
-									origElem := elem
+
 									if l := len("ed-paths"); len(elem) >= l && elem[0:l] == "ed-paths" {
 										elem = elem[l:]
 									} else {
@@ -682,12 +854,10 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 										}
 									}
 
-									elem = origElem
 								}
 
-								elem = origElem
 							case 'r': // Prefix: "regenerate-image"
-								origElem := elem
+
 								if l := len("regenerate-image"); len(elem) >= l && elem[0:l] == "regenerate-image" {
 									elem = elem[l:]
 								} else {
@@ -710,9 +880,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									}
 								}
 
-								elem = origElem
 							case 't': // Prefix: "title"
-								origElem := elem
+
 								if l := len("title"); len(elem) >= l && elem[0:l] == "title" {
 									elem = elem[l:]
 								} else {
@@ -735,18 +904,14 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									}
 								}
 
-								elem = origElem
 							}
 
-							elem = origElem
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				case 'y': // Prefix: "y/"
-					origElem := elem
+
 					if l := len("y/"); len(elem) >= l && elem[0:l] == "y/" {
 						elem = elem[l:]
 					} else {
@@ -767,7 +932,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 					switch elem[0] {
 					case '/': // Prefix: "/visibility"
-						origElem := elem
+
 						if l := len("/visibility"); len(elem) >= l && elem[0:l] == "/visibility" {
 							elem = elem[l:]
 						} else {
@@ -790,15 +955,12 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 						}
 
-						elem = origElem
 					}
 
-					elem = origElem
 				}
 
-				elem = origElem
 			case 'u': // Prefix: "upload"
-				origElem := elem
+
 				if l := len("upload"); len(elem) >= l && elem[0:l] == "upload" {
 					elem = elem[l:]
 				} else {
@@ -821,10 +983,8 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 				}
 
-				elem = origElem
 			}
 
-			elem = origElem
 		}
 	}
 	return r, false

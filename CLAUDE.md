@@ -150,3 +150,7 @@ Required environment variables (see `app.jsonnet` for full list):
 
 - after modify tsx or ts, run biome before the commit
 - use mockgen for db testing
+- before commit, run biome, go test.
+```
+
+</invoke>

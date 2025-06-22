@@ -3,7 +3,7 @@ import { defineConfig } from "orval";
 export default defineConfig({
 	adminApi: {
 		input: {
-			target: "../../../typespec/tsp-output/@typespec/openapi3/openapi.yaml",
+			target: "../../typespec/tsp-output/@typespec/openapi3/openapi.yaml",
 		},
 		output: {
 			mode: "single",

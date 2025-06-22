@@ -41,6 +41,7 @@ export const customInstance = async <T>(
 		headers: requestHeaders,
 		body: requestBody,
 		signal,
+		credentials: "include", // Include cookies for session management
 	});
 
 	if (!response.ok) {
