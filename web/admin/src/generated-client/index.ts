@@ -7,18 +7,26 @@
 import type {
   CreateEntryRequest,
   CreateEntryResponse,
+  DeleteEntryPathParameters,
   EmptyResponse,
   EntryTitlesResponse,
   ErrorResponse,
+  GetEntryByDynamicPathPathParameters,
   GetLatestEntriesParams,
   GetLatestEntriesRow,
+  GetLinkPalletPathParameters,
+  GetLinkedEntryPathsPathParameters,
   LinkPalletData,
   LinkedEntryPathsResponse,
+  RegenerateEntryImagePathParameters,
+  UpdateEntryBodyPathParameters,
   UpdateEntryBodyRequest,
+  UpdateEntryTitlePathParameters,
   UpdateEntryTitleRequest,
+  UpdateEntryVisibilityPathParameters,
   UpdateVisibilityRequest,
   UpdateVisibilityResponse,
-  UploadFileBody,
+  UploadFileRequest,
   UploadFileResponse
 } from './model';
 
@@ -177,7 +185,7 @@ export type deleteEntryResponse = deleteEntryResponseComposite & {
   headers: Headers;
 }
 
-export const getDeleteEntryUrl = (path: string,) => {
+export const getDeleteEntryUrl = ({ path }: DeleteEntryPathParameters,) => {
 
 
   
@@ -185,9 +193,9 @@ export const getDeleteEntryUrl = (path: string,) => {
   return `/entries/${path}`
 }
 
-export const deleteEntry = async (path: string, options?: RequestInit): Promise<deleteEntryResponse> => {
+export const deleteEntry = async ({ path }: DeleteEntryPathParameters, options?: RequestInit): Promise<deleteEntryResponse> => {
   
-  return customInstance<deleteEntryResponse>(getDeleteEntryUrl(path),
+  return customInstance<deleteEntryResponse>(getDeleteEntryUrl({ path }),
   {      
     ...options,
     method: 'DELETE'
@@ -217,7 +225,7 @@ export type getEntryByDynamicPathResponse = getEntryByDynamicPathResponseComposi
   headers: Headers;
 }
 
-export const getGetEntryByDynamicPathUrl = (path: string,) => {
+export const getGetEntryByDynamicPathUrl = ({ path }: GetEntryByDynamicPathPathParameters,) => {
 
 
   
@@ -225,9 +233,9 @@ export const getGetEntryByDynamicPathUrl = (path: string,) => {
   return `/entries/${path}`
 }
 
-export const getEntryByDynamicPath = async (path: string, options?: RequestInit): Promise<getEntryByDynamicPathResponse> => {
+export const getEntryByDynamicPath = async ({ path }: GetEntryByDynamicPathPathParameters, options?: RequestInit): Promise<getEntryByDynamicPathResponse> => {
   
-  return customInstance<getEntryByDynamicPathResponse>(getGetEntryByDynamicPathUrl(path),
+  return customInstance<getEntryByDynamicPathResponse>(getGetEntryByDynamicPathUrl({ path }),
   {      
     ...options,
     method: 'GET'
@@ -257,7 +265,7 @@ export type updateEntryBodyResponse = updateEntryBodyResponseComposite & {
   headers: Headers;
 }
 
-export const getUpdateEntryBodyUrl = (path: string,) => {
+export const getUpdateEntryBodyUrl = ({ path }: UpdateEntryBodyPathParameters,) => {
 
 
   
@@ -265,10 +273,10 @@ export const getUpdateEntryBodyUrl = (path: string,) => {
   return `/entries/${path}/body`
 }
 
-export const updateEntryBody = async (path: string,
+export const updateEntryBody = async ({ path }: UpdateEntryBodyPathParameters,
     updateEntryBodyRequest: UpdateEntryBodyRequest, options?: RequestInit): Promise<updateEntryBodyResponse> => {
   
-  return customInstance<updateEntryBodyResponse>(getUpdateEntryBodyUrl(path),
+  return customInstance<updateEntryBodyResponse>(getUpdateEntryBodyUrl({ path }),
   {      
     ...options,
     method: 'PUT',
@@ -299,7 +307,7 @@ export type getLinkPalletResponse = getLinkPalletResponseComposite & {
   headers: Headers;
 }
 
-export const getGetLinkPalletUrl = (path: string,) => {
+export const getGetLinkPalletUrl = ({ path }: GetLinkPalletPathParameters,) => {
 
 
   
@@ -307,9 +315,9 @@ export const getGetLinkPalletUrl = (path: string,) => {
   return `/entries/${path}/link-pallet`
 }
 
-export const getLinkPallet = async (path: string, options?: RequestInit): Promise<getLinkPalletResponse> => {
+export const getLinkPallet = async ({ path }: GetLinkPalletPathParameters, options?: RequestInit): Promise<getLinkPalletResponse> => {
   
-  return customInstance<getLinkPalletResponse>(getGetLinkPalletUrl(path),
+  return customInstance<getLinkPalletResponse>(getGetLinkPalletUrl({ path }),
   {      
     ...options,
     method: 'GET'
@@ -339,7 +347,7 @@ export type getLinkedEntryPathsResponse = getLinkedEntryPathsResponseComposite &
   headers: Headers;
 }
 
-export const getGetLinkedEntryPathsUrl = (path: string,) => {
+export const getGetLinkedEntryPathsUrl = ({ path }: GetLinkedEntryPathsPathParameters,) => {
 
 
   
@@ -347,9 +355,9 @@ export const getGetLinkedEntryPathsUrl = (path: string,) => {
   return `/entries/${path}/linked-paths`
 }
 
-export const getLinkedEntryPaths = async (path: string, options?: RequestInit): Promise<getLinkedEntryPathsResponse> => {
+export const getLinkedEntryPaths = async ({ path }: GetLinkedEntryPathsPathParameters, options?: RequestInit): Promise<getLinkedEntryPathsResponse> => {
   
-  return customInstance<getLinkedEntryPathsResponse>(getGetLinkedEntryPathsUrl(path),
+  return customInstance<getLinkedEntryPathsResponse>(getGetLinkedEntryPathsUrl({ path }),
   {      
     ...options,
     method: 'GET'
@@ -379,7 +387,7 @@ export type regenerateEntryImageResponse = regenerateEntryImageResponseComposite
   headers: Headers;
 }
 
-export const getRegenerateEntryImageUrl = (path: string,) => {
+export const getRegenerateEntryImageUrl = ({ path }: RegenerateEntryImagePathParameters,) => {
 
 
   
@@ -387,9 +395,9 @@ export const getRegenerateEntryImageUrl = (path: string,) => {
   return `/entries/${path}/regenerate-image`
 }
 
-export const regenerateEntryImage = async (path: string, options?: RequestInit): Promise<regenerateEntryImageResponse> => {
+export const regenerateEntryImage = async ({ path }: RegenerateEntryImagePathParameters, options?: RequestInit): Promise<regenerateEntryImageResponse> => {
   
-  return customInstance<regenerateEntryImageResponse>(getRegenerateEntryImageUrl(path),
+  return customInstance<regenerateEntryImageResponse>(getRegenerateEntryImageUrl({ path }),
   {      
     ...options,
     method: 'POST'
@@ -419,7 +427,7 @@ export type updateEntryTitleResponse = updateEntryTitleResponseComposite & {
   headers: Headers;
 }
 
-export const getUpdateEntryTitleUrl = (path: string,) => {
+export const getUpdateEntryTitleUrl = ({ path }: UpdateEntryTitlePathParameters,) => {
 
 
   
@@ -427,10 +435,10 @@ export const getUpdateEntryTitleUrl = (path: string,) => {
   return `/entries/${path}/title`
 }
 
-export const updateEntryTitle = async (path: string,
+export const updateEntryTitle = async ({ path }: UpdateEntryTitlePathParameters,
     updateEntryTitleRequest: UpdateEntryTitleRequest, options?: RequestInit): Promise<updateEntryTitleResponse> => {
   
-  return customInstance<updateEntryTitleResponse>(getUpdateEntryTitleUrl(path),
+  return customInstance<updateEntryTitleResponse>(getUpdateEntryTitleUrl({ path }),
   {      
     ...options,
     method: 'PUT',
@@ -461,7 +469,7 @@ export type updateEntryVisibilityResponse = updateEntryVisibilityResponseComposi
   headers: Headers;
 }
 
-export const getUpdateEntryVisibilityUrl = (path: string,) => {
+export const getUpdateEntryVisibilityUrl = ({ path }: UpdateEntryVisibilityPathParameters,) => {
 
 
   
@@ -469,10 +477,10 @@ export const getUpdateEntryVisibilityUrl = (path: string,) => {
   return `/entry/${path}/visibility`
 }
 
-export const updateEntryVisibility = async (path: string,
+export const updateEntryVisibility = async ({ path }: UpdateEntryVisibilityPathParameters,
     updateVisibilityRequest: UpdateVisibilityRequest, options?: RequestInit): Promise<updateEntryVisibilityResponse> => {
   
-  return customInstance<updateEntryVisibilityResponse>(getUpdateEntryVisibilityUrl(path),
+  return customInstance<updateEntryVisibilityResponse>(getUpdateEntryVisibilityUrl({ path }),
   {      
     ...options,
     method: 'POST',
@@ -508,9 +516,9 @@ export const getUploadFileUrl = () => {
   return `/upload`
 }
 
-export const uploadFile = async (uploadFileBody: UploadFileBody, options?: RequestInit): Promise<uploadFileResponse> => {
+export const uploadFile = async (uploadFileRequest: UploadFileRequest, options?: RequestInit): Promise<uploadFileResponse> => {
     const formData = new FormData();
-formData.append(`file`, uploadFileBody.file)
+formData.append(`file`, uploadFileRequest.file)
 
   return customInstance<uploadFileResponse>(getUploadFileUrl(),
   {      

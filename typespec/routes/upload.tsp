@@ -11,9 +11,11 @@ model UploadFileResponse {
   url: url;
 }
 
+model UploadFileRequest {
+  file: HttpPart<bytes>;
+}
+
 @route("/upload") @post op uploadFile(
   @header contentType: "multipart/form-data",
-  @body body: {
-    file: bytes;
-  },
+  @multipartBody body: UploadFileRequest,
 ): UploadFileResponse | BadRequestResponse;
