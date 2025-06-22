@@ -172,4 +172,4 @@ The application is deployed on Sakura Cloud App Run using Docker. See `Dockerfil
 
 ## License
 
-Personal project - not open for external contributions.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
