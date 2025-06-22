@@ -3,7 +3,8 @@
     "allow": [
       "Bash(npm run lint)",
       "Bash(npm install)",
-      "Bash(npm run format:*)"
+      "Bash(npm run format:*)",
+      "Bash(npx biome format:*)"
     ],
     "deny": []
   }

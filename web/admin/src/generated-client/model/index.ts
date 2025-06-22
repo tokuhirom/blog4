@@ -36,4 +36,5 @@ export * from './updateEntryVisibilityPathParameters';
 export * from './updateVisibilityRequest';
 export * from './updateVisibilityResponse';
 export * from './uploadFileBody';
+export * from './uploadFileRequest';
 export * from './uploadFileResponse';

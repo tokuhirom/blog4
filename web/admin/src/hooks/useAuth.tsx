@@ -1,5 +1,11 @@
 import type React from "react";
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import {
+	createContext,
+	useContext,
+	useState,
+	useEffect,
+	useCallback,
+} from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { authCheck, authLogout } from "../generated-client";
 
