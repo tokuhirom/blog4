@@ -1,6 +1,6 @@
 # Stage 1: Build the frontend
 FROM node:22 AS frontend-builder
-RUN corepack enable && corepack prepare pnpm@8 --activate
+RUN corepack enable && corepack prepare pnpm@10.12.1 --activate
 WORKDIR /app
 COPY web/admin/package.json web/admin/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
