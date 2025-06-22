@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@typespec/http": "^1.0.0",
+    "@typespec/openapi": "^1.0.0",
     "@typespec/openapi3": "^1.0.0",
     "@typespec/rest": "^0.71.0"
   }

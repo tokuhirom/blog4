@@ -1,10 +1,11 @@
 # Stage 1: Build the frontend
 FROM node:22 AS frontend-builder
+RUN corepack enable && corepack prepare pnpm@8 --activate
 WORKDIR /app
-COPY web/admin/package*.json ./
-RUN npm install
+COPY web/admin/package.json web/admin/pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 COPY web/admin/ ./
-RUN npm run build
+RUN pnpm run build
 
 # Stage 2: Build the Go backend
 FROM golang:1.24 AS backend-builder
