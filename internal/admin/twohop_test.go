@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/tokuhirom/blog4/internal/admin/openapi"
+	"github.com/tokuhirom/blog4/server/admin/openapi"
 )
 
 func Test_toOptNilString(t *testing.T) {
