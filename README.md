@@ -11,11 +11,11 @@ brew install go-task
 # Install dependencies (Linux)
 go install github.com/go-task/task/v3/cmd/task@latest
 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-npm install -g @typespec/compiler
 
 # One-time setup
-task gen
+npm install  # Install TypeSpec dependencies
 cd web/admin && npm install
+task gen
 
 # Run development servers
 task dev
@@ -31,7 +31,7 @@ task dev
   - macOS: `brew install go-task`
   - Linux: `go install github.com/go-task/task/v3/cmd/task@latest`
 - sqlc: `go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest`
-- TypeSpec: `npm install -g @typespec/compiler`
+- TypeSpec: Installed via `npm install` (see package.json)
 
 ### Common Commands
 
