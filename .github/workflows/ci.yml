@@ -102,8 +102,8 @@ jobs:
       - name: Install Go dependencies
         run: go mod download
 
-      - name: Install TypeSpec
-        run: npm install -g @typespec/compiler
+      - name: Install TypeSpec dependencies
+        run: npm install
 
       - name: Install go-task
         run: |
