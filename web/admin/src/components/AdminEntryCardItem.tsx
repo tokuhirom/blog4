@@ -27,7 +27,7 @@ export default function AdminEntryCardItem({
 				window.open(`/admin/entry/${entry.Path}`, "_blank");
 			} else {
 				// 通常クリック時は同じタブで開く
-				navigate(`/admin/entry/${entry.Path}`);
+				navigate(`/entry/${entry.Path}`);
 			}
 		}
 	};

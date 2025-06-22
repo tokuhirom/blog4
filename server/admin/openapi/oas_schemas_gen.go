@@ -9,6 +9,34 @@ import (
 	ht "github.com/ogen-go/ogen/http"
 )
 
+// Ref: #/components/schemas/AuthCheckResponse
+type AuthCheckResponse struct {
+	Authenticated bool      `json:"authenticated"`
+	Username      OptString `json:"username"`
+}
+
+// GetAuthenticated returns the value of Authenticated.
+func (s *AuthCheckResponse) GetAuthenticated() bool {
+	return s.Authenticated
+}
+
+// GetUsername returns the value of Username.
+func (s *AuthCheckResponse) GetUsername() OptString {
+	return s.Username
+}
+
+// SetAuthenticated sets the value of Authenticated.
+func (s *AuthCheckResponse) SetAuthenticated(val bool) {
+	s.Authenticated = val
+}
+
+// SetUsername sets the value of Username.
+func (s *AuthCheckResponse) SetUsername(val OptString) {
+	s.Username = val
+}
+
+func (*AuthCheckResponse) authCheckRes() {}
+
 // Ref: #/components/schemas/CreateEntryRequest
 type CreateEntryRequest struct {
 	// The title of the new entry.
@@ -59,6 +87,7 @@ func (s *EmptyResponse) SetMessage(val OptString) {
 	s.Message = val
 }
 
+func (*EmptyResponse) authLogoutRes()           {}
 func (*EmptyResponse) deleteEntryRes()          {}
 func (*EmptyResponse) regenerateEntryImageRes() {}
 func (*EmptyResponse) updateEntryBodyRes()      {}
@@ -245,6 +274,9 @@ func (s *ErrorResponse) SetError(val OptString) {
 	s.Error = val
 }
 
+func (*ErrorResponse) authCheckRes()             {}
+func (*ErrorResponse) authLoginRes()             {}
+func (*ErrorResponse) authLogoutRes()            {}
 func (*ErrorResponse) createEntryRes()           {}
 func (*ErrorResponse) deleteEntryRes()           {}
 func (*ErrorResponse) getLinkedEntryPathsRes()   {}
@@ -468,6 +500,60 @@ func (s *LinkedEntryPathsResponse) init() LinkedEntryPathsResponse {
 
 func (*LinkedEntryPathsResponse) getLinkedEntryPathsRes() {}
 
+// Ref: #/components/schemas/LoginRequest
+type LoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+// GetUsername returns the value of Username.
+func (s *LoginRequest) GetUsername() string {
+	return s.Username
+}
+
+// GetPassword returns the value of Password.
+func (s *LoginRequest) GetPassword() string {
+	return s.Password
+}
+
+// SetUsername sets the value of Username.
+func (s *LoginRequest) SetUsername(val string) {
+	s.Username = val
+}
+
+// SetPassword sets the value of Password.
+func (s *LoginRequest) SetPassword(val string) {
+	s.Password = val
+}
+
+// Ref: #/components/schemas/LoginResponse
+type LoginResponse struct {
+	Success bool      `json:"success"`
+	Message OptString `json:"message"`
+}
+
+// GetSuccess returns the value of Success.
+func (s *LoginResponse) GetSuccess() bool {
+	return s.Success
+}
+
+// GetMessage returns the value of Message.
+func (s *LoginResponse) GetMessage() OptString {
+	return s.Message
+}
+
+// SetSuccess sets the value of Success.
+func (s *LoginResponse) SetSuccess(val bool) {
+	s.Success = val
+}
+
+// SetMessage sets the value of Message.
+func (s *LoginResponse) SetMessage(val OptString) {
+	s.Message = val
+}
+
+func (*LoginResponse) authLoginRes() {}
+
 // NewOptDateTime returns new OptDateTime with value set to v.
 func NewOptDateTime(v time.Time) OptDateTime {
 	return OptDateTime{
@@ -547,10 +633,10 @@ func (o *OptNilDateTime) SetTo(v time.Time) {
 	o.Value = v
 }
 
-// IsSet returns true if value is Null.
+// IsNull returns true if value is Null.
 func (o OptNilDateTime) IsNull() bool { return o.Null }
 
-// SetNull sets value to null.
+// SetToNull sets value to null.
 func (o *OptNilDateTime) SetToNull() {
 	o.Set = true
 	o.Null = true
@@ -610,10 +696,10 @@ func (o *OptNilString) SetTo(v string) {
 	o.Value = v
 }
 
-// IsSet returns true if value is Null.
+// IsNull returns true if value is Null.
 func (o OptNilString) IsNull() bool { return o.Null }
 
-// SetNull sets value to null.
+// SetToNull sets value to null.
 func (o *OptNilString) SetToNull() {
 	o.Set = true
 	o.Null = true
@@ -791,17 +877,18 @@ type UploadFileBadRequest struct{}
 
 func (*UploadFileBadRequest) uploadFileRes() {}
 
-type UploadFileReq struct {
+// Ref: #/components/schemas/UploadFileBody
+type UploadFileBodyMultipart struct {
 	File ht.MultipartFile `json:"file"`
 }
 
 // GetFile returns the value of File.
-func (s *UploadFileReq) GetFile() ht.MultipartFile {
+func (s *UploadFileBodyMultipart) GetFile() ht.MultipartFile {
 	return s.File
 }
 
 // SetFile sets the value of File.
-func (s *UploadFileReq) SetFile(val ht.MultipartFile) {
+func (s *UploadFileBodyMultipart) SetFile(val ht.MultipartFile) {
 	s.File = val
 }
 

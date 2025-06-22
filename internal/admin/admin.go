@@ -9,16 +9,16 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/ogen-go/ogen/ogenerrors"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
-	"github.com/tokuhirom/blog4/internal/admin/openapi"
 	"github.com/tokuhirom/blog4/server"
+	"github.com/tokuhirom/blog4/server/admin/openapi"
 	"github.com/tokuhirom/blog4/server/sobs"
 )
 
@@ -42,14 +42,6 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 			AllowCredentials: true,
 			MaxAge:           300,
 		}))
-	} else {
-		slog.Info("LocalDevelopment mode disabled. CORS is not allowed. BasicAuth enabled", slog.String("admin_user", cfg.AdminUser))
-		r.Use(middleware.BasicAuth(
-			"admin",
-			map[string]string{
-				cfg.AdminUser: cfg.AdminPassword,
-			},
-		))
 	}
 	dir, _ := os.Getwd()
 	indexHtmlHandler := func(w http.ResponseWriter, r *http.Request) {
@@ -62,6 +54,7 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 		http.ServeContent(w, r, "index.html", time.Time{}, bytes.NewReader(file))
 	}
 	r.Get("/", indexHtmlHandler)
+	r.Get("/login", indexHtmlHandler)
 	r.HandleFunc("/entry/*", indexHtmlHandler)
 	filesDir := http.Dir(filepath.Join(dir, "web/admin/dist"))
 	r.Handle("/assets/*", http.StripPrefix("/admin/", http.FileServer(filesDir)))
@@ -73,6 +66,9 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 		hubUrls:     cfg.GetHubUrls(),
 		paapiClient: NewPAAPIClient(cfg.AmazonPaapi5AccessKey, cfg.AmazonPaapi5SecretKey),
 		S3Client:    sobsClient,
+		adminUser:   cfg.AdminUser,
+		adminPassword: cfg.AdminPassword,
+		isSecure:    !cfg.LocalDev,
 	}
 	adminApiHandler, err := openapi.NewServer(&apiService,
 		openapi.WithPathPrefix("/admin/api"),
@@ -88,7 +84,27 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 	if err != nil {
 		return nil, fmt.Errorf("failed to create admin API handler: %w", err)
 	}
-	r.Mount("/api/", adminApiHandler)
+	// Create a subrouter for API with session middleware
+	apiRouter := chi.NewRouter()
+	
+	// Add HTTP context middleware
+	apiRouter.Use(HTTPContextMiddleware)
+	
+	// Apply session middleware only to non-auth endpoints
+	apiRouter.Use(func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// Skip auth check for auth endpoints
+			if strings.HasPrefix(r.URL.Path, "/admin/api/auth/") {
+				next.ServeHTTP(w, r)
+				return
+			}
+			// Apply session middleware for other endpoints
+			SessionMiddleware(queries)(next).ServeHTTP(w, r)
+		})
+	})
+	
+	apiRouter.Mount("/", adminApiHandler)
+	r.Mount("/api/", apiRouter)
 
 	return r, nil
 }

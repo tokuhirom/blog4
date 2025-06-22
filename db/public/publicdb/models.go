@@ -8,6 +8,7 @@ import (
 	"database/sql"
 	"database/sql/driver"
 	"fmt"
+	"time"
 )
 
 type EntryFormat string
@@ -92,6 +93,14 @@ func (ns NullEntryVisibility) Value() (driver.Value, error) {
 		return nil, nil
 	}
 	return string(ns.EntryVisibility), nil
+}
+
+type AdminSession struct {
+	SessionID      string
+	Username       string
+	ExpiresAt      time.Time
+	CreatedAt      sql.NullTime
+	LastAccessedAt sql.NullTime
 }
 
 type AmazonCache struct {

@@ -113,7 +113,7 @@ export default function TopPage() {
 
 					const data = await api.createEntry({ title: placeholderTitle });
 					console.log(`New entry created: ${data.Path}`);
-					navigate(`/admin/entry/${data.Path}`);
+					navigate(`/entry/${data.Path}`);
 				} catch (err) {
 					console.error("Error creating new entry:", err);
 					alert(`Failed to create new entry: ${err}`);

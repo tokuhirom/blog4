@@ -1,6 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { Box, Paper, Typography, Divider, Grid } from "@mui/material";
-import type { LinkPalletData, EntryWithImage, GetLatestEntriesRow } from "../generated-client/model";
+import type {
+	LinkPalletData,
+	EntryWithImage,
+	GetLatestEntriesRow,
+} from "../generated-client/model";
 import AdminEntryCardItem from "./AdminEntryCardItem";
 import CardItem from "./CardItem";
 import { createAdminApiClient } from "../admin_api";
@@ -12,7 +16,9 @@ interface LinkPalletProps {
 const api = createAdminApiClient();
 
 // Convert EntryWithImage to GetLatestEntriesRow format
-function convertToGetLatestEntriesRow(entry: EntryWithImage): GetLatestEntriesRow {
+function convertToGetLatestEntriesRow(
+	entry: EntryWithImage,
+): GetLatestEntriesRow {
 	return {
 		Path: entry.path,
 		Title: entry.title,
@@ -34,7 +40,7 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 		api
 			.createEntry({ title })
 			.then((data) => {
-				navigate(`/admin/entry/${data.Path}`);
+				navigate(`/entry/${data.Path}`);
 			})
 			.catch((err) => {
 				console.error("Error creating new entry:", err);
@@ -56,7 +62,9 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 					<Grid container spacing={1} sx={{ maxWidth: "540px" }}>
 						{linkPallet.links.map((link) => (
 							<Grid item key={link.path} xs={12} sm={6} md={4}>
-								<AdminEntryCardItem entry={convertToGetLatestEntriesRow(link)} />
+								<AdminEntryCardItem
+									entry={convertToGetLatestEntriesRow(link)}
+								/>
 							</Grid>
 						))}
 					</Grid>
@@ -94,7 +102,9 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 									</Grid>
 									{twohops.links.map((link) => (
 										<Grid item key={link.path} xs={12} sm={6} md={4}>
-											<AdminEntryCardItem entry={convertToGetLatestEntriesRow(link)} />
+											<AdminEntryCardItem
+												entry={convertToGetLatestEntriesRow(link)}
+											/>
 										</Grid>
 									))}
 								</Grid>

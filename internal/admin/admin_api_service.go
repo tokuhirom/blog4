@@ -3,19 +3,22 @@ package admin
 import (
 	"bytes"
 	"context"
+	"crypto/subtle"
 	"database/sql"
 	"errors"
 	"fmt"
 	"io"
 	"log/slog"
+	"math/rand"
+	"net/http"
 	"net/url"
 	"regexp"
 	"strings"
 	"time"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
-	"github.com/tokuhirom/blog4/internal/admin/openapi"
 	"github.com/tokuhirom/blog4/server"
+	"github.com/tokuhirom/blog4/server/admin/openapi"
 	"github.com/tokuhirom/blog4/server/sobs"
 )
 
@@ -25,6 +28,9 @@ type adminApiService struct {
 	hubUrls     []string
 	paapiClient *PAAPIClient
 	S3Client    *sobs.SobsClient
+	adminUser   string
+	adminPassword string
+	isSecure    bool
 }
 
 func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.GetLatestEntriesParams) (openapi.GetLatestEntriesRes, error) {
@@ -428,7 +434,7 @@ func (p *adminApiService) getAmazonCache(markdown string, ctx context.Context) e
 	return nil
 }
 
-func (p *adminApiService) UploadFile(ctx context.Context, req *openapi.UploadFileReq) (openapi.UploadFileRes, error) {
+func (p *adminApiService) UploadFile(ctx context.Context, req *openapi.UploadFileBodyMultipart) (openapi.UploadFileRes, error) {
 	// Content-Type の取得
 	contentType := req.File.Header.Get("Content-Type")
 	contentLength := req.File.Size
@@ -524,4 +530,145 @@ func (p *adminApiService) RegenerateEntryImage(ctx context.Context, params opena
 		}
 	}
 	return &openapi.EmptyResponse{}, nil
+}
+
+// AuthLogin implements the login endpoint
+func (p *adminApiService) AuthLogin(ctx context.Context, req *openapi.LoginRequest) (openapi.AuthLoginRes, error) {
+	// Validate credentials using constant-time comparison
+	usernameMatch := subtle.ConstantTimeCompare([]byte(req.Username), []byte(p.adminUser)) == 1
+	passwordMatch := subtle.ConstantTimeCompare([]byte(req.Password), []byte(p.adminPassword)) == 1
+
+	if !usernameMatch || !passwordMatch {
+		// Return 401 with ErrorResponse
+		return &openapi.ErrorResponse{
+			Message: openapi.NewOptString("Invalid username or password"),
+		}, nil
+	}
+
+	// Generate session ID
+	sessionID, err := generateSessionID()
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate session ID: %w", err)
+	}
+
+	// Calculate session expiry
+	sessionTimeout := defaultSessionTimeout
+	expires := time.Now().Add(sessionTimeout)
+
+	// Create session in database
+	err = p.queries.CreateSession(ctx, admindb.CreateSessionParams{
+		SessionID: sessionID,
+		Username:  req.Username,
+		ExpiresAt: expires,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("failed to create session: %w", err)
+	}
+
+	// Get response writer from context to set cookie
+	if w, ok := GetHTTPResponse(ctx); ok {
+		http.SetCookie(w, &http.Cookie{
+			Name:     sessionCookieName,
+			Value:    sessionID,
+			Path:     "/admin",
+			HttpOnly: true,
+			Secure:   p.isSecure,
+			SameSite: http.SameSiteStrictMode,
+			Expires:  expires,
+			MaxAge:   int(time.Until(expires).Seconds()),
+		})
+	}
+
+	// Clean up expired sessions (1% probability)
+	if rand.Float32() < 0.01 {
+		go func() {
+			ctx := context.Background()
+			if err := p.queries.DeleteExpiredSessions(ctx); err != nil {
+				slog.Error("failed to delete expired sessions", slog.String("error", err.Error()))
+			}
+		}()
+	}
+
+	return &openapi.LoginResponse{
+		Success: true,
+		Message: openapi.NewOptString("Login successful"),
+	}, nil
+}
+
+// AuthLogout implements the logout endpoint
+func (p *adminApiService) AuthLogout(ctx context.Context) (openapi.AuthLogoutRes, error) {
+	// Get session ID from cookie
+	var sessionID string
+	if r, ok := GetHTTPRequest(ctx); ok {
+		if cookie, err := r.Cookie(sessionCookieName); err == nil {
+			sessionID = cookie.Value
+		}
+	}
+
+	if sessionID != "" {
+		// Delete session from database
+		err := p.queries.DeleteSession(ctx, sessionID)
+		if err != nil {
+			slog.Error("failed to delete session", slog.String("error", err.Error()))
+		}
+	}
+
+	// Clear session cookie
+	if w, ok := GetHTTPResponse(ctx); ok {
+		http.SetCookie(w, &http.Cookie{
+			Name:     sessionCookieName,
+			Value:    "",
+			Path:     "/admin",
+			HttpOnly: true,
+			Secure:   p.isSecure,
+			SameSite: http.SameSiteStrictMode,
+			MaxAge:   -1,
+			Expires:  time.Unix(0, 0),
+		})
+	}
+
+	return &openapi.EmptyResponse{
+		Message: openapi.NewOptString("Logout successful"),
+	}, nil
+}
+
+// AuthCheck implements the auth check endpoint
+func (p *adminApiService) AuthCheck(ctx context.Context) (openapi.AuthCheckRes, error) {
+	// Get session ID from cookie
+	var sessionID string
+	if r, ok := GetHTTPRequest(ctx); ok {
+		if cookie, err := r.Cookie(sessionCookieName); err == nil {
+			sessionID = cookie.Value
+		}
+	}
+
+	if sessionID == "" {
+		return &openapi.ErrorResponse{
+			Message: openapi.NewOptString("No session found"),
+		}, nil
+	}
+
+	// Get session from database
+	session, err := p.queries.GetSession(ctx, sessionID)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return &openapi.ErrorResponse{
+				Message: openapi.NewOptString("Invalid session"),
+			}, nil
+		}
+		return nil, fmt.Errorf("failed to get session: %w", err)
+	}
+
+	// Update last accessed time
+	go func() {
+		ctx := context.Background()
+		if err := p.queries.UpdateSessionLastAccessed(ctx, sessionID); err != nil {
+			slog.Error("failed to update session last accessed", slog.String("error", err.Error()))
+		}
+	}()
+
+	return &openapi.AuthCheckResponse{
+		Authenticated: true,
+		Username:      openapi.NewOptString(session.Username),
+	}, nil
 }

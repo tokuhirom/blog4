@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface UploadFileBody {
-  file: Blob;
+export interface AuthCheckResponse {
+  authenticated: boolean;
+  username?: string;
 }

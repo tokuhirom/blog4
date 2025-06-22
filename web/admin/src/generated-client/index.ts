@@ -5,17 +5,28 @@
  * OpenAPI spec version: 1.0.0
  */
 import type {
+  AuthCheckResponse,
   CreateEntryRequest,
   CreateEntryResponse,
+  DeleteEntryPathParameters,
   EmptyResponse,
   EntryTitlesResponse,
   ErrorResponse,
+  GetEntryByDynamicPathPathParameters,
   GetLatestEntriesParams,
   GetLatestEntriesRow,
+  GetLinkPalletPathParameters,
+  GetLinkedEntryPathsPathParameters,
   LinkPalletData,
   LinkedEntryPathsResponse,
+  LoginRequest,
+  LoginResponse,
+  RegenerateEntryImagePathParameters,
+  UpdateEntryBodyPathParameters,
   UpdateEntryBodyRequest,
+  UpdateEntryTitlePathParameters,
   UpdateEntryTitleRequest,
+  UpdateEntryVisibilityPathParameters,
   UpdateVisibilityRequest,
   UpdateVisibilityResponse,
   UploadFileBody,
@@ -29,6 +40,127 @@ export type HTTPStatusCode3xx = 300 | 301 | 302 | 303 | 304 | 305 | 307 | 308;
 export type HTTPStatusCode4xx = 400 | 401 | 402 | 403 | 404 | 405 | 406 | 407 | 408 | 409 | 410 | 411 | 412 | 413 | 414 | 415 | 416 | 417 | 418 | 419 | 420 | 421 | 422 | 423 | 424 | 426 | 428 | 429 | 431 | 451;
 export type HTTPStatusCode5xx = 500 | 501 | 502 | 503 | 504 | 505 | 507 | 511;
 export type HTTPStatusCodes = HTTPStatusCode1xx | HTTPStatusCode2xx | HTTPStatusCode3xx | HTTPStatusCode4xx | HTTPStatusCode5xx;
+
+/**
+ * @summary Check if user is authenticated
+ */
+export type authCheckResponse200 = {
+  data: AuthCheckResponse
+  status: 200
+}
+
+export type authCheckResponse401 = {
+  data: ErrorResponse
+  status: 401
+}
+    
+export type authCheckResponseComposite = authCheckResponse200 | authCheckResponse401;
+    
+export type authCheckResponse = authCheckResponseComposite & {
+  headers: Headers;
+}
+
+export const getAuthCheckUrl = () => {
+
+
+  
+
+  return `/auth/check`
+}
+
+export const authCheck = async ( options?: RequestInit): Promise<authCheckResponse> => {
+  
+  return customInstance<authCheckResponse>(getAuthCheckUrl(),
+  {      
+    ...options,
+    method: 'GET'
+    
+    
+  }
+);}
+
+
+
+/**
+ * @summary Login with username and password
+ */
+export type authLoginResponse200 = {
+  data: LoginResponse
+  status: 200
+}
+
+export type authLoginResponse401 = {
+  data: ErrorResponse
+  status: 401
+}
+    
+export type authLoginResponseComposite = authLoginResponse200 | authLoginResponse401;
+    
+export type authLoginResponse = authLoginResponseComposite & {
+  headers: Headers;
+}
+
+export const getAuthLoginUrl = () => {
+
+
+  
+
+  return `/auth/login`
+}
+
+export const authLogin = async (loginRequest: LoginRequest, options?: RequestInit): Promise<authLoginResponse> => {
+  
+  return customInstance<authLoginResponse>(getAuthLoginUrl(),
+  {      
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      loginRequest,)
+  }
+);}
+
+
+
+/**
+ * @summary Logout and invalidate session
+ */
+export type authLogoutResponse200 = {
+  data: EmptyResponse
+  status: 200
+}
+
+export type authLogoutResponse401 = {
+  data: ErrorResponse
+  status: 401
+}
+    
+export type authLogoutResponseComposite = authLogoutResponse200 | authLogoutResponse401;
+    
+export type authLogoutResponse = authLogoutResponseComposite & {
+  headers: Headers;
+}
+
+export const getAuthLogoutUrl = () => {
+
+
+  
+
+  return `/auth/logout`
+}
+
+export const authLogout = async ( options?: RequestInit): Promise<authLogoutResponse> => {
+  
+  return customInstance<authLogoutResponse>(getAuthLogoutUrl(),
+  {      
+    ...options,
+    method: 'POST'
+    
+    
+  }
+);}
+
+
 
 /**
  * @summary Get latest entries
@@ -177,7 +309,7 @@ export type deleteEntryResponse = deleteEntryResponseComposite & {
   headers: Headers;
 }
 
-export const getDeleteEntryUrl = (path: string,) => {
+export const getDeleteEntryUrl = ({ path }: DeleteEntryPathParameters,) => {
 
 
   
@@ -185,9 +317,9 @@ export const getDeleteEntryUrl = (path: string,) => {
   return `/entries/${path}`
 }
 
-export const deleteEntry = async (path: string, options?: RequestInit): Promise<deleteEntryResponse> => {
+export const deleteEntry = async ({ path }: DeleteEntryPathParameters, options?: RequestInit): Promise<deleteEntryResponse> => {
   
-  return customInstance<deleteEntryResponse>(getDeleteEntryUrl(path),
+  return customInstance<deleteEntryResponse>(getDeleteEntryUrl({ path }),
   {      
     ...options,
     method: 'DELETE'
@@ -217,7 +349,7 @@ export type getEntryByDynamicPathResponse = getEntryByDynamicPathResponseComposi
   headers: Headers;
 }
 
-export const getGetEntryByDynamicPathUrl = (path: string,) => {
+export const getGetEntryByDynamicPathUrl = ({ path }: GetEntryByDynamicPathPathParameters,) => {
 
 
   
@@ -225,9 +357,9 @@ export const getGetEntryByDynamicPathUrl = (path: string,) => {
   return `/entries/${path}`
 }
 
-export const getEntryByDynamicPath = async (path: string, options?: RequestInit): Promise<getEntryByDynamicPathResponse> => {
+export const getEntryByDynamicPath = async ({ path }: GetEntryByDynamicPathPathParameters, options?: RequestInit): Promise<getEntryByDynamicPathResponse> => {
   
-  return customInstance<getEntryByDynamicPathResponse>(getGetEntryByDynamicPathUrl(path),
+  return customInstance<getEntryByDynamicPathResponse>(getGetEntryByDynamicPathUrl({ path }),
   {      
     ...options,
     method: 'GET'
@@ -257,7 +389,7 @@ export type updateEntryBodyResponse = updateEntryBodyResponseComposite & {
   headers: Headers;
 }
 
-export const getUpdateEntryBodyUrl = (path: string,) => {
+export const getUpdateEntryBodyUrl = ({ path }: UpdateEntryBodyPathParameters,) => {
 
 
   
@@ -265,10 +397,10 @@ export const getUpdateEntryBodyUrl = (path: string,) => {
   return `/entries/${path}/body`
 }
 
-export const updateEntryBody = async (path: string,
+export const updateEntryBody = async ({ path }: UpdateEntryBodyPathParameters,
     updateEntryBodyRequest: UpdateEntryBodyRequest, options?: RequestInit): Promise<updateEntryBodyResponse> => {
   
-  return customInstance<updateEntryBodyResponse>(getUpdateEntryBodyUrl(path),
+  return customInstance<updateEntryBodyResponse>(getUpdateEntryBodyUrl({ path }),
   {      
     ...options,
     method: 'PUT',
@@ -299,7 +431,7 @@ export type getLinkPalletResponse = getLinkPalletResponseComposite & {
   headers: Headers;
 }
 
-export const getGetLinkPalletUrl = (path: string,) => {
+export const getGetLinkPalletUrl = ({ path }: GetLinkPalletPathParameters,) => {
 
 
   
@@ -307,9 +439,9 @@ export const getGetLinkPalletUrl = (path: string,) => {
   return `/entries/${path}/link-pallet`
 }
 
-export const getLinkPallet = async (path: string, options?: RequestInit): Promise<getLinkPalletResponse> => {
+export const getLinkPallet = async ({ path }: GetLinkPalletPathParameters, options?: RequestInit): Promise<getLinkPalletResponse> => {
   
-  return customInstance<getLinkPalletResponse>(getGetLinkPalletUrl(path),
+  return customInstance<getLinkPalletResponse>(getGetLinkPalletUrl({ path }),
   {      
     ...options,
     method: 'GET'
@@ -339,7 +471,7 @@ export type getLinkedEntryPathsResponse = getLinkedEntryPathsResponseComposite &
   headers: Headers;
 }
 
-export const getGetLinkedEntryPathsUrl = (path: string,) => {
+export const getGetLinkedEntryPathsUrl = ({ path }: GetLinkedEntryPathsPathParameters,) => {
 
 
   
@@ -347,9 +479,9 @@ export const getGetLinkedEntryPathsUrl = (path: string,) => {
   return `/entries/${path}/linked-paths`
 }
 
-export const getLinkedEntryPaths = async (path: string, options?: RequestInit): Promise<getLinkedEntryPathsResponse> => {
+export const getLinkedEntryPaths = async ({ path }: GetLinkedEntryPathsPathParameters, options?: RequestInit): Promise<getLinkedEntryPathsResponse> => {
   
-  return customInstance<getLinkedEntryPathsResponse>(getGetLinkedEntryPathsUrl(path),
+  return customInstance<getLinkedEntryPathsResponse>(getGetLinkedEntryPathsUrl({ path }),
   {      
     ...options,
     method: 'GET'
@@ -379,7 +511,7 @@ export type regenerateEntryImageResponse = regenerateEntryImageResponseComposite
   headers: Headers;
 }
 
-export const getRegenerateEntryImageUrl = (path: string,) => {
+export const getRegenerateEntryImageUrl = ({ path }: RegenerateEntryImagePathParameters,) => {
 
 
   
@@ -387,9 +519,9 @@ export const getRegenerateEntryImageUrl = (path: string,) => {
   return `/entries/${path}/regenerate-image`
 }
 
-export const regenerateEntryImage = async (path: string, options?: RequestInit): Promise<regenerateEntryImageResponse> => {
+export const regenerateEntryImage = async ({ path }: RegenerateEntryImagePathParameters, options?: RequestInit): Promise<regenerateEntryImageResponse> => {
   
-  return customInstance<regenerateEntryImageResponse>(getRegenerateEntryImageUrl(path),
+  return customInstance<regenerateEntryImageResponse>(getRegenerateEntryImageUrl({ path }),
   {      
     ...options,
     method: 'POST'
@@ -419,7 +551,7 @@ export type updateEntryTitleResponse = updateEntryTitleResponseComposite & {
   headers: Headers;
 }
 
-export const getUpdateEntryTitleUrl = (path: string,) => {
+export const getUpdateEntryTitleUrl = ({ path }: UpdateEntryTitlePathParameters,) => {
 
 
   
@@ -427,10 +559,10 @@ export const getUpdateEntryTitleUrl = (path: string,) => {
   return `/entries/${path}/title`
 }
 
-export const updateEntryTitle = async (path: string,
+export const updateEntryTitle = async ({ path }: UpdateEntryTitlePathParameters,
     updateEntryTitleRequest: UpdateEntryTitleRequest, options?: RequestInit): Promise<updateEntryTitleResponse> => {
   
-  return customInstance<updateEntryTitleResponse>(getUpdateEntryTitleUrl(path),
+  return customInstance<updateEntryTitleResponse>(getUpdateEntryTitleUrl({ path }),
   {      
     ...options,
     method: 'PUT',
@@ -461,7 +593,7 @@ export type updateEntryVisibilityResponse = updateEntryVisibilityResponseComposi
   headers: Headers;
 }
 
-export const getUpdateEntryVisibilityUrl = (path: string,) => {
+export const getUpdateEntryVisibilityUrl = ({ path }: UpdateEntryVisibilityPathParameters,) => {
 
 
   
@@ -469,10 +601,10 @@ export const getUpdateEntryVisibilityUrl = (path: string,) => {
   return `/entry/${path}/visibility`
 }
 
-export const updateEntryVisibility = async (path: string,
+export const updateEntryVisibility = async ({ path }: UpdateEntryVisibilityPathParameters,
     updateVisibilityRequest: UpdateVisibilityRequest, options?: RequestInit): Promise<updateEntryVisibilityResponse> => {
   
-  return customInstance<updateEntryVisibilityResponse>(getUpdateEntryVisibilityUrl(path),
+  return customInstance<updateEntryVisibilityResponse>(getUpdateEntryVisibilityUrl({ path }),
   {      
     ...options,
     method: 'POST',
