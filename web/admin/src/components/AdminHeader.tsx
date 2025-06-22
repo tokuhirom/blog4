@@ -20,7 +20,7 @@ export default function AdminHeader() {
 
 			const data = await api.createEntry({ title: placeholderTitle });
 			console.log(`New entry created: ${data.path}`);
-			navigate(`/entry/${data.path}`);
+			navigate(`/admin/entry/${data.path}`);
 		} catch (e) {
 			console.error("Error creating new entry:", e);
 			alert("Failed to create new entry");
@@ -34,7 +34,7 @@ export default function AdminHeader() {
 					<Typography
 						variant="h6"
 						component="a"
-						href="/"
+						href="/admin/"
 						sx={{
 							flexGrow: 1,
 							textDecoration: "none",

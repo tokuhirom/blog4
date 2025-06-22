@@ -40,7 +40,7 @@ export default function LinkPallet({ linkPallet }: LinkPalletProps) {
 		api
 			.createEntry({ title })
 			.then((data) => {
-				navigate(`/entry/${data.Path}`);
+				navigate(`/admin/entry/${data.Path}`);
 			})
 			.catch((err) => {
 				console.error("Error creating new entry:", err);
