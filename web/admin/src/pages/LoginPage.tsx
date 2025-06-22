@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import type React from "react";
+import { useState, useId } from "react";
 import { useNavigate } from "react-router-dom";
 import {
 	Button,
@@ -18,6 +19,8 @@ export default function LoginPage() {
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
 	const { checkAuth } = useAuth();
+	const usernameId = useId();
+	const passwordId = useId();
 
 	const handleSubmit = async (e: React.FormEvent) => {
 		e.preventDefault();
@@ -35,7 +38,7 @@ export default function LoginPage() {
 			} else {
 				setError("Login failed");
 			}
-		} catch (err) {
+		} catch (_err) {
 			setError("Invalid username or password");
 		} finally {
 			setLoading(false);
@@ -65,7 +68,7 @@ export default function LoginPage() {
 						margin="normal"
 						required
 						fullWidth
-						id="username"
+						id={usernameId}
 						label="Username"
 						name="username"
 						autoComplete="username"
@@ -80,7 +83,7 @@ export default function LoginPage() {
 						name="password"
 						label="Password"
 						type="password"
-						id="password"
+						id={passwordId}
 						autoComplete="current-password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}

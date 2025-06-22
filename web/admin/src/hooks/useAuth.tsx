@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import type React from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { authCheck, authLogout } from "../generated-client";
 
@@ -19,7 +20,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 	const navigate = useNavigate();
 	const location = useLocation();
 
-	const checkAuth = async () => {
+	const checkAuth = useCallback(async () => {
 		try {
 			const response = await authCheck();
 			if (response.status === 200) {
@@ -29,13 +30,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 				setIsAuthenticated(false);
 				setUsername(null);
 			}
-		} catch (error) {
+		} catch (_error) {
 			setIsAuthenticated(false);
 			setUsername(null);
 		} finally {
 			setLoading(false);
 		}
-	};
+	}, []);
 
 	const logout = async () => {
 		try {
@@ -51,7 +52,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 	useEffect(() => {
 		checkAuth();
-	}, []);
+	}, [checkAuth]);
 
 	useEffect(() => {
 		if (!loading && !isAuthenticated && location.pathname !== "/login") {
