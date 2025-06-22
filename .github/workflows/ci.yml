@@ -117,6 +117,10 @@ jobs:
           sudo mv sqlc /usr/local/bin/
           rm sqlc.tar.gz
 
+      - name: Install npm dependencies
+        run: npm install
+        working-directory: web/admin
+
       - name: Generate TypeSpec files
         run: task tsp
 
@@ -125,6 +129,9 @@ jobs:
 
       - name: Generate SQLC public files
         run: task sqlc-public
+
+      - name: Generate Ogen server code
+        run: task ogen
 
       - name: Generate OpenAPI client
         run: task openapi-client
@@ -137,6 +144,7 @@ jobs:
             echo "  task tsp"
             echo "  task sqlc-admin"
             echo "  task sqlc-public"
+            echo "  task ogen"
             echo "  task openapi-client"
             echo ""
             echo "Changed files:"
