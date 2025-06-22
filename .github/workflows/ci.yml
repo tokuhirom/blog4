@@ -107,7 +107,8 @@ jobs:
 
       - name: Install go-task
         run: |
-          sh -c "$(curl -fsSL https://raw.githubusercontent.com/go-task/task/main/install.sh)" -- -d -b /usr/local/bin
+          sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
+          sudo mv ./bin/task /usr/local/bin/
 
       - name: Install sqlc
         run: |
