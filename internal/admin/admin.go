@@ -61,14 +61,14 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 
 	queries := admindb.New(db)
 	apiService := adminApiService{
-		queries:     queries,
-		db:          db,
-		hubUrls:     cfg.GetHubUrls(),
-		paapiClient: NewPAAPIClient(cfg.AmazonPaapi5AccessKey, cfg.AmazonPaapi5SecretKey),
-		S3Client:    sobsClient,
-		adminUser:   cfg.AdminUser,
+		queries:       queries,
+		db:            db,
+		hubUrls:       cfg.GetHubUrls(),
+		paapiClient:   NewPAAPIClient(cfg.AmazonPaapi5AccessKey, cfg.AmazonPaapi5SecretKey),
+		S3Client:      sobsClient,
+		adminUser:     cfg.AdminUser,
 		adminPassword: cfg.AdminPassword,
-		isSecure:    !cfg.LocalDev,
+		isSecure:      !cfg.LocalDev,
 	}
 	adminApiHandler, err := openapi.NewServer(&apiService,
 		openapi.WithPathPrefix("/admin/api"),
@@ -86,10 +86,10 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 	}
 	// Create a subrouter for API with session middleware
 	apiRouter := chi.NewRouter()
-	
+
 	// Add HTTP context middleware
 	apiRouter.Use(HTTPContextMiddleware)
-	
+
 	// Apply session middleware only to non-auth endpoints
 	apiRouter.Use(func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -102,7 +102,7 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 			SessionMiddleware(queries)(next).ServeHTTP(w, r)
 		})
 	})
-	
+
 	apiRouter.Mount("/", adminApiHandler)
 	r.Mount("/api/", apiRouter)
 

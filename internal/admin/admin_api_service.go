@@ -23,14 +23,14 @@ import (
 )
 
 type adminApiService struct {
-	queries     *admindb.Queries
-	db          *sql.DB
-	hubUrls     []string
-	paapiClient *PAAPIClient
-	S3Client    *sobs.SobsClient
-	adminUser   string
+	queries       *admindb.Queries
+	db            *sql.DB
+	hubUrls       []string
+	paapiClient   *PAAPIClient
+	S3Client      *sobs.SobsClient
+	adminUser     string
 	adminPassword string
-	isSecure    bool
+	isSecure      bool
 }
 
 func (p *adminApiService) GetLatestEntries(ctx context.Context, params openapi.GetLatestEntriesParams) (openapi.GetLatestEntriesRes, error) {

@@ -10,6 +10,7 @@ type contextKey string
 const (
 	httpRequestKey  contextKey = "httpRequest"
 	httpResponseKey contextKey = "httpResponse"
+	usernameKey     contextKey = "username"
 )
 
 // HTTPContextMiddleware injects HTTP request and response into context
@@ -31,4 +32,10 @@ func GetHTTPRequest(ctx context.Context) (*http.Request, bool) {
 func GetHTTPResponse(ctx context.Context) (http.ResponseWriter, bool) {
 	resp, ok := ctx.Value(httpResponseKey).(http.ResponseWriter)
 	return resp, ok
+}
+
+// GetUsername gets the username from context
+func GetUsername(ctx context.Context) (string, bool) {
+	username, ok := ctx.Value(usernameKey).(string)
+	return username, ok
 }

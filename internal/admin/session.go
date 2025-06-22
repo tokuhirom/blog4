@@ -8,8 +8,8 @@ import (
 )
 
 const (
-	sessionCookieName = "admin_session"
-	sessionIDLength   = 32
+	sessionCookieName     = "admin_session"
+	sessionIDLength       = 32
 	defaultSessionTimeout = 24 * time.Hour
 )
 
@@ -21,7 +21,6 @@ func generateSessionID() (string, error) {
 	}
 	return base64.URLEncoding.EncodeToString(b), nil
 }
-
 
 func getSessionID(r *http.Request) string {
 	cookie, err := r.Cookie(sessionCookieName)

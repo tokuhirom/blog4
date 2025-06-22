@@ -51,7 +51,7 @@ func SessionMiddleware(queries *admindb.Queries) func(http.Handler) http.Handler
 			}()
 
 			// Add username to context
-			ctx := context.WithValue(r.Context(), "username", session.Username)
+			ctx := context.WithValue(r.Context(), usernameKey, session.Username)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}
