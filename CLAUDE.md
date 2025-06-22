@@ -40,7 +40,7 @@ brew install go-task
 
 # One-time setup
 task gen          # Generate all code (TypeSpec, SQLC, OpenAPI)
-cd web/admin && npm install
+cd web/admin && pnpm install
 
 # Development
 task dev          # Run all dev servers and watchers
@@ -138,7 +138,7 @@ Required environment variables (see `app.jsonnet` for full list):
 - Object literals in decorators must use `#{}` syntax
 
 ### Frontend Build Issues
-- Run `npm install` in `/web/admin/`
+- Run `pnpm install` in `/web/admin/`
 - Check Node.js version compatibility (v18+)
 
 ## Deployment
