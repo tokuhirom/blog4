@@ -23,7 +23,7 @@ export default function NotFound() {
 			<Typography variant="body1" color="text.secondary" paragraph>
 				The page you are looking for doesn't exist.
 			</Typography>
-			<Button variant="contained" onClick={() => navigate("/admin/")}>
+			<Button variant="contained" onClick={() => navigate("/")}>
 				Go to Home
 			</Button>
 		</Box>

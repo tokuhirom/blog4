@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type {
+  AuthCheckResponse,
   CreateEntryRequest,
   CreateEntryResponse,
   DeleteEntryPathParameters,
@@ -18,6 +19,8 @@ import type {
   GetLinkedEntryPathsPathParameters,
   LinkPalletData,
   LinkedEntryPathsResponse,
+  LoginRequest,
+  LoginResponse,
   RegenerateEntryImagePathParameters,
   UpdateEntryBodyPathParameters,
   UpdateEntryBodyRequest,
@@ -26,7 +29,7 @@ import type {
   UpdateEntryVisibilityPathParameters,
   UpdateVisibilityRequest,
   UpdateVisibilityResponse,
-  UploadFileRequest,
+  UploadFileBody,
   UploadFileResponse
 } from './model';
 
@@ -37,6 +40,127 @@ export type HTTPStatusCode3xx = 300 | 301 | 302 | 303 | 304 | 305 | 307 | 308;
 export type HTTPStatusCode4xx = 400 | 401 | 402 | 403 | 404 | 405 | 406 | 407 | 408 | 409 | 410 | 411 | 412 | 413 | 414 | 415 | 416 | 417 | 418 | 419 | 420 | 421 | 422 | 423 | 424 | 426 | 428 | 429 | 431 | 451;
 export type HTTPStatusCode5xx = 500 | 501 | 502 | 503 | 504 | 505 | 507 | 511;
 export type HTTPStatusCodes = HTTPStatusCode1xx | HTTPStatusCode2xx | HTTPStatusCode3xx | HTTPStatusCode4xx | HTTPStatusCode5xx;
+
+/**
+ * @summary Check if user is authenticated
+ */
+export type authCheckResponse200 = {
+  data: AuthCheckResponse
+  status: 200
+}
+
+export type authCheckResponse401 = {
+  data: ErrorResponse
+  status: 401
+}
+    
+export type authCheckResponseComposite = authCheckResponse200 | authCheckResponse401;
+    
+export type authCheckResponse = authCheckResponseComposite & {
+  headers: Headers;
+}
+
+export const getAuthCheckUrl = () => {
+
+
+  
+
+  return `/auth/check`
+}
+
+export const authCheck = async ( options?: RequestInit): Promise<authCheckResponse> => {
+  
+  return customInstance<authCheckResponse>(getAuthCheckUrl(),
+  {      
+    ...options,
+    method: 'GET'
+    
+    
+  }
+);}
+
+
+
+/**
+ * @summary Login with username and password
+ */
+export type authLoginResponse200 = {
+  data: LoginResponse
+  status: 200
+}
+
+export type authLoginResponse401 = {
+  data: ErrorResponse
+  status: 401
+}
+    
+export type authLoginResponseComposite = authLoginResponse200 | authLoginResponse401;
+    
+export type authLoginResponse = authLoginResponseComposite & {
+  headers: Headers;
+}
+
+export const getAuthLoginUrl = () => {
+
+
+  
+
+  return `/auth/login`
+}
+
+export const authLogin = async (loginRequest: LoginRequest, options?: RequestInit): Promise<authLoginResponse> => {
+  
+  return customInstance<authLoginResponse>(getAuthLoginUrl(),
+  {      
+    ...options,
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', ...options?.headers },
+    body: JSON.stringify(
+      loginRequest,)
+  }
+);}
+
+
+
+/**
+ * @summary Logout and invalidate session
+ */
+export type authLogoutResponse200 = {
+  data: EmptyResponse
+  status: 200
+}
+
+export type authLogoutResponse401 = {
+  data: ErrorResponse
+  status: 401
+}
+    
+export type authLogoutResponseComposite = authLogoutResponse200 | authLogoutResponse401;
+    
+export type authLogoutResponse = authLogoutResponseComposite & {
+  headers: Headers;
+}
+
+export const getAuthLogoutUrl = () => {
+
+
+  
+
+  return `/auth/logout`
+}
+
+export const authLogout = async ( options?: RequestInit): Promise<authLogoutResponse> => {
+  
+  return customInstance<authLogoutResponse>(getAuthLogoutUrl(),
+  {      
+    ...options,
+    method: 'POST'
+    
+    
+  }
+);}
+
+
 
 /**
  * @summary Get latest entries
@@ -516,9 +640,9 @@ export const getUploadFileUrl = () => {
   return `/upload`
 }
 
-export const uploadFile = async (uploadFileRequest: UploadFileRequest, options?: RequestInit): Promise<uploadFileResponse> => {
+export const uploadFile = async (uploadFileBody: UploadFileBody, options?: RequestInit): Promise<uploadFileResponse> => {
     const formData = new FormData();
-formData.append(`file`, uploadFileRequest.file)
+formData.append(`file`, uploadFileBody.file)
 
   return customInstance<uploadFileResponse>(getUploadFileUrl(),
   {      

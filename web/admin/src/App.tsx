@@ -5,6 +5,9 @@ import Layout from "./Layout";
 import NotFound from "./NotFound";
 import AdminEntryPage from "./pages/AdminEntryPage";
 import TopPage from "./pages/TopPage";
+import LoginPage from "./pages/LoginPage";
+import { AuthProvider } from "./hooks/useAuth";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const theme = createTheme({
 	palette: {
@@ -22,14 +25,24 @@ export default function App() {
 	return (
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
-			<BrowserRouter>
-				<Routes>
-					<Route path="/" element={<Layout />}>
-						<Route path="/admin/" element={<TopPage />} />
-						<Route path="/admin/entry/*" element={<AdminEntryPage />} />
-						<Route path="*" element={<NotFound />} />
-					</Route>
-				</Routes>
+			<BrowserRouter basename="/admin">
+				<AuthProvider>
+					<Routes>
+						<Route path="/login" element={<LoginPage />} />
+						<Route
+							path="/"
+							element={
+								<ProtectedRoute>
+									<Layout />
+								</ProtectedRoute>
+							}
+						>
+							<Route index element={<TopPage />} />
+							<Route path="/entry/*" element={<AdminEntryPage />} />
+							<Route path="*" element={<NotFound />} />
+						</Route>
+					</Routes>
+				</AuthProvider>
 			</BrowserRouter>
 		</ThemeProvider>
 	);

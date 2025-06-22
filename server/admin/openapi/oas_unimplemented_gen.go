@@ -13,6 +13,33 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
+// AuthCheck implements Auth_check operation.
+//
+// Check if user is authenticated.
+//
+// GET /auth/check
+func (UnimplementedHandler) AuthCheck(ctx context.Context) (r AuthCheckRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// AuthLogin implements Auth_login operation.
+//
+// Login with username and password.
+//
+// POST /auth/login
+func (UnimplementedHandler) AuthLogin(ctx context.Context, req *LoginRequest) (r AuthLoginRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// AuthLogout implements Auth_logout operation.
+//
+// Logout and invalidate session.
+//
+// POST /auth/logout
+func (UnimplementedHandler) AuthLogout(ctx context.Context) (r AuthLogoutRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // CreateEntry implements createEntry operation.
 //
 // Create a new entry.
@@ -115,6 +142,6 @@ func (UnimplementedHandler) UpdateEntryVisibility(ctx context.Context, req *Upda
 // UploadFile implements uploadFile operation.
 //
 // POST /upload
-func (UnimplementedHandler) UploadFile(ctx context.Context, req *UploadFileRequestMultipart) (r UploadFileRes, _ error) {
+func (UnimplementedHandler) UploadFile(ctx context.Context, req *UploadFileBodyMultipart) (r UploadFileRes, _ error) {
 	return r, ht.ErrNotImplemented
 }

@@ -8,6 +8,24 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// AuthCheck implements Auth_check operation.
+	//
+	// Check if user is authenticated.
+	//
+	// GET /auth/check
+	AuthCheck(ctx context.Context) (AuthCheckRes, error)
+	// AuthLogin implements Auth_login operation.
+	//
+	// Login with username and password.
+	//
+	// POST /auth/login
+	AuthLogin(ctx context.Context, req *LoginRequest) (AuthLoginRes, error)
+	// AuthLogout implements Auth_logout operation.
+	//
+	// Logout and invalidate session.
+	//
+	// POST /auth/logout
+	AuthLogout(ctx context.Context) (AuthLogoutRes, error)
 	// CreateEntry implements createEntry operation.
 	//
 	// Create a new entry.
@@ -77,7 +95,7 @@ type Handler interface {
 	// UploadFile implements uploadFile operation.
 	//
 	// POST /upload
-	UploadFile(ctx context.Context, req *UploadFileRequestMultipart) (UploadFileRes, error)
+	UploadFile(ctx context.Context, req *UploadFileBodyMultipart) (UploadFileRes, error)
 }
 
 // Server implements http server based on OpenAPI v3 specification and

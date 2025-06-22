@@ -5,6 +5,7 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface UploadFileBody {
-  file: Blob;
+export interface LoginResponse {
+  success: boolean;
+  message?: string;
 }

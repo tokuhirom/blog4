@@ -15,6 +15,20 @@ import (
 	"github.com/ogen-go/ogen/uri"
 )
 
+func encodeAuthLoginRequest(
+	req *LoginRequest,
+	r *http.Request,
+) error {
+	const contentType = "application/json"
+	e := new(jx.Encoder)
+	{
+		req.Encode(e)
+	}
+	encoded := e.Bytes()
+	ht.SetBody(r, bytes.NewReader(encoded), contentType)
+	return nil
+}
+
 func encodeCreateEntryRequest(
 	req *CreateEntryRequest,
 	r *http.Request,
@@ -72,7 +86,7 @@ func encodeUpdateEntryVisibilityRequest(
 }
 
 func encodeUploadFileRequest(
-	req *UploadFileRequestMultipart,
+	req *UploadFileBodyMultipart,
 	r *http.Request,
 ) error {
 	const contentType = "multipart/form-data"
