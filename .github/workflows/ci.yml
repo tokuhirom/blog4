@@ -74,19 +74,86 @@ jobs:
       - name: Build Docker image
         run: docker build -t blog4 .
 
-      - name: Verify Docker image
+      - name: Test Docker container runtime
         run: |
-          # Verify the image was built successfully
-          docker images | grep blog4
+          # Create a minimal .env file for testing
+          cat > .env.test << EOF
+          MYSQL_USER=root
+          MYSQL_PASSWORD=example
+          MYSQL_HOST=127.0.0.1
+          MYSQL_PORT=3306
+          MYSQL_DATABASE=blog4
+          ENTRY_IMAGE_BUCKET_NAME=test-bucket
+          ENTRY_IMAGE_ENDPOINT=http://localhost:9000
+          AWS_ACCESS_KEY_ID=test
+          AWS_SECRET_ACCESS_KEY=test
+          AMAZON_ACCESS_KEY_ID=test
+          AMAZON_SECRET_ACCESS_KEY=test
+          AMAZON_PARTNER_TAG=test
+          ADMIN_USERNAME=admin
+          ADMIN_PASSWORD=admin123
+          SESSION_SECRET=test-secret-key-for-sessions
+          EOF
           
-          # Check that the binary exists in the container
-          docker run --rm blog4 ls -la /app/blog4
+          # Create database
+          mysql -h 127.0.0.1 -u root -pexample -e "CREATE DATABASE IF NOT EXISTS blog4;"
+          mysql -h 127.0.0.1 -u root -pexample -e "CREATE DATABASE IF NOT EXISTS blog4_admin;"
           
-          # Verify the container has the correct entrypoint
-          docker inspect blog4 | jq '.[0].Config.Cmd'
+          # Run migrations or create tables if needed
+          # (Assuming the app creates tables on startup)
           
-          # Test that the binary can at least show help/version (without needing DB)
-          docker run --rm blog4 /app/blog4 --help || true
+          # Run the container
+          echo "Starting Docker container..."
+          docker run -d --name blog4-test \
+            --network="host" \
+            --env-file .env.test \
+            -e LOG_LEVEL=debug \
+            blog4
+          
+          # Wait a bit for startup
+          echo "Waiting for container to start..."
+          sleep 10
+          
+          # Check container status
+          echo "Container status:"
+          docker ps -a | grep blog4-test || true
+          
+          # Show container logs
+          echo "Container logs:"
+          docker logs blog4-test
+          
+          # Check if container is still running
+          if docker ps | grep -q blog4-test; then
+            echo "Container is running successfully"
+            
+            # Try to access the health endpoint
+            echo "Checking health endpoint..."
+            if curl -v -f http://localhost:8181/healthz 2>&1; then
+              echo "Health check passed!"
+              RESULT=0
+            else
+              echo "Health check failed, checking if service is responding..."
+              # Try root endpoint
+              if curl -v http://localhost:8181/ 2>&1; then
+                echo "Service is responding on root endpoint"
+                RESULT=0
+              else
+                echo "Service is not responding"
+                RESULT=1
+              fi
+            fi
+          else
+            echo "Container stopped unexpectedly"
+            RESULT=1
+          fi
+          
+          # Cleanup
+          echo "Cleaning up..."
+          docker stop blog4-test || true
+          docker rm blog4-test || true
+          rm .env.test
+          
+          exit $RESULT
 
   check-generated-files:
     runs-on: ubuntu-latest
