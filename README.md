@@ -13,8 +13,8 @@ go install github.com/go-task/task/v3/cmd/task@latest
 go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
 
 # One-time setup
-npm install  # Install TypeSpec dependencies
-cd web/admin && npm install
+pnpm install  # Install TypeSpec dependencies
+cd web/admin && pnpm install
 task gen
 
 # Run development servers
@@ -31,7 +31,7 @@ task dev
   - macOS: `brew install go-task`
   - Linux: `go install github.com/go-task/task/v3/cmd/task@latest`
 - sqlc: `go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest`
-- TypeSpec: Installed via `npm install` (see package.json)
+- TypeSpec: Installed via `pnpm install` (see package.json)
 
 ### Common Commands
 
@@ -138,10 +138,10 @@ task biome-lint
 # Run both format and lint
 task frontend-fmt
 
-# Or use npm directly in the frontend directory
+# Or use pnpm directly in the frontend directory
 cd web/admin
-npm run format  # Format code
-npm run lint    # Lint code
+pnpm run format  # Format code
+pnpm run lint    # Lint code
 ```
 
 ### Testing

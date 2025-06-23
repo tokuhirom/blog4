@@ -5,7 +5,7 @@ interval: 500ms
 tasks:
   tsp:
     cmds:
-      - npm run tsp
+      - pnpm run tsp
     sources:
       - typespec/**/*.tsp
     generates:
@@ -13,7 +13,7 @@ tasks:
 
   frontend:
     cmds:
-      - npm run dev
+      - pnpm run dev
     dir: ./web/admin
     desc: "Run the Node.js development server"
 
@@ -21,10 +21,10 @@ tasks:
     deps: [npmi, openapi-client]
     watch: true
     cmds:
-      - cd ./web/admin && npm run build
+      - cd ./web/admin && pnpm run build
     sources:
       - ./web/admin/package.json
-      - ./web/admin/package-lock.json
+      - ./web/admin/pnpm-lock.yaml
       - ./web/admin/tsconfig.json
       - ./web/admin/src/**/*.svelte
     generates:
@@ -85,18 +85,18 @@ tasks:
 
   npmi:
     cmds:
-      - npm install
+      - pnpm install
     dir: ./web/admin
     sources:
       - ./web/admin/package.json
-      - ./web/admin/package-lock.json
+      - ./web/admin/pnpm-lock.yaml
     desc: "Install npm dependencies"
 
   openapi-client:
     deps: [npmi, tsp]
     dir: ./web/admin
     cmds:
-      - npm run generate-client
+      - pnpm run generate-client
     sources:
       - typespec/tsp-output/@typespec/openapi3/openapi.yaml
       - orval.config.ts
@@ -133,7 +133,7 @@ tasks:
     desc: "Format frontend code with Biome"
     dir: ./web/admin
     cmds:
-      - npm run format
+      - pnpm run format
     sources:
       - 'src/**/*.{js,ts,jsx,tsx,svelte,json,jsonc}'
       - '*.{js,ts,json,jsonc}'
@@ -142,13 +142,13 @@ tasks:
     desc: "Lint frontend code with Biome"
     dir: ./web/admin
     cmds:
-      - npm run lint
+      - pnpm run lint
 
   biome-check:
     desc: "Check frontend code with Biome (format and lint)"
     dir: ./web/admin
     cmds:
-      - npx biome check .
+      - pnpm exec biome check .
 
   frontend-fmt:
     desc: "Format and lint frontend code"
