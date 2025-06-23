@@ -33,7 +33,7 @@ const api = createAdminApiClient();
 export default function AdminEntryPage() {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const path = location.pathname.replace("/admin/entry/", "");
+	const path = location.pathname.replace("/entry/", "");
 
 	const [entry, setEntry] = useState<GetLatestEntriesRow>(
 		{} as GetLatestEntriesRow,
@@ -120,7 +120,7 @@ export default function AdminEntryPage() {
 					showMessage("success", "Entry deleted successfully");
 					// Small delay to ensure the message is shown
 					setTimeout(() => {
-						navigate("/admin/");
+						navigate("/");
 					}, 500);
 				} catch (e) {
 					console.log(e);
@@ -269,7 +269,7 @@ export default function AdminEntryPage() {
 			} catch (e) {
 				console.error("Failed to get entry:", e);
 				if (e instanceof Error && e.message.includes("404")) {
-					navigate("/admin/");
+					navigate("/");
 				}
 			}
 		};
