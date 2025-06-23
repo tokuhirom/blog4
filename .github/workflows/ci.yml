@@ -74,6 +74,53 @@ jobs:
       - name: Build Docker image
         run: docker build -t blog4 .
 
+      - name: Test Docker image
+        run: |
+          # Create a minimal .env file for testing
+          cat > .env.test << EOF
+          MYSQL_USER=test
+          MYSQL_PASSWORD=test
+          MYSQL_HOST=localhost
+          MYSQL_PORT=3306
+          ENTRY_IMAGE_BUCKET_NAME=test-bucket
+          ENTRY_IMAGE_ENDPOINT=http://localhost:9000
+          AWS_ACCESS_KEY_ID=test
+          AWS_SECRET_ACCESS_KEY=test
+          AMAZON_ACCESS_KEY_ID=test
+          AMAZON_SECRET_ACCESS_KEY=test
+          AMAZON_PARTNER_TAG=test
+          ADMIN_USERNAME=test
+          ADMIN_PASSWORD=test
+          EOF
+          
+          # Run the container in detached mode
+          docker run -d --name blog4-test \
+            --env-file .env.test \
+            -p 8181:8181 \
+            --add-host=host.docker.internal:host-gateway \
+            blog4
+          
+          # Wait for the service to be ready (max 30 seconds)
+          for i in {1..30}; do
+            if curl -f http://localhost:8181/healthz 2>/dev/null; then
+              echo "Container is healthy"
+              docker logs blog4-test
+              docker stop blog4-test
+              docker rm blog4-test
+              rm .env.test
+              exit 0
+            fi
+            echo "Waiting for container to be ready... ($i/30)"
+            sleep 1
+          done
+          
+          echo "Container failed to become healthy"
+          docker logs blog4-test
+          docker stop blog4-test
+          docker rm blog4-test
+          rm .env.test
+          exit 1
+
   check-generated-files:
     runs-on: ubuntu-latest
 
