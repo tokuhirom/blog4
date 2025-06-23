@@ -13,12 +13,12 @@ WORKDIR /app
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . ./
-RUN go build -o /app/server ./cmd/blog4
+RUN go build -o /app/blog4 ./cmd/blog4
 
 # Stage 3: Final stage
 FROM ubuntu:24.04
 WORKDIR /app
-COPY --from=backend-builder /app/server/blog4 /app/
+COPY --from=backend-builder /app/blog4 /app/
 COPY --from=frontend-builder /app/dist /app/web/admin/dist
 COPY web/static /app/web/static
 RUN apt-get update && apt-get install -y tzdata mysql-client openssl ca-certificates
