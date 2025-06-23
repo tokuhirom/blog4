@@ -17,6 +17,7 @@
     "url": "https://github.com/tokuhirom/blog4/issues"
   },
   "homepage": "https://github.com/tokuhirom/blog4#readme",
+  "packageManager": "pnpm@10.12.1",
   "devDependencies": {
     "@typespec/compiler": "^1.0.0"
   },
