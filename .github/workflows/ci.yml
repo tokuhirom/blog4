@@ -34,16 +34,21 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install npm dependencies
-        run: npm install
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+
+      - name: Install dependencies with pnpm
+        run: pnpm install
         working-directory: web/admin
 
       - name: Run biome lint
-        run: npm run lint
+        run: pnpm run lint
         working-directory: web/admin
 
       - name: Run vitest
-        run: npm run test
+        run: pnpm run test
         working-directory: web/admin
 
       - name: Set up Go
@@ -102,8 +107,13 @@ jobs:
       - name: Install Go dependencies
         run: go mod download
 
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.12.1
+
       - name: Install TypeSpec dependencies
-        run: npm install
+        run: pnpm install
 
       - name: Install go-task
         run: |
@@ -117,8 +127,8 @@ jobs:
           sudo mv sqlc /usr/local/bin/
           rm sqlc.tar.gz
 
-      - name: Install npm dependencies
-        run: npm install
+      - name: Install dependencies with pnpm
+        run: pnpm install
         working-directory: web/admin
 
       - name: Generate TypeSpec files

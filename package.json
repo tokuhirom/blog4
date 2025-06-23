@@ -17,11 +17,13 @@
     "url": "https://github.com/tokuhirom/blog4/issues"
   },
   "homepage": "https://github.com/tokuhirom/blog4#readme",
+  "packageManager": "pnpm@10.12.1",
   "devDependencies": {
     "@typespec/compiler": "^1.0.0"
   },
   "dependencies": {
     "@typespec/http": "^1.0.0",
+    "@typespec/openapi": "^1.0.0",
     "@typespec/openapi3": "^1.0.0",
     "@typespec/rest": "^0.71.0"
   }
