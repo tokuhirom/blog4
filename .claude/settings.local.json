@@ -6,7 +6,15 @@
       "Bash(npm run format:*)",
       "Bash(npx biome format:*)",
       "Bash(pnpm:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(git pull:*)",
+      "Bash(npm install:*)",
+      "Bash(mkdir:*)",
+      "Bash(curl:*)",
+      "Bash(ADMIN_USER=admin ADMIN_PW=password pnpm test:e2e auth.spec.ts --grep \"should login successfully\")",
+      "Bash(ADMIN_USER=admin ADMIN_PW=password pnpm test:e2e auth.spec.ts --grep \"should login successfully\" --workers=1)",
+      "Bash(cat:*)",
+      "Bash(go test:*)"
     ],
     "deny": []
   }

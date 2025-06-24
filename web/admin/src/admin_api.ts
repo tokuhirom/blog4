@@ -55,7 +55,10 @@ export function createAdminApiClient(): DefaultApi {
 			return response.data;
 		},
 		async updateEntryBody(params, request) {
-			const response = await api.updateEntryBody({ path: params.path }, request);
+			const response = await api.updateEntryBody(
+				{ path: params.path },
+				request,
+			);
 			return response.data;
 		},
 		async getLinkPallet(params) {
@@ -72,11 +75,17 @@ export function createAdminApiClient(): DefaultApi {
 			return response.data;
 		},
 		async updateEntryTitle(params, request) {
-			const response = await api.updateEntryTitle({ path: params.path }, request);
+			const response = await api.updateEntryTitle(
+				{ path: params.path },
+				request,
+			);
 			return response.data;
 		},
 		async updateEntryVisibility(params, request) {
-			const response = await api.updateEntryVisibility({ path: params.path }, request);
+			const response = await api.updateEntryVisibility(
+				{ path: params.path },
+				request,
+			);
 			return response.data;
 		},
 		async uploadFile(formData) {

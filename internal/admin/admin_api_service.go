@@ -643,8 +643,9 @@ func (p *adminApiService) AuthCheck(ctx context.Context) (openapi.AuthCheckRes, 
 	}
 
 	if sessionID == "" {
-		return &openapi.ErrorResponse{
-			Message: openapi.NewOptString("No session found"),
+		return &openapi.AuthCheckResponse{
+			Authenticated: false,
+			Username:      openapi.OptString{},
 		}, nil
 	}
 
@@ -652,8 +653,9 @@ func (p *adminApiService) AuthCheck(ctx context.Context) (openapi.AuthCheckRes, 
 	session, err := p.queries.GetSession(ctx, sessionID)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return &openapi.ErrorResponse{
-				Message: openapi.NewOptString("Invalid session"),
+			return &openapi.AuthCheckResponse{
+				Authenticated: false,
+				Username:      openapi.OptString{},
 			}, nil
 		}
 		return nil, fmt.Errorf("failed to get session: %w", err)

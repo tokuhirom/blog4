@@ -146,10 +146,14 @@ Required environment variables (see `app.jsonnet` for full list):
 - Deployed on Sakura Cloud App Run
 - Health check endpoint: `/healthz`
 - Backup runs daily via cron job to S3
-```
-
+```bash
 - after modify tsx or ts, run biome before the commit
 - use mockgen for db testing
 - before commit, run biome, go test.
 - after send pr, sleep a while, and check the ci state. if it's failed, resolve the issue and commit & push again.
 ```
+
+## Package Management
+
+- We're using pnpm for nodejs package management.
+- 

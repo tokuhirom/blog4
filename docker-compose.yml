@@ -39,9 +39,9 @@ services:
       # Application configuration
       BLOG_PORT: 8181
       LOCAL_DEV: true
-      ADMIN_USER: ${ADMIN_USER:-admin}
-      ADMIN_PW: ${ADMIN_PASSWORD:-admin}
-      
+      ADMIN_USER: admin
+      ADMIN_PW: password
+
       # S3 configuration (using MinIO for local dev)
       S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-minioadmin}
       S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-minioadmin}
