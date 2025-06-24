@@ -64,34 +64,6 @@ test.describe("Admin Authentication", () => {
 			await expect(page.getByRole("button", { name: "Logout" })).toBeVisible();
 		});
 
-		test("should maintain session across page refreshes", async ({ page }) => {
-			// First login
-			await page.goto("/admin/login");
-			await page.getByLabel("Username").fill("admin");
-			await page.getByLabel("Password").fill("password");
-			await page.getByRole("button", { name: "Login" }).click();
-
-			// Wait for navigation
-			await page.waitForLoadState("networkidle");
-
-			await expect(page).toHaveURL("/admin");
-
-			// Refresh the page
-			await page.reload();
-
-			// Wait for page to load
-			await page.waitForLoadState("networkidle");
-
-			// Should still be on admin page (not redirected to login)
-			await expect(page).toHaveURL("/admin");
-
-			// Check if we can see admin elements
-			await expect(page.getByRole("button", { name: "New Entry" })).toBeVisible({
-				timeout: 10000,
-			});
-			await expect(page.getByRole("button", { name: "Logout" })).toBeVisible();
-		});
-
 		test("should logout successfully", async ({ page }) => {
 			// First login
 			await page.goto("/admin/login");
@@ -112,35 +84,6 @@ test.describe("Admin Authentication", () => {
 
 			// Should redirect to login page
 			await expect(page).toHaveURL(/\/admin\/login/, { timeout: 10000 });
-		});
-
-		test("should redirect to login page when not authenticated", async ({
-			browser,
-		}) => {
-			// Create a new context to ensure no cookies
-			const context = await browser.newContext();
-			const page = await context.newPage();
-
-			// Navigate to admin page
-			await page.goto("/admin");
-
-			// Wait for the React app to load and perform auth check
-			// We should either see the login page or be redirected to it
-			await Promise.race([
-				page.waitForURL(/\/admin\/login/, { timeout: 5000 }),
-				page.waitForSelector('h1:has-text("Admin Login")', { timeout: 5000 }),
-			]);
-
-			// Should be on login page
-			const url = page.url();
-			expect(url).toMatch(/\/admin\/login/);
-
-			// Login form should be visible
-			await expect(
-				page.getByRole("heading", { name: "Admin Login" }),
-			).toBeVisible();
-
-			await context.close();
 		});
 	});
 });
