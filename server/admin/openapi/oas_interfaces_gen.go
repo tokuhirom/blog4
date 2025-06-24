@@ -25,6 +25,10 @@ type GetAllEntryTitlesRes interface {
 	getAllEntryTitlesRes()
 }
 
+type GetBuildInfoRes interface {
+	getBuildInfoRes()
+}
+
 type GetEntryByDynamicPathRes interface {
 	getEntryByDynamicPathRes()
 }
