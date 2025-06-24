@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "tsp": "tsp compile typespec/main.tsp --emit @typespec/openapi3 --output-dir typespec/tsp-output"
+    "tsp": "tsp compile typespec/main.tsp --emit @typespec/openapi3 --output-dir typespec/tsp-output",
+    "docs:build": "redocly build-docs typespec/tsp-output/@typespec/openapi3/openapi.yaml -o docs/index.html",
+    "docs:preview": "redocly preview-docs typespec/tsp-output/@typespec/openapi3/openapi.yaml"
   },
   "repository": {
     "type": "git",
@@ -19,7 +21,8 @@
   "homepage": "https://github.com/tokuhirom/blog4#readme",
   "packageManager": "pnpm@10.12.2",
   "devDependencies": {
-    "@typespec/compiler": "^1.0.0"
+    "@typespec/compiler": "^1.0.0",
+    "@redocly/cli": "^1.25.0"
   },
   "dependencies": {
     "@typespec/http": "^1.0.0",
