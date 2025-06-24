@@ -67,6 +67,13 @@ func (UnimplementedHandler) GetAllEntryTitles(ctx context.Context) (r GetAllEntr
 	return r, ht.ErrNotImplemented
 }
 
+// GetBuildInfo implements getBuildInfo operation.
+//
+// GET /api/build-info
+func (UnimplementedHandler) GetBuildInfo(ctx context.Context) (r GetBuildInfoRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetEntryByDynamicPath implements getEntryByDynamicPath operation.
 //
 // Get entry by dynamic path.

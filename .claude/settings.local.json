@@ -6,7 +6,17 @@
       "Bash(npm run format:*)",
       "Bash(npx biome format:*)",
       "Bash(pnpm:*)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(chmod:*)",
+      "Bash(task tsp:*)",
+      "Bash(task:*)",
+      "Bash(go test:*)",
+      "Bash(grep:*)",
+      "Bash(git checkout:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(goimports:*)"
     ],
     "deny": []
   }
