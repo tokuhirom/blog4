@@ -58,8 +58,8 @@ jobs:
     - name: Initialize database
       working-directory: ./
       run: |
-        mysql -h 127.0.0.1 -P 3306 -u root -prootpassword < db/init/01-schema.sql
-        mysql -h 127.0.0.1 -P 3306 -u root -prootpassword < db/init/02-setup-users.sql
+        mysql -h 127.0.0.1 -P 3306 -u root -prootpassword blog4 < db/init/01-schema.sql
+        mysql -h 127.0.0.1 -P 3306 -u root -prootpassword blog4 < db/init/02-setup-users.sql
 
     - name: Build frontend
       run: pnpm run build
