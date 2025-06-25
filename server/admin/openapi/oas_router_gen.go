@@ -61,9 +61,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			switch elem[0] {
-			case 'a': // Prefix: "a"
+			case 'a': // Prefix: "auth/"
 
-				if l := len("a"); len(elem) >= l && elem[0:l] == "a" {
+				if l := len("auth/"); len(elem) >= l && elem[0:l] == "auth/" {
 					elem = elem[l:]
 				} else {
 					break
@@ -73,9 +73,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					break
 				}
 				switch elem[0] {
-				case 'p': // Prefix: "pi/build-info"
+				case 'c': // Prefix: "check"
 
-					if l := len("pi/build-info"); len(elem) >= l && elem[0:l] == "pi/build-info" {
+					if l := len("check"); len(elem) >= l && elem[0:l] == "check" {
 						elem = elem[l:]
 					} else {
 						break
@@ -85,7 +85,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						// Leaf node.
 						switch r.Method {
 						case "GET":
-							s.handleGetBuildInfoRequest([0]string{}, elemIsEscaped, w, r)
+							s.handleAuthCheckRequest([0]string{}, elemIsEscaped, w, r)
 						default:
 							s.notAllowed(w, r, "GET")
 						}
@@ -93,9 +93,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						return
 					}
 
-				case 'u': // Prefix: "uth/"
+				case 'l': // Prefix: "log"
 
-					if l := len("uth/"); len(elem) >= l && elem[0:l] == "uth/" {
+					if l := len("log"); len(elem) >= l && elem[0:l] == "log" {
 						elem = elem[l:]
 					} else {
 						break
@@ -105,9 +105,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						break
 					}
 					switch elem[0] {
-					case 'c': // Prefix: "check"
+					case 'i': // Prefix: "in"
 
-						if l := len("check"); len(elem) >= l && elem[0:l] == "check" {
+						if l := len("in"); len(elem) >= l && elem[0:l] == "in" {
 							elem = elem[l:]
 						} else {
 							break
@@ -116,71 +116,57 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						if len(elem) == 0 {
 							// Leaf node.
 							switch r.Method {
-							case "GET":
-								s.handleAuthCheckRequest([0]string{}, elemIsEscaped, w, r)
+							case "POST":
+								s.handleAuthLoginRequest([0]string{}, elemIsEscaped, w, r)
 							default:
-								s.notAllowed(w, r, "GET")
+								s.notAllowed(w, r, "POST")
 							}
 
 							return
 						}
 
-					case 'l': // Prefix: "log"
+					case 'o': // Prefix: "out"
 
-						if l := len("log"); len(elem) >= l && elem[0:l] == "log" {
+						if l := len("out"); len(elem) >= l && elem[0:l] == "out" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
 						if len(elem) == 0 {
-							break
-						}
-						switch elem[0] {
-						case 'i': // Prefix: "in"
-
-							if l := len("in"); len(elem) >= l && elem[0:l] == "in" {
-								elem = elem[l:]
-							} else {
-								break
+							// Leaf node.
+							switch r.Method {
+							case "POST":
+								s.handleAuthLogoutRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "POST")
 							}
 
-							if len(elem) == 0 {
-								// Leaf node.
-								switch r.Method {
-								case "POST":
-									s.handleAuthLoginRequest([0]string{}, elemIsEscaped, w, r)
-								default:
-									s.notAllowed(w, r, "POST")
-								}
-
-								return
-							}
-
-						case 'o': // Prefix: "out"
-
-							if l := len("out"); len(elem) >= l && elem[0:l] == "out" {
-								elem = elem[l:]
-							} else {
-								break
-							}
-
-							if len(elem) == 0 {
-								// Leaf node.
-								switch r.Method {
-								case "POST":
-									s.handleAuthLogoutRequest([0]string{}, elemIsEscaped, w, r)
-								default:
-									s.notAllowed(w, r, "POST")
-								}
-
-								return
-							}
-
+							return
 						}
 
 					}
 
+				}
+
+			case 'b': // Prefix: "build-info"
+
+				if l := len("build-info"); len(elem) >= l && elem[0:l] == "build-info" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch r.Method {
+					case "GET":
+						s.handleGetBuildInfoRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, "GET")
+					}
+
+					return
 				}
 
 			case 'e': // Prefix: "entries"
@@ -542,9 +528,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				break
 			}
 			switch elem[0] {
-			case 'a': // Prefix: "a"
+			case 'a': // Prefix: "auth/"
 
-				if l := len("a"); len(elem) >= l && elem[0:l] == "a" {
+				if l := len("auth/"); len(elem) >= l && elem[0:l] == "auth/" {
 					elem = elem[l:]
 				} else {
 					break
@@ -554,9 +540,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					break
 				}
 				switch elem[0] {
-				case 'p': // Prefix: "pi/build-info"
+				case 'c': // Prefix: "check"
 
-					if l := len("pi/build-info"); len(elem) >= l && elem[0:l] == "pi/build-info" {
+					if l := len("check"); len(elem) >= l && elem[0:l] == "check" {
 						elem = elem[l:]
 					} else {
 						break
@@ -566,10 +552,10 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						// Leaf node.
 						switch method {
 						case "GET":
-							r.name = GetBuildInfoOperation
-							r.summary = ""
-							r.operationID = "getBuildInfo"
-							r.pathPattern = "/api/build-info"
+							r.name = AuthCheckOperation
+							r.summary = "Check if user is authenticated"
+							r.operationID = "Auth_check"
+							r.pathPattern = "/auth/check"
 							r.args = args
 							r.count = 0
 							return r, true
@@ -578,9 +564,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 					}
 
-				case 'u': // Prefix: "uth/"
+				case 'l': // Prefix: "log"
 
-					if l := len("uth/"); len(elem) >= l && elem[0:l] == "uth/" {
+					if l := len("log"); len(elem) >= l && elem[0:l] == "log" {
 						elem = elem[l:]
 					} else {
 						break
@@ -590,9 +576,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						break
 					}
 					switch elem[0] {
-					case 'c': // Prefix: "check"
+					case 'i': // Prefix: "in"
 
-						if l := len("check"); len(elem) >= l && elem[0:l] == "check" {
+						if l := len("in"); len(elem) >= l && elem[0:l] == "in" {
 							elem = elem[l:]
 						} else {
 							break
@@ -601,11 +587,11 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						if len(elem) == 0 {
 							// Leaf node.
 							switch method {
-							case "GET":
-								r.name = AuthCheckOperation
-								r.summary = "Check if user is authenticated"
-								r.operationID = "Auth_check"
-								r.pathPattern = "/auth/check"
+							case "POST":
+								r.name = AuthLoginOperation
+								r.summary = "Login with username and password"
+								r.operationID = "Auth_login"
+								r.pathPattern = "/auth/login"
 								r.args = args
 								r.count = 0
 								return r, true
@@ -614,70 +600,56 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							}
 						}
 
-					case 'l': // Prefix: "log"
+					case 'o': // Prefix: "out"
 
-						if l := len("log"); len(elem) >= l && elem[0:l] == "log" {
+						if l := len("out"); len(elem) >= l && elem[0:l] == "out" {
 							elem = elem[l:]
 						} else {
 							break
 						}
 
 						if len(elem) == 0 {
-							break
-						}
-						switch elem[0] {
-						case 'i': // Prefix: "in"
-
-							if l := len("in"); len(elem) >= l && elem[0:l] == "in" {
-								elem = elem[l:]
-							} else {
-								break
+							// Leaf node.
+							switch method {
+							case "POST":
+								r.name = AuthLogoutOperation
+								r.summary = "Logout and invalidate session"
+								r.operationID = "Auth_logout"
+								r.pathPattern = "/auth/logout"
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
 							}
-
-							if len(elem) == 0 {
-								// Leaf node.
-								switch method {
-								case "POST":
-									r.name = AuthLoginOperation
-									r.summary = "Login with username and password"
-									r.operationID = "Auth_login"
-									r.pathPattern = "/auth/login"
-									r.args = args
-									r.count = 0
-									return r, true
-								default:
-									return
-								}
-							}
-
-						case 'o': // Prefix: "out"
-
-							if l := len("out"); len(elem) >= l && elem[0:l] == "out" {
-								elem = elem[l:]
-							} else {
-								break
-							}
-
-							if len(elem) == 0 {
-								// Leaf node.
-								switch method {
-								case "POST":
-									r.name = AuthLogoutOperation
-									r.summary = "Logout and invalidate session"
-									r.operationID = "Auth_logout"
-									r.pathPattern = "/auth/logout"
-									r.args = args
-									r.count = 0
-									return r, true
-								default:
-									return
-								}
-							}
-
 						}
 
 					}
 
+				}
+
+			case 'b': // Prefix: "build-info"
+
+				if l := len("build-info"); len(elem) >= l && elem[0:l] == "build-info" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch method {
+					case "GET":
+						r.name = GetBuildInfoOperation
+						r.summary = ""
+						r.operationID = "getBuildInfo"
+						r.pathPattern = "/build-info"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
 				}
 
 			case 'e': // Prefix: "entries"

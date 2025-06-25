@@ -46,7 +46,7 @@ type Handler interface {
 	GetAllEntryTitles(ctx context.Context) (GetAllEntryTitlesRes, error)
 	// GetBuildInfo implements getBuildInfo operation.
 	//
-	// GET /api/build-info
+	// GET /build-info
 	GetBuildInfo(ctx context.Context) (GetBuildInfoRes, error)
 	// GetEntryByDynamicPath implements getEntryByDynamicPath operation.
 	//

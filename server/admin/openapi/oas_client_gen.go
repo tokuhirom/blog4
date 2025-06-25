@@ -66,7 +66,7 @@ type Invoker interface {
 	GetAllEntryTitles(ctx context.Context) (GetAllEntryTitlesRes, error)
 	// GetBuildInfo invokes getBuildInfo operation.
 	//
-	// GET /api/build-info
+	// GET /build-info
 	GetBuildInfo(ctx context.Context) (GetBuildInfoRes, error)
 	// GetEntryByDynamicPath invokes getEntryByDynamicPath operation.
 	//
@@ -623,7 +623,7 @@ func (c *Client) sendGetAllEntryTitles(ctx context.Context) (res GetAllEntryTitl
 
 // GetBuildInfo invokes getBuildInfo operation.
 //
-// GET /api/build-info
+// GET /build-info
 func (c *Client) GetBuildInfo(ctx context.Context) (GetBuildInfoRes, error) {
 	res, err := c.sendGetBuildInfo(ctx)
 	return res, err
@@ -633,7 +633,7 @@ func (c *Client) sendGetBuildInfo(ctx context.Context) (res GetBuildInfoRes, err
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getBuildInfo"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/api/build-info"),
+		semconv.HTTPRouteKey.String("/build-info"),
 	}
 
 	// Run stopwatch.
@@ -666,7 +666,7 @@ func (c *Client) sendGetBuildInfo(ctx context.Context) (res GetBuildInfoRes, err
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/api/build-info"
+	pathParts[0] = "/build-info"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
