@@ -94,7 +94,7 @@ type Handler interface {
 	//
 	// Update entry visibility.
 	//
-	// POST /entry/{path}/visibility
+	// POST /entries/{path}/visibility
 	UpdateEntryVisibility(ctx context.Context, req *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (UpdateEntryVisibilityRes, error)
 	// UploadFile implements uploadFile operation.
 	//

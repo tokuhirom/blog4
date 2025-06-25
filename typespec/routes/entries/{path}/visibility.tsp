@@ -9,7 +9,7 @@ using OpenAPI;
 
 namespace AdminAPI;
 
-@route("/entry/{path}/visibility")
+@route("/entries/{path}/visibility")
 @post
 @summary("Update entry visibility")
 op updateEntryVisibility(

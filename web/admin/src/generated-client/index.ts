@@ -636,7 +636,7 @@ export const getUpdateEntryVisibilityUrl = ({ path }: UpdateEntryVisibilityPathP
 
   
 
-  return `/entry/${path}/visibility`
+  return `/entries/${path}/visibility`
 }
 
 export const updateEntryVisibility = async ({ path }: UpdateEntryVisibilityPathParameters,

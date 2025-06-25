@@ -1,6 +1,6 @@
-import React, { useState } from "react";
-import { TextField, InputAdornment } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { InputAdornment, TextField } from "@mui/material";
+import React, { useState } from "react";
 import { debounce } from "../utils";
 
 interface SearchBoxProps {
