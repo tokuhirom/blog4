@@ -60,7 +60,9 @@ test.describe("Admin Authentication", () => {
 			await expect(page).toHaveURL("/admin");
 
 			// Should see the admin header buttons
-			await expect(page.getByRole("button", { name: "New Entry" })).toBeVisible();
+			await expect(
+				page.getByRole("button", { name: "New Entry" }),
+			).toBeVisible();
 			await expect(page.getByRole("button", { name: "Logout" })).toBeVisible();
 		});
 

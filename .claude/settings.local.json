@@ -29,7 +29,10 @@
       "Bash(git merge:*)",
       "Bash(git status:*)",
       "Bash(gh pr view:*)",
-      "Bash(sleep:*)"
+      "Bash(sleep:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr checks:*)",
+      "Bash(gh run view:*)"
     ],
     "deny": []
   }
