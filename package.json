@@ -19,7 +19,7 @@
     "url": "https://github.com/tokuhirom/blog4/issues"
   },
   "homepage": "https://github.com/tokuhirom/blog4#readme",
-  "packageManager": "pnpm@10.12.2",
+  "packageManager": "pnpm@10.12.3",
   "devDependencies": {
     "@typespec/compiler": "^1.0.0",
     "@redocly/cli": "^1.25.0"
