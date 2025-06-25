@@ -14,7 +14,8 @@
       "Bash(ADMIN_USER=admin ADMIN_PW=password pnpm test:e2e auth.spec.ts --grep \"should login successfully\")",
       "Bash(ADMIN_USER=admin ADMIN_PW=password pnpm test:e2e auth.spec.ts --grep \"should login successfully\" --workers=1)",
       "Bash(cat:*)",
-      "Bash(go test:*)"
+      "Bash(go test:*)",
+      "Bash(git merge:*)"
     ],
     "deny": []
   }
