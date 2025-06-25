@@ -36,8 +36,6 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10.12.2
 
       - name: Install dependencies with pnpm
         run: pnpm install
@@ -109,8 +107,6 @@ jobs:
 
       - name: Install pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10.12.2
 
       - name: Install TypeSpec dependencies
         run: pnpm install
