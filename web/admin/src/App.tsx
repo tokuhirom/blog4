@@ -1,13 +1,13 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { ThemeProvider, createTheme } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import ProtectedRoute from "./components/ProtectedRoute";
+import { AuthProvider } from "./hooks/useAuth";
 import Layout from "./Layout";
 import NotFound from "./NotFound";
 import AdminEntryPage from "./pages/AdminEntryPage";
-import TopPage from "./pages/TopPage";
 import LoginPage from "./pages/LoginPage";
-import { AuthProvider } from "./hooks/useAuth";
-import ProtectedRoute from "./components/ProtectedRoute";
+import TopPage from "./pages/TopPage";
 
 const theme = createTheme({
 	palette: {

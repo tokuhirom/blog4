@@ -1,13 +1,13 @@
+import { Box, Divider, Grid, Paper, Typography } from "@mui/material";
 import { useNavigate } from "react-router-dom";
-import { Box, Paper, Typography, Divider, Grid } from "@mui/material";
+import { createAdminApiClient } from "../admin_api";
 import type {
-	LinkPalletData,
 	EntryWithImage,
 	GetLatestEntriesRow,
+	LinkPalletData,
 } from "../generated-client/model";
 import AdminEntryCardItem from "./AdminEntryCardItem";
 import CardItem from "./CardItem";
-import { createAdminApiClient } from "../admin_api";
 
 interface LinkPalletProps {
 	linkPallet: LinkPalletData;

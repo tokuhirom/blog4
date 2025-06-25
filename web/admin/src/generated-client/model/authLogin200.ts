@@ -4,7 +4,8 @@
  * Admin API
  * OpenAPI spec version: 1.0.0
  */
-import type { LoginResponse } from './loginResponse';
+
 import type { ErrorResponse } from './errorResponse';
+import type { LoginResponse } from './loginResponse';
 
 export type AuthLogin200 = LoginResponse | ErrorResponse;

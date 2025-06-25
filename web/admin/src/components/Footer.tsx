@@ -1,5 +1,5 @@
+import { Box, Link, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { Box, Typography, Link } from "@mui/material";
 import { getBuildInfo } from "../generated-client";
 
 interface BuildInfo {

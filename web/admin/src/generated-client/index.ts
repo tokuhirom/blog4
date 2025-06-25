@@ -4,6 +4,9 @@
  * Admin API
  * OpenAPI spec version: 1.0.0
  */
+
+
+import { customInstance } from '../api/custom-instance';
 import type {
   AuthCheckResponse,
   BuildInfoBuildInfo,
@@ -16,10 +19,10 @@ import type {
   GetEntryByDynamicPathPathParameters,
   GetLatestEntriesParams,
   GetLatestEntriesRow,
-  GetLinkPalletPathParameters,
   GetLinkedEntryPathsPathParameters,
-  LinkPalletData,
+  GetLinkPalletPathParameters,
   LinkedEntryPathsResponse,
+  LinkPalletData,
   LoginRequest,
   LoginResponse,
   RegenerateEntryImagePathParameters,
@@ -33,8 +36,6 @@ import type {
   UploadFileBody,
   UploadFileResponse
 } from './model';
-
-import { customInstance } from '../api/custom-instance';
 export type HTTPStatusCode1xx = 100 | 101 | 102 | 103;
 export type HTTPStatusCode2xx = 200 | 201 | 202 | 203 | 204 | 205 | 206 | 207;
 export type HTTPStatusCode3xx = 300 | 301 | 302 | 303 | 304 | 305 | 307 | 308;

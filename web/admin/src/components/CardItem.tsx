@@ -1,5 +1,5 @@
+import { Box, Card, CardContent, Typography } from "@mui/material";
 import type React from "react";
-import { Card, CardContent, Typography, Box } from "@mui/material";
 
 interface CardItemProps {
 	title?: string;
