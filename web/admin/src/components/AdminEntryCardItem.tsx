@@ -24,10 +24,10 @@ export default function AdminEntryCardItem({
 		} else {
 			if (event.metaKey || event.ctrlKey) {
 				// Commandキー (Mac) または Ctrlキー (Windows/Linux) が押されている場合、別タブで開く
-				window.open(`/admin/entry/${entry.Path}`, "_blank");
+				window.open(`/entry/${entry.Path}`, "_blank");
 			} else {
 				// 通常クリック時は同じタブで開く
-				navigate(`/admin/entry/${entry.Path}`);
+				navigate(`/entry/${entry.Path}`);
 			}
 		}
 	};

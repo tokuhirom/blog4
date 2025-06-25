@@ -674,3 +674,22 @@ func (p *adminApiService) AuthCheck(ctx context.Context) (openapi.AuthCheckRes, 
 		Username:      openapi.NewOptString(session.Username),
 	}, nil
 }
+
+func (p *adminApiService) GetBuildInfo(ctx context.Context) (openapi.GetBuildInfoRes, error) {
+	buildInfo, err := server.ReadBuildInfo()
+	if err != nil {
+		return &openapi.ErrorResponse{
+			Message: openapi.NewOptString("Failed to read build info"),
+			Error:   openapi.NewOptString(err.Error()),
+		}, nil
+	}
+
+	return &openapi.BuildInfoBuildInfo{
+		BuildTime:      buildInfo.BuildTime,
+		GitCommit:      buildInfo.GitCommit,
+		GitShortCommit: buildInfo.GitShortCommit,
+		GitBranch:      buildInfo.GitBranch,
+		GitTag:         openapi.NewOptString(buildInfo.GitTag),
+		GithubUrl:      buildInfo.GithubUrl,
+	}, nil
+}

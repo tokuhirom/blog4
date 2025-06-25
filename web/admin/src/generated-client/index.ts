@@ -6,6 +6,7 @@
  */
 import type {
   AuthCheckResponse,
+  BuildInfoBuildInfo,
   CreateEntryRequest,
   CreateEntryResponse,
   DeleteEntryPathParameters,
@@ -155,6 +156,43 @@ export const authLogout = async ( options?: RequestInit): Promise<authLogoutResp
   {      
     ...options,
     method: 'POST'
+    
+    
+  }
+);}
+
+
+
+export type getBuildInfoResponse200 = {
+  data: BuildInfoBuildInfo
+  status: 200
+}
+
+export type getBuildInfoResponse500 = {
+  data: ErrorResponse
+  status: 500
+}
+    
+export type getBuildInfoResponseComposite = getBuildInfoResponse200 | getBuildInfoResponse500;
+    
+export type getBuildInfoResponse = getBuildInfoResponseComposite & {
+  headers: Headers;
+}
+
+export const getGetBuildInfoUrl = () => {
+
+
+  
+
+  return `/build-info`
+}
+
+export const getBuildInfo = async ( options?: RequestInit): Promise<getBuildInfoResponse> => {
+  
+  return customInstance<getBuildInfoResponse>(getGetBuildInfoUrl(),
+  {      
+    ...options,
+    method: 'GET'
     
     
   }
@@ -598,7 +636,7 @@ export const getUpdateEntryVisibilityUrl = ({ path }: UpdateEntryVisibilityPathP
 
   
 
-  return `/entry/${path}/visibility`
+  return `/entries/${path}/visibility`
 }
 
 export const updateEntryVisibility = async ({ path }: UpdateEntryVisibilityPathParameters,

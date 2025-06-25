@@ -64,6 +64,10 @@ type Invoker interface {
 	//
 	// GET /entries/titles
 	GetAllEntryTitles(ctx context.Context) (GetAllEntryTitlesRes, error)
+	// GetBuildInfo invokes getBuildInfo operation.
+	//
+	// GET /build-info
+	GetBuildInfo(ctx context.Context) (GetBuildInfoRes, error)
 	// GetEntryByDynamicPath invokes getEntryByDynamicPath operation.
 	//
 	// Get entry by dynamic path.
@@ -110,7 +114,7 @@ type Invoker interface {
 	//
 	// Update entry visibility.
 	//
-	// POST /entry/{path}/visibility
+	// POST /entries/{path}/visibility
 	UpdateEntryVisibility(ctx context.Context, request *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (UpdateEntryVisibilityRes, error)
 	// UploadFile invokes uploadFile operation.
 	//
@@ -610,6 +614,76 @@ func (c *Client) sendGetAllEntryTitles(ctx context.Context) (res GetAllEntryTitl
 
 	stage = "DecodeResponse"
 	result, err := decodeGetAllEntryTitlesResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// GetBuildInfo invokes getBuildInfo operation.
+//
+// GET /build-info
+func (c *Client) GetBuildInfo(ctx context.Context) (GetBuildInfoRes, error) {
+	res, err := c.sendGetBuildInfo(ctx)
+	return res, err
+}
+
+func (c *Client) sendGetBuildInfo(ctx context.Context) (res GetBuildInfoRes, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("getBuildInfo"),
+		semconv.HTTPRequestMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/build-info"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, GetBuildInfoOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/build-info"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetBuildInfoResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -1265,7 +1339,7 @@ func (c *Client) sendUpdateEntryTitle(ctx context.Context, request *UpdateEntryT
 //
 // Update entry visibility.
 //
-// POST /entry/{path}/visibility
+// POST /entries/{path}/visibility
 func (c *Client) UpdateEntryVisibility(ctx context.Context, request *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (UpdateEntryVisibilityRes, error) {
 	res, err := c.sendUpdateEntryVisibility(ctx, request, params)
 	return res, err
@@ -1275,7 +1349,7 @@ func (c *Client) sendUpdateEntryVisibility(ctx context.Context, request *UpdateV
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateEntryVisibility"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/entry/{path}/visibility"),
+		semconv.HTTPRouteKey.String("/entries/{path}/visibility"),
 	}
 
 	// Run stopwatch.
@@ -1308,7 +1382,7 @@ func (c *Client) sendUpdateEntryVisibility(ctx context.Context, request *UpdateV
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [3]string
-	pathParts[0] = "/entry/"
+	pathParts[0] = "/entries/"
 	{
 		// Encode "path" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{

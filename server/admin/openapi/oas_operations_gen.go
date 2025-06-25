@@ -12,6 +12,7 @@ const (
 	CreateEntryOperation           OperationName = "CreateEntry"
 	DeleteEntryOperation           OperationName = "DeleteEntry"
 	GetAllEntryTitlesOperation     OperationName = "GetAllEntryTitles"
+	GetBuildInfoOperation          OperationName = "GetBuildInfo"
 	GetEntryByDynamicPathOperation OperationName = "GetEntryByDynamicPath"
 	GetLatestEntriesOperation      OperationName = "GetLatestEntries"
 	GetLinkPalletOperation         OperationName = "GetLinkPallet"

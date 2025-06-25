@@ -1,10 +1,10 @@
-import { useEffect, useRef } from "react";
-import { EditorState } from "@codemirror/state";
-import { EditorView, keymap } from "@codemirror/view";
-import { markdown } from "@codemirror/lang-markdown";
 import { defaultKeymap, indentWithTab } from "@codemirror/commands";
-import { oneDarkHighlightStyle } from "@codemirror/theme-one-dark";
+import { markdown } from "@codemirror/lang-markdown";
 import { syntaxHighlighting } from "@codemirror/language";
+import { EditorState } from "@codemirror/state";
+import { oneDarkHighlightStyle } from "@codemirror/theme-one-dark";
+import { EditorView, keymap } from "@codemirror/view";
+import { useEffect, useRef } from "react";
 
 interface MarkdownEditorProps {
 	initialContent?: string;
