@@ -803,14 +803,14 @@ func (s *Server) handleGetAllEntryTitlesRequest(args [0]string, argsEscaped bool
 
 // handleGetBuildInfoRequest handles getBuildInfo operation.
 //
-// GET /api/build-info
+// GET /build-info
 func (s *Server) handleGetBuildInfoRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getBuildInfo"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/api/build-info"),
+		semconv.HTTPRouteKey.String("/build-info"),
 	}
 
 	// Start a span for this request.

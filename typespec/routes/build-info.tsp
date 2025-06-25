@@ -7,7 +7,7 @@ using OpenAPI;
 
 namespace AdminAPI;
 
-@route("/api/build-info")
+@route("/build-info")
 namespace BuildInfo {
   model BuildInfo {
     buildTime: string;

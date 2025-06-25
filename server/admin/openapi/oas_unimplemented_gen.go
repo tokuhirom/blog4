@@ -69,7 +69,7 @@ func (UnimplementedHandler) GetAllEntryTitles(ctx context.Context) (r GetAllEntr
 
 // GetBuildInfo implements getBuildInfo operation.
 //
-// GET /api/build-info
+// GET /build-info
 func (UnimplementedHandler) GetBuildInfo(ctx context.Context) (r GetBuildInfoRes, _ error) {
 	return r, ht.ErrNotImplemented
 }

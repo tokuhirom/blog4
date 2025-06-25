@@ -42,43 +42,6 @@ export type HTTPStatusCode4xx = 400 | 401 | 402 | 403 | 404 | 405 | 406 | 407 | 
 export type HTTPStatusCode5xx = 500 | 501 | 502 | 503 | 504 | 505 | 507 | 511;
 export type HTTPStatusCodes = HTTPStatusCode1xx | HTTPStatusCode2xx | HTTPStatusCode3xx | HTTPStatusCode4xx | HTTPStatusCode5xx;
 
-export type getBuildInfoResponse200 = {
-  data: BuildInfoBuildInfo
-  status: 200
-}
-
-export type getBuildInfoResponse500 = {
-  data: ErrorResponse
-  status: 500
-}
-    
-export type getBuildInfoResponseComposite = getBuildInfoResponse200 | getBuildInfoResponse500;
-    
-export type getBuildInfoResponse = getBuildInfoResponseComposite & {
-  headers: Headers;
-}
-
-export const getGetBuildInfoUrl = () => {
-
-
-  
-
-  return `/api/build-info`
-}
-
-export const getBuildInfo = async ( options?: RequestInit): Promise<getBuildInfoResponse> => {
-  
-  return customInstance<getBuildInfoResponse>(getGetBuildInfoUrl(),
-  {      
-    ...options,
-    method: 'GET'
-    
-    
-  }
-);}
-
-
-
 /**
  * @summary Check if user is authenticated
  */
@@ -193,6 +156,43 @@ export const authLogout = async ( options?: RequestInit): Promise<authLogoutResp
   {      
     ...options,
     method: 'POST'
+    
+    
+  }
+);}
+
+
+
+export type getBuildInfoResponse200 = {
+  data: BuildInfoBuildInfo
+  status: 200
+}
+
+export type getBuildInfoResponse500 = {
+  data: ErrorResponse
+  status: 500
+}
+    
+export type getBuildInfoResponseComposite = getBuildInfoResponse200 | getBuildInfoResponse500;
+    
+export type getBuildInfoResponse = getBuildInfoResponseComposite & {
+  headers: Headers;
+}
+
+export const getGetBuildInfoUrl = () => {
+
+
+  
+
+  return `/build-info`
+}
+
+export const getBuildInfo = async ( options?: RequestInit): Promise<getBuildInfoResponse> => {
+  
+  return customInstance<getBuildInfoResponse>(getGetBuildInfoUrl(),
+  {      
+    ...options,
+    method: 'GET'
     
     
   }
