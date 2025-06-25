@@ -33,7 +33,9 @@ const api = createAdminApiClient();
 export default function AdminEntryPage() {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const path = location.pathname.replace("/entry/", "");
+	const path = location.pathname
+		.replace("/admin/entry/", "")
+		.replace("/entry/", "");
 
 	const [entry, setEntry] = useState<GetLatestEntriesRow>(
 		{} as GetLatestEntriesRow,
