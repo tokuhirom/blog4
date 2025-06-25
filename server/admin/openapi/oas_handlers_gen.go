@@ -1918,14 +1918,14 @@ func (s *Server) handleUpdateEntryTitleRequest(args [1]string, argsEscaped bool,
 //
 // Update entry visibility.
 //
-// POST /entry/{path}/visibility
+// POST /entries/{path}/visibility
 func (s *Server) handleUpdateEntryVisibilityRequest(args [1]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateEntryVisibility"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/entry/{path}/visibility"),
+		semconv.HTTPRouteKey.String("/entries/{path}/visibility"),
 	}
 
 	// Start a span for this request.

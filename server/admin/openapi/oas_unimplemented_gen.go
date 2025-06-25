@@ -141,7 +141,7 @@ func (UnimplementedHandler) UpdateEntryTitle(ctx context.Context, req *UpdateEnt
 //
 // Update entry visibility.
 //
-// POST /entry/{path}/visibility
+// POST /entries/{path}/visibility
 func (UnimplementedHandler) UpdateEntryVisibility(ctx context.Context, req *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (r UpdateEntryVisibilityRes, _ error) {
 	return r, ht.ErrNotImplemented
 }

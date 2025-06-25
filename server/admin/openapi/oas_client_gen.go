@@ -114,7 +114,7 @@ type Invoker interface {
 	//
 	// Update entry visibility.
 	//
-	// POST /entry/{path}/visibility
+	// POST /entries/{path}/visibility
 	UpdateEntryVisibility(ctx context.Context, request *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (UpdateEntryVisibilityRes, error)
 	// UploadFile invokes uploadFile operation.
 	//
@@ -1339,7 +1339,7 @@ func (c *Client) sendUpdateEntryTitle(ctx context.Context, request *UpdateEntryT
 //
 // Update entry visibility.
 //
-// POST /entry/{path}/visibility
+// POST /entries/{path}/visibility
 func (c *Client) UpdateEntryVisibility(ctx context.Context, request *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (UpdateEntryVisibilityRes, error) {
 	res, err := c.sendUpdateEntryVisibility(ctx, request, params)
 	return res, err
@@ -1349,7 +1349,7 @@ func (c *Client) sendUpdateEntryVisibility(ctx context.Context, request *UpdateV
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateEntryVisibility"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/entry/{path}/visibility"),
+		semconv.HTTPRouteKey.String("/entries/{path}/visibility"),
 	}
 
 	// Run stopwatch.
@@ -1382,7 +1382,7 @@ func (c *Client) sendUpdateEntryVisibility(ctx context.Context, request *UpdateV
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [3]string
-	pathParts[0] = "/entry/"
+	pathParts[0] = "/entries/"
 	{
 		// Encode "path" parameter.
 		e := uri.NewPathEncoder(uri.PathEncoderConfig{
