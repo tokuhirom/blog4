@@ -1,0 +1,98 @@
+name: E2E Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  e2e-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web/admin
+
+    services:
+      mariadb:
+        image: mariadb:10.11.13
+        env:
+          MYSQL_ROOT_PASSWORD: rootpassword
+          MYSQL_DATABASE: blog4
+          MYSQL_USER: blog4user
+          MYSQL_PASSWORD: blog4password
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="healthcheck.sh --connect --innodb_initialized"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+          --health-start-period=10s
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '22'
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10.12.3
+
+    - name: Install frontend dependencies
+      run: pnpm install --frozen-lockfile
+
+    - name: Setup Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.24'
+
+    - name: Install Go dependencies
+      working-directory: ./
+      run: go mod download
+
+    - name: Initialize database
+      working-directory: ./
+      run: |
+        mysql -h 127.0.0.1 -P 3306 -u root -prootpassword < db/init/01-schema.sql
+        mysql -h 127.0.0.1 -P 3306 -u root -prootpassword < db/init/02-setup-users.sql
+
+    - name: Build frontend
+      run: pnpm run build
+
+    - name: Start backend server
+      working-directory: ./
+      env:
+        DATABASE_USER: blog4user
+        DATABASE_PASSWORD: blog4password
+        DATABASE_HOST: 127.0.0.1
+        DATABASE_PORT: 3306
+        DATABASE_DB: blog4
+        BLOG_PORT: 8181
+        LOCAL_DEV: true
+        ADMIN_USER: admin
+        ADMIN_PW: password
+      run: |
+        go run ./cmd/blog4 &
+        sleep 5  # Wait for server to start
+
+    - name: Install Playwright Browsers
+      run: pnpm exec playwright install --with-deps chromium
+
+    - name: Run E2E tests
+      env:
+        ADMIN_USER: admin
+        ADMIN_PW: password
+      run: pnpm test:e2e
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: playwright-report
+        path: web/admin/playwright-report/
+        retention-days: 30

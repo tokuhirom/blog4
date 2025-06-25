@@ -45,7 +45,7 @@ jobs:
         run: pnpm run lint
         working-directory: web/admin
 
-      - name: Run vitest
+      - name: Run unit tests with vitest
         run: pnpm run test
         working-directory: web/admin
 
