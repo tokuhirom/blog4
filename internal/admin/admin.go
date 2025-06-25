@@ -33,10 +33,10 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 
 	r := chi.NewRouter()
 	//r.Use(middleware.BasicAuth("admin", map[string]string{cfg.AdminUser: cfg.AdminPassword}))
-	if cfg.LocalDev {
-		slog.Info("LocalDevelopment mode enabled. CORS is allowed", slog.String("origin", "http://localhost:6173"))
+	if len(cfg.AllowedOrigins) > 0 {
+		slog.Info("CORS is allowed", slog.Any("origins", cfg.AllowedOrigins))
 		r.Use(cors.Handler(cors.Options{
-			AllowedOrigins:   []string{"http://localhost:6173"},
+			AllowedOrigins:   cfg.AllowedOrigins,
 			AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
 			AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 			AllowCredentials: true,
