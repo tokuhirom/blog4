@@ -59,7 +59,6 @@ jobs:
       working-directory: ./
       run: |
         mysql -h 127.0.0.1 -P 3306 -u root -prootpassword blog4 < db/init/01-schema.sql
-        mysql -h 127.0.0.1 -P 3306 -u root -prootpassword blog4 < db/init/02-setup-users.sql
 
     - name: Build frontend
       run: pnpm run build
@@ -76,6 +75,11 @@ jobs:
         LOCAL_DEV: true
         ADMIN_USER: admin
         ADMIN_PW: password
+        S3_ACCESS_KEY_ID: minioadmin
+        S3_SECRET_ACCESS_KEY: minioadmin
+        S3_ATTACHMENTS_BUCKET_NAME: blog4-attachments
+        S3_BACKUP_BUCKET_NAME: blog4-backup
+        S3_ENDPOINT: localhost:9000
       run: |
         go run ./cmd/blog4 &
         sleep 5  # Wait for server to start
