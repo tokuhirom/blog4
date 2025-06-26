@@ -2,11 +2,10 @@
 FROM node:22 AS frontend-builder
 RUN corepack enable && corepack prepare pnpm@10.12.2 --activate
 WORKDIR /app
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
-COPY web/admin/package.json ./web/admin/
+COPY web/admin/package.json web/admin/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
-COPY web/admin/ ./web/admin/
-RUN cd web/admin && pnpm run build
+COPY web/admin/ ./
+RUN pnpm run build
 
 # Stage 2: Build the Go backend
 FROM golang:1.24 AS backend-builder
@@ -24,7 +23,7 @@ FROM ubuntu:24.04
 WORKDIR /app
 COPY --from=backend-builder /app/blog4 /app/
 COPY --from=backend-builder /app/build-info.json /app/
-COPY --from=frontend-builder /app/web/admin/dist /app/web/admin/dist
+COPY --from=frontend-builder /app/dist /app/web/admin/dist
 COPY web/static /app/web/static
 RUN apt-get update && apt-get install -y tzdata mysql-client openssl ca-certificates
 
