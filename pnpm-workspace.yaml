@@ -1,6 +1,0 @@
-packages:
-  - 'web/admin'
-
-onlyBuiltDependencies:
-  - core-js
-  - protobufjs
