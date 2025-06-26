@@ -343,12 +343,13 @@ export default function AdminEntryPage() {
 								<RadioGroup
 									value={visibility}
 									onChange={(e) => {
+										const newVisibility = e.target.value;
 										if (
 											confirm(
 												"Are you sure you want to change the visibility of this entry?",
 											)
 										) {
-											const newVisibility = e.target.value;
+											setVisibility(newVisibility); // Optimistic update
 											api
 												.updateEntryVisibility(
 													{ path: encodeURIComponent(entry.Path) },
