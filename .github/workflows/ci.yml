@@ -37,7 +37,10 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
 
-      - name: Install dependencies with pnpm
+      - name: Install root dependencies with pnpm
+        run: pnpm install
+
+      - name: Install frontend dependencies with pnpm
         run: pnpm install
         working-directory: web/admin
 

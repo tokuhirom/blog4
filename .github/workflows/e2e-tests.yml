@@ -29,6 +29,9 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
+    - name: Install root dependencies
+      run: pnpm install --frozen-lockfile
+
     - name: Install frontend dependencies
       run: pnpm install --frozen-lockfile
       working-directory: web/admin
@@ -52,8 +55,15 @@ jobs:
         done
 
     - name: Install Playwright Browsers
+      run: pnpm exec playwright install --with-deps
+      working-directory: web/admin
+
+    - name: Run E2E tests
       run: pnpm run test:e2e
       working-directory: web/admin
+      env:
+        ADMIN_USER: admin
+        ADMIN_PW: password
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
