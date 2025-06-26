@@ -82,7 +82,15 @@ jobs:
         S3_ENDPOINT: localhost:9000
       run: |
         go run ./cmd/blog4 &
-        sleep 5  # Wait for server to start
+        # Wait for server to be ready
+        for i in {1..30}; do
+          if curl -f http://localhost:8181/healthz > /dev/null 2>&1; then
+            echo "Server is ready"
+            break
+          fi
+          echo "Waiting for server to start... ($i/30)"
+          sleep 2
+        done
 
     - name: Install Playwright Browsers
       run: pnpm exec playwright install --with-deps chromium

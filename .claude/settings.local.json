@@ -32,7 +32,8 @@
       "Bash(sleep:*)",
       "Bash(gh pr view:*)",
       "Bash(gh pr checks:*)",
-      "Bash(gh run view:*)"
+      "Bash(gh run view:*)",
+      "Bash(gh run cancel:*)"
     ],
     "deny": []
   }
