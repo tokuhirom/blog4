@@ -91,7 +91,7 @@ jobs:
       env:
         ADMIN_USER: admin
         ADMIN_PW: password
-      run: pnpm test:e2e -- --project=chromium
+      run: pnpm exec playwright test --project=chromium
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
