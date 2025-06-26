@@ -16,13 +16,13 @@ test.describe("Admin Top Page", () => {
 	test("should display top page elements correctly", async ({ page }) => {
 		// Check header elements
 		await expect(
-			page.getByRole("heading", { name: "Blog admin" }),
+			page.getByRole("link", { name: "Blog Admin" }),
 		).toBeVisible();
 		await expect(page.getByRole("button", { name: "New Entry" })).toBeVisible();
 		await expect(page.getByRole("button", { name: "Logout" })).toBeVisible();
 
 		// Check search box
-		await expect(page.getByPlaceholder("Search...")).toBeVisible();
+		await expect(page.getByPlaceholder("Search entries...")).toBeVisible();
 
 		// Entry cards should be visible (if any exist)
 		const entryCards = page.locator('[class*="MuiCard-root"]');
@@ -36,11 +36,11 @@ test.describe("Admin Top Page", () => {
 
 	test("should filter entries using search box", async ({ page }) => {
 		// Type in search box
-		const searchBox = page.getByPlaceholder("Search...");
-		await searchBox.fill("test");
+		const searchBox = page.getByPlaceholder("Search entries...");
+		await searchBox.fill("Private");
 
 		// Wait a bit for debounce
-		await page.waitForTimeout(300);
+		await page.waitForTimeout(1300);
 
 		// Check if entries are filtered (if any match)
 		const entryCards = page.locator('[class*="MuiCard-root"]');
@@ -49,7 +49,7 @@ test.describe("Admin Top Page", () => {
 		// All visible cards should contain 'test' in title or body
 		for (const card of allCards) {
 			const text = await card.textContent();
-			expect(text?.toLowerCase()).toContain("test");
+			expect(text?.toLowerCase()).toContain("private");
 		}
 	});
 
@@ -67,7 +67,7 @@ test.describe("Admin Top Page", () => {
 		// The title should contain "New Entry" with timestamp
 		const titleInput = page.getByLabel("Title");
 		const titleValue = await titleInput.inputValue();
-		expect(titleValue).toContain("New Entry");
+		expect(titleValue).toContain(new Date().getFullYear().toString());
 	});
 
 	test("should create new entry using NEW button", async ({ page }) => {
@@ -85,16 +85,13 @@ test.describe("Admin Top Page", () => {
 	test("should navigate to entry when clicking entry card", async ({
 		page,
 	}) => {
-		// Wait for entries to load
-		await page.waitForLoadState("networkidle");
-
 		const entryCards = page.locator('[class*="MuiCard-root"]');
 		const count = await entryCards.count();
 
 		if (count > 0) {
 			// Get the first entry's title
 			const firstCard = entryCards.first();
-			const titleElement = firstCard.locator('[class*="MuiTypography-h6"]');
+			const titleElement = firstCard.locator("h2");
 			const title = await titleElement.textContent();
 
 			// Click the card

@@ -108,12 +108,12 @@ export default function TopPage() {
 					const now = new Date();
 					const placeholderTitle = format(
 						now,
-						"'New Entry' yyyy-MM-dd HH-mm-ss",
+						"yyyy-MM-ddTHH-mm-ss",
 					);
 
-					const data = await api.createEntry({ title: placeholderTitle });
-					console.log(`New entry created: ${data.Path}`);
-					navigate(`/admin/entry/${data.Path}`);
+					const data = await api.createEntry({title: placeholderTitle});
+					console.log(`New entry created: ${data.path}`);
+					navigate(`/entry/${data.path}`);
 				} catch (err) {
 					console.error("Error creating new entry:", err);
 					alert(`Failed to create new entry: ${err}`);

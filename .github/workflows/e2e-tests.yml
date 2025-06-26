@@ -9,26 +9,6 @@ on:
 jobs:
   e2e-tests:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./web/admin
-
-    services:
-      mariadb:
-        image: mariadb:10.11.13
-        env:
-          MYSQL_ROOT_PASSWORD: rootpassword
-          MYSQL_DATABASE: blog4
-          MYSQL_USER: blog4user
-          MYSQL_PASSWORD: blog4password
-        ports:
-          - 3306:3306
-        options: >-
-          --health-cmd="healthcheck.sh --connect --innodb_initialized"
-          --health-interval=10s
-          --health-timeout=5s
-          --health-retries=3
-          --health-start-period=10s
 
     steps:
     - uses: actions/checkout@v4
@@ -43,63 +23,39 @@ jobs:
       with:
         version: 10.12.3
 
-    - name: Install frontend dependencies
-      run: pnpm install --frozen-lockfile
-
     - name: Setup Go
       uses: actions/setup-go@v5
       with:
         go-version: '1.24'
 
-    - name: Install Go dependencies
-      working-directory: ./
-      run: go mod download
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
 
-    - name: Initialize database
-      working-directory: ./
-      run: |
-        mysql -h 127.0.0.1 -P 3306 -u root -prootpassword blog4 < db/init/01-schema.sql
+    - name: Install frontend dependencies
+      run: pnpm install --frozen-lockfile
+      working-directory: web/admin
+
+    - name: Run Docker Compose
+      run: docker compose up -d
 
     - name: Build frontend
       run: pnpm run build
+      working-directory: web/admin
 
-    - name: Start backend server
-      working-directory: ./
-      env:
-        DATABASE_USER: blog4user
-        DATABASE_PASSWORD: blog4password
-        DATABASE_HOST: 127.0.0.1
-        DATABASE_PORT: 3306
-        DATABASE_DB: blog4
-        BLOG_PORT: 8181
-        LOCAL_DEV: true
-        ADMIN_USER: admin
-        ADMIN_PW: password
-        S3_ACCESS_KEY_ID: minioadmin
-        S3_SECRET_ACCESS_KEY: minioadmin
-        S3_ATTACHMENTS_BUCKET_NAME: blog4-attachments
-        S3_BACKUP_BUCKET_NAME: blog4-backup
-        S3_ENDPOINT: localhost:9000
+    - name: Wait for web to be healthy
       run: |
-        go run ./cmd/blog4 &
-        # Wait for server to be ready
         for i in {1..30}; do
-          if curl -f http://localhost:8181/healthz > /dev/null 2>&1; then
-            echo "Server is ready"
+          if curl -s http://localhost:6137/admin/login; then
+            echo "Service is up!"
             break
           fi
-          echo "Waiting for server to start... ($i/30)"
+          echo "Waiting for service..."
           sleep 2
         done
 
     - name: Install Playwright Browsers
-      run: pnpm exec playwright install --with-deps chromium
-
-    - name: Run E2E tests
-      env:
-        ADMIN_USER: admin
-        ADMIN_PW: password
-      run: pnpm exec playwright test --project=chromium
+      run: pnpm run e2e
+      working-directory: web/admin
 
     - name: Upload test results
       uses: actions/upload-artifact@v4
