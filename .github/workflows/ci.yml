@@ -37,12 +37,8 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
 
-      - name: Install root dependencies with pnpm
+      - name: Install dependencies with pnpm
         run: pnpm install
-
-      - name: Install frontend dependencies with pnpm
-        run: pnpm install
-        working-directory: web/admin
 
       - name: Run biome lint
         run: pnpm run lint
@@ -111,12 +107,8 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
 
-      - name: Install TypeSpec dependencies
+      - name: Install dependencies with pnpm
         run: pnpm install
-
-      - name: Install TypeSpec dependencies
-        run: pnpm install
-        working-directory: web/admin
 
       - name: Install go-task
         run: |
@@ -129,10 +121,6 @@ jobs:
           tar -xzf sqlc.tar.gz
           sudo mv sqlc /usr/local/bin/
           rm sqlc.tar.gz
-
-      - name: Install dependencies with pnpm
-        run: pnpm install
-        working-directory: web/admin
 
       - name: Generate TypeSpec files
         run: task tsp

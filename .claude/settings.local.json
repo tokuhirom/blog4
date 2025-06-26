@@ -36,7 +36,8 @@
       "Bash(gh run cancel:*)",
       "Bash(gh pr view:*)",
       "Bash(gh run view:*)",
-      "Bash(gh pr create:*)"
+      "Bash(gh pr create:*)",
+      "Bash(ls:*)"
     ],
     "deny": []
   }
