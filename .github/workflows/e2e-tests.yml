@@ -54,7 +54,7 @@ jobs:
         done
 
     - name: Install Playwright Browsers
-      run: pnpm run e2e
+      run: pnpm run test:e2e
       working-directory: web/admin
 
     - name: Upload test results
