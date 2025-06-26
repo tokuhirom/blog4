@@ -355,7 +355,7 @@ export default function AdminEntryPage() {
 													{ visibility: newVisibility },
 												)
 												.then((data) => {
-													setVisibility(data.Visibility);
+													setVisibility(data.visibility);
 												})
 												.catch((error) => {
 													console.error("Failed to update visibility:", error);
