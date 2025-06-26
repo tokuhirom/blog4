@@ -21,7 +21,7 @@
   "homepage": "https://github.com/tokuhirom/blog4#readme",
   "packageManager": "pnpm@10.12.4",
   "devDependencies": {
-    "@typespec/compiler": "^1.0.0",
+    "@typespec/compiler": "^1.1.0",
     "@redocly/cli": "^1.34.3"
   },
   "dependencies": {
