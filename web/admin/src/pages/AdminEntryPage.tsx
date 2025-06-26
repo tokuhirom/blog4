@@ -43,7 +43,7 @@ export default function AdminEntryPage() {
 	const [, setLinks] = useState<{ [key: string]: string | null }>({});
 	const [title, setTitle] = useState("");
 	const [body, setBody] = useState("");
-	const [visibility, setVisibility] = useState("private");
+	const [visibility, setVisibility] = useState<string>("private");
 	const [currentLinks, setCurrentLinks] = useState<string[]>([]);
 	const [linkPallet, setLinkPallet] = useState<LinkPalletData>({
 		links: [],
@@ -266,7 +266,7 @@ export default function AdminEntryPage() {
 				setEntry(loadedEntry);
 				setTitle(loadedEntry.Title);
 				setBody(loadedEntry.Body);
-				setVisibility(loadedEntry.Visibility);
+				setVisibility(loadedEntry.Visibility || "private");
 				setCurrentLinks(extractLinks(loadedEntry.Body));
 			} catch (e) {
 				console.error("Failed to get entry:", e);
@@ -341,7 +341,7 @@ export default function AdminEntryPage() {
 							<FormControl component="fieldset" sx={{ width: "100%", mb: 2 }}>
 								<FormLabel component="legend">Visibility</FormLabel>
 								<RadioGroup
-									value={visibility}
+									value={visibility || "private"}
 									onChange={(e) => {
 										if (
 											confirm(
@@ -355,7 +355,7 @@ export default function AdminEntryPage() {
 													{ visibility: newVisibility },
 												)
 												.then((data) => {
-													setVisibility(data.Visibility);
+													setVisibility(data.visibility);
 												})
 												.catch((error) => {
 													console.error("Failed to update visibility:", error);
