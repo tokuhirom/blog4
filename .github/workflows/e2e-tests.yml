@@ -55,7 +55,7 @@ jobs:
         done
 
     - name: Install Playwright Browsers
-      run: pnpm run test:e2e:install
+      run: pnpm exec playwright install --with-deps
       working-directory: web/admin
 
     - name: Run E2E tests
