@@ -106,12 +106,9 @@ export default function TopPage() {
 				try {
 					// Generate a placeholder title with current date/time
 					const now = new Date();
-					const placeholderTitle = format(
-						now,
-						"yyyy-MM-ddTHH-mm-ss",
-					);
+					const placeholderTitle = format(now, "yyyy-MM-ddTHH-mm-ss");
 
-					const data = await api.createEntry({title: placeholderTitle});
+					const data = await api.createEntry({ title: placeholderTitle });
 					console.log(`New entry created: ${data.path}`);
 					navigate(`/entry/${data.path}`);
 				} catch (err) {

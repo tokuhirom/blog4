@@ -15,9 +15,7 @@ test.describe("Admin Top Page", () => {
 
 	test("should display top page elements correctly", async ({ page }) => {
 		// Check header elements
-		await expect(
-			page.getByRole("link", { name: "Blog Admin" }),
-		).toBeVisible();
+		await expect(page.getByRole("link", { name: "Blog Admin" })).toBeVisible();
 		await expect(page.getByRole("button", { name: "New Entry" })).toBeVisible();
 		await expect(page.getByRole("button", { name: "Logout" })).toBeVisible();
 
