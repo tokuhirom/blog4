@@ -39,6 +39,7 @@ jobs:
 
       - name: Install dependencies with pnpm
         run: pnpm install
+        working-directory: web/admin
 
       - name: Run biome lint
         run: pnpm run lint
@@ -121,6 +122,10 @@ jobs:
           tar -xzf sqlc.tar.gz
           sudo mv sqlc /usr/local/bin/
           rm sqlc.tar.gz
+
+      - name: Install dependencies with pnpm
+        run: pnpm install
+        working-directory: web/admin
 
       - name: Generate TypeSpec files
         run: task tsp
