@@ -50,6 +50,10 @@ jobs:
           sleep 2
         done
 
+    - name: Install dependencies
+      run: pnpm install
+      working-directory: web/admin
+
     - name: Install Playwright Browsers
       run: pnpm exec playwright install --with-deps
       working-directory: web/admin
