@@ -38,11 +38,11 @@
 		"@codemirror/commands": "^6.8.1",
 		"@codemirror/lang-javascript": "^6.2.4",
 		"@codemirror/lang-markdown": "^6.3.3",
-		"@codemirror/language": "^6.11.1",
+		"@codemirror/language": "^6.11.2",
 		"@codemirror/language-data": "^6.5.1",
 		"@codemirror/state": "^6.5.2",
 		"@codemirror/theme-one-dark": "^6.1.3",
-		"@codemirror/view": "^6.37.2",
+		"@codemirror/view": "^6.38.0",
 		"@emotion/react": "^11.14.0",
 		"@emotion/styled": "^11.14.1",
 		"@mui/icons-material": "^7.1.2",
@@ -50,6 +50,6 @@
 		"date-fns": "^4.1.0",
 		"react": "^19.1.0",
 		"react-dom": "^19.1.0",
-		"react-router-dom": "^7.6.2"
+		"react-router-dom": "^7.6.3"
 	}
 }
