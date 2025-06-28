@@ -9,6 +9,6 @@ export default defineConfig({
 		port: 6173,
 	},
 	test: {
-		exclude: ["e2e/**", "tests-examples/**", "node_modules/**"],
+		exclude: ["e2e/**", "node_modules/**"],
 	},
 });
