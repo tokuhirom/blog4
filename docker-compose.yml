@@ -39,7 +39,7 @@ services:
       # Application configuration
       BLOG_PORT: 8181
       LOCAL_DEV: true
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:6173}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS:-http://localhost:6173,http://localhost:6174}
       ADMIN_USER: ${ADMIN_USER:-admin}
       ADMIN_PW: ${ADMIN_PASSWORD:-password}
       
