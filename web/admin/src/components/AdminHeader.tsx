@@ -16,11 +16,11 @@ export default function AdminHeader() {
 		try {
 			// Generate a placeholder title with current date/time
 			const now = new Date();
-			const placeholderTitle = format(now, "'New Entry' yyyy-MM-dd HH-mm-ss");
+			const placeholderTitle = format(now, "yyyy-MM-ddTHH-mm-ss");
 
 			const data = await api.createEntry({ title: placeholderTitle });
 			console.log(`New entry created: ${data.path}`);
-			navigate(`/admin/entry/${data.path}`);
+			navigate(`/entry/${data.path}`);
 		} catch (e) {
 			console.error("Error creating new entry:", e);
 			alert("Failed to create new entry");
