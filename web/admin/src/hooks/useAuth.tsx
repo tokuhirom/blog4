@@ -28,15 +28,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
 	const checkAuth = useCallback(async () => {
 		try {
+			setLoading(true);
 			const response = await authCheck();
-			if (response.status === 200) {
-				setIsAuthenticated(response.data.authenticated);
+			if (response.status === 200 && response.data.authenticated) {
+				setIsAuthenticated(true);
 				setUsername(response.data.username || null);
 			} else {
 				setIsAuthenticated(false);
 				setUsername(null);
 			}
 		} catch (_error) {
+			// Session expired or network error
 			setIsAuthenticated(false);
 			setUsername(null);
 		} finally {
@@ -44,17 +46,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 		}
 	}, []);
 
-	const logout = async () => {
+	const logout = useCallback(async () => {
 		try {
 			await authLogout();
-		} catch (error) {
-			console.error("Logout error:", error);
-		} finally {
+			// Clear auth state immediately
 			setIsAuthenticated(false);
 			setUsername(null);
-			navigate("/login");
+			// Force navigation to login page
+			navigate("/login", { replace: true });
+		} catch (error) {
+			console.error("Logout error:", error);
+			// Even if logout fails, clear client state
+			setIsAuthenticated(false);
+			setUsername(null);
+			navigate("/login", { replace: true });
 		}
-	};
+	}, [navigate]);
 
 	useEffect(() => {
 		checkAuth();
