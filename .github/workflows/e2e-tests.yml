@@ -101,7 +101,6 @@ jobs:
           AMAZON_PAAPI5_ACCESS_KEY: 'DUMMYACCESSKEYDUMMYACCESSKEY'
           AMAZON_PAAPI5_SECRET_KEY: 'DUMMYSECRETKEYDUMMYSECRETKEY'
           BACKUP_ENCRYPTION_KEY: 'DUMMYENCRYPTIONKEYDUMMYENCRYPTIONKEY'
-          WEBACCEL_GUARD: 'DUMMYWEBACCELGUARDDUMMYWEBACCELGUARD'
           KEEP_ALIVE_URL: 'http://localhost:8181/keep-alive'
           # HUB_URLS is not used in this test, but required for the app to start
           HUB_URLS: 'http://localhost:9090/hub'
