@@ -5,6 +5,7 @@ WORKDIR /app
 COPY web/admin/package.json web/admin/pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY web/admin/ ./
+ENV VITE_API_BASE_URL=/admin/api
 RUN pnpm run build
 
 # Stage 2: Build the Go backend
