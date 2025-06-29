@@ -69,6 +69,43 @@ jobs:
         env:
           MYSQL_HOST: 127.0.0.1
 
+      - name: build blog4 backend
+        run: go build -o blog4 ./cmd/blog4
+
+      - name: Start blog4 backend
+        run: ./blog4 &
+        env:
+          # Database configuration
+          DATABASE_USER: blog4user
+          DATABASE_PASSWORD: blog4password
+          DATABASE_HOST: 127.0.0.1
+          DATABASE_PORT: 3306
+          DATABASE_DB: blog4
+
+          # Application configuration
+          BLOG_PORT: 8181
+          LOCAL_DEV: true
+          ALLOWED_ORIGINS: 'http://localhost:6173,http://localhost:6174'
+          ADMIN_USER: admin
+          ADMIN_PW: password
+
+          # S3 configuration (using MinIO for local dev)
+          S3_ACCESS_KEY_ID: minioadmin
+          S3_SECRET_ACCESS_KEY: minioadmin
+          S3_REGION: us-east-1
+          S3_ATTACHMENTS_BUCKET_NAME: blog4-attachments
+          S3_BACKUP_BUCKET_NAME: blog4-backup
+          S3_ENDPOINT: 'minio:9000'
+
+          # Other optional configuration
+          AMAZON_PAAPI5_ACCESS_KEY: 'DUMMYACCESSKEYDUMMYACCESSKEY'
+          AMAZON_PAAPI5_SECRET_KEY: 'DUMMYSECRETKEYDUMMYSECRETKEY'
+          BACKUP_ENCRYPTION_KEY: 'DUMMYENCRYPTIONKEYDUMMYENCRYPTIONKEY'
+          WEBACCEL_GUARD: 'DUMMYWEBACCELGUARDDUMMYWEBACCELGUARD'
+          KEEP_ALIVE_URL: 'http://localhost:8181/keep-alive'
+          # HUB_URLS is not used in this test, but required for the app to start
+          HUB_URLS: 'http://localhost:9090/hub'
+
       - name: Install frontend dependencies
         working-directory: web/admin
         run: pnpm install
