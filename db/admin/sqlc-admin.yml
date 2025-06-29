@@ -7,3 +7,4 @@ sql:
       go:
         package: "admindb"
         out: "admindb"
+        emit_interface: true
