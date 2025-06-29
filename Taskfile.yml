@@ -11,12 +11,6 @@ tasks:
     generates:
       - typespec/tsp-output/@typespec/openapi3/openapi.yaml
 
-  frontend:
-    cmds:
-      - pnpm run dev
-    dir: ./web/admin
-    desc: "Run the Node.js development server"
-
   frontend-build:
     deps: [npmi, openapi-client]
     watch: true
@@ -64,8 +58,8 @@ tasks:
     desc: "Run SQLC generation for both admin and public databases"
 
   dev:
-    deps: [sqlc, frontend, frontend-build, ogen, openapi-client]
-    desc: "Run both SQLC generation and Node.js dev server"
+    deps: [sqlc, ogen, openapi-client]
+    desc: "Generate all code (SQLC, OpenAPI server, and client)"
 
   gen:
     deps: [ogen, openapi-client, sqlc]
@@ -110,46 +104,5 @@ tasks:
       - docker build -t blog4 .
     sources:
       - Dockerfile
+    desc: "Build production Docker image"
 
-  docker-run:
-    cmds:
-      - docker run --rm -it --env-file .env -p 8080:8080 blog4
-
-  fmt:
-    desc: "Format Go code with goimports"
-    cmds:
-      - go fmt ./...
-      - goimports -w -local github.com/tokuhirom/blog4 .
-    sources:
-      - '**/*.go'
-
-  lint:
-    desc: "Run linters"
-    cmds:
-      - goimports -d -local github.com/tokuhirom/blog4 .
-      - go vet ./...
-
-  biome-format:
-    desc: "Format frontend code with Biome"
-    dir: ./web/admin
-    cmds:
-      - pnpm run format
-    sources:
-      - 'src/**/*.{js,ts,jsx,tsx,svelte,json,jsonc}'
-      - '*.{js,ts,json,jsonc}'
-
-  biome-lint:
-    desc: "Lint frontend code with Biome"
-    dir: ./web/admin
-    cmds:
-      - pnpm run lint
-
-  biome-check:
-    desc: "Check frontend code with Biome (format and lint)"
-    dir: ./web/admin
-    cmds:
-      - pnpm exec biome check .
-
-  frontend-fmt:
-    desc: "Format and lint frontend code"
-    deps: [biome-format, biome-lint]
