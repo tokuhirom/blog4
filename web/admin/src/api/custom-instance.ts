@@ -44,22 +44,19 @@ export const customInstance = async <T>(
 		credentials: "include", // Include cookies for session management
 	});
 
-	if (!response.ok) {
-		const errorData = await response.json().catch(() => ({}));
-		throw new Error(
-			errorData.message || `HTTP error! status: ${response.status}`,
-		);
-	}
-
 	// Handle empty responses
 	if (
 		response.status === 204 ||
 		response.headers.get("content-length") === "0"
 	) {
-		return {} as T;
+		return {
+			data: {},
+			status: response.status,
+			headers: response.headers,
+		} as T;
 	}
 
-	const jsonData = await response.json();
+	const jsonData = await response.json().catch(() => ({}));
 
 	// Orval expects response in format { data: T, status: number }
 	return {
