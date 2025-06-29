@@ -60,6 +60,9 @@ importers:
       '@biomejs/biome':
         specifier: ^2.0.6
         version: 2.0.6
+      '@playwright/experimental-ct-react':
+        specifier: ^1.53.1
+        version: 1.53.1(@types/node@24.0.3)(vite@7.0.0(@types/node@24.0.3)(yaml@2.8.0))(yaml@2.8.0)
       '@playwright/test':
         specifier: ^1.53.1
         version: 1.53.1
@@ -788,6 +791,15 @@ packages:
 
   '@orval/zod@7.10.0':
     resolution: {integrity: sha512-AB/508IBMlVDBcGvlq+ASz7DvqU3nhoDnIeBCyjwNfQwhYzREU0qqiFBnH0XAW70c6SCMf9/bIcYbw8GAx/zxA==}
+
+  '@playwright/experimental-ct-core@1.53.1':
+    resolution: {integrity: sha512-3edf/JF1Fnziq+++XJpH20nbU26yQfGBDT2KfTlYoPdEcVWBf3JIHfRNKsF9KXIFmrzYsBtFnJ/Tkzm7dWLzeA==}
+    engines: {node: '>=18'}
+
+  '@playwright/experimental-ct-react@1.53.1':
+    resolution: {integrity: sha512-4u0JLdIVDRIynkhP1KkfqTAjG5FoQ/w7s1KqgViuVoWzlCqYVtwBchxl6Le9g3T25a+vXWgFhWO35ddL3BeVLQ==}
+    engines: {node: '>=18'}
+    hasBin: true
 
   '@playwright/test@1.53.1':
     resolution: {integrity: sha512-Z4c23LHV0muZ8hfv4jw6HngPJkbbtZxTkxPNIg7cJcTc9C28N/p2q7g3JZS2SiKBBHJ3uM1dgDye66bB7LEk5w==}
@@ -2495,6 +2507,46 @@ packages:
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
     hasBin: true
 
+  vite@6.3.5:
+    resolution: {integrity: sha512-cZn6NDFE7wdTpINgs++ZJ4N49W2vRp8LCKrn3Ob1kYNtOo21vfDoaV5GzBfLU4MovSAB8uNRm4jgzVQZ+mBzPQ==}
+    engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
+    hasBin: true
+    peerDependencies:
+      '@types/node': ^18.0.0 || ^20.0.0 || >=22.0.0
+      jiti: '>=1.21.0'
+      less: '*'
+      lightningcss: ^1.21.0
+      sass: '*'
+      sass-embedded: '*'
+      stylus: '*'
+      sugarss: '*'
+      terser: ^5.16.0
+      tsx: ^4.8.1
+      yaml: ^2.4.2
+    peerDependenciesMeta:
+      '@types/node':
+        optional: true
+      jiti:
+        optional: true
+      less:
+        optional: true
+      lightningcss:
+        optional: true
+      sass:
+        optional: true
+      sass-embedded:
+        optional: true
+      stylus:
+        optional: true
+      sugarss:
+        optional: true
+      terser:
+        optional: true
+      tsx:
+        optional: true
+      yaml:
+        optional: true
+
   vite@7.0.0:
     resolution: {integrity: sha512-ixXJB1YRgDIw2OszKQS9WxGHKwLdCsbQNkpJN171udl6szi/rIySHL6/Os3s2+oE4P/FLD4dxg4mD7Wust+u5g==}
     engines: {node: ^20.19.0 || >=22.12.0}
@@ -3568,6 +3620,43 @@ snapshots:
       - encoding
       - openapi-types
       - supports-color
+
+  '@playwright/experimental-ct-core@1.53.1(@types/node@24.0.3)(yaml@2.8.0)':
+    dependencies:
+      playwright: 1.53.1
+      playwright-core: 1.53.1
+      vite: 6.3.5(@types/node@24.0.3)(yaml@2.8.0)
+    transitivePeerDependencies:
+      - '@types/node'
+      - jiti
+      - less
+      - lightningcss
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - terser
+      - tsx
+      - yaml
+
+  '@playwright/experimental-ct-react@1.53.1(@types/node@24.0.3)(vite@7.0.0(@types/node@24.0.3)(yaml@2.8.0))(yaml@2.8.0)':
+    dependencies:
+      '@playwright/experimental-ct-core': 1.53.1(@types/node@24.0.3)(yaml@2.8.0)
+      '@vitejs/plugin-react': 4.6.0(vite@7.0.0(@types/node@24.0.3)(yaml@2.8.0))
+    transitivePeerDependencies:
+      - '@types/node'
+      - jiti
+      - less
+      - lightningcss
+      - sass
+      - sass-embedded
+      - stylus
+      - sugarss
+      - supports-color
+      - terser
+      - tsx
+      - vite
+      - yaml
 
   '@playwright/test@1.53.1':
     dependencies:
@@ -5479,6 +5568,19 @@ snapshots:
       - terser
       - tsx
       - yaml
+
+  vite@6.3.5(@types/node@24.0.3)(yaml@2.8.0):
+    dependencies:
+      esbuild: 0.25.5
+      fdir: 6.4.6(picomatch@4.0.2)
+      picomatch: 4.0.2
+      postcss: 8.5.6
+      rollup: 4.44.0
+      tinyglobby: 0.2.14
+    optionalDependencies:
+      '@types/node': 24.0.3
+      fsevents: 2.3.3
+      yaml: 2.8.0
 
   vite@7.0.0(@types/node@24.0.3)(yaml@2.8.0):
     dependencies:
