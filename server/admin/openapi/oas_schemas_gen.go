@@ -37,6 +37,78 @@ func (s *AuthCheckResponse) SetUsername(val OptString) {
 
 func (*AuthCheckResponse) authCheckRes() {}
 
+// Ref: #/components/schemas/BuildInfo.BuildInfo
+type BuildInfoBuildInfo struct {
+	BuildTime      string    `json:"buildTime"`
+	GitCommit      string    `json:"gitCommit"`
+	GitShortCommit string    `json:"gitShortCommit"`
+	GitBranch      string    `json:"gitBranch"`
+	GitTag         OptString `json:"gitTag"`
+	GithubUrl      string    `json:"githubUrl"`
+}
+
+// GetBuildTime returns the value of BuildTime.
+func (s *BuildInfoBuildInfo) GetBuildTime() string {
+	return s.BuildTime
+}
+
+// GetGitCommit returns the value of GitCommit.
+func (s *BuildInfoBuildInfo) GetGitCommit() string {
+	return s.GitCommit
+}
+
+// GetGitShortCommit returns the value of GitShortCommit.
+func (s *BuildInfoBuildInfo) GetGitShortCommit() string {
+	return s.GitShortCommit
+}
+
+// GetGitBranch returns the value of GitBranch.
+func (s *BuildInfoBuildInfo) GetGitBranch() string {
+	return s.GitBranch
+}
+
+// GetGitTag returns the value of GitTag.
+func (s *BuildInfoBuildInfo) GetGitTag() OptString {
+	return s.GitTag
+}
+
+// GetGithubUrl returns the value of GithubUrl.
+func (s *BuildInfoBuildInfo) GetGithubUrl() string {
+	return s.GithubUrl
+}
+
+// SetBuildTime sets the value of BuildTime.
+func (s *BuildInfoBuildInfo) SetBuildTime(val string) {
+	s.BuildTime = val
+}
+
+// SetGitCommit sets the value of GitCommit.
+func (s *BuildInfoBuildInfo) SetGitCommit(val string) {
+	s.GitCommit = val
+}
+
+// SetGitShortCommit sets the value of GitShortCommit.
+func (s *BuildInfoBuildInfo) SetGitShortCommit(val string) {
+	s.GitShortCommit = val
+}
+
+// SetGitBranch sets the value of GitBranch.
+func (s *BuildInfoBuildInfo) SetGitBranch(val string) {
+	s.GitBranch = val
+}
+
+// SetGitTag sets the value of GitTag.
+func (s *BuildInfoBuildInfo) SetGitTag(val OptString) {
+	s.GitTag = val
+}
+
+// SetGithubUrl sets the value of GithubUrl.
+func (s *BuildInfoBuildInfo) SetGithubUrl(val string) {
+	s.GithubUrl = val
+}
+
+func (*BuildInfoBuildInfo) getBuildInfoRes() {}
+
 // Ref: #/components/schemas/CreateEntryRequest
 type CreateEntryRequest struct {
 	// The title of the new entry.
@@ -279,6 +351,7 @@ func (*ErrorResponse) authLoginRes()             {}
 func (*ErrorResponse) authLogoutRes()            {}
 func (*ErrorResponse) createEntryRes()           {}
 func (*ErrorResponse) deleteEntryRes()           {}
+func (*ErrorResponse) getBuildInfoRes()          {}
 func (*ErrorResponse) getLinkedEntryPathsRes()   {}
 func (*ErrorResponse) regenerateEntryImageRes()  {}
 func (*ErrorResponse) updateEntryBodyRes()       {}
@@ -502,8 +575,9 @@ func (*LinkedEntryPathsResponse) getLinkedEntryPathsRes() {}
 
 // Ref: #/components/schemas/LoginRequest
 type LoginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username   string  `json:"username"`
+	Password   string  `json:"password"`
+	RememberMe OptBool `json:"remember_me"`
 }
 
 // GetUsername returns the value of Username.
@@ -516,6 +590,11 @@ func (s *LoginRequest) GetPassword() string {
 	return s.Password
 }
 
+// GetRememberMe returns the value of RememberMe.
+func (s *LoginRequest) GetRememberMe() OptBool {
+	return s.RememberMe
+}
+
 // SetUsername sets the value of Username.
 func (s *LoginRequest) SetUsername(val string) {
 	s.Username = val
@@ -524,6 +603,11 @@ func (s *LoginRequest) SetUsername(val string) {
 // SetPassword sets the value of Password.
 func (s *LoginRequest) SetPassword(val string) {
 	s.Password = val
+}
+
+// SetRememberMe sets the value of RememberMe.
+func (s *LoginRequest) SetRememberMe(val OptBool) {
+	s.RememberMe = val
 }
 
 // Ref: #/components/schemas/LoginResponse
@@ -553,6 +637,52 @@ func (s *LoginResponse) SetMessage(val OptString) {
 }
 
 func (*LoginResponse) authLoginRes() {}
+
+// NewOptBool returns new OptBool with value set to v.
+func NewOptBool(v bool) OptBool {
+	return OptBool{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptBool is optional bool.
+type OptBool struct {
+	Value bool
+	Set   bool
+}
+
+// IsSet returns true if OptBool was set.
+func (o OptBool) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptBool) Reset() {
+	var v bool
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptBool) SetTo(v bool) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptBool) Get() (v bool, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptBool) Or(d bool) bool {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
 
 // NewOptDateTime returns new OptDateTime with value set to v.
 func NewOptDateTime(v time.Time) OptDateTime {

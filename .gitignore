@@ -11,3 +11,9 @@ node_modules/
 
 # Air temporary files
 /tmp
+
+# Generated API docs
+/docs
+
+# Claude settings
+.claude/settings.local.json

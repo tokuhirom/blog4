@@ -17,6 +17,7 @@ import "./routes/entries/{path}.tsp";
 import "./routes/entries.tsp";
 import "./routes/upload.tsp";
 import "./routes/auth.tsp";
+import "./routes/build-info.tsp";
 
 using Http;
 using OpenAPI;

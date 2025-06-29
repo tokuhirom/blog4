@@ -1,7 +1,7 @@
+import { Alert, Box, CircularProgress, Grid, Typography } from "@mui/material";
 import { format } from "date-fns";
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Box, Grid, Typography, CircularProgress, Alert } from "@mui/material";
 import { createAdminApiClient } from "../admin_api";
 import AdminEntryCardItem from "../components/AdminEntryCardItem";
 import SearchBox from "../components/SearchBox";
@@ -106,14 +106,11 @@ export default function TopPage() {
 				try {
 					// Generate a placeholder title with current date/time
 					const now = new Date();
-					const placeholderTitle = format(
-						now,
-						"'New Entry' yyyy-MM-dd HH-mm-ss",
-					);
+					const placeholderTitle = format(now, "yyyy-MM-ddTHH-mm-ss");
 
 					const data = await api.createEntry({ title: placeholderTitle });
-					console.log(`New entry created: ${data.Path}`);
-					navigate(`/admin/entry/${data.Path}`);
+					console.log(`New entry created: ${data.path}`);
+					navigate(`/entry/${data.path}`);
 				} catch (err) {
 					console.error("Error creating new entry:", err);
 					alert(`Failed to create new entry: ${err}`);

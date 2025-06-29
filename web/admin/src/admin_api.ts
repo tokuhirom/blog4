@@ -47,35 +47,45 @@ export function createAdminApiClient(): DefaultApi {
 			return response.data;
 		},
 		async deleteEntry(params) {
-			const response = await api.deleteEntry(params.path);
+			const response = await api.deleteEntry({ path: params.path });
 			return response.data;
 		},
 		async getEntryByDynamicPath(params) {
-			const response = await api.getEntryByDynamicPath(params.path);
+			const response = await api.getEntryByDynamicPath({ path: params.path });
 			return response.data;
 		},
 		async updateEntryBody(params, request) {
-			const response = await api.updateEntryBody(params.path, request);
+			const response = await api.updateEntryBody(
+				{ path: params.path },
+				request,
+			);
 			return response.data;
 		},
 		async getLinkPallet(params) {
-			const response = await api.getLinkPallet(params.path);
+			console.log("getLinkPallet", params.path);
+			const response = await api.getLinkPallet({ path: params.path });
 			return response.data;
 		},
 		async getLinkedEntryPaths(params) {
-			const response = await api.getLinkedEntryPaths(params.path);
+			const response = await api.getLinkedEntryPaths({ path: params.path });
 			return response.data;
 		},
 		async regenerateEntryImage(params) {
-			const response = await api.regenerateEntryImage(params.path);
+			const response = await api.regenerateEntryImage({ path: params.path });
 			return response.data;
 		},
 		async updateEntryTitle(params, request) {
-			const response = await api.updateEntryTitle(params.path, request);
+			const response = await api.updateEntryTitle(
+				{ path: params.path },
+				request,
+			);
 			return response.data;
 		},
 		async updateEntryVisibility(params, request) {
-			const response = await api.updateEntryVisibility(params.path, request);
+			const response = await api.updateEntryVisibility(
+				{ path: params.path },
+				request,
+			);
 			return response.data;
 		},
 		async uploadFile(formData) {

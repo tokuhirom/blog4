@@ -18,6 +18,8 @@ type Config struct {
 	AdminUser     string `env:"ADMIN_USER"   envDefault:"admin"`
 	AdminPassword string `env:"ADMIN_PW"`
 
+	AllowedOrigins []string `env:"ALLOWED_ORIGINS" envSeparator:","`
+
 	HubUrls string `env:"HUB_URLS"`
 
 	AmazonPaapi5AccessKey string `env:"AMAZON_PAAPI5_ACCESS_KEY"`

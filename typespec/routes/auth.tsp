@@ -8,6 +8,7 @@ namespace AdminAPI;
 model LoginRequest {
   username: string;
   password: string;
+  remember_me?: boolean = false;
 }
 
 model LoginResponse {

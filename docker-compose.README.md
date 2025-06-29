@@ -9,29 +9,22 @@ This setup provides a complete development environment with MariaDB, Go backend 
 
 ## Quick Start
 
-1. Copy the environment file:
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Edit `.env` file with your desired configuration (especially `ADMIN_PASSWORD`)
-
-3. Start all services:
+1. Start all services:
    ```bash
    docker-compose up -d
    ```
 
-4. Initialize the database (first time only):
+2. Initialize the database (first time only):
    ```bash
    docker-compose exec -T mariadb mysql -uroot -prootpassword blog4 < db/init/01-schema.sql
    ```
 
-5. Load dummy data (optional):
+3. Load dummy data (optional):
    ```bash
    docker-compose exec -T mariadb mysql -uroot -prootpassword --default-character-set=utf8mb4 blog4 < db/init/02-dummy-data.sql
    ```
 
-6. Access the application:
+4. Access the application:
    - Frontend (Admin): http://localhost:6173
    - Backend API: http://localhost:8181
    - Database: localhost:3306
@@ -108,7 +101,7 @@ docker-compose exec backend task gen
 ### Backend not starting
 - Check logs: `docker-compose logs backend`
 - Ensure database is healthy: `docker-compose ps`
-- Verify environment variables in `.env`
+- Verify environment variables in docker-compose.yml
 
 ### Frontend not accessible
 - Check if port 6173 is already in use
@@ -116,4 +109,4 @@ docker-compose exec backend task gen
 
 ### Database connection issues
 - Wait for MariaDB to be fully initialized (check health status)
-- Verify credentials match between `.env` and application config
+- Verify credentials match in docker-compose.yml

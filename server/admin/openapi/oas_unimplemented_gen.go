@@ -67,6 +67,13 @@ func (UnimplementedHandler) GetAllEntryTitles(ctx context.Context) (r GetAllEntr
 	return r, ht.ErrNotImplemented
 }
 
+// GetBuildInfo implements getBuildInfo operation.
+//
+// GET /build-info
+func (UnimplementedHandler) GetBuildInfo(ctx context.Context) (r GetBuildInfoRes, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetEntryByDynamicPath implements getEntryByDynamicPath operation.
 //
 // Get entry by dynamic path.
@@ -134,7 +141,7 @@ func (UnimplementedHandler) UpdateEntryTitle(ctx context.Context, req *UpdateEnt
 //
 // Update entry visibility.
 //
-// POST /entry/{path}/visibility
+// POST /entries/{path}/visibility
 func (UnimplementedHandler) UpdateEntryVisibility(ctx context.Context, req *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (r UpdateEntryVisibilityRes, _ error) {
 	return r, ht.ErrNotImplemented
 }

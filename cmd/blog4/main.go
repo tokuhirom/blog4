@@ -16,7 +16,6 @@ import (
 
 	"github.com/caarlos0/env/v11"
 	"github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 )
 
 //go:generate go run github.com/ogen-go/ogen/cmd/ogen@latest --config ../../ogen.yml --target ../../server/admin/openapi -package openapi --clean ../../typespec/tsp-output/@typespec/openapi3/openapi.yaml
@@ -30,16 +29,6 @@ func main() {
 }
 
 func DoMain() error {
-	if _, err := os.Stat(".env"); err == nil {
-		slog.Info("loading .env file")
-		err := godotenv.Load()
-		if err != nil {
-			return fmt.Errorf("failed to load .env file: %w", err)
-		}
-	} else {
-		slog.Info(".env file not found")
-	}
-
 	cfg, err := env.ParseAs[server.Config]()
 	if err != nil {
 		return fmt.Errorf("failed to parse Config: %w", err)

@@ -44,6 +44,10 @@ type Handler interface {
 	//
 	// GET /entries/titles
 	GetAllEntryTitles(ctx context.Context) (GetAllEntryTitlesRes, error)
+	// GetBuildInfo implements getBuildInfo operation.
+	//
+	// GET /build-info
+	GetBuildInfo(ctx context.Context) (GetBuildInfoRes, error)
 	// GetEntryByDynamicPath implements getEntryByDynamicPath operation.
 	//
 	// Get entry by dynamic path.
@@ -90,7 +94,7 @@ type Handler interface {
 	//
 	// Update entry visibility.
 	//
-	// POST /entry/{path}/visibility
+	// POST /entries/{path}/visibility
 	UpdateEntryVisibility(ctx context.Context, req *UpdateVisibilityRequest, params UpdateEntryVisibilityParams) (UpdateEntryVisibilityRes, error)
 	// UploadFile implements uploadFile operation.
 	//

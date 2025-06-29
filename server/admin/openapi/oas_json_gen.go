@@ -128,6 +128,187 @@ func (s *AuthCheckResponse) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
+func (s *BuildInfoBuildInfo) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *BuildInfoBuildInfo) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("buildTime")
+		e.Str(s.BuildTime)
+	}
+	{
+		e.FieldStart("gitCommit")
+		e.Str(s.GitCommit)
+	}
+	{
+		e.FieldStart("gitShortCommit")
+		e.Str(s.GitShortCommit)
+	}
+	{
+		e.FieldStart("gitBranch")
+		e.Str(s.GitBranch)
+	}
+	{
+		if s.GitTag.Set {
+			e.FieldStart("gitTag")
+			s.GitTag.Encode(e)
+		}
+	}
+	{
+		e.FieldStart("githubUrl")
+		e.Str(s.GithubUrl)
+	}
+}
+
+var jsonFieldsNameOfBuildInfoBuildInfo = [6]string{
+	0: "buildTime",
+	1: "gitCommit",
+	2: "gitShortCommit",
+	3: "gitBranch",
+	4: "gitTag",
+	5: "githubUrl",
+}
+
+// Decode decodes BuildInfoBuildInfo from json.
+func (s *BuildInfoBuildInfo) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode BuildInfoBuildInfo to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "buildTime":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Str()
+				s.BuildTime = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"buildTime\"")
+			}
+		case "gitCommit":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Str()
+				s.GitCommit = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"gitCommit\"")
+			}
+		case "gitShortCommit":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Str()
+				s.GitShortCommit = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"gitShortCommit\"")
+			}
+		case "gitBranch":
+			requiredBitSet[0] |= 1 << 3
+			if err := func() error {
+				v, err := d.Str()
+				s.GitBranch = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"gitBranch\"")
+			}
+		case "gitTag":
+			if err := func() error {
+				s.GitTag.Reset()
+				if err := s.GitTag.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"gitTag\"")
+			}
+		case "githubUrl":
+			requiredBitSet[0] |= 1 << 5
+			if err := func() error {
+				v, err := d.Str()
+				s.GithubUrl = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"githubUrl\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode BuildInfoBuildInfo")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00101111,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfBuildInfoBuildInfo) {
+					name = jsonFieldsNameOfBuildInfoBuildInfo[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *BuildInfoBuildInfo) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *BuildInfoBuildInfo) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
 func (s *CreateEntryRequest) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
@@ -1395,11 +1576,18 @@ func (s *LoginRequest) encodeFields(e *jx.Encoder) {
 		e.FieldStart("password")
 		e.Str(s.Password)
 	}
+	{
+		if s.RememberMe.Set {
+			e.FieldStart("remember_me")
+			s.RememberMe.Encode(e)
+		}
+	}
 }
 
-var jsonFieldsNameOfLoginRequest = [2]string{
+var jsonFieldsNameOfLoginRequest = [3]string{
 	0: "username",
 	1: "password",
+	2: "remember_me",
 }
 
 // Decode decodes LoginRequest from json.
@@ -1408,6 +1596,7 @@ func (s *LoginRequest) Decode(d *jx.Decoder) error {
 		return errors.New("invalid: unable to decode LoginRequest to nil")
 	}
 	var requiredBitSet [1]uint8
+	s.setDefaults()
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
@@ -1434,6 +1623,16 @@ func (s *LoginRequest) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"password\"")
+			}
+		case "remember_me":
+			if err := func() error {
+				s.RememberMe.Reset()
+				if err := s.RememberMe.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"remember_me\"")
 			}
 		default:
 			return d.Skip()
@@ -1600,6 +1799,41 @@ func (s *LoginResponse) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *LoginResponse) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes bool as json.
+func (o OptBool) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Bool(bool(o.Value))
+}
+
+// Decode decodes bool from json.
+func (o *OptBool) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptBool to nil")
+	}
+	o.Set = true
+	v, err := d.Bool()
+	if err != nil {
+		return err
+	}
+	o.Value = bool(v)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptBool) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptBool) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

@@ -1,23 +1,23 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import {
-	Box,
-	TextField,
-	Button,
-	Paper,
-	Typography,
-	Alert,
-	Snackbar,
-	Grid,
-	FormControl,
-	FormLabel,
-	RadioGroup,
-	FormControlLabel,
-	Radio,
-	Link,
-} from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import RefreshIcon from "@mui/icons-material/Refresh";
+import {
+	Alert,
+	Box,
+	Button,
+	FormControl,
+	FormControlLabel,
+	FormLabel,
+	Grid,
+	Link,
+	Paper,
+	Radio,
+	RadioGroup,
+	Snackbar,
+	TextField,
+	Typography,
+} from "@mui/material";
+import React, { useEffect, useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import { createAdminApiClient } from "../admin_api";
 import LinkPallet from "../components/LinkPallet";
 import MarkdownEditor from "../components/MarkdownEditor";
@@ -33,7 +33,9 @@ const api = createAdminApiClient();
 export default function AdminEntryPage() {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const path = location.pathname.replace("/admin/entry/", "");
+	const path = location.pathname
+		.replace("/admin/entry/", "")
+		.replace("/entry/", "");
 
 	const [entry, setEntry] = useState<GetLatestEntriesRow>(
 		{} as GetLatestEntriesRow,
@@ -120,7 +122,7 @@ export default function AdminEntryPage() {
 					showMessage("success", "Entry deleted successfully");
 					// Small delay to ensure the message is shown
 					setTimeout(() => {
-						navigate("/admin/");
+						navigate("/");
 					}, 500);
 				} catch (e) {
 					console.log(e);
@@ -269,7 +271,7 @@ export default function AdminEntryPage() {
 			} catch (e) {
 				console.error("Failed to get entry:", e);
 				if (e instanceof Error && e.message.includes("404")) {
-					navigate("/admin/");
+					navigate("/");
 				}
 			}
 		};
@@ -353,7 +355,7 @@ export default function AdminEntryPage() {
 													{ visibility: newVisibility },
 												)
 												.then((data) => {
-													setVisibility(data.Visibility);
+													setVisibility(data.visibility);
 												})
 												.catch((error) => {
 													console.error("Failed to update visibility:", error);
