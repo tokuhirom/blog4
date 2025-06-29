@@ -68,6 +68,29 @@ test.describe("Admin Top Page", () => {
 		expect(titleValue).toContain(new Date().getFullYear().toString());
 	});
 
+	test("should NOT create new entry when typing 'c' in search box", async ({
+		page,
+	}) => {
+		// Focus on search box
+		const searchBox = page.getByPlaceholder("Search entries...");
+		await searchBox.focus();
+
+		// Type 'c' in the search box
+		await searchBox.type("c");
+
+		// Wait a moment to ensure no navigation happens
+		await page.waitForTimeout(500);
+
+		// Should still be on the admin page
+		await expect(page).toHaveURL("/admin");
+
+		// Search box should contain 'c'
+		await expect(searchBox).toHaveValue("c");
+
+		// Should not have navigated to a new entry page
+		await expect(page).not.toHaveURL(/\/admin\/entry\/.+/);
+	});
+
 	test("should create new entry using NEW button", async ({ page }) => {
 		// Click New Entry button
 		await page.getByRole("button", { name: "New Entry" }).click();
