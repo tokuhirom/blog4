@@ -575,8 +575,9 @@ func (*LinkedEntryPathsResponse) getLinkedEntryPathsRes() {}
 
 // Ref: #/components/schemas/LoginRequest
 type LoginRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Username   string  `json:"username"`
+	Password   string  `json:"password"`
+	RememberMe OptBool `json:"remember_me"`
 }
 
 // GetUsername returns the value of Username.
@@ -589,6 +590,11 @@ func (s *LoginRequest) GetPassword() string {
 	return s.Password
 }
 
+// GetRememberMe returns the value of RememberMe.
+func (s *LoginRequest) GetRememberMe() OptBool {
+	return s.RememberMe
+}
+
 // SetUsername sets the value of Username.
 func (s *LoginRequest) SetUsername(val string) {
 	s.Username = val
@@ -597,6 +603,11 @@ func (s *LoginRequest) SetUsername(val string) {
 // SetPassword sets the value of Password.
 func (s *LoginRequest) SetPassword(val string) {
 	s.Password = val
+}
+
+// SetRememberMe sets the value of RememberMe.
+func (s *LoginRequest) SetRememberMe(val OptBool) {
+	s.RememberMe = val
 }
 
 // Ref: #/components/schemas/LoginResponse
@@ -626,6 +637,52 @@ func (s *LoginResponse) SetMessage(val OptString) {
 }
 
 func (*LoginResponse) authLoginRes() {}
+
+// NewOptBool returns new OptBool with value set to v.
+func NewOptBool(v bool) OptBool {
+	return OptBool{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptBool is optional bool.
+type OptBool struct {
+	Value bool
+	Set   bool
+}
+
+// IsSet returns true if OptBool was set.
+func (o OptBool) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptBool) Reset() {
+	var v bool
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptBool) SetTo(v bool) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptBool) Get() (v bool, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptBool) Or(d bool) bool {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
 
 // NewOptDateTime returns new OptDateTime with value set to v.
 func NewOptDateTime(v time.Time) OptDateTime {
