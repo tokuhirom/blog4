@@ -19,7 +19,10 @@
       "Bash(goimports:*)",
       "Bash(mkdir:*)",
       "WebFetch(domain:localhost)",
-      "Bash(git restore:*)"
+      "Bash(git restore:*)",
+      "Bash(npx @modelcontextprotocol/server-playwright:*)",
+      "mcp__playwright__browser_navigate",
+      "mcp__playwright__browser_install"
     ],
     "deny": []
   }
