@@ -17,8 +17,8 @@ export default function Footer() {
 	useEffect(() => {
 		getBuildInfo()
 			.then((response) => {
-				if ("buildTime" in response) {
-					setBuildInfo(response);
+				if (response.status === 200 && response.data) {
+					setBuildInfo(response.data);
 				}
 			})
 			.catch((error) => {
