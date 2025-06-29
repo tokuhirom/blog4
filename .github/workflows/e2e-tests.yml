@@ -64,8 +64,8 @@ jobs:
 
       - name: Setup database
         run: |
-          mysql -h127.0.0.1 -uroot -prootpassword blog4 < db/schema.sql
-          mysql -h127.0.0.1 -uroot -prootpassword blog4 < db/seed.sql
+          mysql -h127.0.0.1 -uroot -prootpassword blog4 < db/init/01-schema.sql
+          mysql -h127.0.0.1 -uroot -prootpassword blog4 < db/init/02-dummy-data.sql
         env:
           MYSQL_HOST: 127.0.0.1
 
