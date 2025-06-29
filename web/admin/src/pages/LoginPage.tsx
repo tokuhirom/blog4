@@ -2,7 +2,9 @@ import {
 	Alert,
 	Box,
 	Button,
+	Checkbox,
 	Container,
+	FormControlLabel,
 	TextField,
 	Typography,
 } from "@mui/material";
@@ -15,6 +17,7 @@ import { useAuth } from "../hooks/useAuth";
 export default function LoginPage() {
 	const [username, setUsername] = useState("");
 	const [password, setPassword] = useState("");
+	const [rememberMe, setRememberMe] = useState(false);
 	const [error, setError] = useState("");
 	const [loading, setLoading] = useState(false);
 	const navigate = useNavigate();
@@ -28,7 +31,11 @@ export default function LoginPage() {
 		setLoading(true);
 
 		try {
-			const response = await authLogin({ username, password });
+			const response = await authLogin({
+				username,
+				password,
+				remember_me: rememberMe,
+			});
 			if (response.status === 200 && response.data.success) {
 				// Update auth state before navigating
 				await checkAuth();
@@ -87,6 +94,17 @@ export default function LoginPage() {
 						autoComplete="current-password"
 						value={password}
 						onChange={(e) => setPassword(e.target.value)}
+					/>
+					<FormControlLabel
+						control={
+							<Checkbox
+								checked={rememberMe}
+								onChange={(e) => setRememberMe(e.target.checked)}
+								color="primary"
+							/>
+						}
+						label="Remember me for 30 days"
+						sx={{ mt: 1 }}
 					/>
 					<Button
 						type="submit"

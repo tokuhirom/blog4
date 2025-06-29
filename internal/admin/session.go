@@ -8,9 +8,10 @@ import (
 )
 
 const (
-	sessionCookieName     = "admin_session"
-	sessionIDLength       = 32
-	defaultSessionTimeout = 24 * time.Hour
+	sessionCookieName      = "admin_session"
+	sessionIDLength        = 32
+	defaultSessionTimeout  = 24 * time.Hour
+	extendedSessionTimeout = 30 * 24 * time.Hour // 30 days for "remember me"
 )
 
 func generateSessionID() (string, error) {

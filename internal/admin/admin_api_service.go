@@ -551,8 +551,11 @@ func (p *adminApiService) AuthLogin(ctx context.Context, req *openapi.LoginReque
 		return nil, fmt.Errorf("failed to generate session ID: %w", err)
 	}
 
-	// Calculate session expiry
+	// Calculate session expiry based on remember_me option
 	sessionTimeout := defaultSessionTimeout
+	if req.RememberMe.Or(false) {
+		sessionTimeout = extendedSessionTimeout
+	}
 	expires := time.Now().Add(sessionTimeout)
 
 	// Create session in database

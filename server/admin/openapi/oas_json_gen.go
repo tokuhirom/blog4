@@ -1576,11 +1576,18 @@ func (s *LoginRequest) encodeFields(e *jx.Encoder) {
 		e.FieldStart("password")
 		e.Str(s.Password)
 	}
+	{
+		if s.RememberMe.Set {
+			e.FieldStart("remember_me")
+			s.RememberMe.Encode(e)
+		}
+	}
 }
 
-var jsonFieldsNameOfLoginRequest = [2]string{
+var jsonFieldsNameOfLoginRequest = [3]string{
 	0: "username",
 	1: "password",
+	2: "remember_me",
 }
 
 // Decode decodes LoginRequest from json.
@@ -1589,6 +1596,7 @@ func (s *LoginRequest) Decode(d *jx.Decoder) error {
 		return errors.New("invalid: unable to decode LoginRequest to nil")
 	}
 	var requiredBitSet [1]uint8
+	s.setDefaults()
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
@@ -1615,6 +1623,16 @@ func (s *LoginRequest) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"password\"")
+			}
+		case "remember_me":
+			if err := func() error {
+				s.RememberMe.Reset()
+				if err := s.RememberMe.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"remember_me\"")
 			}
 		default:
 			return d.Skip()
@@ -1781,6 +1799,41 @@ func (s *LoginResponse) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *LoginResponse) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes bool as json.
+func (o OptBool) Encode(e *jx.Encoder) {
+	if !o.Set {
+		return
+	}
+	e.Bool(bool(o.Value))
+}
+
+// Decode decodes bool from json.
+func (o *OptBool) Decode(d *jx.Decoder) error {
+	if o == nil {
+		return errors.New("invalid: unable to decode OptBool to nil")
+	}
+	o.Set = true
+	v, err := d.Bool()
+	if err != nil {
+		return err
+	}
+	o.Value = bool(v)
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s OptBool) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *OptBool) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
