@@ -5,75 +5,54 @@ tokuhirom の個人的なブログサービスです｡
 ## Quick Start
 
 ```bash
-# Install dependencies (macOS)
-brew install go-task
+# Install Docker and Docker Compose
+# Then run the entire stack
+docker-compose up
 
-# Install dependencies (Linux)
-go install github.com/go-task/task/v3/cmd/task@latest
-go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-
-# One-time setup
-pnpm install  # Install TypeSpec dependencies
-cd web/admin && pnpm install
-task gen
-
-# Run development servers
-task dev
+# The services are available at:
+# - Frontend: http://localhost:6173
+# - Backend API: http://localhost:8181
+# - MariaDB: localhost:3306
+# - MinIO Console: http://localhost:9001
+# - MinIO API: http://localhost:9000
 ```
 
 ## Development Guide
 
 ### Prerequisites
-- Go 1.21+
-- Node.js 18+
-- MySQL/MariaDB
-- go-task
-  - macOS: `brew install go-task`
-  - Linux: `go install github.com/go-task/task/v3/cmd/task@latest`
-- sqlc: `go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest`
-- TypeSpec: Installed via `pnpm install` (see package.json)
+- Docker and Docker Compose
 
 ### Common Commands
 
 ```bash
-# Generate all code (TypeSpec, SQLC, OpenAPI client)
-task gen
+# Start all services with Docker Compose
+docker-compose up
 
-# Watch mode for code generation
-task --watch gen
+# Start in background
+docker-compose up -d
 
-# Run all dev servers
-task dev
+# Stop all services
+docker-compose down
 
-# Frontend development only
-task frontend
+# View logs
+docker-compose logs -f [service-name]
 
-# Build production assets
-task frontend-build
-go build ./cmd/blog4
-
-# Docker operations
+# Build production Docker image
 task docker-build
-task docker-run
 ```
 
-### Running the Server
+### Port Numbers
 
-```bash
-# Run the main server (includes both public and admin)
-go run ./cmd/blog4
+When running with Docker Compose, the following ports are exposed:
 
-# The server starts on http://localhost:8181/
-# - Public blog: http://localhost:8181/
-# - Admin panel: http://localhost:8181/admin
+| Service | Port | Description |
+|---------|------|-------------|
+| Frontend | 6173 | Svelte admin UI |
+| Backend | 8181 | Go API server |
+| MariaDB | 3306 | Database |
+| MinIO API | 9000 | S3-compatible storage |
+| MinIO Console | 9001 | MinIO web interface |
 
-# Debug with Delve
-dlv debug ./cmd/blog4
-
-# Build and run
-go build -o blog4 ./cmd/blog4
-./blog4
-```
 
 ### Project Structure
 

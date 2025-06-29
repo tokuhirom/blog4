@@ -17,6 +17,17 @@ type BuildInfo struct {
 func ReadBuildInfo() (*BuildInfo, error) {
 	data, err := os.ReadFile("/app/build-info.json")
 	if err != nil {
+		// Return local development build info when file doesn't exist
+		if os.IsNotExist(err) {
+			return &BuildInfo{
+				BuildTime:      "localdev",
+				GitCommit:      "localdev",
+				GitShortCommit: "localdev",
+				GitBranch:      "localdev",
+				GitTag:         "localdev",
+				GithubUrl:      "https://github.com/tokuhirom/blog4",
+			}, nil
+		}
 		return nil, err
 	}
 
