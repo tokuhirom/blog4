@@ -31,17 +31,17 @@ jobs:
       - name: Run docker-compose
         run: docker compose up -d
 
-      - name: Install Playwright
-        working-directory: web/admin
-        run: pnpm run test:e2e:install
-
       - name: Install TypeSpec dependencies
         run: pnpm install
         working-directory: web/admin
 
-      - name: Run E2E tests
+      - name: Install Playwright
+        run: pnpm run test:e2e:install
         working-directory: web/admin
+
+      - name: Run E2E tests
         run: pnpm run test:e2e
+        working-directory: web/admin
 
       - uses: actions/upload-artifact@v4
         if: always()
