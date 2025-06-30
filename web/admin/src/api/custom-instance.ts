@@ -1,6 +1,8 @@
 const baseUrl =
 	import.meta.env.VITE_API_BASE_URL || "http://localhost:8181/admin/api";
 
+console.log("Using API base URL:", baseUrl);
+
 export const customInstance = async <T>(
 	url: string,
 	options: {

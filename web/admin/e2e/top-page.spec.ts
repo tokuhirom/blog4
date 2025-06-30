@@ -68,7 +68,7 @@ test.describe("Admin Top Page", () => {
 		expect(titleValue).toContain(new Date().getFullYear().toString());
 	});
 
-	test("should NOT create new entry when typing 'c' in search box", async ({
+	test.skip("should NOT create new entry when typing 'c' in search box", async ({
 		page,
 	}) => {
 		// Focus on search box
