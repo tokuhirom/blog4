@@ -1,0 +1,13 @@
+desc: Test healthz endpoint
+runners:
+  req: http://localhost:8181
+steps:
+  healthz:
+    desc: "Test healthz endpoint"
+    req:
+      /healthz:
+        get:
+          body: null
+    test: |
+      current.res.status == 200 && 
+      current.res.rawBody == "ok"

@@ -1,0 +1,69 @@
+desc: Test authentication flow
+runners:
+  req: 
+    endpoint: http://localhost:8181
+    useCookie: true
+steps:
+  # Step 1: Check initial auth status (should be unauthenticated)
+  check_initial:
+    desc: "Check initial auth status"
+    req:
+      /admin/api/auth/check:
+        get:
+          body: null
+    test: |
+      current.res.status == 401
+
+  # Step 2: Login with valid credentials
+  login:
+    desc: "Login with valid credentials"
+    req:
+      /admin/api/auth/login:
+        post:
+          headers:
+            Content-Type: application/json
+          body:
+            application/json:
+              username: "admin"
+              password: "password"
+              remember_me: false
+    test: |
+      current.res.status == 200 &&
+      current.res.body.success == true &&
+      current.res.body.message == "Login successful"
+
+  # Step 3: Check auth status after login (should be authenticated)
+  check_authenticated:
+    desc: "Check auth status after login"
+    req:
+      /admin/api/auth/check:
+        get:
+          body: null
+    test: |
+      current.res.status == 200 &&
+      current.res.body.authenticated == true &&
+      current.res.body.username == "admin"
+
+  # Step 4: Logout
+  logout:
+    desc: "Logout"
+    req:
+      /admin/api/auth/logout:
+        post:
+          headers:
+            Content-Type: application/json
+          body:
+            application/json: {}
+    test: |
+      current.res.status == 200 &&
+      current.res.body.message == "Logout successful"
+
+  # Step 5: Check auth status after logout (should be unauthenticated)
+  check_after_logout:
+    desc: "Check auth status after logout"
+    req:
+      /admin/api/auth/check:
+        get:
+          body: null
+    test: |
+      current.res.status == 401
