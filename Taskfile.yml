@@ -106,3 +106,9 @@ tasks:
       - Dockerfile
     desc: "Build production Docker image"
 
+  e2e:
+    cmds:
+      - cd e2e && go test -v
+    desc: "Run E2E tests using runn"
+
+
