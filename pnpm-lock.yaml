@@ -10,23 +10,23 @@ importers:
     dependencies:
       '@typespec/http':
         specifier: ^1.1.0
-        version: 1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13))
+        version: 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))
       '@typespec/openapi':
         specifier: ^1.1.0
-        version: 1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13)))
+        version: 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13)))
       '@typespec/openapi3':
         specifier: ^1.1.0
-        version: 1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13)))(@typespec/openapi@1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13))))
+        version: 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13)))(@typespec/openapi@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))))
       '@typespec/rest':
         specifier: ^0.71.0
-        version: 0.71.0(@typespec/compiler@1.1.0(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13)))
+        version: 0.71.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13)))
     devDependencies:
       '@redocly/cli':
         specifier: ^1.34.4
         version: 1.34.4(ajv@8.17.1)
       '@typespec/compiler':
-        specifier: ^1.1.0
-        version: 1.1.0(@types/node@24.0.13)
+        specifier: ^1.2.1
+        version: 1.2.1(@types/node@24.0.13)
 
 packages:
 
@@ -392,8 +392,8 @@ packages:
     peerDependencies:
       '@typespec/compiler': ^1.1.0
 
-  '@typespec/compiler@1.1.0':
-    resolution: {integrity: sha512-dtwosIqd2UUEEIVBR+oDiUtN4n1lP8/9GxQVno+wbkijQgKDj4Hg0Vaq6HG4BduF7RptDdtzkdGQCS9CgOIdRA==}
+  '@typespec/compiler@1.2.1':
+    resolution: {integrity: sha512-lUdHCRBPtianNN6QKt0G9qyyuSu7azbqKcYNimNLYQwrEIDcgSfQAUnoja9s+gtzCQQRzfbUZ8WLBC2b9cC81Q==}
     engines: {node: '>=20.0.0'}
     hasBin: true
 
@@ -467,6 +467,10 @@ packages:
     resolution: {integrity: sha512-quJQXlTSUGL2LH9SUXo8VwsY4soanhgo6LNSm84E1LBcE8s3O0wpdiRzyR9z/ZZJMlMWv37qOOb9pdJlMUEKFQ==}
     engines: {node: '>=8'}
 
+  ansi-regex@6.1.0:
+    resolution: {integrity: sha512-7HSX4QQb4CspciLpVFwyRe79O3xsIZDDLER21kERQ71oaPodF8jL725AgJMFAYbooIqolJoRLuM81SpeUkpkvA==}
+    engines: {node: '>=12'}
+
   ansi-styles@4.3.0:
     resolution: {integrity: sha512-zbB9rCJAT1rbjiVDb2hqKFHNYLxgtk8NURxZ3IZwD3F6NtxbXZQCnnSi1Lkx+IDohdPlFp222wVALIheZJQSEg==}
     engines: {node: '>=8'}
@@ -474,6 +478,10 @@ packages:
   ansi-styles@5.2.0:
     resolution: {integrity: sha512-Cxwpt2SfTzTtXcfOlzGEee8O+c+MmUgGrNiBcXnuWxuFJHe6a5Hz7qwhwe5OgaSYI0IJvkLqWX1ASG+cJOkEiA==}
     engines: {node: '>=10'}
+
+  ansi-styles@6.2.1:
+    resolution: {integrity: sha512-bN798gFfQX+viw3R7yrGWRqnrN2oRkEkUjjl4JNn4E8GxxbjtG3FbrEIIY3l8/hrwUwIeCZvi4QuOTP4MErVug==}
+    engines: {node: '>=12'}
 
   anymatch@3.1.3:
     resolution: {integrity: sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==}
@@ -556,6 +564,10 @@ packages:
   cliui@8.0.1:
     resolution: {integrity: sha512-BSeNnyus75C4//NQ9gQt1/csTXyo/8Sb+afLAkzAptFuMsod9HFokGNudZpi/oQV73hnVK+sR+5PVRMd+Dr7YQ==}
     engines: {node: '>=12'}
+
+  cliui@9.0.1:
+    resolution: {integrity: sha512-k7ndgKhwoQveBL+/1tqGJYNz097I7WOvwbmmU2AR5+magtbjPWQTS1C5vzGkBC8Ym8UWRzfKUzUUqFLypY4Q+w==}
+    engines: {node: '>=20'}
 
   clsx@2.1.1:
     resolution: {integrity: sha512-eYm0QWBtUrBWZWG0d386OGAw16Z995PiOVo2B7bjWSbHedGl5e0ZWaq65kOGgUSNesEIDkB9ISbTg/JK9dhCZA==}
@@ -644,6 +656,9 @@ packages:
   dunder-proto@1.0.1:
     resolution: {integrity: sha512-KIN/nDJBQRcXw0MLVhZE9iQHmG68qAVIBg9CqmUYjmQIhgij9U5MFvrqkUL5FbtyyzZuOeOt0zdeRe4UY7ct+A==}
     engines: {node: '>= 0.4'}
+
+  emoji-regex@10.4.0:
+    resolution: {integrity: sha512-EC+0oUMY1Rqm4O6LLrgjtYDvcVYTy7chDnM4Q7030tP4Kwj3u/pR6gP9ygnp2CJMK5Gq+9Q2oqmrFJAz01DXjw==}
 
   emoji-regex@8.0.0:
     resolution: {integrity: sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==}
@@ -735,6 +750,10 @@ packages:
   get-caller-file@2.0.5:
     resolution: {integrity: sha512-DyFP3BM/3YHTQOCUL/w0OZHR0lpKeGrxotcHWcqNEdnltqFwXVfhEBQ94eIo34AfQpo0rGki4cyIiftY06h2Fg==}
     engines: {node: 6.* || 8.* || >= 10.*}
+
+  get-east-asian-width@1.3.0:
+    resolution: {integrity: sha512-vpeMIQKxczTD/0s2CdEWHcb0eeJe6TFjxb+J5xgX7hScxqrGuyjmv4c1D4A/gelKfyox0gJJwIHF+fLjeaM8kQ==}
+    engines: {node: '>=18'}
 
   get-intrinsic@1.3.0:
     resolution: {integrity: sha512-9fSjSaos/fRIVIp+xSJlE6lfwhES7LNtKaCBIamHsjr2na1BiABJPo0mOjjz8GJDURarmCPGqaiVg5mfjb98CQ==}
@@ -1249,12 +1268,20 @@ packages:
     resolution: {integrity: sha512-wKyQRQpjJ0sIp62ErSZdGsjMJWsap5oRNihHhu6G7JVO/9jIB6UyevL+tXuOqrng8j/cxKTWyWUwvSTriiZz/g==}
     engines: {node: '>=8'}
 
+  string-width@7.2.0:
+    resolution: {integrity: sha512-tsaTIkKW9b4N+AEj+SVA+WhJzV7/zMhcSu78mLKWSk7cXMOSHsBKFWUs0fWwq8QyK3MgJBQRX6Gbi4kYbdvGkQ==}
+    engines: {node: '>=18'}
+
   string_decoder@1.3.0:
     resolution: {integrity: sha512-hkRX8U1WjJFd8LsDJ2yQ/wWWxaopEsABU1XfkM8A+j0+85JAGppt16cr1Whg6KIbb4okU6Mql6BOj+uup/wKeA==}
 
   strip-ansi@6.0.1:
     resolution: {integrity: sha512-Y38VPSHcqkFrCpFnQ9vuSXmquuv5oXOKpGeT6aGrr3o3Gc9AlVa6JBfUSOCnbxGGZF+/0ooI7KrPuUSztUdU5A==}
     engines: {node: '>=8'}
+
+  strip-ansi@7.1.0:
+    resolution: {integrity: sha512-iq6eVVI64nQQTRYq2KtEg2d2uU7LElhTJwsH4YzIHZshxlgZms/wIc4VoDQTlG/IvVIrBKG06CrZnp0qv7hkcQ==}
+    engines: {node: '>=12'}
 
   strnum@1.1.2:
     resolution: {integrity: sha512-vrN+B7DBIoTTZjnPNewwhx6cBA/H+IS7rfW68n7XxC1y7uoiGQBxaKzqucGUgavX15dJgiGztLJ8vxuEzwqBdA==}
@@ -1372,6 +1399,10 @@ packages:
     resolution: {integrity: sha512-YVGIj2kamLSTxw6NsZjoBxfSwsn0ycdesmc4p+Q21c5zPuZ1pl+NfxVdxPtdHvmNVOQ6XSYG4AUtyt/Fi7D16Q==}
     engines: {node: '>=10'}
 
+  wrap-ansi@9.0.0:
+    resolution: {integrity: sha512-G8ura3S+3Z2G+mkgNRq8dqaFZAuxfsxpBB8OCTGRTCtp+l/v9nbFNmCUP1BZMts3G1142MsZfn6eeUKrr4PD1Q==}
+    engines: {node: '>=18'}
+
   wrappy@1.0.2:
     resolution: {integrity: sha512-l4Sp/DRseor9wL6EvV2+TuQn63dMkPjZ/sp9XkghTEbV9KlPS1xUsZ3u7/IQO4wxtcFB4bgpQPRcR3QCvezPcQ==}
 
@@ -1407,6 +1438,11 @@ packages:
     engines: {node: '>= 14'}
     hasBin: true
 
+  yaml@2.8.0:
+    resolution: {integrity: sha512-4lLa/EcQCB0cJkyts+FpIRx5G/llPxfP6VQU5KByHEhLxY3IJCH0f0Hy1MHI8sClTvsIb8qwRJ6R/ZdlDJ/leQ==}
+    engines: {node: '>= 14.6'}
+    hasBin: true
+
   yargs-parser@20.2.9:
     resolution: {integrity: sha512-y11nGElTIV+CT3Zv9t7VKl+Q3hTQoT9a1Qzezhhl6Rp21gJ/IVTW7Z3y9EWXhuUBC2Shnf+DX0antecpAwSP8w==}
     engines: {node: '>=10'}
@@ -1415,6 +1451,10 @@ packages:
     resolution: {integrity: sha512-tVpsJW7DdjecAiFpbIB1e3qxIQsE6NoPc5/eTdrbbIC4h0LVsWhnoa3g+m2HclBIujHzsxZ4VJVA+GUuc2/LBw==}
     engines: {node: '>=12'}
 
+  yargs-parser@22.0.0:
+    resolution: {integrity: sha512-rwu/ClNdSMpkSrUb+d6BRsSkLUq1fmfsY6TOpYzTwvwkg1/NRG85KBy3kq++A8LKQwX6lsu+aWad+2khvuXrqw==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=23}
+
   yargs@17.0.1:
     resolution: {integrity: sha512-xBBulfCc8Y6gLFcrPvtqKz9hz8SO0l1Ni8GgDekvBX2ro0HRQImDGnikfc33cgzcYUSncapnNcZDjVFIH3f6KQ==}
     engines: {node: '>=12'}
@@ -1422,6 +1462,10 @@ packages:
   yargs@17.7.2:
     resolution: {integrity: sha512-7dSzzRQ++CKnNI/krKnYRV7JKKPUXMEh61soaHKg9mrWEhzFWhFnxPxGl+69cD1Ou63C13NUPCnmIcrvqCuM6w==}
     engines: {node: '>=12'}
+
+  yargs@18.0.0:
+    resolution: {integrity: sha512-4UEqdc2RYGHZc7Doyqkrqiln3p9X2DZVxaGbwhn2pi7MrRagKaOcIKe8L3OxYcbhXLgLFUS3zAYuQjKBQgmuNg==}
+    engines: {node: ^20.19.0 || ^22.12.0 || >=23}
 
   yoctocolors-cjs@2.1.2:
     resolution: {integrity: sha512-cYVsTjKl8b+FrnidjibDWskAv7UKOfcwaVZdp/it9n1s9fU3IkgDbhdIRKCW4JDsAlECJY0ytoVPT3sK6kideA==}
@@ -1831,11 +1875,11 @@ snapshots:
   '@types/trusted-types@2.0.7':
     optional: true
 
-  '@typespec/asset-emitter@0.71.0(@typespec/compiler@1.1.0(@types/node@24.0.13))':
+  '@typespec/asset-emitter@0.71.0(@typespec/compiler@1.2.1(@types/node@24.0.13))':
     dependencies:
-      '@typespec/compiler': 1.1.0(@types/node@24.0.13)
+      '@typespec/compiler': 1.2.1(@types/node@24.0.13)
 
-  '@typespec/compiler@1.1.0(@types/node@24.0.13)':
+  '@typespec/compiler@1.2.1(@types/node@24.0.13)':
     dependencies:
       '@babel/code-frame': 7.27.1
       '@inquirer/prompts': 7.6.0(@types/node@24.0.13)
@@ -1852,34 +1896,34 @@ snapshots:
       temporal-polyfill: 0.3.0
       vscode-languageserver: 9.0.1
       vscode-languageserver-textdocument: 1.0.12
-      yaml: 2.7.1
-      yargs: 17.7.2
+      yaml: 2.8.0
+      yargs: 18.0.0
     transitivePeerDependencies:
       - '@types/node'
 
-  '@typespec/http@1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13))':
+  '@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))':
     dependencies:
-      '@typespec/compiler': 1.1.0(@types/node@24.0.13)
+      '@typespec/compiler': 1.2.1(@types/node@24.0.13)
 
-  '@typespec/openapi3@1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13)))(@typespec/openapi@1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13))))':
+  '@typespec/openapi3@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13)))(@typespec/openapi@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))))':
     dependencies:
       '@apidevtools/swagger-parser': 10.1.1(openapi-types@12.1.3)
-      '@typespec/asset-emitter': 0.71.0(@typespec/compiler@1.1.0(@types/node@24.0.13))
-      '@typespec/compiler': 1.1.0(@types/node@24.0.13)
-      '@typespec/http': 1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13))
-      '@typespec/openapi': 1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13)))
+      '@typespec/asset-emitter': 0.71.0(@typespec/compiler@1.2.1(@types/node@24.0.13))
+      '@typespec/compiler': 1.2.1(@types/node@24.0.13)
+      '@typespec/http': 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))
+      '@typespec/openapi': 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13)))
       openapi-types: 12.1.3
       yaml: 2.7.1
 
-  '@typespec/openapi@1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13)))':
+  '@typespec/openapi@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13)))':
     dependencies:
-      '@typespec/compiler': 1.1.0(@types/node@24.0.13)
-      '@typespec/http': 1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13))
+      '@typespec/compiler': 1.2.1(@types/node@24.0.13)
+      '@typespec/http': 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))
 
-  '@typespec/rest@0.71.0(@typespec/compiler@1.1.0(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13)))':
+  '@typespec/rest@0.71.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13)))':
     dependencies:
-      '@typespec/compiler': 1.1.0(@types/node@24.0.13)
-      '@typespec/http': 1.1.0(@typespec/compiler@1.1.0(@types/node@24.0.13))
+      '@typespec/compiler': 1.2.1(@types/node@24.0.13)
+      '@typespec/http': 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))
 
   abort-controller@3.0.0:
     dependencies:
@@ -1904,11 +1948,15 @@ snapshots:
 
   ansi-regex@5.0.1: {}
 
+  ansi-regex@6.1.0: {}
+
   ansi-styles@4.3.0:
     dependencies:
       color-convert: 2.0.1
 
   ansi-styles@5.2.0: {}
+
+  ansi-styles@6.2.1: {}
 
   anymatch@3.1.3:
     dependencies:
@@ -1999,6 +2047,12 @@ snapshots:
       strip-ansi: 6.0.1
       wrap-ansi: 7.0.0
 
+  cliui@9.0.1:
+    dependencies:
+      string-width: 7.2.0
+      strip-ansi: 7.1.0
+      wrap-ansi: 9.0.0
+
   clsx@2.1.1: {}
 
   color-convert@2.0.1:
@@ -2068,6 +2122,8 @@ snapshots:
       call-bind-apply-helpers: 1.0.2
       es-errors: 1.3.0
       gopd: 1.2.0
+
+  emoji-regex@10.4.0: {}
 
   emoji-regex@8.0.0: {}
 
@@ -2152,6 +2208,8 @@ snapshots:
   function-bind@1.1.2: {}
 
   get-caller-file@2.0.5: {}
+
+  get-east-asian-width@1.3.0: {}
 
   get-intrinsic@1.3.0:
     dependencies:
@@ -2656,6 +2714,12 @@ snapshots:
       is-fullwidth-code-point: 3.0.0
       strip-ansi: 6.0.1
 
+  string-width@7.2.0:
+    dependencies:
+      emoji-regex: 10.4.0
+      get-east-asian-width: 1.3.0
+      strip-ansi: 7.1.0
+
   string_decoder@1.3.0:
     dependencies:
       safe-buffer: 5.2.1
@@ -2663,6 +2727,10 @@ snapshots:
   strip-ansi@6.0.1:
     dependencies:
       ansi-regex: 5.0.1
+
+  strip-ansi@7.1.0:
+    dependencies:
+      ansi-regex: 6.1.0
 
   strnum@1.1.2: {}
 
@@ -2788,6 +2856,12 @@ snapshots:
       string-width: 4.2.3
       strip-ansi: 6.0.1
 
+  wrap-ansi@9.0.0:
+    dependencies:
+      ansi-styles: 6.2.1
+      string-width: 7.2.0
+      strip-ansi: 7.1.0
+
   wrappy@1.0.2: {}
 
   ws@7.5.10: {}
@@ -2802,9 +2876,13 @@ snapshots:
 
   yaml@2.7.1: {}
 
+  yaml@2.8.0: {}
+
   yargs-parser@20.2.9: {}
 
   yargs-parser@21.1.1: {}
+
+  yargs-parser@22.0.0: {}
 
   yargs@17.0.1:
     dependencies:
@@ -2825,5 +2903,14 @@ snapshots:
       string-width: 4.2.3
       y18n: 5.0.8
       yargs-parser: 21.1.1
+
+  yargs@18.0.0:
+    dependencies:
+      cliui: 9.0.1
+      escalade: 3.2.0
+      get-caller-file: 2.0.5
+      string-width: 7.2.0
+      y18n: 5.0.8
+      yargs-parser: 22.0.0
 
   yoctocolors-cjs@2.1.2: {}
