@@ -9,17 +9,17 @@ importers:
   .:
     dependencies:
       '@typespec/http':
-        specifier: ^1.1.0
-        version: 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))
+        specifier: ^1.2.1
+        version: 1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))
       '@typespec/openapi':
         specifier: ^1.1.0
-        version: 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13)))
+        version: 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13)))
       '@typespec/openapi3':
         specifier: ^1.1.0
-        version: 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13)))(@typespec/openapi@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))))
+        version: 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13)))(@typespec/openapi@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))))
       '@typespec/rest':
         specifier: ^0.71.0
-        version: 0.71.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13)))
+        version: 0.71.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13)))
     devDependencies:
       '@redocly/cli':
         specifier: ^1.34.4
@@ -397,12 +397,12 @@ packages:
     engines: {node: '>=20.0.0'}
     hasBin: true
 
-  '@typespec/http@1.1.0':
-    resolution: {integrity: sha512-1doVGmkv3N8l57fVuci4jGMZ61EZBlDzuNZO2b9o0+mexCOs/P96CIpFkaNVvTQgjpyFsW1DlXiUKAvUC9zQfg==}
+  '@typespec/http@1.2.1':
+    resolution: {integrity: sha512-HEPHgVFO2oQL6uZCtpqnRYVZizfSu9BO6vAgdRl1FYJWD2G0f/A4/hK6LEgpyZP44k39M1xMSqVrll2KZ5zpnw==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
-      '@typespec/compiler': ^1.1.0
-      '@typespec/streams': ^0.71.0
+      '@typespec/compiler': ^1.2.1
+      '@typespec/streams': ^0.72.1
     peerDependenciesMeta:
       '@typespec/streams':
         optional: true
@@ -1901,29 +1901,29 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  '@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))':
+  '@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))':
     dependencies:
       '@typespec/compiler': 1.2.1(@types/node@24.0.13)
 
-  '@typespec/openapi3@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13)))(@typespec/openapi@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))))':
+  '@typespec/openapi3@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13)))(@typespec/openapi@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))))':
     dependencies:
       '@apidevtools/swagger-parser': 10.1.1(openapi-types@12.1.3)
       '@typespec/asset-emitter': 0.71.0(@typespec/compiler@1.2.1(@types/node@24.0.13))
       '@typespec/compiler': 1.2.1(@types/node@24.0.13)
-      '@typespec/http': 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))
-      '@typespec/openapi': 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13)))
+      '@typespec/http': 1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))
+      '@typespec/openapi': 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13)))
       openapi-types: 12.1.3
       yaml: 2.7.1
 
-  '@typespec/openapi@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13)))':
+  '@typespec/openapi@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13)))':
     dependencies:
       '@typespec/compiler': 1.2.1(@types/node@24.0.13)
-      '@typespec/http': 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))
+      '@typespec/http': 1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))
 
-  '@typespec/rest@0.71.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13)))':
+  '@typespec/rest@0.71.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13)))':
     dependencies:
       '@typespec/compiler': 1.2.1(@types/node@24.0.13)
-      '@typespec/http': 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))
+      '@typespec/http': 1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))
 
   abort-controller@3.0.0:
     dependencies:
