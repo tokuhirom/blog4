@@ -15,8 +15,8 @@ importers:
         specifier: ^1.2.1
         version: 1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13)))
       '@typespec/openapi3':
-        specifier: ^1.1.0
-        version: 1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13)))(@typespec/openapi@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))))
+        specifier: ^1.2.1
+        version: 1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13)))(@typespec/openapi@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))))
       '@typespec/rest':
         specifier: ^0.72.1
         version: 0.72.1(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13)))
@@ -30,8 +30,8 @@ importers:
 
 packages:
 
-  '@apidevtools/json-schema-ref-parser@11.7.2':
-    resolution: {integrity: sha512-4gY54eEGEstClvEkGnwVkTkrx0sqwemEFG5OSRRn3tD91XH0+Q8XIkYIfo7IwEWPpJZwILb9GUXeShtplRc/eA==}
+  '@apidevtools/json-schema-ref-parser@14.0.1':
+    resolution: {integrity: sha512-Oc96zvmxx1fqoSEdUmfmvvb59/KDOnUoJ7s2t7bISyAn0XEz57LCCw8k2Y4Pf3mwKaZLMciESALORLgfe2frCw==}
     engines: {node: '>= 16'}
 
   '@apidevtools/openapi-schemas@2.1.0':
@@ -41,8 +41,8 @@ packages:
   '@apidevtools/swagger-methods@3.0.2':
     resolution: {integrity: sha512-QAkD5kK2b1WfjDS/UQn/qQkbwF31uqRjPTrsCs5ZG9BQGAkjwvqGFjjPqAuzac/IYzpPtRzjCP1WrTuAIjMrXg==}
 
-  '@apidevtools/swagger-parser@10.1.1':
-    resolution: {integrity: sha512-u/kozRnsPO/x8QtKYJOqoGtC4kH6yg1lfYkB9Au0WhYB0FNLpyFusttQtvhlwjtG3rOwiRz4D8DnnXa8iEpIKA==}
+  '@apidevtools/swagger-parser@12.0.0':
+    resolution: {integrity: sha512-WLJIWcfOXrSKlZEM+yhA2Xzatgl488qr1FoOxixYmtWapBzwSC0gVGq4WObr4hHClMIiFFdOBdixNkvWqkWIWA==}
     peerDependencies:
       openapi-types: '>=7'
 
@@ -206,9 +206,6 @@ packages:
   '@jest/schemas@29.6.3':
     resolution: {integrity: sha512-mo5j5X+jIZmJQveBKeS/clAueipV7KgiX1vMgCxam1RNYiqE1w62n0/tJJnHtjW8ZHcQco5gY85jA3mi0L+nSA==}
     engines: {node: ^14.15.0 || ^16.10.0 || >=18.0.0}
-
-  '@jsdevtools/ono@7.1.3':
-    resolution: {integrity: sha512-4JQNk+3mVzK3xh2rqd6RB4J46qUR19azEHBneZyTZM+c456qOrbbM/5xcR8huNCCcbVt7+UmizG6GuUvPvKUYg==}
 
   '@jsep-plugin/assignment@1.3.0':
     resolution: {integrity: sha512-VVgV+CXrhbMI3aSusQyclHkenWSAm95WaiKrMxRFam3JSUiIaQjoMIw2sEs/OX4XifnqeQUN4DYbJjlA8EfktQ==}
@@ -386,11 +383,11 @@ packages:
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
-  '@typespec/asset-emitter@0.71.0':
-    resolution: {integrity: sha512-wXDF2kbEPTJksv16mzcEyaz97PUxz1xH/Bl4OFSnvwE5xC1hkb0uKQ2nsunnu4yFzbz6Jmn7aoxM1WlYR5PzkA==}
+  '@typespec/asset-emitter@0.72.1':
+    resolution: {integrity: sha512-lk41TinsVknczgl64OrEVQ+S6K5WiLAzDgIclaOVKu0ld1vNADz9grqwOtnTiYCz0pWRyZE+xhrq/9XkszU3lg==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
-      '@typespec/compiler': ^1.1.0
+      '@typespec/compiler': ^1.2.1
 
   '@typespec/compiler@1.2.1':
     resolution: {integrity: sha512-lUdHCRBPtianNN6QKt0G9qyyuSu7azbqKcYNimNLYQwrEIDcgSfQAUnoja9s+gtzCQQRzfbUZ8WLBC2b9cC81Q==}
@@ -407,16 +404,16 @@ packages:
       '@typespec/streams':
         optional: true
 
-  '@typespec/openapi3@1.1.0':
-    resolution: {integrity: sha512-+1Ue7+M/PkNX54H6SJAym5ONHzlW7s5ZnA4fCH5jwKvalvI94stMvefOpd8FAesJDVmXc3wZ0kiqYo5EuMTjOQ==}
+  '@typespec/openapi3@1.2.1':
+    resolution: {integrity: sha512-PG4+yDTm1YI1rrxFAS3B8WZc6S66pl2WPK+9pP/5b0He9NkFmA53BIodgXpV2QuhvChCbEjr/CDa94ufv8+cKw==}
     engines: {node: '>=20.0.0'}
     hasBin: true
     peerDependencies:
-      '@typespec/compiler': ^1.1.0
-      '@typespec/http': ^1.1.0
-      '@typespec/json-schema': ^1.1.0
-      '@typespec/openapi': ^1.1.0
-      '@typespec/versioning': ^0.71.0
+      '@typespec/compiler': ^1.2.1
+      '@typespec/http': ^1.2.1
+      '@typespec/json-schema': ^1.2.1
+      '@typespec/openapi': ^1.2.1
+      '@typespec/versioning': ^0.72.1
       '@typespec/xml': '*'
     peerDependenciesMeta:
       '@typespec/json-schema':
@@ -1433,11 +1430,6 @@ packages:
     resolution: {integrity: sha512-r3vXyErRCYJ7wg28yvBY5VSoAF8ZvlcW9/BwUzEtUsjvX/DKs24dIkuwjtuprwJJHsbyUbLApepYTR1BN4uHrg==}
     engines: {node: '>= 6'}
 
-  yaml@2.7.1:
-    resolution: {integrity: sha512-10ULxpnOCQXxJvBgxsn9ptjq6uviG/htZKk9veJGhlqn3w/DxQ631zFF+nlQXLwmImeS5amR2dl2U8sg6U9jsQ==}
-    engines: {node: '>= 14'}
-    hasBin: true
-
   yaml@2.8.0:
     resolution: {integrity: sha512-4lLa/EcQCB0cJkyts+FpIRx5G/llPxfP6VQU5KByHEhLxY3IJCH0f0Hy1MHI8sClTvsIb8qwRJ6R/ZdlDJ/leQ==}
     engines: {node: '>= 14.6'}
@@ -1473,9 +1465,8 @@ packages:
 
 snapshots:
 
-  '@apidevtools/json-schema-ref-parser@11.7.2':
+  '@apidevtools/json-schema-ref-parser@14.0.1':
     dependencies:
-      '@jsdevtools/ono': 7.1.3
       '@types/json-schema': 7.0.15
       js-yaml: 4.1.0
 
@@ -1483,12 +1474,11 @@ snapshots:
 
   '@apidevtools/swagger-methods@3.0.2': {}
 
-  '@apidevtools/swagger-parser@10.1.1(openapi-types@12.1.3)':
+  '@apidevtools/swagger-parser@12.0.0(openapi-types@12.1.3)':
     dependencies:
-      '@apidevtools/json-schema-ref-parser': 11.7.2
+      '@apidevtools/json-schema-ref-parser': 14.0.1
       '@apidevtools/openapi-schemas': 2.1.0
       '@apidevtools/swagger-methods': 3.0.2
-      '@jsdevtools/ono': 7.1.3
       ajv: 8.17.1
       ajv-draft-04: 1.0.0(ajv@8.17.1)
       call-me-maybe: 1.0.2
@@ -1641,8 +1631,6 @@ snapshots:
   '@jest/schemas@29.6.3':
     dependencies:
       '@sinclair/typebox': 0.27.8
-
-  '@jsdevtools/ono@7.1.3': {}
 
   '@jsep-plugin/assignment@1.3.0(jsep@1.4.0)':
     dependencies:
@@ -1875,7 +1863,7 @@ snapshots:
   '@types/trusted-types@2.0.7':
     optional: true
 
-  '@typespec/asset-emitter@0.71.0(@typespec/compiler@1.2.1(@types/node@24.0.13))':
+  '@typespec/asset-emitter@0.72.1(@typespec/compiler@1.2.1(@types/node@24.0.13))':
     dependencies:
       '@typespec/compiler': 1.2.1(@types/node@24.0.13)
 
@@ -1905,15 +1893,15 @@ snapshots:
     dependencies:
       '@typespec/compiler': 1.2.1(@types/node@24.0.13)
 
-  '@typespec/openapi3@1.1.0(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13)))(@typespec/openapi@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))))':
+  '@typespec/openapi3@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13)))(@typespec/openapi@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))))':
     dependencies:
-      '@apidevtools/swagger-parser': 10.1.1(openapi-types@12.1.3)
-      '@typespec/asset-emitter': 0.71.0(@typespec/compiler@1.2.1(@types/node@24.0.13))
+      '@apidevtools/swagger-parser': 12.0.0(openapi-types@12.1.3)
+      '@typespec/asset-emitter': 0.72.1(@typespec/compiler@1.2.1(@types/node@24.0.13))
       '@typespec/compiler': 1.2.1(@types/node@24.0.13)
       '@typespec/http': 1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))
       '@typespec/openapi': 1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13)))
       openapi-types: 12.1.3
-      yaml: 2.7.1
+      yaml: 2.8.0
 
   '@typespec/openapi@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13))(@typespec/http@1.2.1(@typespec/compiler@1.2.1(@types/node@24.0.13)))':
     dependencies:
@@ -2873,8 +2861,6 @@ snapshots:
   yaml-ast-parser@0.0.43: {}
 
   yaml@1.10.2: {}
-
-  yaml@2.7.1: {}
 
   yaml@2.8.0: {}
 
