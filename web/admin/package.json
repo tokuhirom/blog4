@@ -22,7 +22,7 @@
 		"generate-client": "orval"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "^2.1.1",
+		"@biomejs/biome": "^2.1.2",
 		"@playwright/experimental-ct-react": "^1.54.1",
 		"@playwright/test": "^1.54.1",
 		"@types/react": "^19.1.8",
