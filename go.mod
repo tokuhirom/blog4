@@ -15,7 +15,7 @@ require (
 	github.com/gorilla/feeds v1.2.0
 	github.com/minio/minio-go/v7 v7.0.95
 	github.com/ogen-go/ogen v1.14.0
-	github.com/yuin/goldmark v1.7.12
+	github.com/yuin/goldmark v1.7.13
 	github.com/yuin/goldmark-highlighting/v2 v2.0.0-20230729083705-37449abec8cc
 	github.com/zeebo/assert v1.3.1
 	go.opentelemetry.io/otel v1.37.0
