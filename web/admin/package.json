@@ -31,7 +31,7 @@
 		"autoprefixer": "^10.4.21",
 		"globals": "^16.3.0",
 		"husky": "^9.1.7",
-		"lint-staged": "^16.1.2",
+		"lint-staged": "^16.1.4",
 		"orval": "^7.10.0",
 		"typescript": "^5.9.2",
 		"vite": "^7.0.6",
