@@ -15,8 +15,8 @@ importers:
         specifier: ^1.3.0
         version: 1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0))(@typespec/http@1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0)))
       '@typespec/openapi3':
-        specifier: ^1.2.1
-        version: 1.2.1(@typespec/compiler@1.3.0(@types/node@24.1.0))(@typespec/http@1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0)))(@typespec/openapi@1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0))(@typespec/http@1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0))))
+        specifier: ^1.3.0
+        version: 1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0))(@typespec/http@1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0)))(@typespec/openapi@1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0))(@typespec/http@1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0))))
       '@typespec/rest':
         specifier: ^0.72.1
         version: 0.72.1(@typespec/compiler@1.3.0(@types/node@24.1.0))(@typespec/http@1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0)))
@@ -394,11 +394,11 @@ packages:
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
 
-  '@typespec/asset-emitter@0.72.1':
-    resolution: {integrity: sha512-lk41TinsVknczgl64OrEVQ+S6K5WiLAzDgIclaOVKu0ld1vNADz9grqwOtnTiYCz0pWRyZE+xhrq/9XkszU3lg==}
+  '@typespec/asset-emitter@0.73.0':
+    resolution: {integrity: sha512-SigCa9k8gS+AiHE7Ky/kcwyqFM5kuJ0wXT+Dy89Jbd+wwrYu+mKXyXbScrTdc+MBzut+rFltFENgEYXsSvA/mA==}
     engines: {node: '>=20.0.0'}
     peerDependencies:
-      '@typespec/compiler': ^1.2.1
+      '@typespec/compiler': ^1.3.0
 
   '@typespec/compiler@1.3.0':
     resolution: {integrity: sha512-OqpoNP3C2y8riA6C5RofPMvmj9jNiGyyhde0tM2ZE7IBOv7BBaTDqw4CJD22YnC8JEilRfPmvdVCViNrPHEjrA==}
@@ -415,16 +415,16 @@ packages:
       '@typespec/streams':
         optional: true
 
-  '@typespec/openapi3@1.2.1':
-    resolution: {integrity: sha512-PG4+yDTm1YI1rrxFAS3B8WZc6S66pl2WPK+9pP/5b0He9NkFmA53BIodgXpV2QuhvChCbEjr/CDa94ufv8+cKw==}
+  '@typespec/openapi3@1.3.0':
+    resolution: {integrity: sha512-ZG+swQYtdBgyTUbwPI03YQJpPUYhORtbcx6mIFNsKhsTRRC2UDq63jUNCIFCTYI6DJPzkVpra56YPNCXmQLZMg==}
     engines: {node: '>=20.0.0'}
     hasBin: true
     peerDependencies:
-      '@typespec/compiler': ^1.2.1
-      '@typespec/http': ^1.2.1
-      '@typespec/json-schema': ^1.2.1
-      '@typespec/openapi': ^1.2.1
-      '@typespec/versioning': ^0.72.1
+      '@typespec/compiler': ^1.3.0
+      '@typespec/http': ^1.3.0
+      '@typespec/json-schema': ^1.3.0
+      '@typespec/openapi': ^1.3.0
+      '@typespec/versioning': ^0.73.0
       '@typespec/xml': '*'
     peerDependenciesMeta:
       '@typespec/json-schema':
@@ -1874,7 +1874,7 @@ snapshots:
   '@types/trusted-types@2.0.7':
     optional: true
 
-  '@typespec/asset-emitter@0.72.1(@typespec/compiler@1.3.0(@types/node@24.1.0))':
+  '@typespec/asset-emitter@0.73.0(@typespec/compiler@1.3.0(@types/node@24.1.0))':
     dependencies:
       '@typespec/compiler': 1.3.0(@types/node@24.1.0)
 
@@ -1904,10 +1904,10 @@ snapshots:
     dependencies:
       '@typespec/compiler': 1.3.0(@types/node@24.1.0)
 
-  '@typespec/openapi3@1.2.1(@typespec/compiler@1.3.0(@types/node@24.1.0))(@typespec/http@1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0)))(@typespec/openapi@1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0))(@typespec/http@1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0))))':
+  '@typespec/openapi3@1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0))(@typespec/http@1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0)))(@typespec/openapi@1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0))(@typespec/http@1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0))))':
     dependencies:
       '@apidevtools/swagger-parser': 12.0.0(openapi-types@12.1.3)
-      '@typespec/asset-emitter': 0.72.1(@typespec/compiler@1.3.0(@types/node@24.1.0))
+      '@typespec/asset-emitter': 0.73.0(@typespec/compiler@1.3.0(@types/node@24.1.0))
       '@typespec/compiler': 1.3.0(@types/node@24.1.0)
       '@typespec/http': 1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0))
       '@typespec/openapi': 1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0))(@typespec/http@1.3.0(@typespec/compiler@1.3.0(@types/node@24.1.0)))
