@@ -34,7 +34,7 @@
 		"lint-staged": "^16.1.4",
 		"orval": "^7.10.0",
 		"typescript": "^5.9.2",
-		"vite": "^7.1.0",
+		"vite": "^7.1.1",
 		"vitest": "^3.2.4"
 	},
 	"dependencies": {
