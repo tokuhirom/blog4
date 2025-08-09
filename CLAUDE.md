@@ -7,7 +7,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **CRITICAL: Always follow these git workflow rules:**
 1. **Create a new branch for EVERY commit** - Never commit directly to main
 2. **Create a PR after EVERY commit** - Each commit should have its own PR
-3. **Always enable auto-merge** - Use `gh pr merge --auto --merge` for every PR
+3. **Do NOT enable auto-merge** - Manually review and merge PRs
 4. **Branch naming convention** - Use descriptive names like `fix/bug-description` or `feat/feature-name`
 
 Example workflow:
@@ -25,36 +25,34 @@ git push -u origin fix/some-bug
 # 4. Create PR
 gh pr create --title "fix: description" --body "..."
 
-# 5. Enable auto-merge
-gh pr merge --auto --merge <PR_NUMBER>
+# 5. Manually review and merge PR
 ```
 
 ## Project Overview
 
 Blog4 is a full-stack blog application with an admin interface, built with Go backend and TypeScript/Svelte frontend. It features wiki-style linking, Amazon product integration, and automated image generation.
 
+## Development Setup
+
+The project now uses Docker Compose for local development:
+
+```bash
+# Start all services
+docker-compose up
+
+# Services and ports:
+# - Frontend (Svelte admin): http://localhost:6173
+# - Backend API: http://localhost:8181  
+# - MariaDB: localhost:3306
+# - MinIO (S3): http://localhost:9000
+# - MinIO Console: http://localhost:9001
+```
+
 ## Build Commands
 
 ```bash
-# Install dependencies
-brew install go-task
-
-# One-time setup
-task gen          # Generate all code (TypeSpec, SQLC, OpenAPI)
-cd web/admin && npm install
-
-# Development
-task dev          # Run all dev servers and watchers
-task frontend     # Run frontend dev server only
-task --watch gen  # Watch mode for code generation
-
-# Build
-task frontend-build  # Build frontend assets
-go build ./cmd/blog4  # Build Go binary
-
-# Docker
-task docker-build   # Build Docker image
-task docker-run     # Run Docker container
+# Build production Docker image
+task docker-build
 ```
 
 ## Architecture
@@ -122,11 +120,14 @@ go test -run TestFunctionName ./path/to/package
 ```
 
 ## Environment Configuration
-Required environment variables (see `app.jsonnet` for full list):
-- `MYSQL_USER`, `MYSQL_PASSWORD`, `MYSQL_HOST`
-- `ENTRY_IMAGE_BUCKET_NAME`, `ENTRY_IMAGE_ENDPOINT`
-- `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`
-- `AMAZON_ACCESS_KEY_ID`, `AMAZON_SECRET_ACCESS_KEY`
+
+Docker Compose handles all environment variables automatically. Key variables include:
+- `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_HOST`
+- `S3_ATTACHMENTS_BUCKET_NAME`, `S3_ENDPOINT`
+- `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`
+- `AMAZON_PAAPI5_ACCESS_KEY`, `AMAZON_PAAPI5_SECRET_KEY`
+
+See `docker-compose.yml` for the complete list and default values.
 
 ## Troubleshooting
 
@@ -139,7 +140,7 @@ Required environment variables (see `app.jsonnet` for full list):
 - Object literals in decorators must use `#{}` syntax
 
 ### Frontend Build Issues
-- Run `npm install` in `/web/admin/`
+- Run `pnpm install` in `/web/admin/`
 - Check Node.js version compatibility (v18+)
 
 ## Deployment
@@ -147,6 +148,11 @@ Required environment variables (see `app.jsonnet` for full list):
 - Deployed on Sakura Cloud App Run
 - Health check endpoint: `/healthz`
 - Backup runs daily via cron job to S3
-```
+
+## Git Workflow Best Practices
 
 - after modify tsx or ts, run biome before the commit
+- use mockgen for db testing
+- before commit, run biome, go test.
+- after send pr, sleep a while, and check the ci state. if it's failed, resolve the issue and commit & push again.
+- run goimports before commit golang code.

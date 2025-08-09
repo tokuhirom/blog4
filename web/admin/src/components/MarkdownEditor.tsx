@@ -1,11 +1,10 @@
-import { useEffect, useRef } from "react";
-import { EditorState } from "@codemirror/state";
-import { EditorView, keymap } from "@codemirror/view";
-import { markdown } from "@codemirror/lang-markdown";
 import { defaultKeymap, indentWithTab } from "@codemirror/commands";
-import { oneDarkHighlightStyle } from "@codemirror/theme-one-dark";
+import { markdown } from "@codemirror/lang-markdown";
 import { syntaxHighlighting } from "@codemirror/language";
-import styles from "./MarkdownEditor.module.css";
+import { EditorState } from "@codemirror/state";
+import { oneDarkHighlightStyle } from "@codemirror/theme-one-dark";
+import { EditorView, keymap } from "@codemirror/view";
+import { useEffect, useRef } from "react";
 
 interface MarkdownEditorProps {
 	initialContent?: string;
@@ -44,6 +43,19 @@ export default function MarkdownEditor({
 				markdown(),
 				keymap.of([...defaultKeymap, indentWithTab]),
 				syntaxHighlighting(oneDarkHighlightStyle),
+				EditorView.theme({
+					"&": {
+						height: "100%",
+					},
+					".cm-scroller": {
+						overflow: "auto",
+						height: "100%",
+						maxHeight: "100%",
+					},
+					".cm-content": {
+						minHeight: "100%",
+					},
+				}),
 				EditorView.updateListener.of((update) => {
 					if (update.docChanged && onUpdateTextRef.current) {
 						onUpdateTextRef.current(update.state.doc.toString());
@@ -133,5 +145,16 @@ export default function MarkdownEditor({
 		};
 	}, [initialContent]);
 
-	return <div ref={containerRef} className={styles.editor} />;
+	return (
+		<div
+			ref={containerRef}
+			style={{
+				height: "100%",
+				overflow: "hidden",
+				border: "none",
+				borderRadius: "4px",
+				position: "relative",
+			}}
+		/>
+	);
 }

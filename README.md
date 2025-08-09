@@ -5,66 +5,54 @@ tokuhirom の個人的なブログサービスです｡
 ## Quick Start
 
 ```bash
-# Install dependencies
-brew install go-task
+# Install Docker and Docker Compose
+# Then run the entire stack
+docker-compose up
 
-# One-time setup
-task gen
-cd web/admin && npm install
-
-# Run development servers
-task dev
+# The services are available at:
+# - Frontend: http://localhost:6173
+# - Backend API: http://localhost:8181
+# - MariaDB: localhost:3306
+# - MinIO Console: http://localhost:9001
+# - MinIO API: http://localhost:9000
 ```
 
 ## Development Guide
 
 ### Prerequisites
-- Go 1.21+
-- Node.js 18+
-- MySQL/MariaDB
-- go-task (install with `brew install go-task`)
+- Docker and Docker Compose
 
 ### Common Commands
 
 ```bash
-# Generate all code (TypeSpec, SQLC, OpenAPI client)
-task gen
+# Start all services with Docker Compose
+docker-compose up
 
-# Watch mode for code generation
-task --watch gen
+# Start in background
+docker-compose up -d
 
-# Run all dev servers
-task dev
+# Stop all services
+docker-compose down
 
-# Frontend development only
-task frontend
+# View logs
+docker-compose logs -f [service-name]
 
-# Build production assets
-task frontend-build
-go build ./cmd/blog4
-
-# Docker operations
+# Build production Docker image
 task docker-build
-task docker-run
 ```
 
-### Running the Server
+### Port Numbers
 
-```bash
-# Run the main server (includes both public and admin)
-go run ./cmd/blog4
+When running with Docker Compose, the following ports are exposed:
 
-# The server starts on http://localhost:8181/
-# - Public blog: http://localhost:8181/
-# - Admin panel: http://localhost:8181/admin
+| Service | Port | Description |
+|---------|------|-------------|
+| Frontend | 6173 | Svelte admin UI |
+| Backend | 8181 | Go API server |
+| MariaDB | 3306 | Database |
+| MinIO API | 9000 | S3-compatible storage |
+| MinIO Console | 9001 | MinIO web interface |
 
-# Debug with Delve
-dlv debug ./cmd/blog4
-
-# Build and run
-go build -o blog4 ./cmd/blog4
-./blog4
-```
 
 ### Project Structure
 
@@ -129,10 +117,10 @@ task biome-lint
 # Run both format and lint
 task frontend-fmt
 
-# Or use npm directly in the frontend directory
+# Or use pnpm directly in the frontend directory
 cd web/admin
-npm run format  # Format code
-npm run lint    # Lint code
+pnpm run format  # Format code
+pnpm run lint    # Lint code
 ```
 
 ### Testing
@@ -163,4 +151,4 @@ The application is deployed on Sakura Cloud App Run using Docker. See `Dockerfil
 
 ## License
 
-Personal project - not open for external contributions.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

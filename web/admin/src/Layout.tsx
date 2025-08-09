@@ -1,13 +1,16 @@
+import { Box, Container } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import AdminHeader from "./components/AdminHeader";
+import Footer from "./components/Footer";
 
 export default function Layout() {
 	return (
-		<div>
+		<Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
 			<AdminHeader />
-			<main style={{ marginTop: "4rem", marginBottom: "4rem" }}>
+			<Container component="main" sx={{ mt: 8, mb: 4, flex: 1 }} maxWidth="xl">
 				<Outlet />
-			</main>
-		</div>
+			</Container>
+			<Footer />
+		</Box>
 	);
 }

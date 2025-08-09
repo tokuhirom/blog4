@@ -16,10 +16,9 @@ import (
 
 	"github.com/caarlos0/env/v11"
 	"github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
 )
 
-//go:generate go run github.com/ogen-go/ogen/cmd/ogen@latest --target ../../server/admin/openapi -package openapi --clean ../../typespec/tsp-output/@typespec/openapi3/openapi.yaml
+//go:generate go run github.com/ogen-go/ogen/cmd/ogen@latest --config ../../ogen.yml --target ../../server/admin/openapi -package openapi --clean ../../typespec/tsp-output/@typespec/openapi3/openapi.yaml
 
 func main() {
 	if err := DoMain(); err != nil {
@@ -30,16 +29,6 @@ func main() {
 }
 
 func DoMain() error {
-	if _, err := os.Stat(".env"); err == nil {
-		slog.Info("loading .env file")
-		err := godotenv.Load()
-		if err != nil {
-			return fmt.Errorf("failed to load .env file: %w", err)
-		}
-	} else {
-		slog.Info(".env file not found")
-	}
-
 	cfg, err := env.ParseAs[server.Config]()
 	if err != nil {
 		return fmt.Errorf("failed to parse Config: %w", err)
@@ -63,7 +52,9 @@ func DoMain() error {
 		return fmt.Errorf("failed to ping DB: %w", err)
 	}
 
-	sobsClient, err := sobs.NewSobsClient(cfg.S3AccessKeyId, cfg.S3SecretAccessKey, cfg.S3Region, cfg.S3AttachmentsBucketName, cfg.S3BackupBucketName, cfg.S3Endpoint)
+	// Use SSL for S3 connections unless in local development mode
+	useSSL := !cfg.LocalDev
+	sobsClient, err := sobs.NewSobsClient(cfg.S3AccessKeyId, cfg.S3SecretAccessKey, cfg.S3Region, cfg.S3AttachmentsBucketName, cfg.S3BackupBucketName, cfg.S3Endpoint, useSSL)
 	if err != nil {
 		return fmt.Errorf("failed to create SobsClient: %w", err)
 	}

@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
-	"github.com/tokuhirom/blog4/internal/admin/openapi"
+	"github.com/tokuhirom/blog4/server/admin/openapi"
 )
 
 func getLinkPalletData(ctx context.Context, db *sql.DB, queries *admindb.Queries, targetPath string, targetTitle string) (*openapi.LinkPalletData, error) {

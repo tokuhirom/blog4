@@ -8,3 +8,12 @@ node_modules/
 
 # Binary
 /blog4
+
+# Air temporary files
+/tmp
+
+# Generated API docs
+/docs
+
+# Claude settings
+.claude/settings.local.json

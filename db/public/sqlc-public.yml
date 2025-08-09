@@ -2,7 +2,7 @@ version: "2"
 sql:
   - engine: "mysql"
     queries: "./queries/"
-    schema: "../schema.sql"
+    schema: "../init/01-schema.sql"
     gen:
       go:
         package: "publicdb"

@@ -1,3 +1,21 @@
+import DeleteIcon from "@mui/icons-material/Delete";
+import RefreshIcon from "@mui/icons-material/Refresh";
+import {
+	Alert,
+	Box,
+	Button,
+	FormControl,
+	FormControlLabel,
+	FormLabel,
+	Grid,
+	Link,
+	Paper,
+	Radio,
+	RadioGroup,
+	Snackbar,
+	TextField,
+	Typography,
+} from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { createAdminApiClient } from "../admin_api";
@@ -9,14 +27,15 @@ import type {
 	LinkPalletData,
 } from "../generated-client/model";
 import { debounce } from "../utils";
-import styles from "./AdminEntryPage.module.css";
 
 const api = createAdminApiClient();
 
 export default function AdminEntryPage() {
 	const location = useLocation();
 	const navigate = useNavigate();
-	const path = location.pathname.replace("/admin/entry/", "");
+	const path = location.pathname
+		.replace("/admin/entry/", "")
+		.replace("/entry/", "");
 
 	const [entry, setEntry] = useState<GetLatestEntriesRow>(
 		{} as GetLatestEntriesRow,
@@ -103,7 +122,7 @@ export default function AdminEntryPage() {
 					showMessage("success", "Entry deleted successfully");
 					// Small delay to ensure the message is shown
 					setTimeout(() => {
-						navigate("/admin/");
+						navigate("/");
 					}, 500);
 				} catch (e) {
 					console.log(e);
@@ -238,36 +257,6 @@ export default function AdminEntryPage() {
 		[showMessage],
 	);
 
-	function toggleVisibility(event: React.MouseEvent) {
-		event.preventDefault();
-		event.stopPropagation();
-
-		const newVisibility = visibility === "private" ? "public" : "private";
-
-		if (
-			!confirm("Are you sure you want to change the visibility of this entry?")
-		) {
-			return;
-		}
-
-		console.log("Updating visibility to", newVisibility);
-
-		api
-			.updateEntryVisibility(
-				{ path: encodeURIComponent(entry.Path) },
-				{
-					visibility: newVisibility,
-				},
-			)
-			.then((data) => {
-				setVisibility(data.Visibility);
-			})
-			.catch((error) => {
-				console.error("Failed to update visibility:", error);
-				showMessage("error", `Failed to update visibility: ${error.message}`);
-			});
-	}
-
 	useEffect(() => {
 		const loadEntry = async () => {
 			try {
@@ -282,7 +271,7 @@ export default function AdminEntryPage() {
 			} catch (e) {
 				console.error("Failed to get entry:", e);
 				if (e instanceof Error && e.message.includes("404")) {
-					navigate("/admin/");
+					navigate("/");
 				}
 			}
 		};
@@ -292,36 +281,45 @@ export default function AdminEntryPage() {
 		loadLinks();
 	}, [path, loadLinks, navigate]);
 
-	const containerClass =
-		entry.Visibility === "private"
-			? `${styles.container} ${styles.containerPrivate}`
-			: styles.container;
-
 	return (
-		<div>
-			<div className={containerClass}>
-				<div className={styles.leftPane}>
-					<form>
-						<div className={styles.titleContainer}>
-							<input
-								name="title"
-								type="text"
-								className={styles.input}
-								value={title}
-								onChange={(e) => {
-									setTitle(e.target.value);
-									setIsDirty(true);
-									debouncedTitleUpdate();
-								}}
-								placeholder="Entry Title"
-							/>
-						</div>
+		<Box>
+			<Grid container spacing={3}>
+				<Grid size={8}>
+					<Paper
+						sx={{
+							p: 3,
+							backgroundColor:
+								entry.Visibility === "private" ? "#f5f5f5" : "background.paper",
+						}}
+					>
+						<TextField
+							fullWidth
+							label="Title"
+							value={title}
+							onChange={(e) => {
+								setTitle(e.target.value);
+								setIsDirty(true);
+								debouncedTitleUpdate();
+							}}
+							placeholder="Entry Title"
+							variant="outlined"
+							sx={{ mb: 3 }}
+						/>
 
-						<div className={styles.bodyContainer}>
-							<label htmlFor="body" className={styles.label}>
+						<Box sx={{ mb: 3 }}>
+							<Typography variant="h6" gutterBottom>
 								Body
-							</label>
-							<div className={styles.editor}>
+							</Typography>
+							<Paper
+								variant="outlined"
+								sx={{
+									p: 0,
+									height: "700px",
+									maxHeight: "70vh",
+									overflow: "hidden",
+									position: "relative",
+								}}
+							>
 								<MarkdownEditor
 									key={path}
 									initialContent={entry.Body}
@@ -331,57 +329,106 @@ export default function AdminEntryPage() {
 									}}
 									onDropFiles={handleDropFiles}
 								/>
-							</div>
-						</div>
+							</Paper>
+						</Box>
+					</Paper>
+				</Grid>
 
-						<div className={styles.visibilityContainer}>
-							<label className={styles.label}>
-								Visibility: {visibility}
-								<button
-									type="button"
-									onClick={toggleVisibility}
-									className={styles.toggleButton}
+				<Grid size={4}>
+					<Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+						{/* Entry Controls */}
+						<Paper sx={{ p: 2 }}>
+							<FormControl component="fieldset" sx={{ width: "100%", mb: 2 }}>
+								<FormLabel component="legend">Visibility</FormLabel>
+								<RadioGroup
+									value={visibility}
+									onChange={(e) => {
+										if (
+											confirm(
+												"Are you sure you want to change the visibility of this entry?",
+											)
+										) {
+											const newVisibility = e.target.value;
+											api
+												.updateEntryVisibility(
+													{ path: encodeURIComponent(entry.Path) },
+													{ visibility: newVisibility },
+												)
+												.then((data) => {
+													setVisibility(data.visibility);
+												})
+												.catch((error) => {
+													console.error("Failed to update visibility:", error);
+													showMessage(
+														"error",
+														`Failed to update visibility: ${error.message}`,
+													);
+												});
+										}
+									}}
 								>
-									Toggle
-								</button>
-							</label>
-						</div>
-					</form>
+									<FormControlLabel
+										value="private"
+										control={<Radio />}
+										label="Private"
+									/>
+									<FormControlLabel
+										value="public"
+										control={<Radio />}
+										label="Public"
+									/>
+								</RadioGroup>
+							</FormControl>
 
-					<div className={styles.buttonContainer}>
-						<button
-							type="button"
-							className={styles.deleteButton}
-							onClick={handleDelete}
-						>
-							Delete
-						</button>
-						<button
-							type="button"
-							className={styles.regenerateButton}
-							onClick={handleRegenerateEntryImage}
-						>
-							Regenerate entry_image
-						</button>
-					</div>
+							<Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
+								<Button
+									variant="outlined"
+									color="error"
+									startIcon={<DeleteIcon />}
+									onClick={handleDelete}
+									fullWidth
+								>
+									Delete
+								</Button>
+								<Button
+									variant="outlined"
+									startIcon={<RefreshIcon />}
+									onClick={handleRegenerateEntryImage}
+									fullWidth
+								>
+									Regenerate entry_image
+								</Button>
+							</Box>
 
-					{visibility === "public" && (
-						<div className={styles.linkContainer}>
-							<a href={`/entry/${entry.Path}`} className={styles.link}>
-								Go to User Side Page
-							</a>
-						</div>
-					)}
-				</div>
+							{visibility === "public" && (
+								<Box sx={{ mt: 2 }}>
+									<Link
+										href={`/entry/${entry.Path}`}
+										target="_blank"
+										rel="noopener"
+									>
+										Go to User Side Page
+									</Link>
+								</Box>
+							)}
+						</Paper>
 
-				<div className={styles.rightPane}>
-					<LinkPallet linkPallet={linkPallet} />
-				</div>
-			</div>
+						{/* Link Pallet */}
+						<LinkPallet linkPallet={linkPallet} />
+					</Box>
+				</Grid>
+			</Grid>
 
-			{updatedMessage !== "" && (
-				<div className={styles.updatedMessage}>{updatedMessage}</div>
-			)}
-		</div>
+			<Snackbar
+				open={updatedMessage !== ""}
+				autoHideDuration={1000}
+				onClose={() => setUpdatedMessage("")}
+				anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+			>
+				<Alert severity="success" sx={{ width: "100%" }}>
+					{updatedMessage}
+				</Alert>
+			</Snackbar>
+		</Box>
 	);
 }

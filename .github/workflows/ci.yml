@@ -34,16 +34,19 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Install npm dependencies
-        run: npm install
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install dependencies with pnpm
+        run: pnpm install
         working-directory: web/admin
 
       - name: Run biome lint
-        run: npm run lint
+        run: pnpm run lint
         working-directory: web/admin
 
       - name: Run vitest
-        run: npm run test
+        run: pnpm run test
         working-directory: web/admin
 
       - name: Set up Go
@@ -57,11 +60,105 @@ jobs:
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v8
         with:
-          version: latest
+          version: v2.1.6
           args: --timeout=5m
 
       - name: Run Go tests
         run: go test ./...
+
+  check-generated-files:
+    runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.4
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: example
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.24'
+
+      - name: Install Go dependencies
+        run: go mod download
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Install TypeSpec dependencies
+        run: pnpm install
+
+      - name: Install go-task
+        run: |
+          sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
+          sudo mv ./bin/task /usr/local/bin/
+
+      - name: Install sqlc
+        run: |
+          curl -L https://github.com/sqlc-dev/sqlc/releases/download/v1.29.0/sqlc_1.29.0_linux_amd64.tar.gz -o sqlc.tar.gz
+          tar -xzf sqlc.tar.gz
+          sudo mv sqlc /usr/local/bin/
+          rm sqlc.tar.gz
+
+      - name: Install dependencies with pnpm
+        run: pnpm install
+        working-directory: web/admin
+
+      - name: Generate TypeSpec files
+        run: task tsp
+
+      - name: Generate SQLC admin files
+        run: task sqlc-admin
+
+      - name: Generate SQLC public files
+        run: task sqlc-public
+
+      - name: Generate Ogen server code
+        run: task ogen
+
+      - name: Generate OpenAPI client
+        run: task openapi-client
+
+      - name: Check for uncommitted changes
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Error: Generated files are not up-to-date!"
+            echo "Please run the following commands and commit the changes:"
+            echo "  task tsp"
+            echo "  task sqlc-admin"
+            echo "  task sqlc-public"
+            echo "  task ogen"
+            echo "  task openapi-client"
+            echo ""
+            echo "Changed files:"
+            git status --porcelain
+            exit 1
+          fi
+
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: [lint-and-test]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

@@ -23,7 +23,7 @@ function simplifyMarkdown(text: string): string {
 
 export default function EntryCardItem({
 	entry,
-	backgroundColor = entry.Visibility === "private" ? "#cccccc" : "#f6f6f6",
+	backgroundColor = entry.Visibility === "private" ? "#e0e0e0" : "#ffffff",
 	color = "#0f0f0f",
 	onClick,
 }: EntryCardItemProps) {
