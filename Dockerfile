@@ -9,7 +9,7 @@ ENV VITE_API_BASE_URL=/admin/api
 RUN pnpm run build
 
 # Stage 2: Build the Go backend
-FROM golang:1.24 AS backend-builder
+FROM golang:1.25 AS backend-builder
 RUN apt-get update && apt-get install -y git
 WORKDIR /app
 COPY go.mod go.sum ./
