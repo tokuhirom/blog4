@@ -23,8 +23,8 @@
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.2.0",
-		"@playwright/experimental-ct-react": "^1.54.2",
-		"@playwright/test": "^1.54.2",
+		"@playwright/experimental-ct-react": "^1.55.0",
+		"@playwright/test": "^1.55.0",
 		"@types/react": "^19.1.10",
 		"@types/react-dom": "^19.1.7",
 		"@vitejs/plugin-react": "^5.0.1",
