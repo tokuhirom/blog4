@@ -118,7 +118,7 @@ jobs:
           rm sqlc.tar.gz
 
       - name: Install dependencies with pnpm
-        run: pnpm install
+        run: pnpm install --frozen-lockfile
         working-directory: web/admin
 
       - name: Generate TypeSpec files
