@@ -8,16 +8,15 @@ import (
 	"time"
 
 	"github.com/go-faster/errors"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/codes"
-	"go.opentelemetry.io/otel/metric"
-	semconv "go.opentelemetry.io/otel/semconv/v1.26.0"
-	"go.opentelemetry.io/otel/trace"
-
 	ht "github.com/ogen-go/ogen/http"
 	"github.com/ogen-go/ogen/middleware"
 	"github.com/ogen-go/ogen/ogenerrors"
 	"github.com/ogen-go/ogen/otelogen"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/metric"
+	semconv "go.opentelemetry.io/otel/semconv/v1.37.0"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type codeRecorder struct {
@@ -86,7 +85,7 @@ func (s *Server) handleAuthCheckRequest(args [0]string, argsEscaped bool, w http
 			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
 			// max redirects exceeded), in which case status MUST be set to Error.
 			code := statusWriter.status
-			if code >= 100 && code < 500 {
+			if code < 100 || code >= 500 {
 				span.SetStatus(codes.Error, stage)
 			}
 
@@ -101,6 +100,8 @@ func (s *Server) handleAuthCheckRequest(args [0]string, argsEscaped bool, w http
 		err error
 	)
 
+	var rawBody []byte
+
 	var response AuthCheckRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -109,6 +110,7 @@ func (s *Server) handleAuthCheckRequest(args [0]string, argsEscaped bool, w http
 			OperationSummary: "Check if user is authenticated",
 			OperationID:      "Auth_check",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params:           middleware.Parameters{},
 			Raw:              r,
 		}
@@ -205,7 +207,7 @@ func (s *Server) handleAuthLoginRequest(args [0]string, argsEscaped bool, w http
 			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
 			// max redirects exceeded), in which case status MUST be set to Error.
 			code := statusWriter.status
-			if code >= 100 && code < 500 {
+			if code < 100 || code >= 500 {
 				span.SetStatus(codes.Error, stage)
 			}
 
@@ -223,7 +225,9 @@ func (s *Server) handleAuthLoginRequest(args [0]string, argsEscaped bool, w http
 			ID:   "Auth_login",
 		}
 	)
-	request, close, err := s.decodeAuthLoginRequest(r)
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeAuthLoginRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -247,6 +251,7 @@ func (s *Server) handleAuthLoginRequest(args [0]string, argsEscaped bool, w http
 			OperationSummary: "Login with username and password",
 			OperationID:      "Auth_login",
 			Body:             request,
+			RawBody:          rawBody,
 			Params:           middleware.Parameters{},
 			Raw:              r,
 		}
@@ -343,7 +348,7 @@ func (s *Server) handleAuthLogoutRequest(args [0]string, argsEscaped bool, w htt
 			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
 			// max redirects exceeded), in which case status MUST be set to Error.
 			code := statusWriter.status
-			if code >= 100 && code < 500 {
+			if code < 100 || code >= 500 {
 				span.SetStatus(codes.Error, stage)
 			}
 
@@ -358,6 +363,8 @@ func (s *Server) handleAuthLogoutRequest(args [0]string, argsEscaped bool, w htt
 		err error
 	)
 
+	var rawBody []byte
+
 	var response AuthLogoutRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -366,6 +373,7 @@ func (s *Server) handleAuthLogoutRequest(args [0]string, argsEscaped bool, w htt
 			OperationSummary: "Logout and invalidate session",
 			OperationID:      "Auth_logout",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params:           middleware.Parameters{},
 			Raw:              r,
 		}
@@ -462,7 +470,7 @@ func (s *Server) handleCreateEntryRequest(args [0]string, argsEscaped bool, w ht
 			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
 			// max redirects exceeded), in which case status MUST be set to Error.
 			code := statusWriter.status
-			if code >= 100 && code < 500 {
+			if code < 100 || code >= 500 {
 				span.SetStatus(codes.Error, stage)
 			}
 
@@ -480,7 +488,9 @@ func (s *Server) handleCreateEntryRequest(args [0]string, argsEscaped bool, w ht
 			ID:   "createEntry",
 		}
 	)
-	request, close, err := s.decodeCreateEntryRequest(r)
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeCreateEntryRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -504,6 +514,7 @@ func (s *Server) handleCreateEntryRequest(args [0]string, argsEscaped bool, w ht
 			OperationSummary: "Create a new entry",
 			OperationID:      "createEntry",
 			Body:             request,
+			RawBody:          rawBody,
 			Params:           middleware.Parameters{},
 			Raw:              r,
 		}
@@ -600,7 +611,7 @@ func (s *Server) handleDeleteEntryRequest(args [1]string, argsEscaped bool, w ht
 			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
 			// max redirects exceeded), in which case status MUST be set to Error.
 			code := statusWriter.status
-			if code >= 100 && code < 500 {
+			if code < 100 || code >= 500 {
 				span.SetStatus(codes.Error, stage)
 			}
 
@@ -629,6 +640,8 @@ func (s *Server) handleDeleteEntryRequest(args [1]string, argsEscaped bool, w ht
 		return
 	}
 
+	var rawBody []byte
+
 	var response DeleteEntryRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -637,6 +650,7 @@ func (s *Server) handleDeleteEntryRequest(args [1]string, argsEscaped bool, w ht
 			OperationSummary: "Delete an entry",
 			OperationID:      "deleteEntry",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "path",
@@ -738,7 +752,7 @@ func (s *Server) handleGetAllEntryTitlesRequest(args [0]string, argsEscaped bool
 			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
 			// max redirects exceeded), in which case status MUST be set to Error.
 			code := statusWriter.status
-			if code >= 100 && code < 500 {
+			if code < 100 || code >= 500 {
 				span.SetStatus(codes.Error, stage)
 			}
 
@@ -753,6 +767,8 @@ func (s *Server) handleGetAllEntryTitlesRequest(args [0]string, argsEscaped bool
 		err error
 	)
 
+	var rawBody []byte
+
 	var response GetAllEntryTitlesRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -761,6 +777,7 @@ func (s *Server) handleGetAllEntryTitlesRequest(args [0]string, argsEscaped bool
 			OperationSummary: "Get all entry titles",
 			OperationID:      "getAllEntryTitles",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params:           middleware.Parameters{},
 			Raw:              r,
 		}
@@ -855,7 +872,7 @@ func (s *Server) handleGetBuildInfoRequest(args [0]string, argsEscaped bool, w h
 			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
 			// max redirects exceeded), in which case status MUST be set to Error.
 			code := statusWriter.status
-			if code >= 100 && code < 500 {
+			if code < 100 || code >= 500 {
 				span.SetStatus(codes.Error, stage)
 			}
 
@@ -870,6 +887,8 @@ func (s *Server) handleGetBuildInfoRequest(args [0]string, argsEscaped bool, w h
 		err error
 	)
 
+	var rawBody []byte
+
 	var response GetBuildInfoRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -878,6 +897,7 @@ func (s *Server) handleGetBuildInfoRequest(args [0]string, argsEscaped bool, w h
 			OperationSummary: "",
 			OperationID:      "getBuildInfo",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params:           middleware.Parameters{},
 			Raw:              r,
 		}
@@ -974,7 +994,7 @@ func (s *Server) handleGetEntryByDynamicPathRequest(args [1]string, argsEscaped 
 			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
 			// max redirects exceeded), in which case status MUST be set to Error.
 			code := statusWriter.status
-			if code >= 100 && code < 500 {
+			if code < 100 || code >= 500 {
 				span.SetStatus(codes.Error, stage)
 			}
 
@@ -1003,6 +1023,8 @@ func (s *Server) handleGetEntryByDynamicPathRequest(args [1]string, argsEscaped 
 		return
 	}
 
+	var rawBody []byte
+
 	var response GetEntryByDynamicPathRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -1011,6 +1033,7 @@ func (s *Server) handleGetEntryByDynamicPathRequest(args [1]string, argsEscaped 
 			OperationSummary: "Get entry by dynamic path",
 			OperationID:      "getEntryByDynamicPath",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "path",
@@ -1112,7 +1135,7 @@ func (s *Server) handleGetLatestEntriesRequest(args [0]string, argsEscaped bool,
 			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
 			// max redirects exceeded), in which case status MUST be set to Error.
 			code := statusWriter.status
-			if code >= 100 && code < 500 {
+			if code < 100 || code >= 500 {
 				span.SetStatus(codes.Error, stage)
 			}
 
@@ -1141,6 +1164,8 @@ func (s *Server) handleGetLatestEntriesRequest(args [0]string, argsEscaped bool,
 		return
 	}
 
+	var rawBody []byte
+
 	var response GetLatestEntriesRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -1149,6 +1174,7 @@ func (s *Server) handleGetLatestEntriesRequest(args [0]string, argsEscaped bool,
 			OperationSummary: "Get latest entries",
 			OperationID:      "getLatestEntries",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "last_last_edited_at",
@@ -1250,7 +1276,7 @@ func (s *Server) handleGetLinkPalletRequest(args [1]string, argsEscaped bool, w 
 			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
 			// max redirects exceeded), in which case status MUST be set to Error.
 			code := statusWriter.status
-			if code >= 100 && code < 500 {
+			if code < 100 || code >= 500 {
 				span.SetStatus(codes.Error, stage)
 			}
 
@@ -1279,6 +1305,8 @@ func (s *Server) handleGetLinkPalletRequest(args [1]string, argsEscaped bool, w 
 		return
 	}
 
+	var rawBody []byte
+
 	var response GetLinkPalletRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -1287,6 +1315,7 @@ func (s *Server) handleGetLinkPalletRequest(args [1]string, argsEscaped bool, w 
 			OperationSummary: "Get linked entry paths",
 			OperationID:      "getLinkPallet",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "path",
@@ -1388,7 +1417,7 @@ func (s *Server) handleGetLinkedEntryPathsRequest(args [1]string, argsEscaped bo
 			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
 			// max redirects exceeded), in which case status MUST be set to Error.
 			code := statusWriter.status
-			if code >= 100 && code < 500 {
+			if code < 100 || code >= 500 {
 				span.SetStatus(codes.Error, stage)
 			}
 
@@ -1417,6 +1446,8 @@ func (s *Server) handleGetLinkedEntryPathsRequest(args [1]string, argsEscaped bo
 		return
 	}
 
+	var rawBody []byte
+
 	var response GetLinkedEntryPathsRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -1425,6 +1456,7 @@ func (s *Server) handleGetLinkedEntryPathsRequest(args [1]string, argsEscaped bo
 			OperationSummary: "Get linked entry paths",
 			OperationID:      "getLinkedEntryPaths",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "path",
@@ -1526,7 +1558,7 @@ func (s *Server) handleRegenerateEntryImageRequest(args [1]string, argsEscaped b
 			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
 			// max redirects exceeded), in which case status MUST be set to Error.
 			code := statusWriter.status
-			if code >= 100 && code < 500 {
+			if code < 100 || code >= 500 {
 				span.SetStatus(codes.Error, stage)
 			}
 
@@ -1555,6 +1587,8 @@ func (s *Server) handleRegenerateEntryImageRequest(args [1]string, argsEscaped b
 		return
 	}
 
+	var rawBody []byte
+
 	var response RegenerateEntryImageRes
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
@@ -1563,6 +1597,7 @@ func (s *Server) handleRegenerateEntryImageRequest(args [1]string, argsEscaped b
 			OperationSummary: "Regenerate entry image",
 			OperationID:      "regenerateEntryImage",
 			Body:             nil,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "path",
@@ -1664,7 +1699,7 @@ func (s *Server) handleUpdateEntryBodyRequest(args [1]string, argsEscaped bool, 
 			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
 			// max redirects exceeded), in which case status MUST be set to Error.
 			code := statusWriter.status
-			if code >= 100 && code < 500 {
+			if code < 100 || code >= 500 {
 				span.SetStatus(codes.Error, stage)
 			}
 
@@ -1692,7 +1727,9 @@ func (s *Server) handleUpdateEntryBodyRequest(args [1]string, argsEscaped bool, 
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
-	request, close, err := s.decodeUpdateEntryBodyRequest(r)
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeUpdateEntryBodyRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -1716,6 +1753,7 @@ func (s *Server) handleUpdateEntryBodyRequest(args [1]string, argsEscaped bool, 
 			OperationSummary: "Update entry body",
 			OperationID:      "updateEntryBody",
 			Body:             request,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "path",
@@ -1817,7 +1855,7 @@ func (s *Server) handleUpdateEntryTitleRequest(args [1]string, argsEscaped bool,
 			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
 			// max redirects exceeded), in which case status MUST be set to Error.
 			code := statusWriter.status
-			if code >= 100 && code < 500 {
+			if code < 100 || code >= 500 {
 				span.SetStatus(codes.Error, stage)
 			}
 
@@ -1845,7 +1883,9 @@ func (s *Server) handleUpdateEntryTitleRequest(args [1]string, argsEscaped bool,
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
-	request, close, err := s.decodeUpdateEntryTitleRequest(r)
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeUpdateEntryTitleRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -1869,6 +1909,7 @@ func (s *Server) handleUpdateEntryTitleRequest(args [1]string, argsEscaped bool,
 			OperationSummary: "Update entry title",
 			OperationID:      "updateEntryTitle",
 			Body:             request,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "path",
@@ -1970,7 +2011,7 @@ func (s *Server) handleUpdateEntryVisibilityRequest(args [1]string, argsEscaped 
 			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
 			// max redirects exceeded), in which case status MUST be set to Error.
 			code := statusWriter.status
-			if code >= 100 && code < 500 {
+			if code < 100 || code >= 500 {
 				span.SetStatus(codes.Error, stage)
 			}
 
@@ -1998,7 +2039,9 @@ func (s *Server) handleUpdateEntryVisibilityRequest(args [1]string, argsEscaped 
 		s.cfg.ErrorHandler(ctx, w, r, err)
 		return
 	}
-	request, close, err := s.decodeUpdateEntryVisibilityRequest(r)
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeUpdateEntryVisibilityRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -2022,6 +2065,7 @@ func (s *Server) handleUpdateEntryVisibilityRequest(args [1]string, argsEscaped 
 			OperationSummary: "Update entry visibility",
 			OperationID:      "updateEntryVisibility",
 			Body:             request,
+			RawBody:          rawBody,
 			Params: middleware.Parameters{
 				{
 					Name: "path",
@@ -2121,7 +2165,7 @@ func (s *Server) handleUploadFileRequest(args [0]string, argsEscaped bool, w htt
 			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
 			// max redirects exceeded), in which case status MUST be set to Error.
 			code := statusWriter.status
-			if code >= 100 && code < 500 {
+			if code < 100 || code >= 500 {
 				span.SetStatus(codes.Error, stage)
 			}
 
@@ -2139,7 +2183,9 @@ func (s *Server) handleUploadFileRequest(args [0]string, argsEscaped bool, w htt
 			ID:   "uploadFile",
 		}
 	)
-	request, close, err := s.decodeUploadFileRequest(r)
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeUploadFileRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -2163,6 +2209,7 @@ func (s *Server) handleUploadFileRequest(args [0]string, argsEscaped bool, w htt
 			OperationSummary: "",
 			OperationID:      "uploadFile",
 			Body:             request,
+			RawBody:          rawBody,
 			Params:           middleware.Parameters{},
 			Raw:              r,
 		}

@@ -9,7 +9,6 @@ import (
 
 	"github.com/go-faster/errors"
 	"github.com/go-faster/jx"
-
 	"github.com/ogen-go/ogen/ogenerrors"
 	"github.com/ogen-go/ogen/validate"
 )
@@ -87,7 +86,7 @@ func decodeAuthCheckResponse(resp *http.Response) (res AuthCheckRes, _ error) {
 			return res, validate.InvalidContentType(ct)
 		}
 	}
-	return res, validate.UnexpectedStatusCode(resp.StatusCode)
+	return res, validate.UnexpectedStatusCodeWithResponse(resp)
 }
 
 func decodeAuthLoginResponse(resp *http.Response) (res AuthLoginRes, _ error) {
@@ -163,7 +162,7 @@ func decodeAuthLoginResponse(resp *http.Response) (res AuthLoginRes, _ error) {
 			return res, validate.InvalidContentType(ct)
 		}
 	}
-	return res, validate.UnexpectedStatusCode(resp.StatusCode)
+	return res, validate.UnexpectedStatusCodeWithResponse(resp)
 }
 
 func decodeAuthLogoutResponse(resp *http.Response) (res AuthLogoutRes, _ error) {
@@ -239,7 +238,7 @@ func decodeAuthLogoutResponse(resp *http.Response) (res AuthLogoutRes, _ error) 
 			return res, validate.InvalidContentType(ct)
 		}
 	}
-	return res, validate.UnexpectedStatusCode(resp.StatusCode)
+	return res, validate.UnexpectedStatusCodeWithResponse(resp)
 }
 
 func decodeCreateEntryResponse(resp *http.Response) (res CreateEntryRes, _ error) {
@@ -643,7 +642,7 @@ func decodeGetBuildInfoResponse(resp *http.Response) (res GetBuildInfoRes, _ err
 			return res, validate.InvalidContentType(ct)
 		}
 	}
-	return res, validate.UnexpectedStatusCode(resp.StatusCode)
+	return res, validate.UnexpectedStatusCodeWithResponse(resp)
 }
 
 func decodeGetEntryByDynamicPathResponse(resp *http.Response) (res GetEntryByDynamicPathRes, _ error) {
@@ -1579,5 +1578,5 @@ func decodeUploadFileResponse(resp *http.Response) (res UploadFileRes, _ error) 
 		// Code 400.
 		return &UploadFileBadRequest{}, nil
 	}
-	return res, validate.UnexpectedStatusCode(resp.StatusCode)
+	return res, validate.UnexpectedStatusCodeWithResponse(resp)
 }
