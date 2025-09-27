@@ -14,9 +14,8 @@ import (
 	sql "database/sql"
 	reflect "reflect"
 
-	gomock "go.uber.org/mock/gomock"
-
 	admindb "github.com/tokuhirom/blog4/db/admin/admindb"
+	gomock "go.uber.org/mock/gomock"
 )
 
 // MockEntryImageStore is a mock of EntryImageStore interface.
