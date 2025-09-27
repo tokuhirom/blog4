@@ -42,7 +42,7 @@ tasks:
 
   sqlc-public:
     cmds:
-      - sqlc generate -f ./db/public/sqlc-public.yml
+      - go tool sqlc generate -f ./db/public/sqlc-public.yml
     sources:
       - ./db/public/sqlc-public.yml
       - ./db/public/queries/**/*.sql

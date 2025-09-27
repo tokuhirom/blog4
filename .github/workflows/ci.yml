@@ -110,13 +110,6 @@ jobs:
         with:
           version: 3.45.3
 
-      - name: Install sqlc
-        run: |
-          curl -L https://github.com/sqlc-dev/sqlc/releases/download/v1.29.0/sqlc_1.29.0_linux_amd64.tar.gz -o sqlc.tar.gz
-          tar -xzf sqlc.tar.gz
-          sudo mv sqlc /usr/local/bin/
-          rm sqlc.tar.gz
-
       - name: Install dependencies with pnpm
         run: pnpm install --frozen-lockfile
         working-directory: web/admin
