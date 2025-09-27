@@ -79,7 +79,7 @@ tasks:
 
   npmi:
     cmds:
-      - pnpm install
+      - pnpm install --frozen-lockfile
     dir: ./web/admin
     sources:
       - ./web/admin/package.json
