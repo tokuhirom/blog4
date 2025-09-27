@@ -105,10 +105,10 @@ jobs:
       - name: Install TypeSpec dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Install go-task
-        run: |
-          sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d
-          sudo mv ./bin/task /usr/local/bin/
+      - name: Install Task
+        uses: go-task/setup-task@0ab1b2a65bc55236a3bc64cde78f80e20e8885c2 # v1
+        with:
+          version: 3.45.3
 
       - name: Install sqlc
         run: |
