@@ -1,15 +1,12 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
+  "extends": ["config:recommended"],
   "automerge": true,
-  "lockFileMaintenance": {
-    "enabled": true
-  },
-  "postUpdateOptions": [
-    "pnpmDedupe"
-  ],
+  "dependencyDashboard": true,
+  "internalChecksFilter": "strict",
+  "minimumReleaseAge": "3 days",
+  "lockFileMaintenance": { "enabled": true },
+  "postUpdateOptions": ["pnpmDedupe"],
   "packageRules": [
     {
       "matchManagers": ["npm"],
