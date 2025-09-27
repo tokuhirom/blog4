@@ -149,6 +149,8 @@ jobs:
             echo ""
             echo "Changed files:"
             git status --porcelain
+            echo "Diff:"
+            git diff | head -n 300
             exit 1
           fi
 
