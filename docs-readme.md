@@ -12,7 +12,7 @@ To generate and preview the API documentation locally:
 
 ```bash
 # Install dependencies
-pnpm install
+pnpm install --frozen-lockfile
 
 # Generate OpenAPI spec from TypeSpec
 pnpm run tsp
