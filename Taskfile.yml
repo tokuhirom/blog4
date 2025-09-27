@@ -5,6 +5,7 @@ interval: 500ms
 tasks:
   tsp:
     cmds:
+      - pnpm install --frozen-lockfile
       - pnpm run tsp
     sources:
       - typespec/**/*.tsp
