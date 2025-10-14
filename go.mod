@@ -11,7 +11,7 @@ require (
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.1.0
 	github.com/go-sql-driver/mysql v1.9.3
-	github.com/goark/pa-api v0.12.7
+	github.com/goark/pa-api v0.14.0
 	github.com/gorilla/feeds v1.2.0
 	github.com/minio/minio-go/v7 v7.0.95
 	github.com/ogen-go/ogen v1.15.1
