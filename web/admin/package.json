@@ -28,7 +28,7 @@
 		"@types/react": "^19.1.15",
 		"@types/react-dom": "^19.1.9",
 		"@vitejs/plugin-react": "^5.0.4",
-		"autoprefixer": "^10.4.21",
+		"autoprefixer": "^10.4.22",
 		"globals": "^16.4.0",
 		"husky": "^9.1.7",
 		"lint-staged": "^16.2.3",
