@@ -178,7 +178,7 @@ func (c *Client) sendAuthCheck(ctx context.Context) (res AuthCheckRes, err error
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("Auth_check"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/auth/check"),
+		semconv.URLTemplateKey.String("/auth/check"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
@@ -251,7 +251,7 @@ func (c *Client) sendAuthLogin(ctx context.Context, request *LoginRequest) (res 
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("Auth_login"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/auth/login"),
+		semconv.URLTemplateKey.String("/auth/login"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
@@ -327,7 +327,7 @@ func (c *Client) sendAuthLogout(ctx context.Context) (res AuthLogoutRes, err err
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("Auth_logout"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/auth/logout"),
+		semconv.URLTemplateKey.String("/auth/logout"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
@@ -400,7 +400,7 @@ func (c *Client) sendCreateEntry(ctx context.Context, request *CreateEntryReques
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createEntry"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/entries"),
+		semconv.URLTemplateKey.String("/entries"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
@@ -476,7 +476,7 @@ func (c *Client) sendDeleteEntry(ctx context.Context, params DeleteEntryParams) 
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("deleteEntry"),
 		semconv.HTTPRequestMethodKey.String("DELETE"),
-		semconv.HTTPRouteKey.String("/entries/{path}"),
+		semconv.URLTemplateKey.String("/entries/{path}"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
@@ -567,7 +567,7 @@ func (c *Client) sendGetAllEntryTitles(ctx context.Context) (res GetAllEntryTitl
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getAllEntryTitles"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/entries/titles"),
+		semconv.URLTemplateKey.String("/entries/titles"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
@@ -638,7 +638,7 @@ func (c *Client) sendGetBuildInfo(ctx context.Context) (res GetBuildInfoRes, err
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getBuildInfo"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/build-info"),
+		semconv.URLTemplateKey.String("/build-info"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
@@ -711,7 +711,7 @@ func (c *Client) sendGetEntryByDynamicPath(ctx context.Context, params GetEntryB
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getEntryByDynamicPath"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/entries/{path}"),
+		semconv.URLTemplateKey.String("/entries/{path}"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
@@ -802,7 +802,7 @@ func (c *Client) sendGetLatestEntries(ctx context.Context, params GetLatestEntri
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getLatestEntries"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/entries"),
+		semconv.URLTemplateKey.String("/entries"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
@@ -896,7 +896,7 @@ func (c *Client) sendGetLinkPallet(ctx context.Context, params GetLinkPalletPara
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getLinkPallet"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/entries/{path}/link-pallet"),
+		semconv.URLTemplateKey.String("/entries/{path}/link-pallet"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
@@ -988,7 +988,7 @@ func (c *Client) sendGetLinkedEntryPaths(ctx context.Context, params GetLinkedEn
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("getLinkedEntryPaths"),
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/entries/{path}/linked-paths"),
+		semconv.URLTemplateKey.String("/entries/{path}/linked-paths"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
@@ -1080,7 +1080,7 @@ func (c *Client) sendRegenerateEntryImage(ctx context.Context, params Regenerate
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("regenerateEntryImage"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/entries/{path}/regenerate-image"),
+		semconv.URLTemplateKey.String("/entries/{path}/regenerate-image"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
@@ -1172,7 +1172,7 @@ func (c *Client) sendUpdateEntryBody(ctx context.Context, request *UpdateEntryBo
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateEntryBody"),
 		semconv.HTTPRequestMethodKey.String("PUT"),
-		semconv.HTTPRouteKey.String("/entries/{path}/body"),
+		semconv.URLTemplateKey.String("/entries/{path}/body"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
@@ -1267,7 +1267,7 @@ func (c *Client) sendUpdateEntryTitle(ctx context.Context, request *UpdateEntryT
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateEntryTitle"),
 		semconv.HTTPRequestMethodKey.String("PUT"),
-		semconv.HTTPRouteKey.String("/entries/{path}/title"),
+		semconv.URLTemplateKey.String("/entries/{path}/title"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
@@ -1362,7 +1362,7 @@ func (c *Client) sendUpdateEntryVisibility(ctx context.Context, request *UpdateV
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("updateEntryVisibility"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/entries/{path}/visibility"),
+		semconv.URLTemplateKey.String("/entries/{path}/visibility"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 
@@ -1455,7 +1455,7 @@ func (c *Client) sendUploadFile(ctx context.Context, request *UploadFileBodyMult
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("uploadFile"),
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/upload"),
+		semconv.URLTemplateKey.String("/upload"),
 	}
 	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
 

@@ -150,7 +150,7 @@ func decodeGetEntryByDynamicPathParams(args [1]string, argsEscaped bool, r *http
 // GetLatestEntriesParams is parameters of getLatestEntries operation.
 type GetLatestEntriesParams struct {
 	// Filter entries by the last edited date.
-	LastLastEditedAt OptDateTime
+	LastLastEditedAt OptDateTime `json:",omitempty,omitzero"`
 }
 
 func unpackGetLatestEntriesParams(packed middleware.Parameters) (params GetLatestEntriesParams) {
