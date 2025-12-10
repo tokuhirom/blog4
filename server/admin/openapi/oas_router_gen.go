@@ -443,12 +443,13 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // Route is route object.
 type Route struct {
-	name        string
-	summary     string
-	operationID string
-	pathPattern string
-	count       int
-	args        [1]string
+	name           string
+	summary        string
+	operationID    string
+	operationGroup string
+	pathPattern    string
+	count          int
+	args           [1]string
 }
 
 // Name returns ogen operation name.
@@ -466,6 +467,11 @@ func (r Route) Summary() string {
 // OperationID returns OpenAPI operationId.
 func (r Route) OperationID() string {
 	return r.operationID
+}
+
+// OperationGroup returns the x-ogen-operation-group value.
+func (r Route) OperationGroup() string {
+	return r.operationGroup
 }
 
 // PathPattern returns OpenAPI path.
@@ -555,6 +561,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = AuthCheckOperation
 							r.summary = "Check if user is authenticated"
 							r.operationID = "Auth_check"
+							r.operationGroup = ""
 							r.pathPattern = "/auth/check"
 							r.args = args
 							r.count = 0
@@ -591,6 +598,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = AuthLoginOperation
 								r.summary = "Login with username and password"
 								r.operationID = "Auth_login"
+								r.operationGroup = ""
 								r.pathPattern = "/auth/login"
 								r.args = args
 								r.count = 0
@@ -615,6 +623,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = AuthLogoutOperation
 								r.summary = "Logout and invalidate session"
 								r.operationID = "Auth_logout"
+								r.operationGroup = ""
 								r.pathPattern = "/auth/logout"
 								r.args = args
 								r.count = 0
@@ -643,6 +652,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = GetBuildInfoOperation
 						r.summary = ""
 						r.operationID = "getBuildInfo"
+						r.operationGroup = ""
 						r.pathPattern = "/build-info"
 						r.args = args
 						r.count = 0
@@ -666,6 +676,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = GetLatestEntriesOperation
 						r.summary = "Get latest entries"
 						r.operationID = "getLatestEntries"
+						r.operationGroup = ""
 						r.pathPattern = "/entries"
 						r.args = args
 						r.count = 0
@@ -674,6 +685,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = CreateEntryOperation
 						r.summary = "Create a new entry"
 						r.operationID = "createEntry"
+						r.operationGroup = ""
 						r.pathPattern = "/entries"
 						r.args = args
 						r.count = 0
@@ -710,6 +722,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 								r.name = GetAllEntryTitlesOperation
 								r.summary = "Get all entry titles"
 								r.operationID = "getAllEntryTitles"
+								r.operationGroup = ""
 								r.pathPattern = "/entries/titles"
 								r.args = args
 								r.count = 0
@@ -736,6 +749,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = DeleteEntryOperation
 							r.summary = "Delete an entry"
 							r.operationID = "deleteEntry"
+							r.operationGroup = ""
 							r.pathPattern = "/entries/{path}"
 							r.args = args
 							r.count = 1
@@ -744,6 +758,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = GetEntryByDynamicPathOperation
 							r.summary = "Get entry by dynamic path"
 							r.operationID = "getEntryByDynamicPath"
+							r.operationGroup = ""
 							r.pathPattern = "/entries/{path}"
 							r.args = args
 							r.count = 1
@@ -780,6 +795,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									r.name = UpdateEntryBodyOperation
 									r.summary = "Update entry body"
 									r.operationID = "updateEntryBody"
+									r.operationGroup = ""
 									r.pathPattern = "/entries/{path}/body"
 									r.args = args
 									r.count = 1
@@ -816,6 +832,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 										r.name = GetLinkPalletOperation
 										r.summary = "Get linked entry paths"
 										r.operationID = "getLinkPallet"
+										r.operationGroup = ""
 										r.pathPattern = "/entries/{path}/link-pallet"
 										r.args = args
 										r.count = 1
@@ -840,6 +857,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 										r.name = GetLinkedEntryPathsOperation
 										r.summary = "Get linked entry paths"
 										r.operationID = "getLinkedEntryPaths"
+										r.operationGroup = ""
 										r.pathPattern = "/entries/{path}/linked-paths"
 										r.args = args
 										r.count = 1
@@ -866,6 +884,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									r.name = RegenerateEntryImageOperation
 									r.summary = "Regenerate entry image"
 									r.operationID = "regenerateEntryImage"
+									r.operationGroup = ""
 									r.pathPattern = "/entries/{path}/regenerate-image"
 									r.args = args
 									r.count = 1
@@ -890,6 +909,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									r.name = UpdateEntryTitleOperation
 									r.summary = "Update entry title"
 									r.operationID = "updateEntryTitle"
+									r.operationGroup = ""
 									r.pathPattern = "/entries/{path}/title"
 									r.args = args
 									r.count = 1
@@ -914,6 +934,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 									r.name = UpdateEntryVisibilityOperation
 									r.summary = "Update entry visibility"
 									r.operationID = "updateEntryVisibility"
+									r.operationGroup = ""
 									r.pathPattern = "/entries/{path}/visibility"
 									r.args = args
 									r.count = 1
@@ -944,6 +965,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.name = UploadFileOperation
 						r.summary = ""
 						r.operationID = "uploadFile"
+						r.operationGroup = ""
 						r.pathPattern = "/upload"
 						r.args = args
 						r.count = 0
