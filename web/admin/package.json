@@ -27,7 +27,7 @@
 		"@playwright/test": "^1.55.1",
 		"@types/react": "^19.2.7",
 		"@types/react-dom": "^19.2.3",
-		"@vitejs/plugin-react": "^5.0.4",
+		"@vitejs/plugin-react": "^5.1.2",
 		"autoprefixer": "^10.4.22",
 		"globals": "^16.4.0",
 		"husky": "^9.1.7",
