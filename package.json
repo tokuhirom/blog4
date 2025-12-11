@@ -28,6 +28,6 @@
     "@typespec/http": "^1.6.0",
     "@typespec/openapi": "^1.6.0",
     "@typespec/openapi3": "^1.4.0",
-    "@typespec/rest": "^0.74.0"
+    "@typespec/rest": "^0.76.0"
   }
 }
