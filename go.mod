@@ -9,7 +9,7 @@ require (
 	github.com/go-chi/chi/v5 v5.2.3
 	github.com/go-chi/cors v1.2.2
 	github.com/go-faster/errors v0.7.1
-	github.com/go-faster/jx v1.1.0
+	github.com/go-faster/jx v1.2.0
 	github.com/go-sql-driver/mysql v1.9.3
 	github.com/goark/pa-api v0.12.7
 	github.com/gorilla/feeds v1.2.0
@@ -96,7 +96,7 @@ require (
 	github.com/riza-io/grpc-go v0.2.0 // indirect
 	github.com/rs/xid v1.6.0 // indirect
 	github.com/sajari/fuzzy v1.0.0 // indirect
-	github.com/segmentio/asm v1.2.0 // indirect
+	github.com/segmentio/asm v1.2.1 // indirect
 	github.com/sergi/go-diff v1.3.2-0.20230802210424-5b0b94c5c0d3 // indirect
 	github.com/skeema/knownhosts v1.3.1 // indirect
 	github.com/spf13/cobra v1.9.1 // indirect
