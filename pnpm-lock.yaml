@@ -12,7 +12,7 @@ importers:
         specifier: ^1.7.0
         version: 1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2))
       '@typespec/openapi':
-        specifier: ^1.6.0
+        specifier: ^1.7.0
         version: 1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2)))
       '@typespec/openapi3':
         specifier: ^1.6.0
