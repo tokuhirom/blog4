@@ -25,7 +25,7 @@
     "@redocly/cli": "^2.12.5"
   },
   "dependencies": {
-    "@typespec/http": "^1.6.0",
+    "@typespec/http": "^1.7.0",
     "@typespec/openapi": "^1.6.0",
     "@typespec/openapi3": "^1.6.0",
     "@typespec/rest": "^0.76.0"
