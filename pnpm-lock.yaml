@@ -10,23 +10,23 @@ importers:
     dependencies:
       '@typespec/http':
         specifier: ^1.7.0
-        version: 1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2))
+        version: 1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2))
       '@typespec/openapi':
         specifier: ^1.7.0
-        version: 1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2)))
+        version: 1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2)))
       '@typespec/openapi3':
         specifier: ^1.7.0
-        version: 1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2)))(@typespec/openapi@1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2))))
+        version: 1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2)))(@typespec/openapi@1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2))))
       '@typespec/rest':
         specifier: ^0.77.0
-        version: 0.77.0(@typespec/compiler@1.7.0(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2)))
+        version: 0.77.0(@typespec/compiler@1.7.1(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2)))
     devDependencies:
       '@redocly/cli':
         specifier: ^2.12.6
         version: 2.12.6(@opentelemetry/api@1.9.0)(ajv@8.17.1)(core-js@3.45.1)
       '@typespec/compiler':
-        specifier: ^1.7.0
-        version: 1.7.0(@types/node@24.5.2)
+        specifier: ^1.7.1
+        version: 1.7.1(@types/node@24.5.2)
 
 packages:
 
@@ -398,8 +398,8 @@ packages:
     peerDependencies:
       '@typespec/compiler': ^1.7.0
 
-  '@typespec/compiler@1.7.0':
-    resolution: {integrity: sha512-KE2t5I7u/33M/nsIxdng06FUPrqaGSbMsSEsv51eMwYnj3v1+Z3qTTX/dxHAXRXHcfadNlX/NtyAKju+pkMTFQ==}
+  '@typespec/compiler@1.7.1':
+    resolution: {integrity: sha512-sb3MEsKjFlAx8ZG484exs5Ec+JwmYf2anJqLjMusrV3rRMUhv3fbEulk9MD+l4eOkBS46VMNGqRu0wTn8suVVA==}
     engines: {node: '>=20.0.0'}
     hasBin: true
 
@@ -1821,11 +1821,11 @@ snapshots:
   '@types/trusted-types@2.0.7':
     optional: true
 
-  '@typespec/asset-emitter@0.77.0(@typespec/compiler@1.7.0(@types/node@24.5.2))':
+  '@typespec/asset-emitter@0.77.0(@typespec/compiler@1.7.1(@types/node@24.5.2))':
     dependencies:
-      '@typespec/compiler': 1.7.0(@types/node@24.5.2)
+      '@typespec/compiler': 1.7.1(@types/node@24.5.2)
 
-  '@typespec/compiler@1.7.0(@types/node@24.5.2)':
+  '@typespec/compiler@1.7.1(@types/node@24.5.2)':
     dependencies:
       '@babel/code-frame': 7.27.1
       '@inquirer/prompts': 8.0.2(@types/node@24.5.2)
@@ -1847,30 +1847,30 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  '@typespec/http@1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2))':
+  '@typespec/http@1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2))':
     dependencies:
-      '@typespec/compiler': 1.7.0(@types/node@24.5.2)
+      '@typespec/compiler': 1.7.1(@types/node@24.5.2)
 
-  '@typespec/openapi3@1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2)))(@typespec/openapi@1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2))))':
+  '@typespec/openapi3@1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2)))(@typespec/openapi@1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2))))':
     dependencies:
       '@scalar/json-magic': 0.8.6
       '@scalar/openapi-parser': 0.23.7
       '@scalar/openapi-types': 0.5.3
-      '@typespec/asset-emitter': 0.77.0(@typespec/compiler@1.7.0(@types/node@24.5.2))
-      '@typespec/compiler': 1.7.0(@types/node@24.5.2)
-      '@typespec/http': 1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2))
-      '@typespec/openapi': 1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2)))
+      '@typespec/asset-emitter': 0.77.0(@typespec/compiler@1.7.1(@types/node@24.5.2))
+      '@typespec/compiler': 1.7.1(@types/node@24.5.2)
+      '@typespec/http': 1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2))
+      '@typespec/openapi': 1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2)))
       yaml: 2.8.1
 
-  '@typespec/openapi@1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2)))':
+  '@typespec/openapi@1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2)))':
     dependencies:
-      '@typespec/compiler': 1.7.0(@types/node@24.5.2)
-      '@typespec/http': 1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2))
+      '@typespec/compiler': 1.7.1(@types/node@24.5.2)
+      '@typespec/http': 1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2))
 
-  '@typespec/rest@0.77.0(@typespec/compiler@1.7.0(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2)))':
+  '@typespec/rest@0.77.0(@typespec/compiler@1.7.1(@types/node@24.5.2))(@typespec/http@1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2)))':
     dependencies:
-      '@typespec/compiler': 1.7.0(@types/node@24.5.2)
-      '@typespec/http': 1.7.0(@typespec/compiler@1.7.0(@types/node@24.5.2))
+      '@typespec/compiler': 1.7.1(@types/node@24.5.2)
+      '@typespec/http': 1.7.0(@typespec/compiler@1.7.1(@types/node@24.5.2))
 
   abort-controller@3.0.0:
     dependencies:
