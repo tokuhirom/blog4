@@ -22,7 +22,7 @@
   "packageManager": "pnpm@10.26.0",
   "devDependencies": {
     "@typespec/compiler": "^1.7.1",
-    "@redocly/cli": "^2.12.7"
+    "@redocly/cli": "^2.13.0"
   },
   "dependencies": {
     "@typespec/http": "^1.7.0",
