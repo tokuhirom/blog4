@@ -1,19 +1,12 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin - Entry List</title>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="/admin/htmx/static/entries.css">
-</head>
-<body>
-    <nav class="admin-nav">
-        <a href="/">Blog</a>
-        <a href="/admin/">React Admin</a>
-        <a href="/admin/htmx/entries" class="active">htmx Admin</a>
-    </nav>
+{{template "layout" .}}
 
+{{define "title"}}Admin - Entry List{{end}}
+
+{{define "extra-css"}}<link rel="stylesheet" href="/admin/htmx/static/entries.css">{{end}}
+
+{{define "nav-entries-active"}}class="active"{{end}}
+
+{{define "content"}}
     <div class="admin-container">
         <div class="search-box">
             <input
@@ -46,7 +39,9 @@
         </div>
         {{end}}
     </div>
+{{end}}
 
+{{define "extra-scripts"}}
     <script>
         document.addEventListener('keydown', async (e) => {
             if (e.key === 'c' && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey
@@ -80,5 +75,4 @@
             }
         }
     </script>
-</body>
-</html>
+{{end}}

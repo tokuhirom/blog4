@@ -143,6 +143,7 @@ func (h *HtmxHandler) RenderEntriesPage(w http.ResponseWriter, r *http.Request) 
 	} else {
 		// For regular requests, return the full page
 		tmpl, err2 = template.ParseFiles(
+			"web/templates/admin/layout.html",
 			"web/templates/admin/htmx_entries.html",
 			"web/templates/admin/htmx_entry_cards.html",
 		)
@@ -159,7 +160,7 @@ func (h *HtmxHandler) RenderEntriesPage(w http.ResponseWriter, r *http.Request) 
 	if isHtmxRequest {
 		err2 = tmpl.ExecuteTemplate(w, "entry-cards", data)
 	} else {
-		err2 = tmpl.Execute(w, data)
+		err2 = tmpl.ExecuteTemplate(w, "layout", data)
 	}
 
 	if err2 != nil {
@@ -198,7 +199,10 @@ func (h *HtmxHandler) RenderEntryEditPage(w http.ResponseWriter, r *http.Request
 		Visibility: string(entry.Visibility),
 	}
 
-	tmpl, err := template.ParseFiles("web/templates/admin/htmx_entry_edit.html")
+	tmpl, err := template.ParseFiles(
+		"web/templates/admin/layout.html",
+		"web/templates/admin/htmx_entry_edit.html",
+	)
 	if err != nil {
 		slog.Error("failed to parse template", slog.Any("error", err))
 		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
@@ -206,7 +210,7 @@ func (h *HtmxHandler) RenderEntryEditPage(w http.ResponseWriter, r *http.Request
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	err = tmpl.Execute(w, data)
+	err = tmpl.ExecuteTemplate(w, "layout", data)
 	if err != nil {
 		slog.Error("failed to execute template", slog.Any("error", err))
 	}

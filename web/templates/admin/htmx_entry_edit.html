@@ -1,22 +1,16 @@
-<!DOCTYPE html>
-<html lang="ja">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{.Title}} - Admin</title>
-    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="/admin/htmx/static/entry-edit.css">
-</head>
-<body>
-    <nav class="admin-nav">
-        <a href="/">Blog</a>
-        <a href="/admin/">React Admin</a>
-        <a href="/admin/htmx/entries">htmx Entries</a>
-        {{if eq .Visibility "public"}}
-        <a href="/entry/{{.Path}}" target="_blank">View Public Page</a>
-        {{end}}
-    </nav>
+{{template "layout" .}}
 
+{{define "title"}}{{.Title}} - Admin{{end}}
+
+{{define "extra-css"}}<link rel="stylesheet" href="/admin/htmx/static/entry-edit.css">{{end}}
+
+{{define "extra-nav"}}
+    {{if eq .Visibility "public"}}
+    <a href="/entry/{{.Path}}" target="_blank">View Public Page</a>
+    {{end}}
+{{end}}
+
+{{define "content"}}
     <div class="edit-container">
         <div class="edit-main">
             <!-- Title Input -->
@@ -97,7 +91,9 @@
             </div>
         </div>
     </div>
+{{end}}
 
+{{define "extra-scripts"}}
     <script>
         // Visibility change confirmation
         async function confirmVisibilityChange(event, path, newValue) {
@@ -168,5 +164,4 @@
             }
         }
     </script>
-</body>
-</html>
+{{end}}

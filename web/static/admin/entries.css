@@ -1,39 +1,4 @@
-* { box-sizing: border-box; }
-
-body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    background: #fafafa;
-    color: #333;
-}
-
-/* Navigation */
-.admin-nav {
-    background: #1976d2;
-    padding: 16px 24px;
-    display: flex;
-    gap: 20px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.admin-nav a {
-    color: white;
-    text-decoration: none;
-    padding: 8px 16px;
-    border-radius: 4px;
-    transition: background 0.2s;
-}
-
-.admin-nav a:hover, .admin-nav a.active {
-    background: rgba(255,255,255,0.2);
-}
-
-/* Container */
-.admin-container {
-    max-width: 1600px;
-    margin: 0 auto;
-    padding: 24px;
-}
+/* Entry list page specific styles */
 
 /* Search */
 .search-box {
@@ -63,7 +28,7 @@ body {
     font-size: 14px;
 }
 
-/* Entry Grid - Material-UI Grid matching */
+/* Entry Grid - Responsive */
 .entry-grid {
     display: grid;
     gap: 16px;
@@ -72,27 +37,22 @@ body {
 
 /* Responsive breakpoints matching Material-UI */
 @media (max-width: 599px) {
-    /* xs: 12 columns = 1 card per row */
     .entry-grid { grid-template-columns: repeat(1, 1fr); }
 }
 
 @media (min-width: 600px) and (max-width: 899px) {
-    /* sm: 6 columns = 2 cards per row */
     .entry-grid { grid-template-columns: repeat(2, 1fr); }
 }
 
 @media (min-width: 900px) and (max-width: 1199px) {
-    /* md: 4 columns = 3 cards per row */
     .entry-grid { grid-template-columns: repeat(3, 1fr); }
 }
 
 @media (min-width: 1200px) and (max-width: 1535px) {
-    /* lg: 3 columns = 4 cards per row */
     .entry-grid { grid-template-columns: repeat(4, 1fr); }
 }
 
 @media (min-width: 1536px) {
-    /* xl: 2 columns = 6 cards per row */
     .entry-grid { grid-template-columns: repeat(6, 1fr); }
 }
 
@@ -210,14 +170,4 @@ body {
     text-align: center;
     padding: 32px;
     color: rgba(0, 0, 0, 0.6);
-}
-
-/* htmx indicators */
-.htmx-request .loading {
-    display: block;
-}
-
-.htmx-request.htmx-added {
-    opacity: 0;
-    transition: opacity 200ms ease-in;
 }
