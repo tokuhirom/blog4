@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} - Admin</title>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/admin/htmx/static/entry-edit.css">
+</head>
+<body>
+    <nav class="admin-nav">
+        <a href="/">Blog</a>
+        <a href="/admin/">React Admin</a>
+        <a href="/admin/htmx/entries">htmx Entries</a>
+        {{if eq .Visibility "public"}}
+        <a href="/entry/{{.Path}}" target="_blank">View Public Page</a>
+        {{end}}
+    </nav>
+
+    <div class="edit-container">
+        <div class="edit-main">
+            <!-- Title Input -->
+            <div class="title-section">
+                <input
+                    type="text"
+                    name="title"
+                    value="{{.Title}}"
+                    placeholder="Entry Title"
+                    class="title-input"
+                    hx-post="/admin/htmx/entries/{{.Path}}/title"
+                    hx-trigger="keyup changed delay:500ms"
+                    hx-target="#save-feedback"
+                    hx-swap="innerHTML"
+                />
+            </div>
+
+            <!-- Body Editor -->
+            <div class="body-section">
+                <textarea
+                    name="body"
+                    placeholder="Write your markdown here..."
+                    class="body-textarea"
+                    hx-post="/admin/htmx/entries/{{.Path}}/body"
+                    hx-trigger="keyup changed delay:800ms"
+                    hx-target="#save-feedback"
+                    hx-swap="innerHTML"
+                >{{.Body}}</textarea>
+            </div>
+        </div>
+
+        <div class="edit-sidebar">
+            <!-- Save Feedback -->
+            <div id="save-feedback" class="save-feedback"></div>
+
+            <!-- Visibility Control -->
+            <div class="control-panel">
+                <h3>Visibility</h3>
+                <form id="visibility-form" class="visibility-control">
+                    <label class="radio-label">
+                        <input
+                            type="radio"
+                            name="visibility"
+                            value="private"
+                            {{if eq .Visibility "private"}}checked{{end}}
+                            onclick="confirmVisibilityChange(event, '{{.Path}}', 'private')"
+                        />
+                        <span>Private</span>
+                    </label>
+                    <label class="radio-label">
+                        <input
+                            type="radio"
+                            name="visibility"
+                            value="public"
+                            {{if eq .Visibility "public"}}checked{{end}}
+                            onclick="confirmVisibilityChange(event, '{{.Path}}', 'public')"
+                        />
+                        <span>Public</span>
+                    </label>
+                </form>
+            </div>
+
+            <!-- Actions -->
+            <div class="control-panel">
+                <h3>Actions</h3>
+                <button
+                    class="btn btn-danger"
+                    onclick="confirmDelete(event, '{{.Path}}')">
+                    🗑 Delete Entry
+                </button>
+                <button
+                    class="btn btn-secondary"
+                    hx-post="/admin/htmx/entries/{{.Path}}/image/regenerate"
+                    hx-target="#save-feedback"
+                    hx-swap="innerHTML">
+                    🔄 Regenerate Image
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Visibility change confirmation
+        async function confirmVisibilityChange(event, path, newValue) {
+            const input = event.target;
+            const currentValue = input.checked ? newValue : (newValue === 'private' ? 'public' : 'private');
+
+            if (!confirm(`Change visibility to "${newValue}"?`)) {
+                event.preventDefault();
+                // Restore previous selection
+                document.querySelectorAll('input[name="visibility"]').forEach(radio => {
+                    radio.checked = (radio.value === currentValue);
+                });
+                return;
+            }
+
+            // Update visibility via API
+            try {
+                const res = await fetch(`/admin/api/entries/${path}/visibility`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({visibility: newValue})
+                });
+
+                if (res.ok) {
+                    document.getElementById('save-feedback').innerHTML =
+                        '<div class="feedback-success">Visibility updated!</div>';
+                    setTimeout(() => {
+                        document.getElementById('save-feedback').innerHTML = '';
+                    }, 2000);
+
+                    // Refresh page to update nav link
+                    setTimeout(() => location.reload(), 500);
+                } else {
+                    throw new Error('Failed to update visibility');
+                }
+            } catch (err) {
+                console.error('Error updating visibility:', err);
+                alert('Failed to update visibility');
+                // Restore previous selection
+                document.querySelectorAll('input[name="visibility"]').forEach(radio => {
+                    radio.checked = (radio.value === currentValue);
+                });
+            }
+        }
+
+        // Delete confirmation
+        async function confirmDelete(event, path) {
+            event.preventDefault();
+
+            if (!confirm(`Are you sure you want to delete this entry? This action cannot be undone.`)) {
+                return;
+            }
+
+            try {
+                const res = await fetch(`/admin/api/entries/${path}`, {
+                    method: 'DELETE'
+                });
+
+                if (res.ok) {
+                    alert('Entry deleted successfully');
+                    window.location.href = '/admin/htmx/entries';
+                } else {
+                    throw new Error('Failed to delete entry');
+                }
+            } catch (err) {
+                console.error('Error deleting entry:', err);
+                alert('Failed to delete entry');
+            }
+        }
+    </script>
+</body>
+</html>

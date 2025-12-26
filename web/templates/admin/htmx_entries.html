@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin - Entry List</title>
-    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="/admin/htmx/static/entries.css">
 </head>
 <body>
@@ -64,7 +64,7 @@
                         body: JSON.stringify({title})
                     });
                     const data = await res.json();
-                    window.location.href = `/admin/entry/${data.path}`;
+                    window.location.href = `/admin/htmx/entries/${data.path}/edit`;
                 } catch (err) {
                     console.error('Failed to create entry:', err);
                     alert('Failed to create new entry');
@@ -74,9 +74,9 @@
 
         function handleCardClick(event, path) {
             if (event.metaKey || event.ctrlKey) {
-                window.open(`/admin/entry/${path}`, '_blank');
+                window.open(`/admin/htmx/entries/${path}/edit`, '_blank');
             } else {
-                window.location.href = `/admin/entry/${path}`;
+                window.location.href = `/admin/htmx/entries/${path}/edit`;
             }
         }
     </script>

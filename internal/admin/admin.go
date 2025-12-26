@@ -114,6 +114,10 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 		http.Redirect(w, r, "/admin/htmx/entries/search", http.StatusFound)
 	})
 	htmxRouter.Get("/entries/search", RenderHtmxEntriesPage(queries))
+	htmxRouter.Get("/entries/{path}/edit", RenderHtmxEntryEditPage(queries))
+	htmxRouter.Post("/entries/{path}/title", UpdateEntryTitleHtmx(queries))
+	htmxRouter.Post("/entries/{path}/body", UpdateEntryBodyHtmx(queries))
+	htmxRouter.Post("/entries/{path}/image/regenerate", RegenerateEntryImageHtmx(queries))
 	htmxRouter.Handle("/static/*", http.StripPrefix("/admin/htmx/static/",
 		http.FileServer(http.Dir("web/static/admin"))))
 	r.Mount("/htmx/", htmxRouter)
