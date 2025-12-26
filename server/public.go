@@ -1,7 +1,6 @@
 package server
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"html/template"
@@ -13,12 +12,9 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"github.com/go-chi/chi/v5"
-
-	"github.com/tokuhirom/blog4/db/public/publicdb"
-
+	"github.com/gin-gonic/gin"
 	"github.com/gorilla/feeds"
-
+	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/tokuhirom/blog4/internal/markdown"
 	"github.com/tokuhirom/blog4/web"
 )
@@ -59,21 +55,21 @@ func summarizeEntry(body string, length int) string {
 	return body
 }
 
-func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Queries) {
+func RenderTopPage(c *gin.Context, queries *publicdb.Queries) {
 	// Parse and execute the template
 	tmpl, err := template.ParseFS(web.TemplateFS, "templates/index.html")
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
 	// get query parameter 'page'
 	page := 1
-	if pageStr := r.URL.Query().Get("page"); pageStr != "" {
+	if pageStr := c.Query("page"); pageStr != "" {
 		page, err = strconv.Atoi(pageStr)
 		if err != nil {
 			slog.Error("failed to parse page number", slog.String("page", pageStr), slog.Any("error", err))
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			c.String(http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
 	}
@@ -81,13 +77,13 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Que
 	entriesPerPage := 60
 	offset := (page - 1) * entriesPerPage
 
-	entries, err := queries.SearchEntries(r.Context(), publicdb.SearchEntriesParams{
+	entries, err := queries.SearchEntries(c.Request.Context(), publicdb.SearchEntriesParams{
 		Limit:  int32(entriesPerPage + 1),
 		Offset: int32(offset),
 	})
 	if err != nil {
 		slog.Error("failed to search entries", slog.Int("page", page), slog.Any("error", err))
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
@@ -107,7 +103,7 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Que
 			formattedDate = entry.PublishedAt.Time.Format("2006-01-02(Mon)")
 		} else {
 			slog.Error("published_at is invalid", slog.String("path", entry.Path), slog.Any("published_at", entry.PublishedAt))
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+			c.String(http.StatusInternalServerError, "Internal Server Error")
 			return
 		}
 
@@ -120,8 +116,8 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Que
 		})
 	}
 
-	w.WriteHeader(http.StatusOK)
-	err = tmpl.Execute(w, TopPageData{
+	c.Status(http.StatusOK)
+	err = tmpl.Execute(c.Writer, TopPageData{
 		Page:    page,
 		Prev:    page - 1,
 		Next:    page + 1,
@@ -130,20 +126,20 @@ func RenderTopPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Que
 		Entries: viewData,
 	})
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 }
 
-func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Queries) {
-	extractedPath := chi.URLParam(r, "*")
+func RenderEntryPage(c *gin.Context, queries *publicdb.Queries) {
+	extractedPath := c.Param("filepath")
 
-	md := markdown.NewMarkdown(r.Context(), queries)
+	md := markdown.NewMarkdown(c.Request.Context(), queries)
 
 	slog.Info("rendering entry page", slog.String("path", extractedPath))
-	entry, err := queries.GetEntryByPath(r.Context(), extractedPath)
+	entry, err := queries.GetEntryByPath(c.Request.Context(), extractedPath)
 	if err != nil {
 		slog.Error("failed to get entry by path", slog.String("path", extractedPath), slog.Any("error", err))
-		http.NotFound(w, r)
+		c.Status(http.StatusNotFound)
 		return
 	}
 
@@ -153,18 +149,18 @@ func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Q
 		formattedDate = formatDateTime(entry.PublishedAt.Time)
 	} else {
 		slog.Error("published_at is invalid", slog.String("path", entry.Path), slog.Any("published_at", entry.PublishedAt))
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
 	body, err := md.Render(entry.Body)
 	if err != nil {
 		slog.Error("failed to render markdown", slog.String("path", entry.Path), slog.Any("error", err))
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
-	relatedEntries, err := getRelatedEntries(r.Context(), queries, entry)
+	relatedEntries, err := getRelatedEntries(c.Request.Context(), queries, entry)
 	if err != nil {
 		slog.Error("failed to get related entries", slog.String("path", entry.Path), slog.Any("error", err))
 	}
@@ -186,13 +182,13 @@ func RenderEntryPage(w http.ResponseWriter, r *http.Request, queries *publicdb.Q
 	// Parse and execute the template
 	tmpl, err := template.ParseFS(web.TemplateFS, "templates/entry.html")
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
-	err = tmpl.Execute(w, data)
+	err = tmpl.Execute(c.Writer, data)
 	if err != nil {
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 }
 
@@ -243,14 +239,14 @@ func getRelatedEntries(context context.Context, queries *publicdb.Queries, entry
 	return uniqueEntries, nil
 }
 
-func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *publicdb.Queries) {
-	entries, err := queries.SearchEntries(request.Context(), publicdb.SearchEntriesParams{
+func RenderFeed(c *gin.Context, queries *publicdb.Queries) {
+	entries, err := queries.SearchEntries(c.Request.Context(), publicdb.SearchEntriesParams{
 		Limit:  10,
 		Offset: 0,
 	})
 	if err != nil {
 		slog.Error("failed to search entries for feed", slog.Any("error", err))
-		http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
+		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
@@ -262,7 +258,7 @@ func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *publ
 		Author:      &feeds.Author{Name: "Tokuhiro Matsuno", Email: "tokuhirom+blog-gmail.com"},
 		Created:     now,
 	}
-	md := markdown.NewMarkdown(request.Context(), queries)
+	md := markdown.NewMarkdown(c.Request.Context(), queries)
 	for _, entry := range entries {
 		render, err := md.Render(entry.Body)
 		if err != nil {
@@ -283,51 +279,48 @@ func RenderFeed(writer http.ResponseWriter, request *http.Request, queries *publ
 	rss, err := feed.ToRss()
 	if err != nil {
 		slog.Error("failed to generate RSS", slog.Any("error", err))
-		http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
+		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
-	writer.Header().Set("Content-Type", "application/rss+xml; charset=utf-8")
-	writer.WriteHeader(http.StatusOK)
-	_, err = writer.Write([]byte(rss))
-	if err != nil {
-		slog.Error("failed to write RSS response", slog.Any("error", err))
-		http.Error(writer, "Internal Server Error", http.StatusInternalServerError)
-		return
-	}
+	c.Header("Content-Type", "application/rss+xml; charset=utf-8")
+	c.String(http.StatusOK, rss)
 }
 
-func RenderStaticMainCss(writer http.ResponseWriter, request *http.Request) {
+func RenderStaticMainCss(c *gin.Context) {
 	// if ./web/static/main.css is available, serve it.
 	// hot reload.
 	if _, err := os.Stat("web/static/main.css"); err == nil {
-		writer.Header().Set("Cache-Control", "no-cache, no-store, must-revalidate")
-		writer.Header().Set("Pragma", "no-cache")
-		writer.Header().Set("Expires", "0")
+		c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+		c.Header("Pragma", "no-cache")
+		c.Header("Expires", "0")
 
-		http.ServeFile(writer, request, "web/static/main.css")
+		c.File("web/static/main.css")
 		return
 	}
 
-	writer.Header().Set("Content-Type", "text/css")
 	file, err := web.StaticFS.ReadFile("static/main.css")
 	if err != nil {
 		return
 	}
-	http.ServeContent(writer, request, "main.css", time.Time{}, bytes.NewReader(file))
+	c.Data(http.StatusOK, "text/css", file)
 }
 
-func Router(queries *publicdb.Queries) *chi.Mux {
-	r := chi.NewRouter()
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		RenderTopPage(w, r, queries)
+func Router(queries *publicdb.Queries) *gin.Engine {
+	r := gin.New()
+	r.Use(gin.Recovery())
+
+	r.GET("/", func(c *gin.Context) {
+		RenderTopPage(c, queries)
 	})
-	r.Get("/feed", func(w http.ResponseWriter, r *http.Request) {
-		RenderFeed(w, r, queries)
+	r.GET("/feed", func(c *gin.Context) {
+		RenderFeed(c, queries)
 	})
-	r.Get("/entry/*", func(w http.ResponseWriter, r *http.Request) {
-		RenderEntryPage(w, r, queries)
+	r.GET("/entry/*filepath", func(c *gin.Context) {
+		RenderEntryPage(c, queries)
 	})
-	r.Get("/static/main.css", RenderStaticMainCss)
+	r.GET("/static/main.css", func(c *gin.Context) {
+		RenderStaticMainCss(c)
+	})
 	return r
 }
