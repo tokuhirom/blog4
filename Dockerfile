@@ -31,6 +31,7 @@ COPY --from=backend-builder /app/blog4 /app/
 COPY --from=backend-builder /app/build-info.json /app/
 COPY --from=frontend-builder /app/web/admin/dist /app/web/admin/dist
 COPY web/static /app/web/static
+COPY web/templates /app/web/templates
 RUN apt-get update && apt-get install -y tzdata mysql-client openssl ca-certificates
 
 ARG GIT_HASH

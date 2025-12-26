@@ -17,7 +17,6 @@ import (
 
 	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/tokuhirom/blog4/internal/markdown"
-	"github.com/tokuhirom/blog4/web"
 )
 
 type TopPageData struct {
@@ -58,7 +57,7 @@ func summarizeEntry(body string, length int) string {
 
 func RenderTopPage(c *gin.Context, queries *publicdb.Queries) {
 	// Parse and execute the template
-	tmpl, err := template.ParseFS(web.TemplateFS, "templates/index.html")
+	tmpl, err := template.ParseFiles("web/templates/index.html")
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
@@ -181,7 +180,7 @@ func RenderEntryPage(c *gin.Context, queries *publicdb.Queries) {
 	}
 
 	// Parse and execute the template
-	tmpl, err := template.ParseFS(web.TemplateFS, "templates/entry.html")
+	tmpl, err := template.ParseFiles("web/templates/entry.html")
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
@@ -289,19 +288,10 @@ func RenderFeed(c *gin.Context, queries *publicdb.Queries) {
 }
 
 func RenderStaticMainCss(c *gin.Context) {
-	// if ./web/static/main.css is available, serve it.
-	// hot reload.
-	if _, err := os.Stat("web/static/main.css"); err == nil {
-		c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
-		c.Header("Pragma", "no-cache")
-		c.Header("Expires", "0")
-
-		c.File("web/static/main.css")
-		return
-	}
-
-	file, err := web.StaticFS.ReadFile("static/main.css")
+	// Read main.css from filesystem
+	file, err := os.ReadFile("web/static/main.css")
 	if err != nil {
+		c.String(http.StatusNotFound, "File not found")
 		return
 	}
 	c.Data(http.StatusOK, "text/css", file)
