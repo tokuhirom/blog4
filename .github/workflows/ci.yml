@@ -121,9 +121,6 @@ jobs:
       - name: Generate Ogen server code
         run: task ogen
 
-      - name: Generate OpenAPI client
-        run: task openapi-client
-
       - name: Check for uncommitted changes
         run: |
           if [ -n "$(git status --porcelain)" ]; then
@@ -133,7 +130,6 @@ jobs:
             echo "  task sqlc-admin"
             echo "  task sqlc-public"
             echo "  task ogen"
-            echo "  task openapi-client"
             echo ""
             echo "Changed files:"
             git status --porcelain

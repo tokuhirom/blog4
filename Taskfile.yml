@@ -12,7 +12,7 @@ tasks:
       - typespec/tsp-output/@typespec/openapi3/openapi.yaml
 
   frontend-build:
-    deps: [npmi, openapi-client]
+    deps: [npmi]
     watch: true
     cmds:
       - cd ./web/admin && pnpm run build
@@ -58,12 +58,12 @@ tasks:
     desc: "Run SQLC generation for both admin and public databases"
 
   dev:
-    deps: [sqlc, ogen, openapi-client]
-    desc: "Generate all code (SQLC, OpenAPI server, and client)"
+    deps: [sqlc, ogen]
+    desc: "Generate all code (SQLC and OpenAPI server)"
 
   gen:
-    deps: [ogen, openapi-client, sqlc]
-    desc: "Generate OpenAPI server and client code"
+    deps: [ogen, sqlc]
+    desc: "Generate OpenAPI server code"
 
   ogen:
     deps: ['tsp']
@@ -85,19 +85,6 @@ tasks:
       - ./web/admin/package.json
       - ./web/admin/pnpm-lock.yaml
     desc: "Install npm dependencies"
-
-  openapi-client:
-    deps: [npmi, tsp]
-    dir: ./web/admin
-    cmds:
-      - pnpm run generate-client
-    sources:
-      - typespec/tsp-output/@typespec/openapi3/openapi.yaml
-      - orval.config.ts
-    generates:
-      - ./src/generated-client/adminApi.ts
-      - ./src/generated-client/model
-    desc: "Generate OpenAPI client code with Orval"
 
   docker-build:
     cmds:
