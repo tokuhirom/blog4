@@ -2,7 +2,7 @@
 
 {{define "title"}}Admin - Entry List{{end}}
 
-{{define "extra-css"}}<link rel="stylesheet" href="/admin/htmx/static/entries.css">{{end}}
+{{define "extra-css"}}<link rel="stylesheet" href="/admin/static/entries.css">{{end}}
 
 {{define "nav-entries-active"}}class="active"{{end}}
 
@@ -13,7 +13,7 @@
                 type="text"
                 name="q"
                 placeholder="Search entries..."
-                hx-get="/admin/htmx/entries/search"
+                hx-get="/admin/entries/search"
                 hx-trigger="keyup changed delay:500ms, search"
                 hx-target="#entry-list"
                 hx-include="this"
@@ -25,7 +25,7 @@
 
         <!-- Hidden form for creating new entry -->
         <form id="create-entry-form"
-              hx-post="/admin/htmx/entries/create"
+              hx-post="/admin/entries/create"
               style="display: none;">
             <input type="hidden" name="title" id="new-entry-title" value="">
         </form>
@@ -37,7 +37,7 @@
         {{if .HasMore}}
         <div class="load-more">
             <button
-                hx-get="/admin/htmx/entries/search?last_last_edited_at={{.LastCursor}}"
+                hx-get="/admin/entries/search?last_last_edited_at={{.LastCursor}}"
                 hx-target="#entry-list"
                 hx-swap="beforeend"
                 hx-select=".entry-card">

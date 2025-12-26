@@ -6,14 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{block "title" .}}Admin{{end}}</title>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="/admin/htmx/static/common.css">
+    <link rel="stylesheet" href="/admin/static/common.css">
     {{block "extra-css" .}}{{end}}
 </head>
 <body>
     <nav class="admin-nav">
         <a href="/">Blog</a>
         <a href="/admin/">React Admin</a>
-        <a href="/admin/htmx/entries" {{block "nav-entries-active" .}}{{end}}>htmx Entries</a>
+        <a href="/admin/entries" {{block "nav-entries-active" .}}{{end}}>htmx Entries</a>
         {{block "extra-nav" .}}{{end}}
     </nav>
 

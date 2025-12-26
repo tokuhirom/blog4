@@ -28,7 +28,7 @@ func GinSessionMiddleware(queries *admindb.Queries) gin.HandlerFunc {
 		sessionID := getSessionID(c.Request)
 		if sessionID == "" {
 			slog.Info("No session found, redirecting to login", slog.String("path", c.Request.URL.Path))
-			c.Redirect(http.StatusFound, "/admin/htmx/login")
+			c.Redirect(http.StatusFound, "/admin/login")
 			c.Abort()
 			return
 		}
@@ -38,7 +38,7 @@ func GinSessionMiddleware(queries *admindb.Queries) gin.HandlerFunc {
 		if err != nil {
 			if errors.Is(err, sql.ErrNoRows) {
 				slog.Info("Invalid session, redirecting to login", slog.String("sessionID", sessionID))
-				c.Redirect(http.StatusFound, "/admin/htmx/login")
+				c.Redirect(http.StatusFound, "/admin/login")
 				c.Abort()
 				return
 			}
@@ -83,7 +83,7 @@ func SetupHtmxRouter(queries *admindb.Queries, cfg server.Config) http.Handler {
 
 	// Entry list routes
 	router.GET("/entries", func(c *gin.Context) {
-		c.Redirect(http.StatusFound, "/admin/htmx/entries/search")
+		c.Redirect(http.StatusFound, "/admin/entries/search")
 	})
 	router.GET("/entries/search", handler.RenderEntriesPage)
 	router.POST("/entries/create", handler.CreateEntry)
@@ -102,10 +102,10 @@ func SetupHtmxRouter(queries *admindb.Queries, cfg server.Config) http.Handler {
 	// Static files
 	router.Static("/static", "web/static/admin")
 
-	// Wrap gin router to strip the /admin/htmx prefix
+	// Wrap gin router to strip the /admin prefix
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Strip /admin/htmx prefix for gin router
-		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/admin/htmx")
+		// Strip /admin prefix for gin router
+		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/admin")
 		if r.URL.Path == "" {
 			r.URL.Path = "/"
 		}

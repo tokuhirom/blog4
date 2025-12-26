@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login</title>
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
-    <link rel="stylesheet" href="/admin/htmx/static/common.css">
-    <link rel="stylesheet" href="/admin/htmx/static/login.css">
+    <link rel="stylesheet" href="/admin/static/common.css">
+    <link rel="stylesheet" href="/admin/static/login.css">
 </head>
 <body>
     <div class="login-container">
@@ -15,7 +15,7 @@
 
             <div id="error-message" class="error-message"></div>
 
-            <form hx-post="/admin/htmx/login"
+            <form hx-post="/admin/login"
                   hx-target="#error-message"
                   hx-swap="innerHTML">
                 <div class="form-group">

@@ -311,7 +311,7 @@ func (h *HtmxHandler) CreateEntry(c *gin.Context) {
 		return
 	}
 
-	c.Header("HX-Redirect", "/admin/htmx/entries/"+path+"/edit")
+	c.Header("HX-Redirect", "/admin/entries/"+path+"/edit")
 	c.Status(200)
 }
 
@@ -326,7 +326,7 @@ func (h *HtmxHandler) DeleteEntry(c *gin.Context) {
 		return
 	}
 
-	c.Header("HX-Redirect", "/admin/htmx/entries")
+	c.Header("HX-Redirect", "/admin/entries")
 	c.Status(200)
 }
 
@@ -398,6 +398,6 @@ func (h *HtmxHandler) HandleLogin(c *gin.Context) {
 	})
 
 	// Redirect to entries page using HX-Redirect header
-	c.Header("HX-Redirect", "/admin/htmx/entries")
+	c.Header("HX-Redirect", "/admin/entries")
 	c.Status(200)
 }

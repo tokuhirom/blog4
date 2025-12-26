@@ -1,16 +1,12 @@
 package admin
 
 import (
-	"bytes"
 	"context"
 	"database/sql"
 	"fmt"
 	"log/slog"
 	"net/http"
-	"os"
-	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/cors"
@@ -43,21 +39,6 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 			MaxAge:           300,
 		}))
 	}
-	dir, _ := os.Getwd()
-	indexHtmlHandler := func(w http.ResponseWriter, r *http.Request) {
-		file, err := os.ReadFile(filepath.Join("web/admin/dist/index.html"))
-		if err != nil {
-			slog.Error("failed to read index.html", slog.Any("error", err))
-			http.Error(w, "Internal Server Error", http.StatusInternalServerError)
-			return // 404
-		}
-		http.ServeContent(w, r, "index.html", time.Time{}, bytes.NewReader(file))
-	}
-	r.Get("/", indexHtmlHandler)
-	r.Get("/login", indexHtmlHandler)
-	r.HandleFunc("/entry/*", indexHtmlHandler)
-	filesDir := http.Dir(filepath.Join(dir, "web/admin/dist"))
-	r.Handle("/assets/*", http.StripPrefix("/admin/", http.FileServer(filesDir)))
 
 	queries := admindb.New(db)
 	apiService := adminApiService{
@@ -106,9 +87,9 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 	apiRouter.Mount("/", adminApiHandler)
 	r.Mount("/api/", apiRouter)
 
-	// htmx routes with gin and session middleware
+	// htmx routes with gin and session middleware (mounted at root)
 	htmxRouter := SetupHtmxRouter(queries, cfg)
-	r.Mount("/htmx/", htmxRouter)
+	r.Mount("/", htmxRouter)
 
 	return r, nil
 }
