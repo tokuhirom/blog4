@@ -16,6 +16,12 @@ import (
 // GinSessionMiddleware validates session and redirects to login if needed
 func GinSessionMiddleware(queries *admindb.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		// Skip authentication for login routes
+		if c.Request.URL.Path == "/login" {
+			c.Next()
+			return
+		}
+
 		// Get session ID from cookie
 		sessionID := getSessionID(c.Request)
 		if sessionID == "" {
