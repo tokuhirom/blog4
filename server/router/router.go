@@ -31,10 +31,12 @@ func BuildRouter(cfg server.Config, sqlDB *sql.DB, sobsClient *sobs.SobsClient) 
 	if err != nil {
 		return nil, fmt.Errorf("failed to create admin router: %w", err)
 	}
+	// Mount specific routes BEFORE mounting at / (which catches everything)
 	r.Mount("/admin", adminRouter)
-	r.Mount("/", server.Router(publicQueries))
 	r.Get("/healthz", HealthzHandler)
 	r.Get("/git_hash", GitHashHandler)
+	// Mount public router last, as it will catch all remaining routes
+	r.Mount("/", server.Router(publicQueries))
 	return r, nil
 }
 
