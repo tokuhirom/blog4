@@ -106,24 +106,8 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 	apiRouter.Mount("/", adminApiHandler)
 	r.Mount("/api/", apiRouter)
 
-	// htmx routes with session middleware
-	htmxHandler := NewHtmxHandler(queries)
-	htmxRouter := chi.NewRouter()
-	htmxRouter.Use(HTTPContextMiddleware)
-	htmxRouter.Use(SessionMiddleware(queries))
-	htmxRouter.Get("/entries", func(w http.ResponseWriter, r *http.Request) {
-		http.Redirect(w, r, "/admin/htmx/entries/search", http.StatusFound)
-	})
-	htmxRouter.Get("/entries/search", htmxHandler.RenderEntriesPage)
-	htmxRouter.Post("/entries/create", htmxHandler.CreateEntry)
-	htmxRouter.Get("/entries/{path}/edit", htmxHandler.RenderEntryEditPage)
-	htmxRouter.Post("/entries/{path}/title", htmxHandler.UpdateEntryTitle)
-	htmxRouter.Post("/entries/{path}/body", htmxHandler.UpdateEntryBody)
-	htmxRouter.Post("/entries/{path}/visibility", htmxHandler.UpdateEntryVisibility)
-	htmxRouter.Post("/entries/{path}/image/regenerate", htmxHandler.RegenerateEntryImage)
-	htmxRouter.Delete("/entries/{path}", htmxHandler.DeleteEntry)
-	htmxRouter.Handle("/static/*", http.StripPrefix("/admin/htmx/static/",
-		http.FileServer(http.Dir("web/static/admin"))))
+	// htmx routes with gin and session middleware
+	htmxRouter := SetupHtmxRouter(queries)
 	r.Mount("/htmx/", htmxRouter)
 
 	return r, nil

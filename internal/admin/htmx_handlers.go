@@ -4,11 +4,11 @@ import (
 	"database/sql"
 	"html/template"
 	"log/slog"
-	"net/http"
 	"regexp"
 	"strings"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 )
 
@@ -20,6 +20,19 @@ type HtmxHandler struct {
 // NewHtmxHandler creates a new HtmxHandler
 func NewHtmxHandler(queries *admindb.Queries) *HtmxHandler {
 	return &HtmxHandler{queries: queries}
+}
+
+// getEntryPath extracts and constructs the entry path from gin context params
+func getEntryPath(c *gin.Context) string {
+	year := c.Param("year")
+	month := c.Param("month")
+	day := c.Param("day")
+	time := c.Param("time")
+
+	if year != "" && month != "" && day != "" && time != "" {
+		return year + "/" + month + "/" + day + "/" + time
+	}
+	return c.Param("path")
 }
 
 type HtmxEntriesData struct {
@@ -74,27 +87,26 @@ func simplifyMarkdown(text string) string {
 }
 
 // RenderEntriesPage displays the entries list page
-func (h *HtmxHandler) RenderEntriesPage(w http.ResponseWriter, r *http.Request) {
+func (h *HtmxHandler) RenderEntriesPage(c *gin.Context) {
 	// Get query parameters (search is client-side filtered for now)
-	lastEditedAtStr := r.URL.Query().Get("last_last_edited_at")
+	lastEditedAtStr := c.Query("last_last_edited_at")
 
 	var lastEditedAt sql.NullTime
 	if lastEditedAtStr != "" {
-		t, err := time.Parse(time.RFC3339, lastEditedAtStr)
-		if err == nil {
+		if t, err := time.Parse(time.RFC3339, lastEditedAtStr); err == nil {
 			lastEditedAt = sql.NullTime{Time: t, Valid: true}
 		}
 	}
 
 	// Get latest entries
-	entries, err := h.queries.GetLatestEntries(r.Context(), admindb.GetLatestEntriesParams{
+	entries, err := h.queries.GetLatestEntries(c.Request.Context(), admindb.GetLatestEntriesParams{
 		Column1:      lastEditedAt,
 		LastEditedAt: lastEditedAt,
 		Limit:        100,
 	})
 	if err != nil {
 		slog.Error("failed to search entries", slog.Any("error", err))
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		c.String(500, "Internal Server Error")
 		return
 	}
 
@@ -124,42 +136,30 @@ func (h *HtmxHandler) RenderEntriesPage(w http.ResponseWriter, r *http.Request) 
 	}
 
 	// Check if this is an htmx request
-	isHtmxRequest := r.Header.Get("HX-Request") == "true"
+	isHtmxRequest := c.GetHeader("HX-Request") == "true"
 
 	// Parse templates
 	var tmpl *template.Template
-	var err2 error
-
 	if isHtmxRequest {
-		// For htmx requests, return just the fragment
-		tmpl, err2 = template.ParseFiles(
-			"web/templates/admin/htmx_entry_cards.html",
-		)
+		tmpl, err = template.ParseFiles("web/templates/admin/htmx_entry_cards.html")
 	} else {
-		// For regular requests, return the full page
-		tmpl, err2 = template.ParseFiles(
+		tmpl, err = template.ParseFiles(
 			"web/templates/admin/layout.html",
 			"web/templates/admin/htmx_entries.html",
 			"web/templates/admin/htmx_entry_cards.html",
 		)
 	}
-
-	if err2 != nil {
-		slog.Error("failed to parse template", slog.Any("error", err2))
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+	if err != nil {
+		slog.Error("failed to parse template", slog.Any("error", err))
+		c.String(500, "Internal Server Error")
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-
+	c.Header("Content-Type", "text/html; charset=utf-8")
 	if isHtmxRequest {
-		err2 = tmpl.ExecuteTemplate(w, "entry-cards", data)
+		_ = tmpl.ExecuteTemplate(c.Writer, "entry-cards", data)
 	} else {
-		err2 = tmpl.ExecuteTemplate(w, "layout", data)
-	}
-
-	if err2 != nil {
-		slog.Error("failed to execute template", slog.Any("error", err2))
+		_ = tmpl.ExecuteTemplate(c.Writer, "layout", data)
 	}
 }
 
@@ -172,18 +172,13 @@ type EntryEditData struct {
 }
 
 // RenderEntryEditPage displays the entry edit page
-func (h *HtmxHandler) RenderEntryEditPage(w http.ResponseWriter, r *http.Request) {
-	path := r.PathValue("path")
-	if path == "" {
-		http.Error(w, "Path is required", http.StatusBadRequest)
-		return
-	}
+func (h *HtmxHandler) RenderEntryEditPage(c *gin.Context) {
+	path := getEntryPath(c)
 
-	// Get entry data
-	entry, err := h.queries.AdminGetEntryByPath(r.Context(), path)
+	entry, err := h.queries.AdminGetEntryByPath(c.Request.Context(), path)
 	if err != nil {
 		slog.Error("failed to get entry", slog.String("path", path), slog.Any("error", err))
-		http.Error(w, "Entry not found", http.StatusNotFound)
+		c.String(404, "Entry not found")
 		return
 	}
 
@@ -200,161 +195,126 @@ func (h *HtmxHandler) RenderEntryEditPage(w http.ResponseWriter, r *http.Request
 	)
 	if err != nil {
 		slog.Error("failed to parse template", slog.Any("error", err))
-		http.Error(w, "Internal Server Error", http.StatusInternalServerError)
+		c.String(500, "Internal Server Error")
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	err = tmpl.ExecuteTemplate(w, "layout", data)
-	if err != nil {
-		slog.Error("failed to execute template", slog.Any("error", err))
-	}
+	c.Header("Content-Type", "text/html; charset=utf-8")
+	_ = tmpl.ExecuteTemplate(c.Writer, "layout", data)
 }
 
 // UpdateEntryTitle updates the entry title and returns feedback HTML
-func (h *HtmxHandler) UpdateEntryTitle(w http.ResponseWriter, r *http.Request) {
-	path := r.PathValue("path")
-	if path == "" {
-		http.Error(w, "Path is required", http.StatusBadRequest)
-		return
-	}
+func (h *HtmxHandler) UpdateEntryTitle(c *gin.Context) {
+	path := getEntryPath(c)
+	title := c.PostForm("title")
 
-	title := r.FormValue("title")
 	if title == "" {
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		_, _ = w.Write([]byte(`<div class="feedback-error">Title cannot be empty</div>`))
+		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Title cannot be empty</div>`))
 		return
 	}
 
-	rows, err := h.queries.UpdateEntryTitle(r.Context(), admindb.UpdateEntryTitleParams{
+	rows, err := h.queries.UpdateEntryTitle(c.Request.Context(), admindb.UpdateEntryTitleParams{
 		Title: title,
 		Path:  path,
 	})
 	if err != nil || rows == 0 {
 		slog.Error("failed to update title", slog.String("path", path), slog.Any("error", err))
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		_, _ = w.Write([]byte(`<div class="feedback-error">Failed to update title</div>`))
+		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to update title</div>`))
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	_, _ = w.Write([]byte(`<div class="feedback-success">Title updated!</div>`))
+	c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-success">Title updated!</div>`))
 }
 
 // UpdateEntryBody updates the entry body and returns feedback HTML
-func (h *HtmxHandler) UpdateEntryBody(w http.ResponseWriter, r *http.Request) {
-	path := r.PathValue("path")
-	if path == "" {
-		http.Error(w, "Path is required", http.StatusBadRequest)
-		return
-	}
+func (h *HtmxHandler) UpdateEntryBody(c *gin.Context) {
+	path := getEntryPath(c)
+	body := c.PostForm("body")
 
-	body := r.FormValue("body")
 	if body == "" {
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		_, _ = w.Write([]byte(`<div class="feedback-error">Body cannot be empty</div>`))
+		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Body cannot be empty</div>`))
 		return
 	}
 
-	rows, err := h.queries.UpdateEntryBody(r.Context(), admindb.UpdateEntryBodyParams{
+	rows, err := h.queries.UpdateEntryBody(c.Request.Context(), admindb.UpdateEntryBodyParams{
 		Body: body,
 		Path: path,
 	})
 	if err != nil || rows == 0 {
 		slog.Error("failed to update body", slog.String("path", path), slog.Any("error", err))
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		_, _ = w.Write([]byte(`<div class="feedback-error">Failed to update body</div>`))
+		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to update body</div>`))
 		return
 	}
 
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	_, _ = w.Write([]byte(`<div class="feedback-success">Body updated!</div>`))
+	c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-success">Body updated!</div>`))
 }
 
 // RegenerateEntryImage triggers image regeneration and returns feedback HTML
-func (h *HtmxHandler) RegenerateEntryImage(w http.ResponseWriter, r *http.Request) {
-	// Note: The actual image regeneration is handled by the worker
-	// This endpoint just returns success feedback
-	// In a real implementation, you might trigger a job queue here
-
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	_, _ = w.Write([]byte(`<div class="feedback-success">Image regeneration queued!</div>`))
+func (h *HtmxHandler) RegenerateEntryImage(c *gin.Context) {
+	c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-success">Image regeneration queued!</div>`))
 }
 
 // UpdateEntryVisibility updates the entry visibility
-func (h *HtmxHandler) UpdateEntryVisibility(w http.ResponseWriter, r *http.Request) {
-	path := r.PathValue("path")
-	if path == "" {
-		http.Error(w, "Path is required", http.StatusBadRequest)
-		return
-	}
+func (h *HtmxHandler) UpdateEntryVisibility(c *gin.Context) {
+	path := getEntryPath(c)
+	visibility := c.PostForm("visibility")
 
-	visibility := r.FormValue("visibility")
 	if visibility == "" {
-		http.Error(w, "Visibility is required", http.StatusBadRequest)
+		c.String(400, "Visibility is required")
 		return
 	}
 
-	err := h.queries.UpdateVisibility(r.Context(), admindb.UpdateVisibilityParams{
+	err := h.queries.UpdateVisibility(c.Request.Context(), admindb.UpdateVisibilityParams{
 		Visibility: admindb.EntryVisibility(visibility),
 		Path:       path,
 	})
 	if err != nil {
 		slog.Error("failed to update visibility", slog.String("path", path), slog.Any("error", err))
-		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		_, _ = w.Write([]byte(`<div class="feedback-error">Failed to update visibility</div>`))
+		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to update visibility</div>`))
 		return
 	}
 
-	// Use HX-Refresh to reload the page (to update nav link)
-	w.Header().Set("HX-Refresh", "true")
-	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	_, _ = w.Write([]byte(`<div class="feedback-success">Visibility updated!</div>`))
+	c.Header("HX-Refresh", "true")
+	c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-success">Visibility updated!</div>`))
 }
 
 // CreateEntry creates a new entry and redirects to edit page
-func (h *HtmxHandler) CreateEntry(w http.ResponseWriter, r *http.Request) {
-	title := r.FormValue("title")
+func (h *HtmxHandler) CreateEntry(c *gin.Context) {
+	title := c.PostForm("title")
 	if title == "" {
-		http.Error(w, "Title is required", http.StatusBadRequest)
+		c.String(400, "Title is required")
 		return
 	}
 
-	// Generate path based on current time (same as API service)
+	// Generate path based on current time
 	now := time.Now()
 	path := now.Format("2006/01/02/150405")
 
-	_, err := h.queries.CreateEmptyEntry(r.Context(), admindb.CreateEmptyEntryParams{
+	_, err := h.queries.CreateEmptyEntry(c.Request.Context(), admindb.CreateEmptyEntryParams{
 		Path:  path,
 		Title: title,
 	})
 	if err != nil {
 		slog.Error("failed to create entry", slog.String("title", title), slog.Any("error", err))
-		http.Error(w, "Failed to create entry", http.StatusInternalServerError)
+		c.String(500, "Failed to create entry")
 		return
 	}
 
-	// Use HX-Redirect to navigate to the edit page
-	w.Header().Set("HX-Redirect", "/admin/htmx/entries/"+path+"/edit")
-	w.WriteHeader(http.StatusOK)
+	c.Header("HX-Redirect", "/admin/htmx/entries/"+path+"/edit")
+	c.Status(200)
 }
 
 // DeleteEntry deletes an entry
-func (h *HtmxHandler) DeleteEntry(w http.ResponseWriter, r *http.Request) {
-	path := r.PathValue("path")
-	if path == "" {
-		http.Error(w, "Path is required", http.StatusBadRequest)
-		return
-	}
+func (h *HtmxHandler) DeleteEntry(c *gin.Context) {
+	path := getEntryPath(c)
 
-	rows, err := h.queries.DeleteEntry(r.Context(), path)
+	rows, err := h.queries.DeleteEntry(c.Request.Context(), path)
 	if err != nil || rows == 0 {
 		slog.Error("failed to delete entry", slog.String("path", path), slog.Any("error", err))
-		http.Error(w, "Failed to delete entry", http.StatusInternalServerError)
+		c.String(500, "Failed to delete entry")
 		return
 	}
 
-	// htmx will handle redirect via HX-Redirect header
-	w.Header().Set("HX-Redirect", "/admin/htmx/entries")
-	w.WriteHeader(http.StatusOK)
+	c.Header("HX-Redirect", "/admin/htmx/entries")
+	c.Status(200)
 }
