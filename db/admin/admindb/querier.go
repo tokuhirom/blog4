@@ -31,6 +31,7 @@ type Querier interface {
 	InsertEntryImage(ctx context.Context, arg InsertEntryImageParams) (int64, error)
 	// TODO batch insert
 	InsertEntryLink(ctx context.Context, arg InsertEntryLinkParams) (int64, error)
+	SearchEntriesAdmin(ctx context.Context, arg SearchEntriesAdminParams) ([]SearchEntriesAdminRow, error)
 	UpdateEntryBody(ctx context.Context, arg UpdateEntryBodyParams) (int64, error)
 	UpdateEntryTitle(ctx context.Context, arg UpdateEntryTitleParams) (int64, error)
 	UpdatePublishedAt(ctx context.Context, path string) error

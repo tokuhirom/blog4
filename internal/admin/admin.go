@@ -106,5 +106,17 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 	apiRouter.Mount("/", adminApiHandler)
 	r.Mount("/api/", apiRouter)
 
+	// htmx routes with session middleware
+	htmxRouter := chi.NewRouter()
+	htmxRouter.Use(HTTPContextMiddleware)
+	htmxRouter.Use(SessionMiddleware(queries))
+	htmxRouter.Get("/entries", func(w http.ResponseWriter, r *http.Request) {
+		http.Redirect(w, r, "/admin/htmx/entries/search", http.StatusFound)
+	})
+	htmxRouter.Get("/entries/search", RenderHtmxEntriesPage(queries))
+	htmxRouter.Handle("/static/*", http.StripPrefix("/admin/htmx/static/",
+		http.FileServer(http.Dir("web/static/admin"))))
+	r.Mount("/htmx/", htmxRouter)
+
 	return r, nil
 }

@@ -305,6 +305,81 @@ func (q *Queries) InsertEntryLink(ctx context.Context, arg InsertEntryLinkParams
 	return result.RowsAffected()
 }
 
+const searchEntriesAdmin = `-- name: SearchEntriesAdmin :many
+SELECT entry.path, entry.title, entry.body, entry.visibility, entry.format, entry.published_at, entry.last_edited_at, entry.created_at, entry.updated_at, entry_image.url AS image_url
+FROM entry
+    LEFT JOIN entry_image ON (entry.path = entry_image.path)
+WHERE
+    (? IS NULL OR last_edited_at <= ?)
+    AND (
+        ? = ''
+        OR MATCH(title, body) AGAINST(? IN NATURAL LANGUAGE MODE)
+    )
+ORDER BY last_edited_at DESC, path DESC
+LIMIT ?
+`
+
+type SearchEntriesAdminParams struct {
+	Column1      interface{}
+	LastEditedAt sql.NullTime
+	Column3      interface{}
+	Column4      string
+	Limit        int32
+}
+
+type SearchEntriesAdminRow struct {
+	Path         string
+	Title        string
+	Body         string
+	Visibility   EntryVisibility
+	Format       EntryFormat
+	PublishedAt  sql.NullTime
+	LastEditedAt sql.NullTime
+	CreatedAt    sql.NullTime
+	UpdatedAt    sql.NullTime
+	ImageUrl     sql.NullString
+}
+
+func (q *Queries) SearchEntriesAdmin(ctx context.Context, arg SearchEntriesAdminParams) ([]SearchEntriesAdminRow, error) {
+	rows, err := q.db.QueryContext(ctx, searchEntriesAdmin,
+		arg.Column1,
+		arg.LastEditedAt,
+		arg.Column3,
+		arg.Column4,
+		arg.Limit,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []SearchEntriesAdminRow
+	for rows.Next() {
+		var i SearchEntriesAdminRow
+		if err := rows.Scan(
+			&i.Path,
+			&i.Title,
+			&i.Body,
+			&i.Visibility,
+			&i.Format,
+			&i.PublishedAt,
+			&i.LastEditedAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ImageUrl,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateEntryBody = `-- name: UpdateEntryBody :execrows
 UPDATE entry
 SET body = ?, last_edited_at = NOW()

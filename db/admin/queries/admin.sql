@@ -66,3 +66,16 @@ INSERT INTO entry
 
 -- name: DeleteEntry :execrows
 DELETE FROM entry WHERE path = ?;
+
+-- name: SearchEntriesAdmin :many
+SELECT entry.*, entry_image.url AS image_url
+FROM entry
+    LEFT JOIN entry_image ON (entry.path = entry_image.path)
+WHERE
+    (? IS NULL OR last_edited_at <= ?)
+    AND (
+        ? = ''
+        OR MATCH(title, body) AGAINST(? IN NATURAL LANGUAGE MODE)
+    )
+ORDER BY last_edited_at DESC, path DESC
+LIMIT ?;

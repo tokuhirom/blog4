@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Entry List</title>
+    <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+    <link rel="stylesheet" href="/admin/htmx/static/entries.css">
+</head>
+<body>
+    <nav class="admin-nav">
+        <a href="/">Blog</a>
+        <a href="/admin/">React Admin</a>
+        <a href="/admin/htmx/entries" class="active">htmx Admin</a>
+    </nav>
+
+    <div class="admin-container">
+        <div class="search-box">
+            <input
+                type="text"
+                name="q"
+                placeholder="Search entries..."
+                hx-get="/admin/htmx/entries/search"
+                hx-trigger="keyup changed delay:500ms, search"
+                hx-target="#entry-list"
+                hx-include="this"
+                autocomplete="off"
+            />
+        </div>
+
+        <div class="keyboard-hint">Press 'c' to create new entry</div>
+
+        <div id="entry-list" class="entry-grid">
+            {{template "entry-cards" .}}
+        </div>
+
+        {{if .HasMore}}
+        <div class="load-more">
+            <button
+                hx-get="/admin/htmx/entries/search?last_last_edited_at={{.LastCursor}}{{if .Query}}&q={{.Query}}{{end}}"
+                hx-target="#entry-list"
+                hx-swap="beforeend"
+                hx-select=".entry-card">
+                Load More
+            </button>
+        </div>
+        {{end}}
+    </div>
+
+    <script>
+        document.addEventListener('keydown', async (e) => {
+            if (e.key === 'c' && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey
+                && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+
+                // Generate timestamp-based title
+                const now = new Date();
+                const title = now.toISOString().slice(0,19).replace(/[-:]/g, '').replace('T', '');
+
+                try {
+                    const res = await fetch('/admin/api/entries', {
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify({title})
+                    });
+                    const data = await res.json();
+                    window.location.href = `/admin/entry/${data.path}`;
+                } catch (err) {
+                    console.error('Failed to create entry:', err);
+                    alert('Failed to create new entry');
+                }
+            }
+        });
+
+        function handleCardClick(event, path) {
+            if (event.metaKey || event.ctrlKey) {
+                window.open(`/admin/entry/${path}`, '_blank');
+            } else {
+                window.location.href = `/admin/entry/${path}`;
+            }
+        }
+    </script>
+</body>
+</html>

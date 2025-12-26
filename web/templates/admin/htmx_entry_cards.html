@@ -1,0 +1,14 @@
+{{define "entry-cards"}}
+{{range .Entries}}
+<div class="entry-card {{if eq .Visibility "private"}}private{{end}}"
+     onclick="handleCardClick(event, '{{.Path}}')">
+    <div class="entry-card-content">
+        <h3 class="entry-title">{{.Title}}</h3>
+        {{if .ImageUrl}}
+        <img src="{{.ImageUrl}}" class="entry-image" alt="">
+        {{end}}
+        <p class="entry-body">{{.BodyPreview}}</p>
+    </div>
+</div>
+{{end}}
+{{end}}
