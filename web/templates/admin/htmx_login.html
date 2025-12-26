@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/admin/htmx/static/common.css">
+    <link rel="stylesheet" href="/admin/htmx/static/login.css">
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-box">
+            <h1>Admin Login</h1>
+
+            <div id="error-message" class="error-message"></div>
+
+            <form hx-post="/admin/htmx/login"
+                  hx-target="#error-message"
+                  hx-swap="innerHTML">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        required
+                        autofocus
+                        autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        required
+                        autocomplete="current-password">
+                </div>
+
+                <div class="form-group checkbox-group">
+                    <label>
+                        <input type="checkbox" name="remember_me" value="true">
+                        <span>Remember me for 30 days</span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-login">
+                    Login
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>
