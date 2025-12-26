@@ -1,0 +1,23 @@
+version: "1.0"
+
+defaults:
+  base_dir: .git/worktrees
+
+# Hooks that run after creating a worktree
+hooks:
+  post_create:
+    # Copy gitignored files from MAIN worktree to new worktree
+    # Note: 'from' is relative to main worktree, 'to' is relative to new worktree
+    - type: copy
+      from: .env        # Copy actual .env file (gitignored)
+      to: .env
+
+    # Run setup commands:
+    - type: copy
+      from: node_modules
+      to: node_modules
+
+    - type: copy
+      from: web/admin/node_modules/
+      to: web/admin/node_modules/
+
