@@ -35,10 +35,10 @@ func TestGinEntryRouteMatching(t *testing.T) {
 	})
 
 	tests := []struct {
-		name           string
-		path           string
-		expectRoute    string
-		expectParam    string
+		name        string
+		path        string
+		expectRoute string
+		expectParam string
 	}{
 		{
 			name:        "Root path",
@@ -133,9 +133,9 @@ func TestPublicRouterWithActualChiMount(t *testing.T) {
 	chiRouter.Mount("/", publicRouter)
 
 	tests := []struct {
-		name        string
-		path        string
-		shouldWork  bool
+		name       string
+		path       string
+		shouldWork bool
 	}{
 		{
 			name:       "Root should work",
