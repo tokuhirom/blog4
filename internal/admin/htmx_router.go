@@ -6,6 +6,7 @@ import (
 	"errors"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -16,8 +17,9 @@ import (
 // GinSessionMiddleware validates session and redirects to login if needed
 func GinSessionMiddleware(queries *admindb.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Skip authentication for login routes
-		if c.Request.URL.Path == "/login" {
+		// Skip authentication for login routes and static files
+		path := c.Request.URL.Path
+		if path == "/admin/htmx/login" || strings.HasPrefix(path, "/admin/htmx/static/") {
 			c.Next()
 			return
 		}
