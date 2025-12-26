@@ -107,17 +107,18 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 	r.Mount("/api/", apiRouter)
 
 	// htmx routes with session middleware
+	htmxHandler := NewHtmxHandler(queries)
 	htmxRouter := chi.NewRouter()
 	htmxRouter.Use(HTTPContextMiddleware)
 	htmxRouter.Use(SessionMiddleware(queries))
 	htmxRouter.Get("/entries", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/admin/htmx/entries/search", http.StatusFound)
 	})
-	htmxRouter.Get("/entries/search", RenderHtmxEntriesPage(queries))
-	htmxRouter.Get("/entries/{path}/edit", RenderHtmxEntryEditPage(queries))
-	htmxRouter.Post("/entries/{path}/title", UpdateEntryTitleHtmx(queries))
-	htmxRouter.Post("/entries/{path}/body", UpdateEntryBodyHtmx(queries))
-	htmxRouter.Post("/entries/{path}/image/regenerate", RegenerateEntryImageHtmx(queries))
+	htmxRouter.Get("/entries/search", htmxHandler.RenderEntriesPage)
+	htmxRouter.Get("/entries/{path}/edit", htmxHandler.RenderEntryEditPage)
+	htmxRouter.Post("/entries/{path}/title", htmxHandler.UpdateEntryTitle)
+	htmxRouter.Post("/entries/{path}/body", htmxHandler.UpdateEntryBody)
+	htmxRouter.Post("/entries/{path}/image/regenerate", htmxHandler.RegenerateEntryImage)
 	htmxRouter.Handle("/static/*", http.StripPrefix("/admin/htmx/static/",
 		http.FileServer(http.Dir("web/static/admin"))))
 	r.Mount("/htmx/", htmxRouter)
