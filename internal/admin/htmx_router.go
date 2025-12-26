@@ -81,6 +81,11 @@ func SetupHtmxRouter(queries *admindb.Queries, cfg server.Config) http.Handler {
 	// Add session middleware for authenticated routes
 	router.Use(GinSessionMiddleware(queries))
 
+	// Root redirect to entries
+	router.GET("/", func(c *gin.Context) {
+		c.Redirect(http.StatusFound, "/admin/entries/search")
+	})
+
 	// Entry list routes
 	router.GET("/entries", func(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/admin/entries/search")
