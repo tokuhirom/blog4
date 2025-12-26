@@ -1,0 +1,69 @@
+{{template "layout" .}}
+
+{{define "title"}}Admin - Entry List{{end}}
+
+{{define "extra-css"}}<link rel="stylesheet" href="/admin/htmx/static/entries.css">{{end}}
+
+{{define "nav-entries-active"}}class="active"{{end}}
+
+{{define "content"}}
+    <div class="admin-container">
+        <div class="search-box">
+            <input
+                type="text"
+                name="q"
+                placeholder="Search entries..."
+                hx-get="/admin/htmx/entries/search"
+                hx-trigger="keyup changed delay:500ms, search"
+                hx-target="#entry-list"
+                hx-include="this"
+                autocomplete="off"
+            />
+        </div>
+
+        <div class="keyboard-hint">Press 'c' to create new entry</div>
+
+        <!-- Hidden form for creating new entry -->
+        <form id="create-entry-form"
+              hx-post="/admin/htmx/entries/create"
+              style="display: none;">
+            <input type="hidden" name="title" id="new-entry-title" value="">
+        </form>
+
+        <div id="entry-list" class="entry-grid">
+            {{template "entry-cards" .}}
+        </div>
+
+        {{if .HasMore}}
+        <div class="load-more">
+            <button
+                hx-get="/admin/htmx/entries/search?last_last_edited_at={{.LastCursor}}"
+                hx-target="#entry-list"
+                hx-swap="beforeend"
+                hx-select=".entry-card">
+                Load More
+            </button>
+        </div>
+        {{end}}
+    </div>
+{{end}}
+
+{{define "extra-scripts"}}
+    <script>
+        // Keyboard shortcut to create new entry
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'c' && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey
+                && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+                e.preventDefault();
+
+                // Generate timestamp-based title
+                const now = new Date();
+                const title = now.toISOString().slice(0,19).replace(/[-:]/g, '').replace('T', '');
+
+                // Set title in hidden form field and trigger htmx submission
+                document.getElementById('new-entry-title').value = title;
+                htmx.trigger('#create-entry-form', 'submit');
+            }
+        });
+    </script>
+{{end}}

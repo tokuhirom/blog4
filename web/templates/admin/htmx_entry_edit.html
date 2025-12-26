@@ -1,0 +1,102 @@
+{{template "layout" .}}
+
+{{define "title"}}{{.Title}} - Admin{{end}}
+
+{{define "extra-css"}}<link rel="stylesheet" href="/admin/htmx/static/entry-edit.css">{{end}}
+
+{{define "extra-nav"}}
+    {{if eq .Visibility "public"}}
+    <a href="/entry/{{.Path}}" target="_blank">View Public Page</a>
+    {{end}}
+{{end}}
+
+{{define "content"}}
+    <div class="edit-container">
+        <div class="edit-main">
+            <!-- Title Input -->
+            <div class="title-section">
+                <input
+                    type="text"
+                    name="title"
+                    value="{{.Title}}"
+                    placeholder="Entry Title"
+                    class="title-input"
+                    hx-post="/admin/htmx/entries/{{.Path}}/title"
+                    hx-trigger="keyup changed delay:500ms"
+                    hx-target="#save-feedback"
+                    hx-swap="innerHTML"
+                />
+            </div>
+
+            <!-- Body Editor -->
+            <div class="body-section">
+                <textarea
+                    name="body"
+                    placeholder="Write your markdown here..."
+                    class="body-textarea"
+                    hx-post="/admin/htmx/entries/{{.Path}}/body"
+                    hx-trigger="keyup changed delay:800ms"
+                    hx-target="#save-feedback"
+                    hx-swap="innerHTML"
+                >{{.Body}}</textarea>
+            </div>
+        </div>
+
+        <div class="edit-sidebar">
+            <!-- Save Feedback -->
+            <div id="save-feedback" class="save-feedback"></div>
+
+            <!-- Visibility Control -->
+            <div class="control-panel">
+                <h3>Visibility</h3>
+                <div class="visibility-control">
+                    <label class="radio-label">
+                        <input
+                            type="radio"
+                            name="visibility"
+                            value="private"
+                            {{if eq .Visibility "private"}}checked{{end}}
+                            hx-post="/admin/htmx/entries/{{.Path}}/visibility"
+                            hx-target="#save-feedback"
+                            hx-confirm="Change visibility to private?"
+                        />
+                        <span>Private</span>
+                    </label>
+                    <label class="radio-label">
+                        <input
+                            type="radio"
+                            name="visibility"
+                            value="public"
+                            {{if eq .Visibility "public"}}checked{{end}}
+                            hx-post="/admin/htmx/entries/{{.Path}}/visibility"
+                            hx-target="#save-feedback"
+                            hx-confirm="Change visibility to public?"
+                        />
+                        <span>Public</span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="control-panel">
+                <h3>Actions</h3>
+                <button
+                    class="btn btn-danger"
+                    hx-delete="/admin/htmx/entries/{{.Path}}"
+                    hx-confirm="Are you sure you want to delete this entry? This action cannot be undone.">
+                    🗑 Delete Entry
+                </button>
+                <button
+                    class="btn btn-secondary"
+                    hx-post="/admin/htmx/entries/{{.Path}}/image/regenerate"
+                    hx-target="#save-feedback"
+                    hx-swap="innerHTML">
+                    🔄 Regenerate Image
+                </button>
+            </div>
+        </div>
+    </div>
+{{end}}
+
+{{define "extra-scripts"}}
+{{end}}
