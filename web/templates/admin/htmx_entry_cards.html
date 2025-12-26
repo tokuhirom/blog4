@@ -1,0 +1,15 @@
+{{define "entry-cards"}}
+{{range .Entries}}
+<a href="/admin/htmx/entries/{{.Path}}/edit"
+   class="entry-card {{if eq .Visibility "private"}}private{{end}}"
+   hx-boost="true">
+    <div class="entry-card-content">
+        <h3 class="entry-title">{{.Title}}</h3>
+        {{if .ImageUrl}}
+        <img src="{{.ImageUrl}}" class="entry-image" alt="">
+        {{end}}
+        <p class="entry-body">{{.BodyPreview}}</p>
+    </div>
+</a>
+{{end}}
+{{end}}
