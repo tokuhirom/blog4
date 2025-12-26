@@ -19,7 +19,7 @@ func GinSessionMiddleware(queries *admindb.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Skip authentication for login routes and static files
 		path := c.Request.URL.Path
-		if path == "/admin/htmx/login" || strings.HasPrefix(path, "/admin/htmx/static/") {
+		if path == "/login" || strings.HasPrefix(path, "/static/") {
 			c.Next()
 			return
 		}
@@ -102,5 +102,13 @@ func SetupHtmxRouter(queries *admindb.Queries, cfg server.Config) http.Handler {
 	// Static files
 	router.Static("/static", "web/static/admin")
 
-	return router
+	// Wrap gin router to strip the /admin/htmx prefix
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Strip /admin/htmx prefix for gin router
+		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/admin/htmx")
+		if r.URL.Path == "" {
+			r.URL.Path = "/"
+		}
+		router.ServeHTTP(w, r)
+	})
 }
