@@ -221,7 +221,8 @@ func (h *HtmxHandler) UpdateEntryTitle(w http.ResponseWriter, r *http.Request) {
 
 	title := r.FormValue("title")
 	if title == "" {
-		w.Write([]byte(`<div class="feedback-error">Title cannot be empty</div>`))
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		_, _ = w.Write([]byte(`<div class="feedback-error">Title cannot be empty</div>`))
 		return
 	}
 
@@ -231,12 +232,13 @@ func (h *HtmxHandler) UpdateEntryTitle(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil || rows == 0 {
 		slog.Error("failed to update title", slog.String("path", path), slog.Any("error", err))
-		w.Write([]byte(`<div class="feedback-error">Failed to update title</div>`))
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		_, _ = w.Write([]byte(`<div class="feedback-error">Failed to update title</div>`))
 		return
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Write([]byte(`<div class="feedback-success">Title updated!</div>`))
+	_, _ = w.Write([]byte(`<div class="feedback-success">Title updated!</div>`))
 }
 
 // UpdateEntryBody updates the entry body and returns feedback HTML
@@ -249,7 +251,8 @@ func (h *HtmxHandler) UpdateEntryBody(w http.ResponseWriter, r *http.Request) {
 
 	body := r.FormValue("body")
 	if body == "" {
-		w.Write([]byte(`<div class="feedback-error">Body cannot be empty</div>`))
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		_, _ = w.Write([]byte(`<div class="feedback-error">Body cannot be empty</div>`))
 		return
 	}
 
@@ -259,12 +262,13 @@ func (h *HtmxHandler) UpdateEntryBody(w http.ResponseWriter, r *http.Request) {
 	})
 	if err != nil || rows == 0 {
 		slog.Error("failed to update body", slog.String("path", path), slog.Any("error", err))
-		w.Write([]byte(`<div class="feedback-error">Failed to update body</div>`))
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		_, _ = w.Write([]byte(`<div class="feedback-error">Failed to update body</div>`))
 		return
 	}
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Write([]byte(`<div class="feedback-success">Body updated!</div>`))
+	_, _ = w.Write([]byte(`<div class="feedback-success">Body updated!</div>`))
 }
 
 // RegenerateEntryImage triggers image regeneration and returns feedback HTML
@@ -274,7 +278,7 @@ func (h *HtmxHandler) RegenerateEntryImage(w http.ResponseWriter, r *http.Reques
 	// In a real implementation, you might trigger a job queue here
 
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Write([]byte(`<div class="feedback-success">Image regeneration queued!</div>`))
+	_, _ = w.Write([]byte(`<div class="feedback-success">Image regeneration queued!</div>`))
 }
 
 // UpdateEntryVisibility updates the entry visibility
@@ -297,14 +301,15 @@ func (h *HtmxHandler) UpdateEntryVisibility(w http.ResponseWriter, r *http.Reque
 	})
 	if err != nil {
 		slog.Error("failed to update visibility", slog.String("path", path), slog.Any("error", err))
-		w.Write([]byte(`<div class="feedback-error">Failed to update visibility</div>`))
+		w.Header().Set("Content-Type", "text/html; charset=utf-8")
+		_, _ = w.Write([]byte(`<div class="feedback-error">Failed to update visibility</div>`))
 		return
 	}
 
 	// Use HX-Refresh to reload the page (to update nav link)
 	w.Header().Set("HX-Refresh", "true")
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
-	w.Write([]byte(`<div class="feedback-success">Visibility updated!</div>`))
+	_, _ = w.Write([]byte(`<div class="feedback-success">Visibility updated!</div>`))
 }
 
 // CreateEntry creates a new entry and redirects to edit page
