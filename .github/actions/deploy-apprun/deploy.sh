@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -ex
+
 # 引数の数を確認
 if [ "$#" -ne 4 ]; then
     echo "Usage: $0 <access_token_id> <access_token_secret> <apprun_app_id> <image>"
