@@ -33,17 +33,11 @@ func NewHtmxHandler(queries *admindb.Queries, adminUser, adminPassword string, i
 	}
 }
 
-// getEntryPath extracts and constructs the entry path from gin context params
+// getEntryPath extracts the entry path from query parameter
+// For /entries/edit?path=getting-started -> returns "getting-started"
+// For /entries/edit?path=2024/01/01/120000 -> returns "2024/01/01/120000"
 func getEntryPath(c *gin.Context) string {
-	year := c.Param("year")
-	month := c.Param("month")
-	day := c.Param("day")
-	time := c.Param("time")
-
-	if year != "" && month != "" && day != "" && time != "" {
-		return year + "/" + month + "/" + day + "/" + time
-	}
-	return c.Param("path")
+	return c.Query("path")
 }
 
 type HtmxEntriesData struct {
@@ -311,7 +305,7 @@ func (h *HtmxHandler) CreateEntry(c *gin.Context) {
 		return
 	}
 
-	c.Header("HX-Redirect", "/admin/entries/"+path+"/edit")
+	c.Header("HX-Redirect", "/admin/entries/edit?path="+path)
 	c.Status(200)
 }
 

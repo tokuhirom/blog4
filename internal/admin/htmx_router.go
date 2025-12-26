@@ -93,16 +93,14 @@ func SetupHtmxRouter(queries *admindb.Queries, cfg server.Config) http.Handler {
 	router.GET("/entries/search", handler.RenderEntriesPage)
 	router.POST("/entries/create", handler.CreateEntry)
 
-	// Entry routes with path parameters (yyyy/mm/dd/hhmmss format)
-	entries := router.Group("/entries/:year/:month/:day/:time")
-	{
-		entries.GET("/edit", handler.RenderEntryEditPage)
-		entries.POST("/title", handler.UpdateEntryTitle)
-		entries.POST("/body", handler.UpdateEntryBody)
-		entries.POST("/visibility", handler.UpdateEntryVisibility)
-		entries.POST("/image/regenerate", handler.RegenerateEntryImage)
-		entries.DELETE("", handler.DeleteEntry)
-	}
+	// Entry routes with query parameter (supports both slug and date-based paths)
+	// Examples: /entries/edit?path=getting-started, /entries/edit?path=2024/01/01/120000
+	router.GET("/entries/edit", handler.RenderEntryEditPage)
+	router.POST("/entries/title", handler.UpdateEntryTitle)
+	router.POST("/entries/body", handler.UpdateEntryBody)
+	router.POST("/entries/visibility", handler.UpdateEntryVisibility)
+	router.POST("/entries/image/regenerate", handler.RegenerateEntryImage)
+	router.DELETE("/entries/delete", handler.DeleteEntry)
 
 	// Static files
 	router.Static("/static", "web/static/admin")
