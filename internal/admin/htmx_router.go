@@ -1,6 +1,10 @@
 package admin
 
 import (
+	"context"
+	"database/sql"
+	"errors"
+	"log/slog"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,18 +13,44 @@ import (
 	"github.com/tokuhirom/blog4/server"
 )
 
-// GinSessionMiddleware converts the session middleware to gin middleware
+// GinSessionMiddleware validates session and redirects to login if needed
 func GinSessionMiddleware(queries *admindb.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Get the underlying session middleware
-		sessionMiddleware := SessionMiddleware(queries)
+		// Get session ID from cookie
+		sessionID := getSessionID(c.Request)
+		if sessionID == "" {
+			slog.Info("No session found, redirecting to login", slog.String("path", c.Request.URL.Path))
+			c.Redirect(http.StatusFound, "/admin/htmx/login")
+			c.Abort()
+			return
+		}
 
-		// Wrap the gin handler to work with the session middleware
-		sessionMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// Update the gin context with the modified request
-			c.Request = r
-			c.Next()
-		})).ServeHTTP(c.Writer, c.Request)
+		// Validate session
+		session, err := queries.GetSession(c.Request.Context(), sessionID)
+		if err != nil {
+			if errors.Is(err, sql.ErrNoRows) {
+				slog.Info("Invalid session, redirecting to login", slog.String("sessionID", sessionID))
+				c.Redirect(http.StatusFound, "/admin/htmx/login")
+				c.Abort()
+				return
+			}
+			slog.Error("Failed to get session", slog.String("error", err.Error()))
+			c.String(http.StatusInternalServerError, "Internal Server Error")
+			c.Abort()
+			return
+		}
+
+		// Update last accessed time in background
+		go func() {
+			ctx := context.Background()
+			if err := queries.UpdateSessionLastAccessed(ctx, sessionID); err != nil {
+				slog.Error("Failed to update session last accessed", slog.String("error", err.Error()))
+			}
+		}()
+
+		// Add username to gin context
+		c.Set("username", session.Username)
+		c.Next()
 	}
 }
 
