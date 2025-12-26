@@ -2,7 +2,7 @@
 
 {{define "title"}}{{.Title}} - Admin{{end}}
 
-{{define "extra-css"}}<link rel="stylesheet" href="/admin/htmx/static/entry-edit.css">{{end}}
+{{define "extra-css"}}<link rel="stylesheet" href="/admin/static/entry-edit.css">{{end}}
 
 {{define "extra-nav"}}
     {{if eq .Visibility "public"}}
@@ -21,7 +21,7 @@
                     value="{{.Title}}"
                     placeholder="Entry Title"
                     class="title-input"
-                    hx-post="/admin/htmx/entries/{{.Path}}/title"
+                    hx-post="/admin/entries/{{.Path}}/title"
                     hx-trigger="keyup changed delay:500ms"
                     hx-target="#save-feedback"
                     hx-swap="innerHTML"
@@ -34,7 +34,7 @@
                     name="body"
                     placeholder="Write your markdown here..."
                     class="body-textarea"
-                    hx-post="/admin/htmx/entries/{{.Path}}/body"
+                    hx-post="/admin/entries/{{.Path}}/body"
                     hx-trigger="keyup changed delay:800ms"
                     hx-target="#save-feedback"
                     hx-swap="innerHTML"
@@ -56,7 +56,7 @@
                             name="visibility"
                             value="private"
                             {{if eq .Visibility "private"}}checked{{end}}
-                            hx-post="/admin/htmx/entries/{{.Path}}/visibility"
+                            hx-post="/admin/entries/{{.Path}}/visibility"
                             hx-target="#save-feedback"
                             hx-confirm="Change visibility to private?"
                         />
@@ -68,7 +68,7 @@
                             name="visibility"
                             value="public"
                             {{if eq .Visibility "public"}}checked{{end}}
-                            hx-post="/admin/htmx/entries/{{.Path}}/visibility"
+                            hx-post="/admin/entries/{{.Path}}/visibility"
                             hx-target="#save-feedback"
                             hx-confirm="Change visibility to public?"
                         />
@@ -82,13 +82,13 @@
                 <h3>Actions</h3>
                 <button
                     class="btn btn-danger"
-                    hx-delete="/admin/htmx/entries/{{.Path}}"
+                    hx-delete="/admin/entries/{{.Path}}"
                     hx-confirm="Are you sure you want to delete this entry? This action cannot be undone.">
                     🗑 Delete Entry
                 </button>
                 <button
                     class="btn btn-secondary"
-                    hx-post="/admin/htmx/entries/{{.Path}}/image/regenerate"
+                    hx-post="/admin/entries/{{.Path}}/image/regenerate"
                     hx-target="#save-feedback"
                     hx-swap="innerHTML">
                     🔄 Regenerate Image
