@@ -1,6 +1,6 @@
 module github.com/tokuhirom/blog4
 
-go 1.24.0
+go 1.25
 
 toolchain go1.25.5
 
@@ -11,7 +11,7 @@ require (
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.2.0
 	github.com/go-sql-driver/mysql v1.9.3
-	github.com/goark/pa-api v0.12.7
+	github.com/goark/pa-api v0.15.0
 	github.com/gorilla/feeds v1.2.0
 	github.com/minio/minio-go/v7 v7.0.97
 	github.com/ogen-go/ogen v1.18.0
@@ -61,7 +61,7 @@ require (
 	github.com/go-task/task/v3 v3.44.0 // indirect
 	github.com/go-task/template v0.1.0 // indirect
 	github.com/goark/errs v1.3.2 // indirect
-	github.com/goark/fetch v0.4.1 // indirect
+	github.com/goark/fetch v0.4.2 // indirect
 	github.com/golang/groupcache v0.0.0-20241129210726-2c02b8208cf8 // indirect
 	github.com/google/cel-go v0.26.1 // indirect
 	github.com/google/uuid v1.6.0 // indirect
