@@ -14,7 +14,9 @@ access_token_secret="$2"
 apprun_app_id="$3"
 image="$4"
 
-curl -s -u "$access_token_id:$access_token_secret" -o 'app.json' \
+# curl -f はステータスコードが 400 以上の場合にエラーとなる
+
+curl -f --no-progress-meter -u "$access_token_id:$access_token_secret" -o 'app.json' \
   "https://secure.sakura.ad.jp/cloud/api/apprun/1.0/apprun/api/applications/$apprun_app_id"
 
 # app.json から deploy.json を生成
@@ -26,8 +28,8 @@ jq --arg image "$image" '
   | .components[0].deploy_source.container_registry.image = "\($image)"
 ' app.json > deploy.json
 
-curl -s -u "$access_token_id:$access_token_secret" -X PATCH -d '@deploy.json' -o /dev/null \
+curl -f --no-progress-meter -u "$access_token_id:$access_token_secret" -X PATCH -d '@deploy.json' -o /dev/null \
   "https://secure.sakura.ad.jp/cloud/api/apprun/1.0/apprun/api/applications/$apprun_app_id"
 
-curl -s -u "$access_token_id:$access_token_secret" \
+curl -f --no-progress-meter -u "$access_token_id:$access_token_secret" \
   "https://secure.sakura.ad.jp/cloud/api/apprun/1.0/apprun/api/applications/$apprun_app_id/versions" | jq
