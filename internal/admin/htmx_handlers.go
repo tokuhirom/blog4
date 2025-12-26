@@ -281,3 +281,21 @@ func (h *HtmxHandler) RegenerateEntryImage(w http.ResponseWriter, r *http.Reques
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Write([]byte(`<div class="feedback-success">Image regeneration queued!</div>`))
 }
+
+// DeleteEntry deletes an entry
+func (h *HtmxHandler) DeleteEntry(w http.ResponseWriter, r *http.Request) {
+	path := r.PathValue("path")
+	if path == "" {
+		http.Error(w, "Path is required", http.StatusBadRequest)
+		return
+	}
+
+	rows, err := h.queries.DeleteEntry(r.Context(), path)
+	if err != nil || rows == 0 {
+		slog.Error("failed to delete entry", slog.String("path", path), slog.Any("error", err))
+		http.Error(w, "Failed to delete entry", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+}

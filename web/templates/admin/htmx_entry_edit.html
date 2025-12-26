@@ -56,7 +56,7 @@
                             name="visibility"
                             value="private"
                             {{if eq .Visibility "private"}}checked{{end}}
-                            onclick="confirmVisibilityChange(event, '{{.Path}}', 'private')"
+                            onclick="changeVisibility(event, '{{.Path}}', 'private')"
                         />
                         <span>Private</span>
                     </label>
@@ -66,7 +66,7 @@
                             name="visibility"
                             value="public"
                             {{if eq .Visibility "public"}}checked{{end}}
-                            onclick="confirmVisibilityChange(event, '{{.Path}}', 'public')"
+                            onclick="changeVisibility(event, '{{.Path}}', 'public')"
                         />
                         <span>Public</span>
                     </label>
@@ -78,7 +78,8 @@
                 <h3>Actions</h3>
                 <button
                     class="btn btn-danger"
-                    onclick="confirmDelete(event, '{{.Path}}')">
+                    hx-delete="/admin/htmx/entries/{{.Path}}"
+                    hx-confirm="Are you sure you want to delete this entry? This action cannot be undone.">
                     🗑 Delete Entry
                 </button>
                 <button
@@ -95,73 +96,37 @@
 
 {{define "extra-scripts"}}
     <script>
-        // Visibility change confirmation
-        async function confirmVisibilityChange(event, path, newValue) {
-            const input = event.target;
-            const currentValue = input.checked ? newValue : (newValue === 'private' ? 'public' : 'private');
+        // Handle htmx events
+        document.body.addEventListener('htmx:afterRequest', function(evt) {
+            // Redirect to entries list after successful delete
+            if (evt.detail.successful && evt.detail.xhr.responseURL.includes('/entries/') &&
+                evt.detail.requestConfig.verb === 'delete') {
+                window.location.href = '/admin/htmx/entries';
+            }
+        });
 
+        // Visibility change with htmx
+        function changeVisibility(event, path, newValue) {
             if (!confirm(`Change visibility to "${newValue}"?`)) {
                 event.preventDefault();
-                // Restore previous selection
-                document.querySelectorAll('input[name="visibility"]').forEach(radio => {
-                    radio.checked = (radio.value === currentValue);
-                });
                 return;
             }
 
-            // Update visibility via API
-            try {
-                const res = await fetch(`/admin/api/entries/${path}/visibility`, {
-                    method: 'POST',
-                    headers: {'Content-Type': 'application/json'},
-                    body: JSON.stringify({visibility: newValue})
-                });
-
+            // htmx will handle the POST
+            fetch(`/admin/api/entries/${path}/visibility`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({visibility: newValue})
+            }).then(res => {
                 if (res.ok) {
                     document.getElementById('save-feedback').innerHTML =
                         '<div class="feedback-success">Visibility updated!</div>';
-                    setTimeout(() => {
-                        document.getElementById('save-feedback').innerHTML = '';
-                    }, 2000);
-
-                    // Refresh page to update nav link
                     setTimeout(() => location.reload(), 500);
                 } else {
-                    throw new Error('Failed to update visibility');
+                    alert('Failed to update visibility');
+                    event.target.checked = false;
                 }
-            } catch (err) {
-                console.error('Error updating visibility:', err);
-                alert('Failed to update visibility');
-                // Restore previous selection
-                document.querySelectorAll('input[name="visibility"]').forEach(radio => {
-                    radio.checked = (radio.value === currentValue);
-                });
-            }
-        }
-
-        // Delete confirmation
-        async function confirmDelete(event, path) {
-            event.preventDefault();
-
-            if (!confirm(`Are you sure you want to delete this entry? This action cannot be undone.`)) {
-                return;
-            }
-
-            try {
-                const res = await fetch(`/admin/api/entries/${path}`, {
-                    method: 'DELETE'
-                });
-
-                if (res.ok) {
-                    alert('Entry deleted successfully');
-                    window.location.href = '/admin/htmx/entries';
-                } else {
-                    throw new Error('Failed to delete entry');
-                }
-            } catch (err) {
-                console.error('Error deleting entry:', err);
-                alert('Failed to delete entry');
-            }
+            });
         }
     </script>
 {{end}}

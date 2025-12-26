@@ -119,6 +119,7 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 	htmxRouter.Post("/entries/{path}/title", htmxHandler.UpdateEntryTitle)
 	htmxRouter.Post("/entries/{path}/body", htmxHandler.UpdateEntryBody)
 	htmxRouter.Post("/entries/{path}/image/regenerate", htmxHandler.RegenerateEntryImage)
+	htmxRouter.Delete("/entries/{path}", htmxHandler.DeleteEntry)
 	htmxRouter.Handle("/static/*", http.StripPrefix("/admin/htmx/static/",
 		http.FileServer(http.Dir("web/static/admin"))))
 	r.Mount("/htmx/", htmxRouter)
