@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
+	"github.com/tokuhirom/blog4/server"
 )
 
 // GinSessionMiddleware converts the session middleware to gin middleware
@@ -24,7 +25,7 @@ func GinSessionMiddleware(queries *admindb.Queries) gin.HandlerFunc {
 }
 
 // SetupHtmxRouter creates and configures the htmx router using gin
-func SetupHtmxRouter(queries *admindb.Queries) http.Handler {
+func SetupHtmxRouter(queries *admindb.Queries, cfg server.Config) http.Handler {
 	// Create gin router in release mode for production
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
@@ -32,11 +33,15 @@ func SetupHtmxRouter(queries *admindb.Queries) http.Handler {
 	// Add recovery middleware
 	router.Use(gin.Recovery())
 
-	// Add session middleware
-	router.Use(GinSessionMiddleware(queries))
-
 	// Create handler
-	handler := NewHtmxHandler(queries)
+	handler := NewHtmxHandler(queries, cfg.AdminUser, cfg.AdminPassword, !cfg.LocalDev)
+
+	// Login page (no session middleware needed)
+	router.GET("/login", handler.RenderLoginPage)
+	router.POST("/login", handler.HandleLogin)
+
+	// Add session middleware for authenticated routes
+	router.Use(GinSessionMiddleware(queries))
 
 	// Entry list routes
 	router.GET("/entries", func(c *gin.Context) {

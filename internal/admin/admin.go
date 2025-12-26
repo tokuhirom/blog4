@@ -107,7 +107,7 @@ func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mu
 	r.Mount("/api/", apiRouter)
 
 	// htmx routes with gin and session middleware
-	htmxRouter := SetupHtmxRouter(queries)
+	htmxRouter := SetupHtmxRouter(queries, cfg)
 	r.Mount("/htmx/", htmxRouter)
 
 	return r, nil

@@ -1,9 +1,11 @@
 package admin
 
 import (
+	"crypto/subtle"
 	"database/sql"
 	"html/template"
 	"log/slog"
+	"net/http"
 	"regexp"
 	"strings"
 	"time"
@@ -15,12 +17,20 @@ import (
 
 // HtmxHandler handles htmx-based admin pages
 type HtmxHandler struct {
-	queries *admindb.Queries
+	queries       *admindb.Queries
+	adminUser     string
+	adminPassword string
+	isSecure      bool
 }
 
 // NewHtmxHandler creates a new HtmxHandler
-func NewHtmxHandler(queries *admindb.Queries) *HtmxHandler {
-	return &HtmxHandler{queries: queries}
+func NewHtmxHandler(queries *admindb.Queries, adminUser, adminPassword string, isSecure bool) *HtmxHandler {
+	return &HtmxHandler{
+		queries:       queries,
+		adminUser:     adminUser,
+		adminPassword: adminPassword,
+		isSecure:      isSecure,
+	}
 }
 
 // getEntryPath extracts and constructs the entry path from gin context params
@@ -316,6 +326,78 @@ func (h *HtmxHandler) DeleteEntry(c *gin.Context) {
 		return
 	}
 
+	c.Header("HX-Redirect", "/admin/htmx/entries")
+	c.Status(200)
+}
+
+// RenderLoginPage displays the login page
+func (h *HtmxHandler) RenderLoginPage(c *gin.Context) {
+	tmpl, err := template.ParseFiles("web/templates/admin/htmx_login.html")
+	if err != nil {
+		slog.Error("failed to parse login template", slog.Any("error", err))
+		c.String(500, "Internal Server Error")
+		return
+	}
+
+	c.Header("Content-Type", "text/html; charset=utf-8")
+	_ = tmpl.Execute(c.Writer, nil)
+}
+
+// HandleLogin processes the login form submission
+func (h *HtmxHandler) HandleLogin(c *gin.Context) {
+	username := c.PostForm("username")
+	password := c.PostForm("password")
+	rememberMe := c.PostForm("remember_me") == "true"
+
+	// Validate credentials using constant-time comparison
+	usernameMatch := subtle.ConstantTimeCompare([]byte(username), []byte(h.adminUser)) == 1
+	passwordMatch := subtle.ConstantTimeCompare([]byte(password), []byte(h.adminPassword)) == 1
+
+	if !usernameMatch || !passwordMatch {
+		c.Data(200, "text/html; charset=utf-8", []byte(`Invalid username or password`))
+		return
+	}
+
+	// Generate session ID
+	sessionID, err := generateSessionID()
+	if err != nil {
+		slog.Error("failed to generate session ID", slog.Any("error", err))
+		c.Data(200, "text/html; charset=utf-8", []byte(`Failed to create session`))
+		return
+	}
+
+	// Calculate session expiry based on remember_me option
+	sessionTimeout := defaultSessionTimeout
+	if rememberMe {
+		sessionTimeout = extendedSessionTimeout
+	}
+	expires := time.Now().Add(sessionTimeout)
+
+	// Create session in database
+	err = h.queries.CreateSession(c.Request.Context(), admindb.CreateSessionParams{
+		SessionID: sessionID,
+		Username:  username,
+		ExpiresAt: expires,
+	})
+	if err != nil {
+		slog.Error("failed to create session", slog.Any("error", err))
+		c.Data(200, "text/html; charset=utf-8", []byte(`Failed to create session`))
+		return
+	}
+
+	// Set cookie
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     sessionCookieName,
+		Value:    sessionID,
+		Path:     "/admin",
+		HttpOnly: true,
+		Secure:   h.isSecure,
+		SameSite: http.SameSiteStrictMode,
+		Expires:  expires,
+		MaxAge:   int(time.Until(expires).Seconds()),
+	})
+
+	// Redirect to entries page using HX-Redirect header
 	c.Header("HX-Redirect", "/admin/htmx/entries")
 	c.Status(200)
 }
