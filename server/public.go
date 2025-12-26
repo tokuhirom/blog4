@@ -9,6 +9,7 @@ import (
 	"os"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 	"unicode/utf8"
 
@@ -132,6 +133,8 @@ func RenderTopPage(c *gin.Context, queries *publicdb.Queries) {
 
 func RenderEntryPage(c *gin.Context, queries *publicdb.Queries) {
 	extractedPath := c.Param("filepath")
+	// Strip leading slash from wildcard parameter
+	extractedPath = strings.TrimPrefix(extractedPath, "/")
 
 	md := markdown.NewMarkdown(c.Request.Context(), queries)
 
