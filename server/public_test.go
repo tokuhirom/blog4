@@ -31,7 +31,9 @@ func TestGinEntryRouteMatching(t *testing.T) {
 	r.GET("/entry/*filepath", func(c *gin.Context) {
 		entryCalled = true
 		entryPath = c.Param("filepath")
-		c.String(http.StatusOK, "entry: "+entryPath)
+		// Strip leading slash (same as production code)
+		strippedPath := strings.TrimPrefix(entryPath, "/")
+		c.String(http.StatusOK, "entry: "+strippedPath)
 	})
 
 	tests := []struct {
