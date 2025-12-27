@@ -2,8 +2,6 @@
 
 {{define "title"}}{{.Title}} - Admin{{end}}
 
-{{define "extra-css"}}<link rel="stylesheet" href="/admin/static/entry-edit.css">{{end}}
-
 {{define "extra-nav"}}
     {{if eq .Visibility "public"}}
     <a href="/entry/{{.Path}}" target="_blank">View Public Page</a>
