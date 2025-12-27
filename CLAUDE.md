@@ -34,25 +34,53 @@ Blog4 is a full-stack blog application with an admin interface, built with Go ba
 
 ## Development Setup
 
-The project now uses Docker Compose for local development:
+The project uses Docker Compose for local development:
 
 ```bash
 # Start all services
 docker-compose up
 
 # Services and ports:
-# - Frontend (Svelte admin): http://localhost:6173
-# - Backend API: http://localhost:8181  
+# - Backend API: http://localhost:8181
 # - MariaDB: localhost:3306
-# - MinIO (S3): http://localhost:9000
-# - MinIO Console: http://localhost:9001
+# - LocalStack (S3): http://localhost:4566
+```
+
+### LocalStack S3 Storage
+
+The project uses LocalStack for S3-compatible storage in local development:
+
+- **Endpoint**: http://localhost:4566
+- **Buckets**:
+  - `blog4-attachments` (public) - for uploaded images and files
+  - `blog4-backup` (private) - for database backups
+- **Credentials**: `test` / `test` (LocalStack defaults)
+
+```bash
+# List buckets
+aws --endpoint-url=http://localhost:4566 s3 ls
+
+# List files in attachments bucket
+aws --endpoint-url=http://localhost:4566 s3 ls s3://blog4-attachments
+
+# Download a file
+aws --endpoint-url=http://localhost:4566 s3 cp s3://blog4-attachments/attachments/2024/01/01/file.jpg ./
 ```
 
 ## Build Commands
 
 ```bash
+# Generate SQLC code for admin database
+make sqlc-admin
+
+# Generate SQLC code for public database
+make sqlc-public
+
+# Generate all code (both databases)
+make gen
+
 # Build production Docker image
-task docker-build
+make docker-build
 ```
 
 ## Architecture
@@ -103,15 +131,9 @@ All admin endpoints are prefixed with `/api/`:
 
 ## Common Development Tasks
 
-### Modify API
-1. Edit TypeSpec files in `/typespec/`
-2. Run `task tsp` to generate OpenAPI
-3. Run `task ogen` to generate Go server
-4. Run `task openapi-client` to generate TypeScript client with Orval
-
 ### Add Database Query
 1. Add SQL query to `/db/admin/queries/*.sql` or `/db/public/queries/*.sql`
-2. Run `task sqlc-admin` or `task sqlc-public`
+2. Run `make sqlc-admin` or `make sqlc-public`
 3. Use generated code in Go handlers
 
 ### Run Specific Test
