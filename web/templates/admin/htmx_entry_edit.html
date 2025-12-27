@@ -99,4 +99,97 @@
 {{end}}
 
 {{define "extra-scripts"}}
+<script>
+(function() {
+    const textarea = document.querySelector('.body-textarea');
+    if (!textarea) return;
+
+    textarea.addEventListener('paste', async (event) => {
+        const items = event.clipboardData?.items || [];
+        const imageFiles = [];
+
+        for (const item of items) {
+            if (item.kind === 'file' && item.type.startsWith('image/')) {
+                const file = item.getAsFile();
+                if (file) imageFiles.push(file);
+            }
+        }
+
+        if (imageFiles.length === 0) return;
+        event.preventDefault();
+
+        for (const file of imageFiles) {
+            await uploadAndInsertImage(textarea, file);
+        }
+    });
+
+    async function uploadAndInsertImage(textarea, file) {
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const response = await fetch('/admin/entries/upload', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error(`Upload failed: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+
+            if (data.error) {
+                showError(data.error);
+                return;
+            }
+
+            if (!data.url) {
+                throw new Error('No URL in response');
+            }
+
+            // Markdownをカーソル位置に挿入
+            const cursorPos = textarea.selectionStart;
+            const before = textarea.value.substring(0, cursorPos);
+            const after = textarea.value.substring(cursorPos);
+            const markdownImage = `![image](${data.url})`;
+
+            textarea.value = before + markdownImage + after;
+
+            // カーソル移動
+            textarea.focus();
+            const newCursorPos = cursorPos + markdownImage.length;
+            textarea.setSelectionRange(newCursorPos, newCursorPos);
+
+            // HTMX経由で自動保存
+            htmx.ajax('POST', '/admin/entries/body?path={{.Path}}', {
+                target: '#save-feedback',
+                swap: 'innerHTML',
+                values: {body: textarea.value}
+            });
+
+            showSuccess('Image uploaded successfully');
+        } catch (error) {
+            console.error('Upload error:', error);
+            showError(`Failed to upload image: ${error.message}`);
+        }
+    }
+
+    function showSuccess(message) {
+        const feedback = document.getElementById('save-feedback');
+        if (feedback) {
+            feedback.innerHTML = `<div class="feedback-success">${message}</div>`;
+            setTimeout(() => feedback.innerHTML = '', 3000);
+        }
+    }
+
+    function showError(message) {
+        const feedback = document.getElementById('save-feedback');
+        if (feedback) {
+            feedback.innerHTML = `<div class="feedback-error">${message}</div>`;
+            setTimeout(() => feedback.innerHTML = '', 5000);
+        }
+    }
+})();
+</script>
 {{end}}

@@ -70,7 +70,7 @@ func BuildRouter(cfg server.Config, sqlDB *sql.DB, sobsClient *sobs.SobsClient) 
 	// Setup admin routes
 	adminQueries := admindb.New(sqlDB)
 	adminGroup := r.Group("/admin")
-	admin.SetupAdminRoutes(adminGroup, adminQueries, cfg)
+	admin.SetupAdminRoutes(adminGroup, adminQueries, sobsClient, cfg)
 
 	// Setup public routes
 	publicQueries := publicdb.New(sqlDB)

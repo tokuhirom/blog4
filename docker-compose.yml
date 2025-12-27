@@ -50,6 +50,7 @@ services:
       S3_ATTACHMENTS_BUCKET_NAME: ${S3_ATTACHMENTS_BUCKET_NAME:-blog4-attachments}
       S3_BACKUP_BUCKET_NAME: ${S3_BACKUP_BUCKET_NAME:-blog4-backup}
       S3_ENDPOINT: ${S3_ENDPOINT:-minio:9000}
+      S3_ATTACHMENTS_BASE_URL: ${S3_ATTACHMENTS_BASE_URL:-http://localhost:9000/blog4-attachments}
       
       # Other optional configuration
       AMAZON_PAAPI5_ACCESS_KEY: ${AMAZON_PAAPI5_ACCESS_KEY:-}

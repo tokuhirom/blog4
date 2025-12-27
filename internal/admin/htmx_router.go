@@ -12,6 +12,7 @@ import (
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server"
+	"github.com/tokuhirom/blog4/server/sobs"
 )
 
 // GinSessionMiddleware validates session and redirects to login if needed
@@ -63,9 +64,9 @@ func GinSessionMiddleware(queries *admindb.Queries) gin.HandlerFunc {
 }
 
 // SetupAdminRoutes configures admin routes on the given router group
-func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, cfg server.Config) {
+func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, sobsClient *sobs.SobsClient, cfg server.Config) {
 	// Create handler
-	handler := NewHtmxHandler(queries, cfg.AdminUser, cfg.AdminPassword, !cfg.LocalDev)
+	handler := NewHtmxHandler(queries, sobsClient, cfg.AdminUser, cfg.AdminPassword, !cfg.LocalDev, cfg.S3AttachmentsBaseUrl)
 
 	// Login page (no session middleware needed)
 	adminGroup.GET("/login", handler.RenderLoginPage)
@@ -93,6 +94,7 @@ func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, cfg
 	adminGroup.POST("/entries/body", handler.UpdateEntryBody)
 	adminGroup.POST("/entries/visibility", handler.UpdateEntryVisibility)
 	adminGroup.POST("/entries/image/regenerate", handler.RegenerateEntryImage)
+	adminGroup.POST("/entries/upload", handler.UploadEntryImage)
 	adminGroup.DELETE("/entries/delete", handler.DeleteEntry)
 
 	// Static files
