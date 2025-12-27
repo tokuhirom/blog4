@@ -15,6 +15,7 @@ WORKDIR /app
 COPY --from=backend-builder /app/blog4 /app/
 COPY --from=backend-builder /app/build-info.json /app/
 COPY web/static /app/web/static
+COPY admin/static /app/admin/static
 COPY web/templates /app/web/templates
 RUN apt-get update && apt-get install -y tzdata mysql-client openssl ca-certificates
 
