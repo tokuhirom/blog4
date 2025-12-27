@@ -344,7 +344,12 @@ func (h *HtmxHandler) RenderLoginPage(c *gin.Context) {
 	}
 
 	c.Header("Content-Type", "text/html; charset=utf-8")
-	_ = tmpl.Execute(c.Writer, nil)
+	err = tmpl.Execute(c.Writer, nil)
+	if err != nil {
+		slog.Error("failed to execute login template", slog.Any("error", err))
+		c.String(500, "Internal Server Error")
+		return
+	}
 }
 
 // HandleLogin processes the login form submission
@@ -447,7 +452,9 @@ func (h *HtmxHandler) UploadEntryImage(c *gin.Context) {
 		c.JSON(500, gin.H{"error": "Failed to read file"})
 		return
 	}
-	defer fileContent.Close()
+	defer func() {
+		_ = fileContent.Close()
+	}()
 
 	// Upload to S3
 	err = h.sobsClient.PutObjectToAttachmentBucket(
