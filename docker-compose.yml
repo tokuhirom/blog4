@@ -68,22 +68,6 @@ services:
     working_dir: /app
     command: air
 
-  frontend:
-    image: node:24-alpine
-    container_name: blog4-frontend
-    restart: unless-stopped
-    working_dir: /app
-    environment:
-      NODE_ENV: development
-    ports:
-      - "6173:6173"
-    volumes:
-      - ./web/admin:/app
-      - node_modules:/app/node_modules
-    command: sh -c "npm install && npm run dev -- --port 6173 --host 0.0.0.0"
-    depends_on:
-      - backend
-
   minio:
     image: minio/minio:latest
     container_name: blog4-minio
@@ -121,5 +105,4 @@ services:
 volumes:
   mariadb_data:
   go_modules:
-  node_modules:
   minio_data:
