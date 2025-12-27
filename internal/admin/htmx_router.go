@@ -63,57 +63,40 @@ func GinSessionMiddleware(queries *admindb.Queries) gin.HandlerFunc {
 	}
 }
 
-// SetupHtmxRouter creates and configures the htmx router using gin
-func SetupHtmxRouter(queries *admindb.Queries, sobsClient *sobs.SobsClient, cfg server.Config) http.Handler {
-	// Create gin router in release mode for production
-	gin.SetMode(gin.ReleaseMode)
-	router := gin.New()
-
-	// Add recovery middleware
-	router.Use(gin.Recovery())
-
+// SetupAdminRoutes configures admin routes on the given router group
+func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, sobsClient *sobs.SobsClient, cfg server.Config) {
 	// Create handler
 	handler := NewHtmxHandler(queries, sobsClient, cfg.AdminUser, cfg.AdminPassword, !cfg.LocalDev, cfg.S3AttachmentsBaseUrl)
 
 	// Login page (no session middleware needed)
-	router.GET("/login", handler.RenderLoginPage)
-	router.POST("/login", handler.HandleLogin)
+	adminGroup.GET("/login", handler.RenderLoginPage)
+	adminGroup.POST("/login", handler.HandleLogin)
 
 	// Add session middleware for authenticated routes
-	router.Use(GinSessionMiddleware(queries))
+	adminGroup.Use(GinSessionMiddleware(queries))
 
 	// Root redirect to entries
-	router.GET("/", func(c *gin.Context) {
+	adminGroup.GET("/", func(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/admin/entries/search")
 	})
 
 	// Entry list routes
-	router.GET("/entries", func(c *gin.Context) {
+	adminGroup.GET("/entries", func(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/admin/entries/search")
 	})
-	router.GET("/entries/search", handler.RenderEntriesPage)
-	router.POST("/entries/create", handler.CreateEntry)
+	adminGroup.GET("/entries/search", handler.RenderEntriesPage)
+	adminGroup.POST("/entries/create", handler.CreateEntry)
 
 	// Entry routes with query parameter (supports both slug and date-based paths)
 	// Examples: /entries/edit?path=getting-started, /entries/edit?path=2024/01/01/120000
-	router.GET("/entries/edit", handler.RenderEntryEditPage)
-	router.POST("/entries/title", handler.UpdateEntryTitle)
-	router.POST("/entries/body", handler.UpdateEntryBody)
-	router.POST("/entries/visibility", handler.UpdateEntryVisibility)
-	router.POST("/entries/image/regenerate", handler.RegenerateEntryImage)
-	router.POST("/entries/upload", handler.UploadEntryImage)
-	router.DELETE("/entries/delete", handler.DeleteEntry)
+	adminGroup.GET("/entries/edit", handler.RenderEntryEditPage)
+	adminGroup.POST("/entries/title", handler.UpdateEntryTitle)
+	adminGroup.POST("/entries/body", handler.UpdateEntryBody)
+	adminGroup.POST("/entries/visibility", handler.UpdateEntryVisibility)
+	adminGroup.POST("/entries/image/regenerate", handler.RegenerateEntryImage)
+	adminGroup.POST("/entries/upload", handler.UploadEntryImage)
+	adminGroup.DELETE("/entries/delete", handler.DeleteEntry)
 
 	// Static files
-	router.Static("/static", "web/static/admin")
-
-	// Wrap gin router to strip the /admin prefix
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Strip /admin prefix for gin router
-		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/admin")
-		if r.URL.Path == "" {
-			r.URL.Path = "/"
-		}
-		router.ServeHTTP(w, r)
-	})
+	adminGroup.Static("/static", "web/static/admin")
 }
