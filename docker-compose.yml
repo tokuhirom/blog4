@@ -43,14 +43,14 @@ services:
       ADMIN_USER: ${ADMIN_USER:-admin}
       ADMIN_PW: ${ADMIN_PASSWORD:-password}
       
-      # S3 configuration (using MinIO for local dev)
-      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-minioadmin}
-      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-minioadmin}
+      # S3 configuration (using LocalStack for local dev)
+      S3_ACCESS_KEY_ID: ${S3_ACCESS_KEY_ID:-test}
+      S3_SECRET_ACCESS_KEY: ${S3_SECRET_ACCESS_KEY:-test}
       S3_REGION: ${S3_REGION:-us-east-1}
       S3_ATTACHMENTS_BUCKET_NAME: ${S3_ATTACHMENTS_BUCKET_NAME:-blog4-attachments}
       S3_BACKUP_BUCKET_NAME: ${S3_BACKUP_BUCKET_NAME:-blog4-backup}
-      S3_ENDPOINT: ${S3_ENDPOINT:-minio:9000}
-      S3_ATTACHMENTS_BASE_URL: ${S3_ATTACHMENTS_BASE_URL:-http://localhost:9000/blog4-attachments}
+      S3_ENDPOINT: ${S3_ENDPOINT:-localstack:4566}
+      S3_ATTACHMENTS_BASE_URL: ${S3_ATTACHMENTS_BASE_URL:-http://localhost:4566/blog4-attachments}
       
       # Other optional configuration
       AMAZON_PAAPI5_ACCESS_KEY: ${AMAZON_PAAPI5_ACCESS_KEY:-}
@@ -68,41 +68,41 @@ services:
     working_dir: /app
     command: air
 
-  minio:
-    image: minio/minio:latest
-    container_name: blog4-minio
+  localstack:
+    image: localstack/localstack:latest
+    container_name: blog4-localstack
     restart: unless-stopped
-    environment:
-      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin}
     ports:
-      - "9000:9000"
-      - "9001:9001"
+      - "4566:4566"
+    environment:
+      SERVICES: s3
+      DEBUG: 0
+      DATA_DIR: /tmp/localstack/data
+      PERSISTENCE: 1
+      AWS_DEFAULT_REGION: us-east-1
     volumes:
-      - minio_data:/data
-    command: server /data --console-address ":9001"
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 30s
-      timeout: 20s
-      retries: 3
+      - localstack_data:/var/lib/localstack
+      - /var/run/docker.sock:/var/run/docker.sock
 
-  createbuckets:
-    image: minio/mc:latest
-    container_name: blog4-minio-setup
+  localstack-init:
+    image: amazon/aws-cli:latest
+    container_name: blog4-localstack-init
     depends_on:
-      minio:
-        condition: service_healthy
+      - localstack
+    environment:
+      AWS_ACCESS_KEY_ID: test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_DEFAULT_REGION: us-east-1
     entrypoint: >
       /bin/sh -c "
-      /usr/bin/mc alias set myminio http://minio:9000 minioadmin minioadmin;
-      /usr/bin/mc mb myminio/blog4-attachments || true;
-      /usr/bin/mc mb myminio/blog4-backup || true;
-      /usr/bin/mc anonymous set public myminio/blog4-attachments;
-      exit 0;
+      sleep 5;
+      aws --endpoint-url=http://localstack:4566 s3 mb s3://blog4-attachments || true;
+      aws --endpoint-url=http://localstack:4566 s3 mb s3://blog4-backup || true;
+      aws --endpoint-url=http://localstack:4566 s3api put-bucket-acl --bucket blog4-attachments --acl public-read;
+      echo 'Buckets created successfully';
       "
 
 volumes:
   mariadb_data:
   go_modules:
-  minio_data:
+  localstack_data:
