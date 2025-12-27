@@ -106,4 +106,3 @@ func TestGinEntryRouteMatching(t *testing.T) {
 		})
 	}
 }
-
