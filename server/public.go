@@ -299,22 +299,3 @@ func RenderStaticMainCss(c *gin.Context) {
 	}
 	c.Data(http.StatusOK, "text/css", file)
 }
-
-func Router(queries *publicdb.Queries) *gin.Engine {
-	r := gin.New()
-	r.Use(gin.Recovery())
-
-	r.GET("/", func(c *gin.Context) {
-		RenderTopPage(c, queries)
-	})
-	r.GET("/feed", func(c *gin.Context) {
-		RenderFeed(c, queries)
-	})
-	r.GET("/entry/*filepath", func(c *gin.Context) {
-		RenderEntryPage(c, queries)
-	})
-	r.GET("/static/main.css", func(c *gin.Context) {
-		RenderStaticMainCss(c)
-	})
-	return r
-}
