@@ -3,14 +3,6 @@ version: '3'
 interval: 500ms
 
 tasks:
-  tsp:
-    cmds:
-      - pnpm run tsp
-    sources:
-      - typespec/**/*.tsp
-    generates:
-      - typespec/tsp-output/@typespec/openapi3/openapi.yaml
-
   sqlc-admin:
     cmds:
       - go tool sqlc generate -f ./db/admin/sqlc-admin.yml
@@ -42,25 +34,9 @@ tasks:
     deps: [sqlc-admin, sqlc-public]
     desc: "Run SQLC generation for both admin and public databases"
 
-  dev:
-    deps: [sqlc, ogen]
-    desc: "Generate all code (SQLC and OpenAPI server)"
-
   gen:
-    deps: [ogen, sqlc]
-    desc: "Generate OpenAPI server code"
-
-  ogen:
-    deps: ['tsp']
-    cmds:
-      - go generate ./cmd/blog4/main.go
-    sources:
-      - typespec/tsp-output/@typespec/openapi3/openapi.yaml
-      - ./cmd/blog4/main.go
-    generates:
-      - ./server/admin/openapi/oas_cfg_gen.go
-      - ./server/admin/openapi/oas_client_gen.go
-    desc: "Generate OpenAPI server code"
+    deps: [sqlc]
+    desc: "Generate all code (SQLC only)"
 
   docker-build:
     cmds:

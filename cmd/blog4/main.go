@@ -18,8 +18,6 @@ import (
 	"github.com/go-sql-driver/mysql"
 )
 
-//go:generate go run github.com/ogen-go/ogen/cmd/ogen@latest --config ../../ogen.yml --target ../../server/admin/openapi -package openapi --clean ../../typespec/tsp-output/@typespec/openapi3/openapi.yaml
-
 func main() {
 	if err := DoMain(); err != nil {
 		slog.Error("failed to start server", slog.Any("error", err))
