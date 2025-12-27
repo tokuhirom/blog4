@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tokuhirom/blog4/internal/middleware"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/db/public/publicdb"
@@ -38,19 +39,8 @@ func BuildRouter(cfg server.Config, sqlDB *sql.DB, sobsClient *sobs.SobsClient) 
 
 	// Add WebAccel guard middleware if configured
 	if cfg.WebAccelGuard != "" {
-		slog.Info("CheckWebAccelHeader validation enabled")
-		r.Use(func(c *gin.Context) {
-			if c.Request.URL.Path != "/healthz" {
-				gotToken := c.GetHeader("X-WebAccel-Guard")
-				if gotToken != cfg.WebAccelGuard {
-					slog.Warn("invalid X-WebAccel-Guard header", slog.String("got_token", gotToken), slog.String("path", c.Request.URL.Path))
-					c.String(http.StatusBadRequest, "Invalid X-WebAccel-Guard header")
-					c.Abort()
-					return
-				}
-			}
-			c.Next()
-		})
+		slog.Info("CheckWebAccelGuard validation enabled")
+		r.Use(middleware.CheckWebAccelGuard(cfg))
 	}
 
 	// Health check endpoints
