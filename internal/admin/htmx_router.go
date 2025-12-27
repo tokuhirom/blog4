@@ -98,5 +98,5 @@ func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, sob
 	adminGroup.DELETE("/entries/delete", handler.DeleteEntry)
 
 	// Static files
-	adminGroup.Static("/static", "web/static/admin")
+	adminGroup.Static("/static", "admin/static/")
 }
