@@ -452,7 +452,9 @@ func (h *HtmxHandler) UploadEntryImage(c *gin.Context) {
 		c.JSON(500, gin.H{"error": "Failed to read file"})
 		return
 	}
-	defer fileContent.Close()
+	defer func() {
+		_ = fileContent.Close()
+	}()
 
 	// Upload to S3
 	err = h.sobsClient.PutObjectToAttachmentBucket(
