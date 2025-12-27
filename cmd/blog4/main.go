@@ -67,11 +67,6 @@ func DoMain() error {
 		server.StartBackup(cfg.BackupEncryptionKey, sobsClient)
 	})()
 
-	if cfg.KeepAliveUrl != "" {
-		url := cfg.KeepAliveUrl
-		go server.KeepAlive(url)
-	}
-
 	// Start the server
 	slog.Info("Starting server", slog.String("url", "http://localhost:8181/"))
 	err = http.ListenAndServe(":8181", r)
