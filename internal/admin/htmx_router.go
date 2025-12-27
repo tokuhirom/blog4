@@ -12,6 +12,7 @@ import (
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server"
+	"github.com/tokuhirom/blog4/server/sobs"
 )
 
 // GinSessionMiddleware validates session and redirects to login if needed
@@ -63,7 +64,7 @@ func GinSessionMiddleware(queries *admindb.Queries) gin.HandlerFunc {
 }
 
 // SetupHtmxRouter creates and configures the htmx router using gin
-func SetupHtmxRouter(queries *admindb.Queries, cfg server.Config) http.Handler {
+func SetupHtmxRouter(queries *admindb.Queries, sobsClient *sobs.SobsClient, cfg server.Config) http.Handler {
 	// Create gin router in release mode for production
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.New()
@@ -72,7 +73,7 @@ func SetupHtmxRouter(queries *admindb.Queries, cfg server.Config) http.Handler {
 	router.Use(gin.Recovery())
 
 	// Create handler
-	handler := NewHtmxHandler(queries, cfg.AdminUser, cfg.AdminPassword, !cfg.LocalDev)
+	handler := NewHtmxHandler(queries, sobsClient, cfg.AdminUser, cfg.AdminPassword, !cfg.LocalDev, cfg.S3AttachmentsBaseUrl)
 
 	// Login page (no session middleware needed)
 	router.GET("/login", handler.RenderLoginPage)
@@ -100,6 +101,7 @@ func SetupHtmxRouter(queries *admindb.Queries, cfg server.Config) http.Handler {
 	router.POST("/entries/body", handler.UpdateEntryBody)
 	router.POST("/entries/visibility", handler.UpdateEntryVisibility)
 	router.POST("/entries/image/regenerate", handler.RegenerateEntryImage)
+	router.POST("/entries/upload", handler.UploadEntryImage)
 	router.DELETE("/entries/delete", handler.DeleteEntry)
 
 	// Static files

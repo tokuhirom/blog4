@@ -9,9 +9,10 @@ import (
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/server"
+	"github.com/tokuhirom/blog4/server/sobs"
 )
 
-func Router(cfg server.Config, db *sql.DB) (*chi.Mux, error) {
+func Router(cfg server.Config, db *sql.DB, sobsClient *sobs.SobsClient) (*chi.Mux, error) {
 	if cfg.AdminUser == "" {
 		slog.Warn("AdminUser is not set")
 	}
@@ -24,7 +25,7 @@ func Router(cfg server.Config, db *sql.DB) (*chi.Mux, error) {
 	queries := admindb.New(db)
 
 	// htmx routes with gin and session middleware (mounted at root)
-	htmxRouter := SetupHtmxRouter(queries, cfg)
+	htmxRouter := SetupHtmxRouter(queries, sobsClient, cfg)
 	r.Mount("/", htmxRouter)
 
 	return r, nil

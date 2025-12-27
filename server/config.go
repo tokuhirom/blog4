@@ -31,6 +31,7 @@ type Config struct {
 	S3AttachmentsBucketName string `env:"S3_ATTACHMENTS_BUCKET_NAME" envDefault:"blog3-attachments"`
 	S3BackupBucketName      string `env:"S3_BACKUP_BUCKET_NAME" envDefault:"blog3-backup"`
 	S3Endpoint              string `env:"S3_ENDPOINT" envDefault:"s3.isk01.sakurastorage.jp"`
+	S3AttachmentsBaseUrl    string `env:"S3_ATTACHMENTS_BASE_URL" envDefault:"https://blog-attachments.64p.org"`
 
 	BackupEncryptionKey string `env:"BACKUP_ENCRYPTION_KEY"`
 

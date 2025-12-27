@@ -1,35 +1,45 @@
 package admin
 
 import (
+	"crypto/rand"
 	"crypto/subtle"
 	"database/sql"
+	"fmt"
 	"html/template"
 	"log/slog"
+	"mime/multipart"
 	"net/http"
+	"path/filepath"
 	"regexp"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
+	"github.com/tokuhirom/blog4/server/sobs"
 )
 
 // HtmxHandler handles htmx-based admin pages
 type HtmxHandler struct {
-	queries       *admindb.Queries
-	adminUser     string
-	adminPassword string
-	isSecure      bool
+	queries              *admindb.Queries
+	sobsClient           *sobs.SobsClient
+	adminUser            string
+	adminPassword        string
+	isSecure             bool
+	s3AttachmentsBaseUrl string
 }
 
 // NewHtmxHandler creates a new HtmxHandler
-func NewHtmxHandler(queries *admindb.Queries, adminUser, adminPassword string, isSecure bool) *HtmxHandler {
+func NewHtmxHandler(queries *admindb.Queries, sobsClient *sobs.SobsClient, adminUser, adminPassword string, isSecure bool, s3AttachmentsBaseUrl string) *HtmxHandler {
 	return &HtmxHandler{
-		queries:       queries,
-		adminUser:     adminUser,
-		adminPassword: adminPassword,
-		isSecure:      isSecure,
+		queries:              queries,
+		sobsClient:           sobsClient,
+		adminUser:            adminUser,
+		adminPassword:        adminPassword,
+		isSecure:             isSecure,
+		s3AttachmentsBaseUrl: s3AttachmentsBaseUrl,
 	}
 }
 
@@ -394,4 +404,147 @@ func (h *HtmxHandler) HandleLogin(c *gin.Context) {
 	// Redirect to entries page using HX-Redirect header
 	c.Header("HX-Redirect", "/admin/entries")
 	c.Status(200)
+}
+
+// UploadEntryImage handles image uploads from paste/drag-drop
+func (h *HtmxHandler) UploadEntryImage(c *gin.Context) {
+	// Get uploaded file
+	file, err := c.FormFile("file")
+	if err != nil {
+		slog.Error("failed to get uploaded file", slog.Any("error", err))
+		c.JSON(400, gin.H{"error": "Invalid file"})
+		return
+	}
+
+	// Validate MIME type
+	contentType := file.Header.Get("Content-Type")
+	if !isValidImageMimeType(contentType) {
+		slog.Warn("invalid file type", slog.String("contentType", contentType))
+		c.JSON(400, gin.H{"error": "Only image files are allowed"})
+		return
+	}
+
+	// Validate file size (10MB limit)
+	const maxUploadSize int64 = 10 * 1024 * 1024
+	if file.Size > maxUploadSize {
+		slog.Warn("file too large", slog.Int64("size", file.Size))
+		c.JSON(400, gin.H{"error": "File too large (max 10MB)"})
+		return
+	}
+
+	// Generate S3 key
+	key, err := generateImageKey(file)
+	if err != nil {
+		slog.Error("failed to generate image key", slog.Any("error", err))
+		c.JSON(500, gin.H{"error": "Failed to generate file name"})
+		return
+	}
+
+	// Open file
+	fileContent, err := file.Open()
+	if err != nil {
+		slog.Error("failed to open uploaded file", slog.Any("error", err))
+		c.JSON(500, gin.H{"error": "Failed to read file"})
+		return
+	}
+	defer fileContent.Close()
+
+	// Upload to S3
+	err = h.sobsClient.PutObjectToAttachmentBucket(
+		c.Request.Context(),
+		key,
+		contentType,
+		file.Size,
+		fileContent,
+	)
+	if err != nil {
+		slog.Error("failed to upload to S3", slog.String("key", key), slog.Any("error", err))
+		c.JSON(500, gin.H{"error": "Upload failed"})
+		return
+	}
+
+	// Generate URL using configured base URL
+	url := fmt.Sprintf("%s/%s", strings.TrimSuffix(h.s3AttachmentsBaseUrl, "/"), key)
+
+	slog.Info("image uploaded successfully", slog.String("key", key), slog.String("url", url))
+	c.JSON(200, gin.H{"url": url})
+}
+
+// isValidImageMimeType checks if the MIME type is a valid image type
+func isValidImageMimeType(contentType string) bool {
+	allowedTypes := []string{
+		"image/jpeg",
+		"image/jpg",
+		"image/png",
+		"image/gif",
+		"image/webp",
+		"image/svg+xml",
+	}
+
+	for _, allowed := range allowedTypes {
+		if contentType == allowed {
+			return true
+		}
+	}
+	return false
+}
+
+// generateImageKey generates a unique S3 key for the uploaded image
+func generateImageKey(file *multipart.FileHeader) (string, error) {
+	// Get file extension
+	ext := filepath.Ext(file.Filename)
+	if ext == "" {
+		// Infer extension from MIME type
+		ext = getExtensionFromMimeType(file.Header.Get("Content-Type"))
+	}
+
+	// Generate timestamp + random string for uniqueness
+	now := time.Now()
+	timeStr := strconv.FormatInt(now.UnixMilli(), 10)
+	randomStr, err := generateRandomString(6)
+	if err != nil {
+		return "", err
+	}
+
+	key := fmt.Sprintf(
+		"attachments/%04d/%02d/%02d/%s-%s%s",
+		now.Year(),
+		now.Month(),
+		now.Day(),
+		timeStr,
+		randomStr,
+		ext,
+	)
+
+	return key, nil
+}
+
+// getExtensionFromMimeType returns the file extension for a given MIME type
+func getExtensionFromMimeType(mimeType string) string {
+	mimeToExt := map[string]string{
+		"image/jpeg":    ".jpg",
+		"image/jpg":     ".jpg",
+		"image/png":     ".png",
+		"image/gif":     ".gif",
+		"image/webp":    ".webp",
+		"image/svg+xml": ".svg",
+	}
+
+	if ext, ok := mimeToExt[mimeType]; ok {
+		return ext
+	}
+	return ".bin"
+}
+
+// generateRandomString generates a random alphanumeric string of given length
+func generateRandomString(length int) (string, error) {
+	const charset = "abcdefghijklmnopqrstuvwxyz0123456789"
+	b := make([]byte, length)
+	if _, err := rand.Read(b); err != nil {
+		return "", err
+	}
+	for i := range b {
+		b[i] = charset[b[i]%byte(len(charset))]
+	}
+	return string(b), nil
 }
