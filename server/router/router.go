@@ -27,7 +27,7 @@ func BuildRouter(cfg server.Config, sqlDB *sql.DB, sobsClient *sobs.SobsClient) 
 		r.Use(middleware2.CheckWebAccelHeader(cfg.WebAccelGuard))
 	}
 
-	adminRouter, err := admin.Router(cfg, sqlDB, sobsClient)
+	adminRouter, err := admin.Router(cfg, sqlDB)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create admin router: %w", err)
 	}

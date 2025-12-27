@@ -66,11 +66,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
 
-      - name: Set up Node.js
-        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6
-        with:
-          node-version: '24'
-
       - name: Set up Go
         uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6
         with:
@@ -79,19 +74,10 @@ jobs:
       - name: Install Go dependencies
         run: go mod download
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4
-
-      - name: Install TypeSpec dependencies
-        run: pnpm install --frozen-lockfile
-
       - name: Install Task
         uses: go-task/setup-task@0ab1b2a65bc55236a3bc64cde78f80e20e8885c2 # v1
         with:
           version: 3.45.3
-
-      - name: Generate TypeSpec files
-        run: task tsp
 
       - name: Generate SQLC admin files
         run: task sqlc-admin
@@ -99,18 +85,13 @@ jobs:
       - name: Generate SQLC public files
         run: task sqlc-public
 
-      - name: Generate Ogen server code
-        run: task ogen
-
       - name: Check for uncommitted changes
         run: |
           if [ -n "$(git status --porcelain)" ]; then
             echo "Error: Generated files are not up-to-date!"
             echo "Please run the following commands and commit the changes:"
-            echo "  task tsp"
             echo "  task sqlc-admin"
             echo "  task sqlc-public"
-            echo "  task ogen"
             echo ""
             echo "Changed files:"
             git status --porcelain

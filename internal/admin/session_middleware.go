@@ -11,6 +11,10 @@ import (
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 )
 
+type contextKey string
+
+const usernameKey contextKey = "username"
+
 // SessionMiddleware creates a middleware that checks for valid sessions
 func SessionMiddleware(queries *admindb.Queries) func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
