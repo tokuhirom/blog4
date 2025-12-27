@@ -74,24 +74,19 @@ jobs:
       - name: Install Go dependencies
         run: go mod download
 
-      - name: Install Task
-        uses: go-task/setup-task@0ab1b2a65bc55236a3bc64cde78f80e20e8885c2 # v1
-        with:
-          version: 3.45.3
-
       - name: Generate SQLC admin files
-        run: task sqlc-admin
+        run: make sqlc-admin
 
       - name: Generate SQLC public files
-        run: task sqlc-public
+        run: make sqlc-public
 
       - name: Check for uncommitted changes
         run: |
           if [ -n "$(git status --porcelain)" ]; then
             echo "Error: Generated files are not up-to-date!"
             echo "Please run the following commands and commit the changes:"
-            echo "  task sqlc-admin"
-            echo "  task sqlc-public"
+            echo "  make sqlc-admin"
+            echo "  make sqlc-public"
             echo ""
             echo "Changed files:"
             git status --porcelain
