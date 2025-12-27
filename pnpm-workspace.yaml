@@ -1,5 +1,4 @@
-packages:
-  - 'web/admin'
+packages: []
 
 overrides:
   glob@>=11.0.0 <11.1.0: '>=11.1.0'

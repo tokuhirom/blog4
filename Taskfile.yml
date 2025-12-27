@@ -11,21 +11,6 @@ tasks:
     generates:
       - typespec/tsp-output/@typespec/openapi3/openapi.yaml
 
-  frontend-build:
-    deps: [npmi]
-    watch: true
-    cmds:
-      - cd ./web/admin && pnpm run build
-    sources:
-      - ./web/admin/package.json
-      - ./web/admin/pnpm-lock.yaml
-      - ./web/admin/tsconfig.json
-      - ./web/admin/src/**/*.svelte
-    generates:
-      - ./web/admin/dist/index.html
-      - ./web/admin/dist/**/*.js
-    desc: "Build the frontend"
-
   sqlc-admin:
     cmds:
       - go tool sqlc generate -f ./db/admin/sqlc-admin.yml
@@ -76,15 +61,6 @@ tasks:
       - ./server/admin/openapi/oas_cfg_gen.go
       - ./server/admin/openapi/oas_client_gen.go
     desc: "Generate OpenAPI server code"
-
-  npmi:
-    cmds:
-      - pnpm install --frozen-lockfile
-    dir: ./web/admin
-    sources:
-      - ./web/admin/package.json
-      - ./web/admin/pnpm-lock.yaml
-    desc: "Install npm dependencies"
 
   docker-build:
     cmds:
