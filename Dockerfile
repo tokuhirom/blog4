@@ -14,9 +14,8 @@ FROM ubuntu:24.04
 WORKDIR /app
 COPY --from=backend-builder /app/blog4 /app/
 COPY --from=backend-builder /app/build-info.json /app/
-COPY web/static /app/web/static
-COPY admin/static /app/admin/static
-COPY web/templates /app/web/templates
+COPY public /app/public
+COPY admin /app/admin
 RUN apt-get update && apt-get install -y tzdata mysql-client openssl ca-certificates
 
 ARG GIT_HASH
