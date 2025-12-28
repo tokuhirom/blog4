@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"log/slog"
 	"net/http"
-	"os"
 	"regexp"
 	"strconv"
 	"strings"
@@ -58,7 +57,7 @@ func summarizeEntry(body string, length int) string {
 
 func RenderTopPage(c *gin.Context, queries *publicdb.Queries) {
 	// Parse and execute the template
-	tmpl, err := template.ParseFiles("web/templates/index.html")
+	tmpl, err := template.ParseFiles("public/templates/index.html")
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
@@ -183,7 +182,7 @@ func RenderEntryPage(c *gin.Context, queries *publicdb.Queries) {
 	}
 
 	// Parse and execute the template
-	tmpl, err := template.ParseFiles("web/templates/entry.html")
+	tmpl, err := template.ParseFiles("public/templates/entry.html")
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
@@ -288,14 +287,4 @@ func RenderFeed(c *gin.Context, queries *publicdb.Queries) {
 
 	c.Header("Content-Type", "application/rss+xml; charset=utf-8")
 	c.String(http.StatusOK, rss)
-}
-
-func RenderStaticMainCss(c *gin.Context) {
-	// Read main.css from filesystem
-	file, err := os.ReadFile("web/static/main.css")
-	if err != nil {
-		c.String(http.StatusNotFound, "File not found")
-		return
-	}
-	c.Data(http.StatusOK, "text/css", file)
 }

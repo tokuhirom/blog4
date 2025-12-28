@@ -20,7 +20,7 @@ func GinSessionMiddleware(queries *admindb.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Skip authentication for login routes and static files
 		path := c.Request.URL.Path
-		if path == "/login" || strings.HasPrefix(path, "/static/") {
+		if path == "/login" || strings.HasPrefix(path, "/admin/static/") {
 			c.Next()
 			return
 		}
@@ -28,7 +28,8 @@ func GinSessionMiddleware(queries *admindb.Queries) gin.HandlerFunc {
 		// Get session ID from cookie
 		sessionID := getSessionID(c.Request)
 		if sessionID == "" {
-			slog.Info("No session found, redirecting to login", slog.String("path", c.Request.URL.Path))
+			slog.Info("No session found, redirecting to login",
+				slog.String("path", c.Request.URL.Path))
 			c.Redirect(http.StatusFound, "/admin/login")
 			c.Abort()
 			return

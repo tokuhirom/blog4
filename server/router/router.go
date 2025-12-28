@@ -89,7 +89,5 @@ func setupPublicRoutes(r *gin.Engine, queries *publicdb.Queries) {
 	r.GET("/entry/*filepath", func(c *gin.Context) {
 		server.RenderEntryPage(c, queries)
 	})
-	r.GET("/static/main.css", func(c *gin.Context) {
-		server.RenderStaticMainCss(c)
-	})
+	r.StaticFile("/static/main.css", "public/static/main.css")
 }

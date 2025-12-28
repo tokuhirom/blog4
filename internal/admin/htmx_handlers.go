@@ -156,12 +156,12 @@ func (h *HtmxHandler) RenderEntriesPage(c *gin.Context) {
 	// Parse templates
 	var tmpl *template.Template
 	if isHtmxRequest {
-		tmpl, err = template.ParseFiles("web/templates/admin/htmx_entry_cards.html")
+		tmpl, err = template.ParseFiles("admin/templates/htmx_entry_cards.html")
 	} else {
 		tmpl, err = template.ParseFiles(
-			"web/templates/admin/layout.html",
-			"web/templates/admin/htmx_entries.html",
-			"web/templates/admin/htmx_entry_cards.html",
+			"admin/templates/layout.html",
+			"admin/templates/htmx_entries.html",
+			"admin/templates/htmx_entry_cards.html",
 		)
 	}
 	if err != nil {
@@ -205,8 +205,8 @@ func (h *HtmxHandler) RenderEntryEditPage(c *gin.Context) {
 	}
 
 	tmpl, err := template.ParseFiles(
-		"web/templates/admin/layout.html",
-		"web/templates/admin/htmx_entry_edit.html",
+		"admin/templates/layout.html",
+		"admin/templates/htmx_entry_edit.html",
 	)
 	if err != nil {
 		slog.Error("failed to parse template", slog.Any("error", err))
@@ -336,7 +336,7 @@ func (h *HtmxHandler) DeleteEntry(c *gin.Context) {
 
 // RenderLoginPage displays the login page
 func (h *HtmxHandler) RenderLoginPage(c *gin.Context) {
-	tmpl, err := template.ParseFiles("web/templates/admin/htmx_login.html")
+	tmpl, err := template.ParseFiles("admin/templates/htmx_login.html")
 	if err != nil {
 		slog.Error("failed to parse login template", slog.Any("error", err))
 		c.String(500, "Internal Server Error")
