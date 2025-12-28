@@ -81,4 +81,5 @@ func setupPublicRoutes(r *gin.Engine, queries *publicdb.Queries) {
 		server.RenderEntryPage(c, queries)
 	})
 	r.StaticFile("/static/main.css", "public/static/main.css")
+	r.StaticFile("/build-info.json", "build-info.json")
 }
