@@ -5,12 +5,11 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-
-	"github.com/tokuhirom/blog4/server"
+	"github.com/tokuhirom/blog4/internal"
 )
 
 // CheckWebAccelGuard is a Gin middleware that checks for the X-WebAccel-Guard header
-func CheckWebAccelGuard(cfg server.Config) func(c *gin.Context) {
+func CheckWebAccelGuard(cfg internal.Config) func(c *gin.Context) {
 	return func(c *gin.Context) {
 		if c.Request.URL.Path != "/healthz" {
 			gotToken := c.GetHeader("X-WebAccel-Guard")

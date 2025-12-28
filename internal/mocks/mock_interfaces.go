@@ -10,12 +10,12 @@
 package mocks
 
 import (
-	context "context"
-	sql "database/sql"
-	reflect "reflect"
+	"context"
+	"database/sql"
+	"reflect"
 
-	admindb "github.com/tokuhirom/blog4/db/admin/admindb"
-	gomock "go.uber.org/mock/gomock"
+	"github.com/tokuhirom/blog4/db/admin/admindb"
+	"go.uber.org/mock/gomock"
 )
 
 // MockEntryImageStore is a mock of EntryImageStore interface.

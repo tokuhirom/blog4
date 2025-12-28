@@ -9,10 +9,10 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tokuhirom/blog4/internal"
+	"github.com/tokuhirom/blog4/internal/sobs"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
-	"github.com/tokuhirom/blog4/server"
-	"github.com/tokuhirom/blog4/server/sobs"
 )
 
 // GinSessionMiddleware validates session and redirects to login if needed
@@ -65,7 +65,7 @@ func GinSessionMiddleware(queries *admindb.Queries) gin.HandlerFunc {
 }
 
 // SetupAdminRoutes configures admin routes on the given router group
-func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, sobsClient *sobs.SobsClient, cfg server.Config) {
+func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, sobsClient *sobs.SobsClient, cfg internal.Config) {
 	// Create handler
 	handler := NewHtmxHandler(queries, sobsClient, cfg.AdminUser, cfg.AdminPassword, !cfg.LocalDev, cfg.S3AttachmentsBaseUrl)
 

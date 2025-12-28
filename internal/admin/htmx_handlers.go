@@ -16,9 +16,9 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
+	"github.com/tokuhirom/blog4/internal/sobs"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
-	"github.com/tokuhirom/blog4/server/sobs"
 )
 
 // HtmxHandler handles htmx-based admin pages
