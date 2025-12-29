@@ -74,6 +74,9 @@ func setupPublicRoutes(r *gin.Engine, queries *publicdb.Queries) {
 	r.GET("/", func(c *gin.Context) {
 		server.RenderTopPage(c, queries)
 	})
+	r.GET("/search", func(c *gin.Context) {
+		server.RenderSearchPage(c, queries)
+	})
 	r.GET("/feed", func(c *gin.Context) {
 		server.RenderFeed(c, queries)
 	})

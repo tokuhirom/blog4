@@ -10,6 +10,78 @@ import (
 	"database/sql"
 )
 
+const fullTextSearchEntries = `-- name: FullTextSearchEntries :many
+SELECT entry.path, entry.title, entry.body, entry.visibility, entry.format, entry.published_at, entry.last_edited_at, entry.created_at, entry.updated_at, entry_image.url image_url,
+       MATCH(entry.title, entry.body) AGAINST(? IN NATURAL LANGUAGE MODE) AS relevance
+FROM entry
+    LEFT JOIN entry_image ON (entry.path = entry_image.path)
+WHERE visibility = 'public'
+  AND MATCH(entry.title, entry.body) AGAINST(? IN NATURAL LANGUAGE MODE)
+ORDER BY relevance DESC
+LIMIT ? OFFSET ?
+`
+
+type FullTextSearchEntriesParams struct {
+	Column1 string
+	Column2 string
+	Limit   int32
+	Offset  int32
+}
+
+type FullTextSearchEntriesRow struct {
+	Path         string
+	Title        string
+	Body         string
+	Visibility   EntryVisibility
+	Format       EntryFormat
+	PublishedAt  sql.NullTime
+	LastEditedAt sql.NullTime
+	CreatedAt    sql.NullTime
+	UpdatedAt    sql.NullTime
+	ImageUrl     sql.NullString
+	Relevance    interface{}
+}
+
+func (q *Queries) FullTextSearchEntries(ctx context.Context, arg FullTextSearchEntriesParams) ([]FullTextSearchEntriesRow, error) {
+	rows, err := q.db.QueryContext(ctx, fullTextSearchEntries,
+		arg.Column1,
+		arg.Column2,
+		arg.Limit,
+		arg.Offset,
+	)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []FullTextSearchEntriesRow
+	for rows.Next() {
+		var i FullTextSearchEntriesRow
+		if err := rows.Scan(
+			&i.Path,
+			&i.Title,
+			&i.Body,
+			&i.Visibility,
+			&i.Format,
+			&i.PublishedAt,
+			&i.LastEditedAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ImageUrl,
+			&i.Relevance,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getAsin = `-- name: GetAsin :one
 SELECT asin, title, image_medium_url, link, created_at
 FROM amazon_cache
