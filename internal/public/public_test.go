@@ -1,4 +1,4 @@
-package server
+package public
 
 import (
 	"net/http"

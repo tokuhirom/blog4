@@ -9,16 +9,18 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/tokuhirom/blog4/internal"
+	"github.com/tokuhirom/blog4/internal/public"
+	"github.com/tokuhirom/blog4/internal/sobs"
+
 	"github.com/tokuhirom/blog4/internal/middleware"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/tokuhirom/blog4/internal/admin"
-	"github.com/tokuhirom/blog4/server"
-	"github.com/tokuhirom/blog4/server/sobs"
 )
 
-func BuildRouter(cfg server.Config, sqlDB *sql.DB, sobsClient *sobs.SobsClient) (*gin.Engine, error) {
+func BuildRouter(cfg internal.Config, sqlDB *sql.DB, sobsClient *sobs.SobsClient) (*gin.Engine, error) {
 	// Validate admin config
 	if cfg.AdminUser == "" {
 		slog.Warn("AdminUser is not set")
@@ -65,24 +67,7 @@ func BuildRouter(cfg server.Config, sqlDB *sql.DB, sobsClient *sobs.SobsClient) 
 
 	// Setup public routes
 	publicQueries := publicdb.New(sqlDB)
-	setupPublicRoutes(r, publicQueries)
+	public.SetupPublicRoutes(r, publicQueries)
 
 	return r, nil
-}
-
-func setupPublicRoutes(r *gin.Engine, queries *publicdb.Queries) {
-	r.GET("/", func(c *gin.Context) {
-		server.RenderTopPage(c, queries)
-	})
-	r.GET("/search", func(c *gin.Context) {
-		server.RenderSearchPage(c, queries)
-	})
-	r.GET("/feed", func(c *gin.Context) {
-		server.RenderFeed(c, queries)
-	})
-	r.GET("/entry/*filepath", func(c *gin.Context) {
-		server.RenderEntryPage(c, queries)
-	})
-	r.StaticFile("/static/main.css", "public/static/main.css")
-	r.StaticFile("/build-info.json", "build-info.json")
 }

@@ -1,4 +1,4 @@
-package server
+package internal
 
 import (
 	"bytes"
@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/tokuhirom/blog4/server/sobs"
+	"github.com/tokuhirom/blog4/internal/sobs"
 )
 
 func StartBackup(encryptionKey string, s3client *sobs.SobsClient) {

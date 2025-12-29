@@ -10,12 +10,12 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/tokuhirom/blog4/server"
-	"github.com/tokuhirom/blog4/server/router"
-	"github.com/tokuhirom/blog4/server/sobs"
-
 	"github.com/caarlos0/env/v11"
 	"github.com/go-sql-driver/mysql"
+
+	"github.com/tokuhirom/blog4/internal"
+	"github.com/tokuhirom/blog4/internal/router"
+	"github.com/tokuhirom/blog4/internal/sobs"
 )
 
 func main() {
@@ -27,7 +27,7 @@ func main() {
 }
 
 func DoMain() error {
-	cfg, err := env.ParseAs[server.Config]()
+	cfg, err := env.ParseAs[internal.Config]()
 	if err != nil {
 		return fmt.Errorf("failed to parse Config: %w", err)
 	}
@@ -64,7 +64,7 @@ func DoMain() error {
 
 	go (func() {
 		slog.Info("Starting backup process")
-		server.StartBackup(cfg.BackupEncryptionKey, sobsClient)
+		internal.StartBackup(cfg.BackupEncryptionKey, sobsClient)
 	})()
 
 	// Start the server

@@ -1,4 +1,4 @@
-package server
+package utils
 
 import (
 	"testing"
@@ -22,8 +22,8 @@ func Test_formatDateTime(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := formatDateTime(tt.args.time_); got != tt.want {
-				t.Errorf("formatDateTime() = %v, want %v", got, tt.want)
+			if got := FormatDateTime(tt.args.time_); got != tt.want {
+				t.Errorf("FormatDateTime() = %v, want %v", got, tt.want)
 			}
 		})
 	}
