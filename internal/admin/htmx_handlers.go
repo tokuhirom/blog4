@@ -17,6 +17,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/tokuhirom/blog4/internal"
 	"github.com/tokuhirom/blog4/internal/sobs"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
@@ -267,7 +268,52 @@ func (h *HtmxHandler) UpdateEntryBody(c *gin.Context) {
 
 // RegenerateEntryImage triggers image regeneration and returns feedback HTML
 func (h *HtmxHandler) RegenerateEntryImage(c *gin.Context) {
-	c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-success">Image regeneration queued!</div>`))
+	path := getEntryPath(c)
+
+	// Delete existing entry image
+	_, err := h.queries.DeleteEntryImageByPath(c.Request.Context(), path)
+	if err != nil {
+		slog.Error("failed to delete entry image", slog.String("path", path), slog.Any("error", err))
+		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to delete entry image</div>`))
+		return
+	}
+
+	// Process entry image in background
+	go func() {
+		ctx := c.Request.Context()
+		service := internal.NewEntryImageService(h.queries)
+
+		// Get the entry
+		entryRow, err := h.queries.AdminGetEntryByPath(ctx, path)
+		if err != nil {
+			slog.Error("failed to get entry for image regeneration", slog.String("path", path), slog.Any("error", err))
+			return
+		}
+
+		// Convert to Entry type
+		entry := admindb.Entry{
+			Path:         entryRow.Path,
+			Title:        entryRow.Title,
+			Body:         entryRow.Body,
+			Visibility:   entryRow.Visibility,
+			Format:       entryRow.Format,
+			PublishedAt:  entryRow.PublishedAt,
+			LastEditedAt: entryRow.LastEditedAt,
+			CreatedAt:    entryRow.CreatedAt,
+			UpdatedAt:    entryRow.UpdatedAt,
+		}
+
+		// Process the entry
+		err = service.ProcessEntry(ctx, entry)
+		if err != nil {
+			slog.Error("failed to process entry image", slog.String("path", path), slog.Any("error", err))
+			return
+		}
+
+		slog.Info("successfully regenerated entry image", slog.String("path", path))
+	}()
+
+	c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-success">Image regeneration started!</div>`))
 }
 
 // UpdateEntryVisibility updates the entry visibility
@@ -280,7 +326,21 @@ func (h *HtmxHandler) UpdateEntryVisibility(c *gin.Context) {
 		return
 	}
 
-	err := h.queries.UpdateVisibility(c.Request.Context(), admindb.UpdateVisibilityParams{
+	// Get current visibility and published_at
+	entry, err := h.queries.GetEntryVisibility(c.Request.Context(), path)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			slog.Error("entry not found", slog.String("path", path))
+			c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Entry not found</div>`))
+			return
+		}
+		slog.Error("failed to get entry visibility", slog.String("path", path), slog.Any("error", err))
+		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to get entry visibility</div>`))
+		return
+	}
+
+	// Update visibility
+	err = h.queries.UpdateVisibility(c.Request.Context(), admindb.UpdateVisibilityParams{
 		Visibility: admindb.EntryVisibility(visibility),
 		Path:       path,
 	})
@@ -288,6 +348,16 @@ func (h *HtmxHandler) UpdateEntryVisibility(c *gin.Context) {
 		slog.Error("failed to update visibility", slog.String("path", path), slog.Any("error", err))
 		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to update visibility</div>`))
 		return
+	}
+
+	// If changing from private to public and published_at is null, set it to now
+	if entry.Visibility == "private" && visibility == "public" && !entry.PublishedAt.Valid {
+		if err := h.queries.UpdatePublishedAt(c.Request.Context(), path); err != nil {
+			slog.Error("failed to update published_at", slog.String("path", path), slog.Any("error", err))
+			c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to update published_at</div>`))
+			return
+		}
+		slog.Info("updated published_at for newly public entry", slog.String("path", path))
 	}
 
 	c.Header("HX-Refresh", "true")
