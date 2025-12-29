@@ -16,6 +16,9 @@ func SetupPublicRoutes(r *gin.Engine, queries *publicdb.Queries) {
 	r.GET("/entry/*filepath", func(c *gin.Context) {
 		RenderEntryPage(c, queries)
 	})
+	r.GET("/search", func(c *gin.Context) {
+		RenderSearchPage(c, queries)
+	})
 	r.StaticFile("/static/main.css", "public/static/main.css")
 	r.StaticFile("/build-info.json", "build-info.json")
 }
