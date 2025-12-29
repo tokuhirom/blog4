@@ -14,7 +14,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/feeds"
-	"github.com/tokuhirom/blog4/server"
+
+	"github.com/tokuhirom/blog4/internal/utils"
 
 	"github.com/tokuhirom/blog4/db/public/publicdb"
 	"github.com/tokuhirom/blog4/internal/markdown"
@@ -149,7 +150,7 @@ func RenderEntryPage(c *gin.Context, queries *publicdb.Queries) {
 	// Data to pass to the template
 	var formattedDate string
 	if entry.PublishedAt.Valid {
-		formattedDate = server.formatDateTime(entry.PublishedAt.Time)
+		formattedDate = utils.FormatDateTime(entry.PublishedAt.Time)
 	} else {
 		slog.Error("published_at is invalid", slog.String("path", entry.Path), slog.Any("published_at", entry.PublishedAt))
 		c.String(http.StatusInternalServerError, "Internal Server Error")

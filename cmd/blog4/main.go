@@ -12,6 +12,7 @@ import (
 
 	"github.com/caarlos0/env/v11"
 	"github.com/go-sql-driver/mysql"
+
 	"github.com/tokuhirom/blog4/internal"
 	"github.com/tokuhirom/blog4/internal/router"
 	"github.com/tokuhirom/blog4/internal/sobs"

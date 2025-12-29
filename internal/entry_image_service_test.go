@@ -6,8 +6,9 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/tokuhirom/blog4/internal/mocks"
 	"go.uber.org/mock/gomock"
+
+	"github.com/tokuhirom/blog4/internal/mocks"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 )
