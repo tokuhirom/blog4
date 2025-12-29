@@ -6,20 +6,29 @@
 
 {{define "content"}}
     <div class="admin-container entry-list-container">
-        <div class="search-box">
-            <input
-                type="text"
-                name="q"
-                placeholder="Search entries..."
-                hx-get="/admin/entries/search"
-                hx-trigger="keyup changed delay:500ms, search"
-                hx-target="#entry-list"
-                hx-include="this"
-                autocomplete="off"
-            />
+        <div class="search-and-actions">
+            <div class="search-box">
+                <input
+                    type="text"
+                    name="q"
+                    placeholder="Search entries..."
+                    hx-get="/admin/entries/search"
+                    hx-trigger="keyup changed delay:500ms, search"
+                    hx-target="#entry-list"
+                    hx-include="this"
+                    autocomplete="off"
+                />
+            </div>
+            <button class="btn-new-entry" id="btn-create-entry">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                New Entry
+            </button>
         </div>
 
-        <div class="keyboard-hint">Press 'c' to create new entry</div>
+        <div class="keyboard-hint">Tip: Press 'c' to create new entry</div>
 
         <!-- Hidden form for creating new entry -->
         <form id="create-entry-form"
@@ -48,19 +57,29 @@
 
 {{define "extra-scripts"}}
     <script>
+        // Function to create new entry
+        function createNewEntry() {
+            // Generate timestamp-based title
+            const now = new Date();
+            const title = now.toISOString().slice(0,19).replace(/[-:]/g, '').replace('T', '');
+
+            // Set title in hidden form field and trigger htmx submission
+            document.getElementById('new-entry-title').value = title;
+            htmx.trigger('#create-entry-form', 'submit');
+        }
+
+        // Button click handler
+        document.getElementById('btn-create-entry').addEventListener('click', (e) => {
+            e.preventDefault();
+            createNewEntry();
+        });
+
         // Keyboard shortcut to create new entry
         document.addEventListener('keydown', (e) => {
             if (e.key === 'c' && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey
                 && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
                 e.preventDefault();
-
-                // Generate timestamp-based title
-                const now = new Date();
-                const title = now.toISOString().slice(0,19).replace(/[-:]/g, '').replace('T', '');
-
-                // Set title in hidden form field and trigger htmx submission
-                document.getElementById('new-entry-title').value = title;
-                htmx.trigger('#create-entry-form', 'submit');
+                createNewEntry();
             }
         });
     </script>
