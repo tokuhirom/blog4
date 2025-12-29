@@ -7,6 +7,44 @@
     <link rel="stylesheet" type="text/css" href="/static/main.css?3">
     <meta charset="UTF-8">
     <title>{{.Title}} - tokuhirom's blog</title>
+    <style>
+        .share-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        .share-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        .share-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+        .share-button-x {
+            background: linear-gradient(135deg, #1DA1F2 0%, #0d8bd9 100%);
+            color: white;
+        }
+        .share-button-hatena {
+            background: linear-gradient(135deg, #00A4DE 0%, #008bb8 100%);
+            color: white;
+        }
+        .share-button svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+    </style>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9032322815824634" crossorigin="anonymous"></script>
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-N48P264GB5"></script>
     <script>
@@ -21,11 +59,41 @@
 <body>
 <nav>
     <a href="/">tokuhirom's blog</a>
+    <a href="/search" style="font-size: 0.9em; margin-left: 20px;">Search</a>
 </nav>
 <div class="entry-content-detail">
     <h1 class="entry-title">{{.Title}}</h1>
     <p>{{.Body}}</p>
     <p class="published">Published: {{.PublishedAt}}</p>
+
+    <div class="share-buttons">
+        <a href="#" class="share-button share-button-x" id="share-x" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+            <span>Post</span>
+        </a>
+        <a href="#" class="share-button share-button-hatena" id="share-hatena" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 3C2.895 3 2 3.895 2 5v14c0 1.105.895 2 2 2h16c1.105 0 2-.895 2-2V5c0-1.105-.895-2-2-2H4zm3.5 3.5h3v8h-3v-8zM14 7h1.5c1.75 0 3 1.25 3 3 0 1.125-.625 2.125-1.5 2.625 1.125.5 1.5 1.625 1.5 2.625 0 1.75-1.25 3-3 3H14V7zm1.5 2.5v2h1c.563 0 1-.438 1-1s-.437-1-1-1h-1zm0 4.5v2h1.5c.563 0 1-.438 1-1s-.437-1-1-1H15.5zM6 16.5c.828 0 1.5.672 1.5 1.5s-.672 1.5-1.5 1.5-1.5-.672-1.5-1.5.672-1.5 1.5-1.5z"/>
+            </svg>
+            <span>Bookmark</span>
+        </a>
+    </div>
+
+    <script>
+        (function() {
+            const pageUrl = encodeURIComponent(window.location.href);
+            const pageTitle = encodeURIComponent(document.title);
+
+            document.getElementById('share-x').href =
+                `https://twitter.com/intent/tweet?text=${pageTitle}&url=${pageUrl}`;
+
+            document.getElementById('share-hatena').href =
+                `https://b.hatena.ne.jp/entry/${window.location.href}`;
+        })();
+    </script>
+
     {{if .HasRelatedEntries}}
     <div class="related-entries">
         <h2>Related Entries</h2>

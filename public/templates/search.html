@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <title>Search - tokuhirom's blog</title>
+    <link rel="stylesheet" type="text/css" href="/static/main.css?3">
+    <style>
+        .search-container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+        .search-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 14px 20px;
+            font-size: 1.1em;
+            border: 3px solid #ffb3d9;
+            border-radius: 25px;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #ffffff;
+            font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .search-input:focus {
+            border-color: #ff8fab;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.2);
+        }
+        .search-button {
+            padding: 14px 32px;
+            font-size: 1.1em;
+            background: linear-gradient(135deg, #ff8fab 0%, #c084fc 100%);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.3);
+        }
+        .search-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 107, 157, 0.4);
+        }
+        .search-result-info {
+            text-align: center;
+            font-size: 1.1em;
+            color: #666;
+            margin: 30px 0;
+        }
+    </style>
+    <link rel="alternate" type="application/rss+xml" title="RSS Feed" href="https://blog.64p.org/feed">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9032322815824634" crossorigin="anonymous"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-N48P264GB5"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() {
+            dataLayer.push(arguments);
+        }
+        gtag('js', new Date());
+        gtag('config', 'G-N48P264GB5');
+    </script>
+</head>
+<body>
+<nav>
+    <a href="/">tokuhirom's blog</a>
+</nav>
+<div class="search-container">
+    <form class="search-form" action="/search" method="GET">
+        <input type="text" name="q" class="search-input" placeholder="Search entries..." value="{{.Query}}" autofocus>
+        <button type="submit" class="search-button">Search</button>
+    </form>
+</div>
+<div class="wrapper">
+    {{if .Entries}}
+    <ul class="card-container">
+        {{range $path, $entry := .Entries}}
+        <li class="card">
+            <a href="/entry/{{$entry.Path}}" class="card-link">
+                <div class="entry-head">
+                    <span class="entry-title">{{$entry.Title}}</span>
+                </div>
+                {{if $entry.ImageUrl}}
+                <div>
+                    <img src="{{$entry.ImageUrl}}" class="entry-image" alt="{{$entry.Title}}">
+                </div>
+                {{else}}
+                <div class="entry-text-preview">{{$entry.TextPreview}}</div>
+                {{end}}
+                <span class="published-date">{{$entry.PublishedAt}}</span>
+            </a>
+        </li>
+        {{end}}
+    </ul>
+    <div class="pager">
+        <div class="prev">
+            {{if .HasPrev}}
+            <a href="/search?q={{.Query}}&page={{.Prev}}">Prev</a>
+            {{else}}
+            Prev
+            {{end}}
+        </div>
+        <div class="next">
+            {{if .HasNext}}
+            <a href="/search?q={{.Query}}&page={{.Next}}">Next</a>
+            {{else}}
+            Next
+            {{end}}
+        </div>
+    </div>
+    {{else}}
+    <div class="search-result-info">
+        {{if .Query}}
+        No results found. Try different keywords.
+        {{else}}
+        Enter keywords to search entries.
+        {{end}}
+    </div>
+    {{end}}
+</div>
+<footer>
+    &copy; tokuhirom
+</footer>
+</body>
+</html>

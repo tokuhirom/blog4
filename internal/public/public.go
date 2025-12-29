@@ -28,6 +28,7 @@ type TopPageData struct {
 	HasNext bool
 	Prev    int
 	Next    int
+	Query   string
 }
 
 type EntryViewData struct {
@@ -126,6 +127,7 @@ func RenderTopPage(c *gin.Context, queries *publicdb.Queries) {
 		HasPrev: page > 1,
 		HasNext: hasNext,
 		Entries: viewData,
+		Query:   "",
 	})
 	if err != nil {
 		c.String(http.StatusInternalServerError, "Internal Server Error")
@@ -289,4 +291,101 @@ func RenderFeed(c *gin.Context, queries *publicdb.Queries) {
 
 	c.Header("Content-Type", "application/rss+xml; charset=utf-8")
 	c.String(http.StatusOK, rss)
+}
+
+func RenderSearchPage(c *gin.Context, queries *publicdb.Queries) {
+	// Parse and execute the template
+	tmpl, err := template.ParseFiles("public/templates/search.html")
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+
+	// Get search query parameter
+	query := c.Query("q")
+	if query == "" {
+		// No query provided, show empty search page
+		c.Status(http.StatusOK)
+		err = tmpl.Execute(c.Writer, TopPageData{
+			Page:    1,
+			Entries: []EntryViewData{},
+			HasPrev: false,
+			HasNext: false,
+			Query:   "",
+		})
+		if err != nil {
+			c.String(http.StatusInternalServerError, "Internal Server Error")
+		}
+		return
+	}
+
+	// Get page number
+	page := 1
+	if pageStr := c.Query("page"); pageStr != "" {
+		page, err = strconv.Atoi(pageStr)
+		if err != nil {
+			slog.Error("failed to parse page number", slog.String("page", pageStr), slog.Any("error", err))
+			c.String(http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+	}
+
+	entriesPerPage := 60
+	offset := (page - 1) * entriesPerPage
+
+	// Perform full-text search
+	entries, err := queries.FullTextSearchEntries(c.Request.Context(), publicdb.FullTextSearchEntriesParams{
+		Column1: query,
+		Column2: query,
+		Limit:   int32(entriesPerPage + 1),
+		Offset:  int32(offset),
+	})
+	if err != nil {
+		slog.Error("failed to search entries", slog.String("query", query), slog.Int("page", page), slog.Any("error", err))
+		c.String(http.StatusInternalServerError, "Internal Server Error")
+		return
+	}
+
+	// Remove last entry if there are more entries
+	var hasNext = false
+	if len(entries) > entriesPerPage {
+		entries = entries[:entriesPerPage]
+		hasNext = true
+	}
+
+	// Prepare data for the template
+	var viewData []EntryViewData
+	for _, entry := range entries {
+		// Format the PublishedAt date
+		var formattedDate string
+		if entry.PublishedAt.Valid {
+			formattedDate = entry.PublishedAt.Time.Format("2006-01-02(Mon)")
+		} else {
+			slog.Error("published_at is invalid", slog.String("path", entry.Path), slog.Any("published_at", entry.PublishedAt))
+			c.String(http.StatusInternalServerError, "Internal Server Error")
+			return
+		}
+
+		viewData = append(viewData, EntryViewData{
+			Path:        entry.Path,
+			Title:       entry.Title,
+			PublishedAt: formattedDate,
+			TextPreview: summarizeEntry(entry.Body, 100),
+			ImageUrl:    entry.ImageUrl.String,
+		})
+	}
+
+	c.Status(http.StatusOK)
+	err = tmpl.Execute(c.Writer, TopPageData{
+		Page:    page,
+		Prev:    page - 1,
+		Next:    page + 1,
+		HasPrev: page > 1,
+		HasNext: hasNext,
+		Entries: viewData,
+		Query:   query,
+	})
+	if err != nil {
+		c.String(http.StatusInternalServerError, "Internal Server Error")
+	}
 }
