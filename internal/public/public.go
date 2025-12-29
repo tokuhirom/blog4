@@ -62,6 +62,7 @@ func RenderTopPage(c *gin.Context, queries *publicdb.Queries) {
 	// Parse and execute the template
 	tmpl, err := template.ParseFiles("public/templates/index.html")
 	if err != nil {
+		slog.Error("failed to parse template", slog.String("template", "index.html"), slog.Any("error", err))
 		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
@@ -130,6 +131,7 @@ func RenderTopPage(c *gin.Context, queries *publicdb.Queries) {
 		Query:   "",
 	})
 	if err != nil {
+		slog.Error("failed to execute template", slog.String("template", "index.html"), slog.Int("page", page), slog.Any("error", err))
 		c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 }
@@ -188,12 +190,14 @@ func RenderEntryPage(c *gin.Context, queries *publicdb.Queries) {
 	// Parse and execute the template
 	tmpl, err := template.ParseFiles("public/templates/entry.html")
 	if err != nil {
+		slog.Error("failed to parse template", slog.String("template", "entry.html"), slog.String("path", extractedPath), slog.Any("error", err))
 		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
 	err = tmpl.Execute(c.Writer, data)
 	if err != nil {
+		slog.Error("failed to execute template", slog.String("template", "entry.html"), slog.String("path", extractedPath), slog.Any("error", err))
 		c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 }
@@ -297,6 +301,7 @@ func RenderSearchPage(c *gin.Context, queries *publicdb.Queries) {
 	// Parse and execute the template
 	tmpl, err := template.ParseFiles("public/templates/search.html")
 	if err != nil {
+		slog.Error("failed to parse template", slog.String("template", "search.html"), slog.Any("error", err))
 		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
@@ -314,6 +319,7 @@ func RenderSearchPage(c *gin.Context, queries *publicdb.Queries) {
 			Query:   "",
 		})
 		if err != nil {
+			slog.Error("failed to execute template", slog.String("template", "search.html"), slog.String("query", ""), slog.Any("error", err))
 			c.String(http.StatusInternalServerError, "Internal Server Error")
 		}
 		return
@@ -386,6 +392,7 @@ func RenderSearchPage(c *gin.Context, queries *publicdb.Queries) {
 		Query:   query,
 	})
 	if err != nil {
+		slog.Error("failed to execute template", slog.String("template", "search.html"), slog.String("query", query), slog.Int("page", page), slog.Any("error", err))
 		c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
 }
