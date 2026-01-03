@@ -19,9 +19,13 @@ import (
 // GinSessionMiddleware validates session and redirects to login if needed
 func GinSessionMiddleware(queries *admindb.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// Skip authentication for login routes and static files
+		// Skip authentication for login routes, static files, PWA files
 		path := c.Request.URL.Path
-		if path == "/login" || strings.HasPrefix(path, "/admin/static/") {
+		if path == "/login" ||
+			strings.HasPrefix(path, "/admin/static/") ||
+			path == "/admin/manifest.webmanifest" ||
+			path == "/admin/sw.js" ||
+			strings.HasPrefix(path, "/admin/icons/") {
 			c.Next()
 			return
 		}
@@ -74,8 +78,16 @@ func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, sob
 	adminGroup.GET("/login", handler.RenderLoginPage)
 	adminGroup.POST("/login", handler.HandleLogin)
 
+	// PWA files (served before session middleware for accessibility)
+	adminGroup.StaticFile("/manifest.webmanifest", "admin/manifest.webmanifest")
+	adminGroup.StaticFile("/sw.js", "admin/static/sw.js")
+	adminGroup.Static("/icons", "admin/static/icons/")
+
 	// Add session middleware for authenticated routes
 	adminGroup.Use(GinSessionMiddleware(queries))
+
+	// Web Share Target endpoint (requires authentication)
+	adminGroup.POST("/share-target", handler.HandleShareTarget)
 
 	// Root redirect to entries
 	adminGroup.GET("/", func(c *gin.Context) {

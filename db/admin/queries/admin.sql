@@ -64,5 +64,10 @@ INSERT INTO entry
            (path, title, body, visibility)
     VALUES (?,        ?, '',    'private');
 
+-- name: CreateEntryWithBody :execrows
+INSERT INTO entry
+           (path, title, body, visibility)
+    VALUES (?,    ?,     ?,    'private');
+
 -- name: DeleteEntry :execrows
 DELETE FROM entry WHERE path = ?;
