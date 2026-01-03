@@ -2,7 +2,7 @@
 // Required for Web Share Target API
 
 const CACHE_NAME = 'blog4-admin-v1';
-const urlsToCache = ['/admin/entries', '/admin/static/admin.css'];
+const urlsToCache = ['/admin/entries/search', '/admin/static/admin.css'];
 
 // Install event - cache critical resources
 self.addEventListener('install', (event) => {
