@@ -67,6 +67,26 @@ func (q *Queries) CreateEmptyEntry(ctx context.Context, arg CreateEmptyEntryPara
 	return result.RowsAffected()
 }
 
+const createEntryWithBody = `-- name: CreateEntryWithBody :execrows
+INSERT INTO entry
+           (path, title, body, visibility)
+    VALUES (?,    ?,     ?,    'private')
+`
+
+type CreateEntryWithBodyParams struct {
+	Path  string
+	Title string
+	Body  string
+}
+
+func (q *Queries) CreateEntryWithBody(ctx context.Context, arg CreateEntryWithBodyParams) (int64, error) {
+	result, err := q.db.ExecContext(ctx, createEntryWithBody, arg.Path, arg.Title, arg.Body)
+	if err != nil {
+		return 0, err
+	}
+	return result.RowsAffected()
+}
+
 const deleteEntry = `-- name: DeleteEntry :execrows
 DELETE FROM entry WHERE path = ?
 `

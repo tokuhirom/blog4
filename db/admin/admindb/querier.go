@@ -13,6 +13,7 @@ type Querier interface {
 	AdminGetEntryByPath(ctx context.Context, path string) (AdminGetEntryByPathRow, error)
 	CountAmazonCacheByAsin(ctx context.Context, asin string) (int64, error)
 	CreateEmptyEntry(ctx context.Context, arg CreateEmptyEntryParams) (int64, error)
+	CreateEntryWithBody(ctx context.Context, arg CreateEntryWithBodyParams) (int64, error)
 	CreateSession(ctx context.Context, arg CreateSessionParams) error
 	DeleteEntry(ctx context.Context, path string) (int64, error)
 	DeleteEntryImageByPath(ctx context.Context, path string) (int64, error)

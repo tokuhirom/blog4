@@ -390,6 +390,79 @@ func (h *HtmxHandler) CreateEntry(c *gin.Context) {
 	c.Status(200)
 }
 
+// HandleShareTarget handles Web Share Target API requests from Android
+func (h *HtmxHandler) HandleShareTarget(c *gin.Context) {
+	ctx := c.Request.Context()
+	now := time.Now()
+
+	// Get shared content from POST form
+	sharedTitle := c.PostForm("title")
+	sharedText := c.PostForm("text")
+	sharedURL := c.PostForm("url")
+
+	// Generate unique title
+	var title string
+	if sharedTitle == "" {
+		// No title provided, generate from timestamp
+		title = "Shared " + now.Format("2006-01-02 15:04:05")
+	} else {
+		// Use shared title with timestamp suffix to ensure uniqueness
+		title = sharedTitle + " - " + now.Format("15:04:05")
+	}
+
+	// Build entry body from shared content
+	var bodyParts []string
+	if sharedText != "" {
+		bodyParts = append(bodyParts, sharedText)
+	}
+	if sharedURL != "" {
+		bodyParts = append(bodyParts, "\n[Source]("+sharedURL+")")
+	}
+	body := strings.Join(bodyParts, "\n\n")
+
+	// Generate path based on current time
+	path := now.Format("2006/01/02/150405")
+
+	// Create entry with body
+	_, err := h.queries.CreateEntryWithBody(ctx, admindb.CreateEntryWithBodyParams{
+		Path:  path,
+		Title: title,
+		Body:  body,
+	})
+	if err != nil {
+		slog.Error("failed to create shared entry",
+			slog.String("title", title),
+			slog.String("path", path),
+			slog.Any("error", err))
+
+		// Render error template
+		tmpl, tmplErr := template.ParseFiles("admin/templates/share_error.html")
+		if tmplErr != nil {
+			slog.Error("failed to parse share error template", slog.Any("error", tmplErr))
+			c.String(500, "Failed to save shared content")
+			return
+		}
+
+		c.Status(500)
+		if err := tmpl.Execute(c.Writer, gin.H{
+			"error":      "Failed to save shared content. Please try again.",
+			"entriesUrl": "/admin/entries",
+		}); err != nil {
+			slog.Error("failed to execute share error template", slog.Any("error", err))
+			c.String(500, "Failed to save shared content")
+		}
+		return
+	}
+
+	slog.Info("created shared entry",
+		slog.String("title", title),
+		slog.String("path", path),
+		slog.String("sharedFrom", sharedURL))
+
+	// Redirect to edit page (regular HTTP redirect, not HX-Redirect)
+	c.Redirect(http.StatusSeeOther, "/admin/entries/edit?path="+path)
+}
+
 // DeleteEntry deletes an entry
 func (h *HtmxHandler) DeleteEntry(c *gin.Context) {
 	path := getEntryPath(c)
