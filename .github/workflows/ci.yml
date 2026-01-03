@@ -46,6 +46,16 @@ jobs:
       - name: Run Go tests
         run: go test ./...
 
+  biome-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+
+      - name: Run biome check
+        run: make biome-check
+
   check-generated-files:
     runs-on: ubuntu-latest
 
