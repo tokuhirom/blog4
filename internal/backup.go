@@ -13,19 +13,19 @@ import (
 	"github.com/tokuhirom/blog4/internal/sobs"
 )
 
-func StartBackup(encryptionKey string, s3client *sobs.SobsClient) {
+func StartBackup(config *Config, s3client *sobs.SobsClient) {
 	slog.Info("Start taking backup")
 	time.AfterFunc(1*time.Second, func() {
-		takeBackup(encryptionKey, s3client)
+		takeBackup(config, s3client)
 	})
 	ticker := time.NewTicker(24 * time.Hour)
 	defer ticker.Stop()
 	for range ticker.C {
-		takeBackup(encryptionKey, s3client)
+		takeBackup(config, s3client)
 	}
 }
 
-func takeBackup(encryptionKey string, s3client *sobs.SobsClient) {
+func takeBackup(config *Config, s3client *sobs.SobsClient) {
 	slog.Info("takeBackup")
 
 	// Generate dump file path
@@ -34,14 +34,21 @@ func takeBackup(encryptionKey string, s3client *sobs.SobsClient) {
 	encryptedFileName := dumpFileName + ".enc"
 	slog.Info("mariadb-dump file name", slog.String("filename", dumpFileName))
 
+	// Build mariadb-dump command with conditional --skip-ssl flag
+	sslFlag := ""
+	if config.LocalDev {
+		sslFlag = "--skip-ssl "
+	}
+
 	// Execute mariadb-dump command
 	err := execCommand(fmt.Sprintf(
-		"mariadb-dump --skip-ssl --host=%s --port=%s --user=%s --password=%s %s > %s",
-		os.Getenv("DATABASE_HOST"),
-		os.Getenv("DATABASE_PORT"),
-		os.Getenv("DATABASE_USER"),
-		os.Getenv("DATABASE_PASSWORD"),
-		os.Getenv("DATABASE_DB"),
+		"mariadb-dump %s--host=%s --port=%d --user=%s --password=%s %s > %s",
+		sslFlag,
+		config.DBHostname,
+		config.DBPort,
+		config.DBUser,
+		config.DBPassword,
+		config.DBName,
 		dumpFileName,
 	))
 	if err != nil {
@@ -60,7 +67,7 @@ func takeBackup(encryptionKey string, s3client *sobs.SobsClient) {
 		"openssl enc -aes-256-cbc -salt -in %s -out %s -pass pass:%s",
 		dumpFileName,
 		encryptedFileName,
-		encryptionKey,
+		config.BackupEncryptionKey,
 	))
 	if err != nil {
 		slog.Error("Error encrypting dump file", slog.Any("error", err))
