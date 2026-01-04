@@ -13,35 +13,42 @@ import (
 	"github.com/tokuhirom/blog4/internal/sobs"
 )
 
-func StartBackup(encryptionKey string, s3client *sobs.SobsClient) {
+func StartBackup(config *Config, s3client *sobs.SobsClient) {
 	slog.Info("Start taking backup")
 	time.AfterFunc(1*time.Second, func() {
-		takeBackup(encryptionKey, s3client)
+		takeBackup(config, s3client)
 	})
 	ticker := time.NewTicker(24 * time.Hour)
 	defer ticker.Stop()
 	for range ticker.C {
-		takeBackup(encryptionKey, s3client)
+		takeBackup(config, s3client)
 	}
 }
 
-func takeBackup(encryptionKey string, s3client *sobs.SobsClient) {
+func takeBackup(config *Config, s3client *sobs.SobsClient) {
 	slog.Info("takeBackup")
 
 	// Generate dump file path
 	date := time.Now()
 	dumpFileName := fmt.Sprintf("/tmp/blog3-backup-%s.sql", date.Format("2006-01-02T15-04-05"))
 	encryptedFileName := dumpFileName + ".enc"
-	slog.Info("mysqldump file name", slog.String("filename", dumpFileName))
+	slog.Info("mariadb-dump file name", slog.String("filename", dumpFileName))
 
-	// Execute mysqldump command
+	// Build mariadb-dump command with conditional --skip-ssl flag
+	sslFlag := ""
+	if config.LocalDev {
+		sslFlag = "--skip-ssl "
+	}
+
+	// Execute mariadb-dump command
 	err := execCommand(fmt.Sprintf(
-		"mysqldump --host=%s --port=%s --user=%s --password=%s %s > %s",
-		os.Getenv("DATABASE_HOST"),
-		os.Getenv("DATABASE_PORT"),
-		os.Getenv("DATABASE_USER"),
-		os.Getenv("DATABASE_PASSWORD"),
-		os.Getenv("DATABASE_NAME"),
+		"mariadb-dump %s--host=%s --port=%d --user=%s --password=%s %s > %s",
+		sslFlag,
+		config.DBHostname,
+		config.DBPort,
+		config.DBUser,
+		config.DBPassword,
+		config.DBName,
 		dumpFileName,
 	))
 	if err != nil {
@@ -60,7 +67,7 @@ func takeBackup(encryptionKey string, s3client *sobs.SobsClient) {
 		"openssl enc -aes-256-cbc -salt -in %s -out %s -pass pass:%s",
 		dumpFileName,
 		encryptedFileName,
-		encryptionKey,
+		config.BackupEncryptionKey,
 	))
 	if err != nil {
 		slog.Error("Error encrypting dump file", slog.Any("error", err))
@@ -103,7 +110,8 @@ func execCommand(command string) error {
 	cmd := exec.Command("sh", "-c", command)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("command execution failed: %s, error: %v", string(output), err)
+		return fmt.Errorf("command execution failed: cmd=%s, output=%s, error=%v",
+			command, string(output), err)
 	}
 	return nil
 }

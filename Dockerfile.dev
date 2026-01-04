@@ -1,14 +1,11 @@
-FROM golang:1.25-alpine
+FROM golang:1.25.5-trixie
 
 # Install dependencies
-RUN apk add --no-cache git mysql-client
+RUN apt-get update && apt-get install -y tzdata mariadb-client openssl ca-certificates && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install air for hot-reload
 RUN go install github.com/air-verse/air@latest
-
-# Install go tools
-RUN go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-RUN go install github.com/ogen-go/ogen/cmd/ogen@latest
 
 WORKDIR /app
 

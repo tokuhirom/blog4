@@ -64,7 +64,7 @@ func DoMain() error {
 
 	go (func() {
 		slog.Info("Starting backup process")
-		internal.StartBackup(cfg.BackupEncryptionKey, sobsClient)
+		internal.StartBackup(&cfg, sobsClient)
 	})()
 
 	// Start the server
