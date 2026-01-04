@@ -1,4 +1,4 @@
-.PHONY: sqlc-admin sqlc-public sqlc gen docker-build biome-check biome-fix help
+.PHONY: sqlc-admin sqlc-public sqlc gen docker-build biome-check biome-fix db db-root help
 
 # SQLC generation for admin database
 sqlc-admin:
@@ -26,6 +26,14 @@ biome-check:
 biome-fix:
 	docker run --rm -v $(PWD):/app -w /app ghcr.io/biomejs/biome:latest check --write admin/static/sw.js
 
+# Access MariaDB console as blog4user
+db:
+	docker-compose exec mariadb mysql -ublog4user -pblog4password blog4
+
+# Access MariaDB console as root
+db-root:
+	docker-compose exec mariadb mysql -uroot -prootpassword
+
 # Show available targets
 help:
 	@echo "Available targets:"
@@ -36,4 +44,6 @@ help:
 	@echo "  docker-build  - Build production Docker image"
 	@echo "  biome-check   - Run biome lint and format check via Docker"
 	@echo "  biome-fix     - Run biome lint and format fix via Docker"
+	@echo "  db            - Access MariaDB console as blog4user"
+	@echo "  db-root       - Access MariaDB console as root"
 	@echo "  help          - Show this help message"
