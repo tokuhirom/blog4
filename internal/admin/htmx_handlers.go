@@ -471,9 +471,17 @@ func (h *HtmxHandler) DeleteEntry(c *gin.Context) {
 	path := getEntryPath(c)
 
 	rows, err := h.queries.DeleteEntry(c.Request.Context(), path)
-	if err != nil || rows == 0 {
-		slog.Error("failed to delete entry", slog.String("path", path), slog.Any("error", err))
+	if err != nil {
+		slog.Error("failed to delete entry",
+			slog.String("path", path),
+			slog.Any("error", err))
 		c.String(500, "Failed to delete entry")
+		return
+	}
+	if rows == 0 {
+		slog.Warn("entry to delete not found",
+			slog.String("path", path))
+		c.String(404, "Entry not found")
 		return
 	}
 
