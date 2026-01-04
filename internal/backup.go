@@ -89,7 +89,6 @@ func takeBackup(config *Config, s3client *sobs.SobsClient) {
 		return
 	}
 
-	// TODO remove old back up files
 	err = s3client.PutObjectToBackupBucket(
 		context.Background(),
 		filepath.Base(encryptedFileName),
@@ -101,6 +100,13 @@ func takeBackup(config *Config, s3client *sobs.SobsClient) {
 		return
 	}
 	slog.Info("File uploaded to S3", slog.String("file", encryptedFileName))
+
+	// Delete old backup files (keep only last 7 days)
+	err = s3client.DeleteOldBackups(context.Background(), 7)
+	if err != nil {
+		slog.Error("Error deleting old backups", slog.Any("error", err))
+		// Don't return - this is not a critical error
+	}
 
 	// Clean up temporary files
 	slog.Info("Removing temporary files", slog.String("dump_file", dumpFileName), slog.String("encrypted_file", encryptedFileName))

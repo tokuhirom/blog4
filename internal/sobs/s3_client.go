@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"strings"
+	"time"
 
 	"github.com/minio/minio-go/v7"
 	"github.com/minio/minio-go/v7/pkg/credentials"
@@ -58,6 +60,66 @@ func (c *SobsClient) PutObjectToBackupBucket(ctx context.Context, key string, co
 	})
 	if err != nil {
 		return fmt.Errorf("failed to put object to backup bucket %s with key %s: %w", c.s3BackupBucketName, key, err)
+	}
+
+	return nil
+}
+
+// DeleteOldBackups deletes backup files older than the specified number of days
+// Only files matching the *.sql.enc pattern are deleted
+func (c *SobsClient) DeleteOldBackups(ctx context.Context, daysToKeep int) error {
+	slog.Info("Checking for old backups to delete",
+		slog.String("bucket", c.s3BackupBucketName),
+		slog.Int("daysToKeep", daysToKeep))
+
+	// Calculate cutoff time
+	cutoffTime := time.Now().AddDate(0, 0, -daysToKeep)
+
+	// List all objects in backup bucket
+	objectCh := c.minioClient.ListObjects(ctx, c.s3BackupBucketName, minio.ListObjectsOptions{
+		Recursive: true,
+	})
+
+	deletedCount := 0
+	for object := range objectCh {
+		slog.Debug("Checking object for deletion",
+			slog.String("bucket", c.s3BackupBucketName),
+			slog.String("key", object.Key))
+
+		if object.Err != nil {
+			slog.Error("Error listing objects", slog.Any("error", object.Err))
+			continue
+		}
+
+		// Only process *.sql.enc files
+		if !strings.HasSuffix(object.Key, ".sql.enc") {
+			continue
+		}
+
+		// Check if object is older than cutoff time
+		if object.LastModified.Before(cutoffTime) {
+			slog.Info("Deleting old backup file",
+				slog.String("key", object.Key),
+				slog.Time("lastModified", object.LastModified),
+				slog.Time("cutoffTime", cutoffTime))
+
+			err := c.minioClient.RemoveObject(ctx, c.s3BackupBucketName, object.Key, minio.RemoveObjectOptions{})
+			if err != nil {
+				slog.Error("Failed to delete old backup",
+					slog.String("key", object.Key),
+					slog.Any("error", err))
+				continue
+			}
+			deletedCount++
+		}
+	}
+
+	if deletedCount > 0 {
+		slog.Info("Old backups deleted",
+			slog.Int("count", deletedCount),
+			slog.Int("daysToKeep", daysToKeep))
+	} else {
+		slog.Info("No old backups to delete")
 	}
 
 	return nil
