@@ -36,7 +36,7 @@ func takeBackup(encryptionKey string, s3client *sobs.SobsClient) {
 
 	// Execute mariadb-dump command
 	err := execCommand(fmt.Sprintf(
-		"mariadb-dump --host=%s --port=%s --user=%s --password=%s %s > %s",
+		"mariadb-dump --skip-ssl --host=%s --port=%s --user=%s --password=%s %s > %s",
 		os.Getenv("DATABASE_HOST"),
 		os.Getenv("DATABASE_PORT"),
 		os.Getenv("DATABASE_USER"),
