@@ -30,7 +30,7 @@ gh pr create --title "fix: description" --body "..."
 
 ## Project Overview
 
-Blog4 is a full-stack blog application with an admin interface, built with Go backend and TypeScript/Svelte frontend. It features wiki-style linking, Amazon product integration, and automated image generation.
+Blog4 is a full-stack blog application with an HTMX-based admin interface, built with Go backend and HTML templates. It features wiki-style linking, Amazon product integration, automated image generation, and PWA support with Web Share Target API for sharing content from Android devices.
 
 ## Development Setup
 
@@ -81,15 +81,21 @@ make gen
 
 # Build production Docker image
 make docker-build
+
+# JavaScript linting and formatting
+make biome-check  # Check JavaScript files
+make biome-fix    # Fix JavaScript files
+
+# Database access
+make db       # Access MariaDB console as blog4user
+make db-root  # Access MariaDB console as root
 ```
 
 ## Architecture
 
 ### Code Generation Pipeline
-1. **TypeSpec** (`/typespec/*.tsp`) → OpenAPI spec
-2. **OpenAPI** → Go server code via Ogen (`go generate ./cmd/blog4/main.go`)
-3. **OpenAPI** → TypeScript client via Orval (no Java required)
-4. **SQL** (`/db/*/queries/*.sql`) → Go code via SQLC
+1. **SQL** (`/db/*/queries/*.sql`) → Go code via SQLC
+2. **Templates** (`/admin/templates/*.html`) → Rendered by Go html/template
 
 ### Database Structure
 - **MySQL/MariaDB** with two schemas:
@@ -98,19 +104,34 @@ make docker-build
 - Key tables: `entry`, `entry_image`, `visibility`
 - Uses n-gram parser for Japanese full-text search
 
-### API Endpoints
-All admin endpoints are prefixed with `/api/`:
-- `/api/entries` - Entry CRUD operations
-- `/api/entries/{path}/*` - Entry-specific operations (title, body, visibility, etc.)
-- `/api/upload` - File upload
+### Admin Interface
+HTMX-based admin interface with server-side rendering:
 
-### Frontend Structure
-- **Location**: `/web/admin`
-- **Framework**: Svelte 5 with TypeScript
-- **Key Components**:
-  - `MarkdownEditor.svelte` - CodeMirror-based editor
-  - `AdminEntryPage.svelte` - Entry editing page
-- **API Client**: Auto-generated in `/src/generated-client/`
+**Key Routes** (`/internal/admin/htmx_router.go`):
+- `/admin/entries/search` - Entry list page (GET)
+- `/admin/entries/edit?path=...` - Entry edit page (GET)
+- `/admin/entries/create` - Create new entry (POST)
+- `/admin/entries/title` - Update entry title (POST, HTMX)
+- `/admin/entries/body` - Update entry body (POST, HTMX)
+- `/admin/entries/visibility` - Update visibility (POST, HTMX)
+- `/admin/entries/delete` - Delete entry (DELETE, HTMX)
+- `/admin/share-target` - Web Share Target endpoint (POST)
+
+**Templates** (`/admin/templates/`):
+- `layout.html` - Base layout with PWA meta tags
+- `htmx_entries.html` - Entry list page
+- `htmx_entry_edit.html` - Entry edit page with auto-save
+- `htmx_login.html` - Login page
+
+**Middleware** (`/internal/admin/htmx_router.go`):
+- `NoCacheMiddleware` - Prevents caching of dynamic admin pages
+- `GinSessionMiddleware` - Session authentication
+
+### PWA Support
+- **Manifest**: `/admin/manifest.webmanifest` - PWA configuration
+- **Service Worker**: `/admin/static/sw.js` - Caching strategy and Web Share Target support
+- **Web Share Target**: Android users can share content directly to Blog4
+- **Cache Strategy**: Static assets cached, admin API endpoints always use network
 
 ## Key Features Implementation
 

@@ -10,11 +10,10 @@ tokuhirom の個人的なブログサービスです｡
 docker-compose up
 
 # The services are available at:
-# - Frontend: http://localhost:6173
+# - Admin Interface: http://localhost:8181/admin/entries/search
 # - Backend API: http://localhost:8181
 # - MariaDB: localhost:3306
-# - MinIO Console: http://localhost:9001
-# - MinIO API: http://localhost:9000
+# - LocalStack (S3): http://localhost:4566
 ```
 
 ## Development Guide
@@ -38,7 +37,11 @@ docker-compose down
 docker-compose logs -f [service-name]
 
 # Build production Docker image
-task docker-build
+make docker-build
+
+# Access MariaDB console
+make db       # as blog4user
+make db-root  # as root
 ```
 
 ### Port Numbers
@@ -47,11 +50,9 @@ When running with Docker Compose, the following ports are exposed:
 
 | Service | Port | Description |
 |---------|------|-------------|
-| Frontend | 6173 | Svelte admin UI |
-| Backend | 8181 | Go API server |
+| Backend | 8181 | Go API server with admin interface |
 | MariaDB | 3306 | Database |
-| MinIO API | 9000 | S3-compatible storage |
-| MinIO Console | 9001 | MinIO web interface |
+| LocalStack | 4566 | S3-compatible storage (LocalStack) |
 
 
 ### Project Structure
@@ -63,13 +64,15 @@ blog4/
 ├── db/               # Database schemas and queries
 │   ├── admin/       # Admin database (write operations)
 │   └── public/      # Public database (read operations)
-├── server/
-│   ├── admin/       # Admin API server
-│   │   └── frontend/  # Svelte admin UI
-│   └── public/      # Public API server
-├── typespec/        # API definitions
+├── internal/
+│   ├── admin/       # Admin handlers and routes (HTMX-based)
+│   ├── public/      # Public handlers
+│   └── middleware/  # HTTP middleware
+├── admin/
+│   ├── templates/   # HTML templates for admin interface
+│   └── static/      # Static assets (CSS, JS, icons)
 ├── markdown/        # Markdown processing
-└── workers/         # Background jobs
+└── scripts/         # Build and utility scripts
 ```
 
 ### Making Changes
@@ -77,11 +80,11 @@ blog4/
 For detailed development instructions, see [CLAUDE.md](./CLAUDE.md).
 
 Key points:
-- API changes: Edit TypeSpec files in `/typespec/`
-- Database queries: Add SQL to `/db/*/queries/`
-- Frontend: Svelte components in `/web/admin/`
-- API client code is generated using Orval (no Java required)
-- All code is auto-generated from TypeSpec and SQL files
+- Database queries: Add SQL to `/db/*/queries/`, then run `make sqlc-admin` or `make sqlc-public`
+- Admin interface: HTML templates in `/admin/templates/` using HTMX
+- Static assets: CSS, JavaScript, icons in `/admin/static/`
+- Handlers: Go handlers in `/internal/admin/` and `/internal/public/`
+- PWA: Manifest and Service Worker for Web Share Target support
 
 ### Code Formatting
 
@@ -89,11 +92,8 @@ Key points:
 This project uses `goimports` for consistent Go code formatting:
 
 ```bash
-# Format all Go files
-task fmt
-
-# Check formatting without making changes
-task lint
+# Format Go files
+goimports -w .
 
 # Install pre-commit hooks (optional)
 pre-commit install
@@ -104,23 +104,15 @@ Import ordering follows `goimports` style:
 2. Third-party imports
 3. Local imports (github.com/tokuhirom/blog4)
 
-#### Frontend Code
-This project uses Biome for frontend formatting and linting:
+#### JavaScript Code
+This project uses Biome for JavaScript linting and formatting:
 
 ```bash
-# Format frontend code
-task biome-format
+# Check JavaScript files
+make biome-check
 
-# Lint frontend code
-task biome-lint
-
-# Run both format and lint
-task frontend-fmt
-
-# Or use pnpm directly in the frontend directory
-cd web/admin
-pnpm run format  # Format code
-pnpm run lint    # Lint code
+# Fix JavaScript files
+make biome-fix
 ```
 
 ### Testing
