@@ -1,7 +1,7 @@
 FROM golang:1.25.5-trixie
 
 # Install dependencies
-RUN apt-get update && apt-get install -y mariadb-client && \
+RUN apt-get update && apt-get install -y mariadb-client openssl && \
     rm -rf /var/lib/apt/lists/*
 
 # Install air for hot-reload
