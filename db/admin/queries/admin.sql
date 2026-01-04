@@ -61,13 +61,13 @@ ORDER BY title ASC;
 
 -- name: CreateEmptyEntry :execrows
 INSERT INTO entry
-           (path, title, body, visibility)
-    VALUES (?,        ?, '',    'private');
+           (path, title, body, visibility, last_edited_at)
+    VALUES (?,        ?, '',    'private',   NOW());
 
 -- name: CreateEntryWithBody :execrows
 INSERT INTO entry
-           (path, title, body, visibility)
-    VALUES (?,    ?,     ?,    'private');
+           (path, title, body, visibility, last_edited_at)
+    VALUES (?,    ?,     ?,    'private',   NOW());
 
 -- name: DeleteEntry :execrows
 DELETE FROM entry WHERE path = ?;

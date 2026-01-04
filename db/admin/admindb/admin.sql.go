@@ -50,8 +50,8 @@ func (q *Queries) AdminGetEntryByPath(ctx context.Context, path string) (AdminGe
 
 const createEmptyEntry = `-- name: CreateEmptyEntry :execrows
 INSERT INTO entry
-           (path, title, body, visibility)
-    VALUES (?,        ?, '',    'private')
+           (path, title, body, visibility, last_edited_at)
+    VALUES (?,        ?, '',    'private',   NOW())
 `
 
 type CreateEmptyEntryParams struct {
@@ -69,8 +69,8 @@ func (q *Queries) CreateEmptyEntry(ctx context.Context, arg CreateEmptyEntryPara
 
 const createEntryWithBody = `-- name: CreateEntryWithBody :execrows
 INSERT INTO entry
-           (path, title, body, visibility)
-    VALUES (?,    ?,     ?,    'private')
+           (path, title, body, visibility, last_edited_at)
+    VALUES (?,    ?,     ?,    'private',   NOW())
 `
 
 type CreateEntryWithBodyParams struct {
