@@ -82,6 +82,10 @@ func (c *SobsClient) DeleteOldBackups(ctx context.Context, daysToKeep int) error
 
 	deletedCount := 0
 	for object := range objectCh {
+		slog.Debug("Checking object for deletion",
+			slog.String("bucket", c.s3BackupBucketName),
+			slog.String("key", object.Key))
+
 		if object.Err != nil {
 			slog.Error("Error listing objects", slog.Any("error", object.Err))
 			continue
