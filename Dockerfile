@@ -10,7 +10,7 @@ RUN bash scripts/generate-build-info.sh
 RUN go build -o /app/blog4 ./cmd/blog4
 
 # Stage 2: Final stage
-FROM debian:bookworm-slim
+FROM debian:trixie-slim
 WORKDIR /app
 COPY --from=backend-builder /app/blog4 /app/
 COPY --from=backend-builder /app/build-info.json /app/
