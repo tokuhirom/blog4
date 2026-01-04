@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Generate build information
-BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+BUILD_TIME=$(TZ=Asia/Tokyo date +"%Y-%m-%dT%H:%M:%S+09:00")
 GIT_COMMIT=$(git rev-parse HEAD 2>/dev/null || echo "unknown")
 GIT_SHORT_COMMIT=$(git rev-parse --short HEAD 2>/dev/null || echo "unknown")
 GIT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "unknown")
