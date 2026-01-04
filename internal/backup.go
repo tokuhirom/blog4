@@ -103,7 +103,8 @@ func execCommand(command string) error {
 	cmd := exec.Command("sh", "-c", command)
 	output, err := cmd.CombinedOutput()
 	if err != nil {
-		return fmt.Errorf("command execution failed: %s, error: %v", string(output), err)
+		return fmt.Errorf("command execution failed: cmd=%s, output=%s, error=%v",
+			command, string(output), err)
 	}
 	return nil
 }
