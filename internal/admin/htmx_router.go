@@ -16,6 +16,26 @@ import (
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 )
 
+// NoCacheMiddleware sets Cache-Control headers to prevent caching of dynamic content
+func NoCacheMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		path := c.Request.URL.Path
+
+		// Don't add no-cache headers for static files (they should be cached)
+		if strings.HasPrefix(path, "/admin/static/") ||
+			path == "/admin/manifest.webmanifest" ||
+			path == "/admin/sw.js" ||
+			strings.HasPrefix(path, "/admin/icons/") {
+			c.Next()
+			return
+		}
+
+		// For all other admin routes, prevent caching
+		c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+		c.Next()
+	}
+}
+
 // GinSessionMiddleware validates session and redirects to login if needed
 func GinSessionMiddleware(queries *admindb.Queries) gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -83,7 +103,8 @@ func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, sob
 	adminGroup.StaticFile("/sw.js", "admin/static/sw.js")
 	adminGroup.Static("/icons", "admin/static/icons/")
 
-	// Add session middleware for authenticated routes
+	// Add middlewares for authenticated routes
+	adminGroup.Use(NoCacheMiddleware())
 	adminGroup.Use(GinSessionMiddleware(queries))
 
 	// Web Share Target endpoint (requires authentication)
