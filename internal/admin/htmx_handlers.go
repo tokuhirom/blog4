@@ -9,6 +9,7 @@ import (
 	"log/slog"
 	"mime/multipart"
 	"net/http"
+	"net/url"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -386,7 +387,8 @@ func (h *HtmxHandler) CreateEntry(c *gin.Context) {
 		return
 	}
 
-	c.Header("HX-Redirect", "/admin/entries/edit?path="+path)
+	// URL-encode the path to handle slashes correctly
+	c.Header("HX-Redirect", "/admin/entries/edit?path="+url.QueryEscape(path))
 	c.Status(200)
 }
 
@@ -460,7 +462,8 @@ func (h *HtmxHandler) HandleShareTarget(c *gin.Context) {
 		slog.String("sharedFrom", sharedURL))
 
 	// Redirect to edit page (regular HTTP redirect, not HX-Redirect)
-	c.Redirect(http.StatusSeeOther, "/admin/entries/edit?path="+path)
+	// URL-encode the path to handle slashes correctly
+	c.Redirect(http.StatusSeeOther, "/admin/entries/edit?path="+url.QueryEscape(path))
 }
 
 // DeleteEntry deletes an entry
