@@ -172,8 +172,6 @@ func (h *HtmxHandler) RenderEntriesPage(c *gin.Context) {
 		return
 	}
 
-	// Prevent caching of dynamic content
-	c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 	c.Header("Content-Type", "text/html; charset=utf-8")
 	if isHtmxRequest {
 		_ = tmpl.ExecuteTemplate(c.Writer, "entry-cards", data)
@@ -218,8 +216,6 @@ func (h *HtmxHandler) RenderEntryEditPage(c *gin.Context) {
 		return
 	}
 
-	// Prevent caching of dynamic content
-	c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 	c.Header("Content-Type", "text/html; charset=utf-8")
 	_ = tmpl.ExecuteTemplate(c.Writer, "layout", data)
 }
