@@ -41,7 +41,7 @@ func takeBackup(encryptionKey string, s3client *sobs.SobsClient) {
 		os.Getenv("DATABASE_PORT"),
 		os.Getenv("DATABASE_USER"),
 		os.Getenv("DATABASE_PASSWORD"),
-		os.Getenv("DATABASE_NAME"),
+		os.Getenv("DATABASE_DB"),
 		dumpFileName,
 	))
 	if err != nil {
