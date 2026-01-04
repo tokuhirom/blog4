@@ -2,7 +2,7 @@
   "name": "Blog4 Admin",
   "short_name": "Blog4",
   "description": "Blog4 Admin Interface",
-  "start_url": "/admin/entries",
+  "start_url": "/admin/entries/search",
   "scope": "/admin/",
   "display": "standalone",
   "theme_color": "#1976d2",

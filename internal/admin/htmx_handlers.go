@@ -446,7 +446,7 @@ func (h *HtmxHandler) HandleShareTarget(c *gin.Context) {
 		c.Status(500)
 		if err := tmpl.Execute(c.Writer, gin.H{
 			"error":      "Failed to save shared content. Please try again.",
-			"entriesUrl": "/admin/entries",
+			"entriesUrl": "/admin/entries/search",
 		}); err != nil {
 			slog.Error("failed to execute share error template", slog.Any("error", err))
 			c.String(500, "Failed to save shared content")
@@ -474,7 +474,7 @@ func (h *HtmxHandler) DeleteEntry(c *gin.Context) {
 		return
 	}
 
-	c.Header("HX-Redirect", "/admin/entries")
+	c.Header("HX-Redirect", "/admin/entries/search")
 	c.Status(200)
 }
 
@@ -551,7 +551,7 @@ func (h *HtmxHandler) HandleLogin(c *gin.Context) {
 	})
 
 	// Redirect to entries page using HX-Redirect header
-	c.Header("HX-Redirect", "/admin/entries")
+	c.Header("HX-Redirect", "/admin/entries/search")
 	c.Status(200)
 }
 
