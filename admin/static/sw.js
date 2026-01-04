@@ -1,8 +1,9 @@
 // Service Worker for Blog4 Admin
 // Required for Web Share Target API
 
-const CACHE_NAME = 'blog4-admin-v1';
-const urlsToCache = ['/admin/entries/search', '/admin/static/admin.css'];
+const CACHE_NAME = 'blog4-admin-v2';
+// Only cache static assets, not dynamic API endpoints
+const urlsToCache = ['/admin/static/admin.css'];
 
 // Install event - cache critical resources
 self.addEventListener('install', (event) => {
@@ -39,8 +40,21 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// Fetch event - serve from cache, fallback to network
+// Fetch event - network-first for dynamic content, cache-first for static assets
 self.addEventListener('fetch', (event) => {
+    const url = new URL(event.request.url);
+
+    // Never cache admin API endpoints - always use network
+    if (
+        url.pathname.startsWith('/admin/entries') ||
+        url.pathname.startsWith('/admin/share-target') ||
+        url.pathname.startsWith('/admin/upload')
+    ) {
+        event.respondWith(fetch(event.request));
+        return;
+    }
+
+    // For static assets, use cache-first strategy
     event.respondWith(
         caches.match(event.request).then((response) => {
             // Cache hit - return response
@@ -52,18 +66,17 @@ self.addEventListener('fetch', (event) => {
             const fetchRequest = event.request.clone();
 
             return fetch(fetchRequest).then((response) => {
-                // Check if valid response
-                if (!response || response.status !== 200 || response.type !== 'basic') {
-                    return response;
+                // Only cache static assets (CSS, images, etc.)
+                if (
+                    response &&
+                    response.status === 200 &&
+                    url.pathname.startsWith('/admin/static/')
+                ) {
+                    const responseToCache = response.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(event.request, responseToCache);
+                    });
                 }
-
-                // Clone the response
-                const responseToCache = response.clone();
-
-                // Cache the fetched resource
-                caches.open(CACHE_NAME).then((cache) => {
-                    cache.put(event.request, responseToCache);
-                });
 
                 return response;
             });
