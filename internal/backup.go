@@ -32,11 +32,11 @@ func takeBackup(encryptionKey string, s3client *sobs.SobsClient) {
 	date := time.Now()
 	dumpFileName := fmt.Sprintf("/tmp/blog3-backup-%s.sql", date.Format("2006-01-02T15-04-05"))
 	encryptedFileName := dumpFileName + ".enc"
-	slog.Info("mysqldump file name", slog.String("filename", dumpFileName))
+	slog.Info("mariadb-dump file name", slog.String("filename", dumpFileName))
 
-	// Execute mysqldump command
+	// Execute mariadb-dump command
 	err := execCommand(fmt.Sprintf(
-		"mysqldump --host=%s --port=%s --user=%s --password=%s %s > %s",
+		"mariadb-dump --host=%s --port=%s --user=%s --password=%s %s > %s",
 		os.Getenv("DATABASE_HOST"),
 		os.Getenv("DATABASE_PORT"),
 		os.Getenv("DATABASE_USER"),
