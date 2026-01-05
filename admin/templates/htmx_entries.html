@@ -28,8 +28,6 @@
             </button>
         </div>
 
-        <div class="keyboard-hint">Tip: Press 'c' to create new entry</div>
-
         <!-- Hidden form for creating new entry -->
         <form id="create-entry-form"
               hx-post="/admin/entries/create"
@@ -72,15 +70,6 @@
         document.getElementById('btn-create-entry').addEventListener('click', (e) => {
             e.preventDefault();
             createNewEntry();
-        });
-
-        // Keyboard shortcut to create new entry
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'c' && !e.ctrlKey && !e.metaKey && !e.shiftKey && !e.altKey
-                && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
-                e.preventDefault();
-                createNewEntry();
-            }
         });
     </script>
 {{end}}
