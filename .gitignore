@@ -21,3 +21,9 @@ node_modules/
 terraform.tfstate
 
 build-info.json
+
+# E2E test results and reports
+/e2e/test-results/
+/e2e/playwright-report/
+/e2e/node_modules/
+/e2e/package-lock.json

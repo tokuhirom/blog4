@@ -106,45 +106,76 @@ func simplifyMarkdown(text string) string {
 
 // RenderEntriesPage displays the entries list page
 func (h *HtmxHandler) RenderEntriesPage(c *gin.Context) {
-	// Get query parameters (search is client-side filtered for now)
+	// Get query parameters
+	searchQuery := c.Query("q")
 	lastEditedAtStr := c.Query("last_last_edited_at")
 
-	var lastEditedAt sql.NullTime
-	if lastEditedAtStr != "" {
-		if t, err := time.Parse(time.RFC3339, lastEditedAtStr); err == nil {
-			lastEditedAt = sql.NullTime{Time: t, Valid: true}
-		}
-	}
-
-	// Get latest entries
-	entries, err := h.queries.GetLatestEntries(c.Request.Context(), admindb.GetLatestEntriesParams{
-		Column1:      lastEditedAt,
-		LastEditedAt: lastEditedAt,
-		Limit:        100,
-	})
-	if err != nil {
-		slog.Error("failed to search entries", slog.Any("error", err))
-		c.String(500, "Internal Server Error")
-		return
-	}
-
-	// Convert to EntryCard
 	var cards []EntryCard
-	for _, e := range entries {
-		cards = append(cards, EntryCard{
-			Path:        e.Path,
-			Title:       e.Title,
-			BodyPreview: simplifyMarkdown(e.Body),
-			Visibility:  string(e.Visibility),
-			ImageUrl:    e.ImageUrl.String,
-		})
-	}
-
-	// Determine if there are more entries
-	hasMore := len(entries) >= 100
+	var hasMore bool
 	var lastCursor string
-	if hasMore && len(entries) > 0 {
-		lastCursor = entries[len(entries)-1].LastEditedAt.Time.Format(time.RFC3339)
+
+	if searchQuery != "" {
+		// Use full-text search
+		searchResults, err := h.queries.AdminFullTextSearchEntries(c.Request.Context(), admindb.AdminFullTextSearchEntriesParams{
+			Column1: searchQuery,
+			Column2: searchQuery,
+			Limit:   100,
+		})
+		if err != nil {
+			slog.Error("failed to search entries", slog.Any("error", err))
+			c.String(500, "Internal Server Error")
+			return
+		}
+
+		// Convert to EntryCard
+		for _, e := range searchResults {
+			cards = append(cards, EntryCard{
+				Path:        e.Path,
+				Title:       e.Title,
+				BodyPreview: simplifyMarkdown(e.Body),
+				Visibility:  string(e.Visibility),
+				ImageUrl:    e.ImageUrl.String,
+			})
+		}
+
+		// Search results don't support pagination for now
+		hasMore = false
+	} else {
+		// Get latest entries
+		var lastEditedAt sql.NullTime
+		if lastEditedAtStr != "" {
+			if t, err := time.Parse(time.RFC3339, lastEditedAtStr); err == nil {
+				lastEditedAt = sql.NullTime{Time: t, Valid: true}
+			}
+		}
+
+		entries, err := h.queries.GetLatestEntries(c.Request.Context(), admindb.GetLatestEntriesParams{
+			Column1:      lastEditedAt,
+			LastEditedAt: lastEditedAt,
+			Limit:        100,
+		})
+		if err != nil {
+			slog.Error("failed to get latest entries", slog.Any("error", err))
+			c.String(500, "Internal Server Error")
+			return
+		}
+
+		// Convert to EntryCard
+		for _, e := range entries {
+			cards = append(cards, EntryCard{
+				Path:        e.Path,
+				Title:       e.Title,
+				BodyPreview: simplifyMarkdown(e.Body),
+				Visibility:  string(e.Visibility),
+				ImageUrl:    e.ImageUrl.String,
+			})
+		}
+
+		// Determine if there are more entries
+		hasMore = len(entries) >= 100
+		if hasMore && len(entries) > 0 {
+			lastCursor = entries[len(entries)-1].LastEditedAt.Time.Format(time.RFC3339)
+		}
 	}
 
 	data := HtmxEntriesData{
@@ -158,6 +189,7 @@ func (h *HtmxHandler) RenderEntriesPage(c *gin.Context) {
 
 	// Parse templates
 	var tmpl *template.Template
+	var err error
 	if isHtmxRequest {
 		tmpl, err = template.ParseFiles("admin/templates/htmx_entry_cards.html")
 	} else {
