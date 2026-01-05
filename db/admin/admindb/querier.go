@@ -10,6 +10,7 @@ import (
 )
 
 type Querier interface {
+	AdminFullTextSearchEntries(ctx context.Context, arg AdminFullTextSearchEntriesParams) ([]AdminFullTextSearchEntriesRow, error)
 	AdminGetEntryByPath(ctx context.Context, path string) (AdminGetEntryByPathRow, error)
 	CountAmazonCacheByAsin(ctx context.Context, asin string) (int64, error)
 	CreateEmptyEntry(ctx context.Context, arg CreateEmptyEntryParams) (int64, error)

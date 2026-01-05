@@ -1,0 +1,16 @@
+{
+    "name": "blog4-e2e",
+    "version": "1.0.0",
+    "description": "E2E tests for Blog4",
+    "main": "index.js",
+    "scripts": {
+        "test": "playwright test",
+        "test:ui": "playwright test --ui"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "@playwright/test": "^1.40.0"
+    }
+}
