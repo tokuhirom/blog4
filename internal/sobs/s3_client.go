@@ -8,12 +8,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/minio/minio-go/v7"
-	"github.com/minio/minio-go/v7/pkg/credentials"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
 )
 
 type SobsClient struct {
-	minioClient             *minio.Client
+	s3Client                *s3.Client
 	s3AttachmentsBucketName string
 	s3BackupBucketName      string
 }
@@ -25,26 +26,37 @@ func NewSobsClient(s3AccessKeyId, s3SecretAccessKey, s3Region, s3AttachmentsBuck
 
 	slog.Info("Creating S3 client", slog.String("endpoint", s3Endpoint), slog.Bool("useSSL", useSSL))
 
-	// Initialize minio client object.
-	minioClient, err := minio.New(s3Endpoint, &minio.Options{
-		Creds:  credentials.NewStaticV4(s3AccessKeyId, s3SecretAccessKey, ""),
-		Secure: useSSL,
-		Region: s3Region,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("unable to initialize minio client for endpoint %s: %w", s3Endpoint, err)
+	protocol := "https"
+	if !useSSL {
+		protocol = "http"
 	}
+	endpointURL := fmt.Sprintf("%s://%s", protocol, s3Endpoint)
+
+	s3Client := s3.New(s3.Options{
+		Region: s3Region,
+		Credentials: credentials.NewStaticCredentialsProvider(
+			s3AccessKeyId,
+			s3SecretAccessKey,
+			"",
+		),
+		BaseEndpoint: aws.String(endpointURL),
+		UsePathStyle: true,
+	})
 
 	return &SobsClient{
-		minioClient:             minioClient,
+		s3Client:                s3Client,
 		s3AttachmentsBucketName: s3AttachmentsBucketName,
 		s3BackupBucketName:      s3BackupBucketName,
 	}, nil
 }
 
 func (c *SobsClient) PutObjectToAttachmentBucket(ctx context.Context, key string, contentType string, contentLength int64, body io.Reader) error {
-	_, err := c.minioClient.PutObject(ctx, c.s3AttachmentsBucketName, key, body, contentLength, minio.PutObjectOptions{
-		ContentType: contentType,
+	_, err := c.s3Client.PutObject(ctx, &s3.PutObjectInput{
+		Bucket:        aws.String(c.s3AttachmentsBucketName),
+		Key:           aws.String(key),
+		Body:          body,
+		ContentType:   aws.String(contentType),
+		ContentLength: aws.Int64(contentLength),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to put object to attachment bucket %s with key %s: %w", c.s3AttachmentsBucketName, key, err)
@@ -55,8 +67,12 @@ func (c *SobsClient) PutObjectToAttachmentBucket(ctx context.Context, key string
 
 func (c *SobsClient) PutObjectToBackupBucket(ctx context.Context, key string, contentType string, contentLength int64, body io.Reader) error {
 	slog.Info("Uploading file to Sobs", slog.String("bucket", c.s3BackupBucketName), slog.String("key", key))
-	_, err := c.minioClient.PutObject(ctx, c.s3BackupBucketName, key, body, contentLength, minio.PutObjectOptions{
-		ContentType: contentType,
+	_, err := c.s3Client.PutObject(ctx, &s3.PutObjectInput{
+		Bucket:        aws.String(c.s3BackupBucketName),
+		Key:           aws.String(key),
+		Body:          body,
+		ContentType:   aws.String(contentType),
+		ContentLength: aws.Int64(contentLength),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to put object to backup bucket %s with key %s: %w", c.s3BackupBucketName, key, err)
@@ -76,41 +92,48 @@ func (c *SobsClient) DeleteOldBackups(ctx context.Context, daysToKeep int) error
 	cutoffTime := time.Now().AddDate(0, 0, -daysToKeep)
 
 	// List all objects in backup bucket
-	objectCh := c.minioClient.ListObjects(ctx, c.s3BackupBucketName, minio.ListObjectsOptions{
-		Recursive: true,
+	paginator := s3.NewListObjectsV2Paginator(c.s3Client, &s3.ListObjectsV2Input{
+		Bucket: aws.String(c.s3BackupBucketName),
 	})
 
 	deletedCount := 0
-	for object := range objectCh {
-		slog.Debug("Checking object for deletion",
-			slog.String("bucket", c.s3BackupBucketName),
-			slog.String("key", object.Key))
-
-		if object.Err != nil {
-			slog.Error("Error listing objects", slog.Any("error", object.Err))
-			continue
+	for paginator.HasMorePages() {
+		page, err := paginator.NextPage(ctx)
+		if err != nil {
+			slog.Error("Error listing objects", slog.Any("error", err))
+			return fmt.Errorf("failed to list objects in backup bucket: %w", err)
 		}
 
-		// Only process *.sql.enc files
-		if !strings.HasSuffix(object.Key, ".sql.enc") {
-			continue
-		}
+		for _, object := range page.Contents {
+			key := aws.ToString(object.Key)
+			slog.Debug("Checking object for deletion",
+				slog.String("bucket", c.s3BackupBucketName),
+				slog.String("key", key))
 
-		// Check if object is older than cutoff time
-		if object.LastModified.Before(cutoffTime) {
-			slog.Info("Deleting old backup file",
-				slog.String("key", object.Key),
-				slog.Time("lastModified", object.LastModified),
-				slog.Time("cutoffTime", cutoffTime))
-
-			err := c.minioClient.RemoveObject(ctx, c.s3BackupBucketName, object.Key, minio.RemoveObjectOptions{})
-			if err != nil {
-				slog.Error("Failed to delete old backup",
-					slog.String("key", object.Key),
-					slog.Any("error", err))
+			// Only process *.sql.enc files
+			if !strings.HasSuffix(key, ".sql.enc") {
 				continue
 			}
-			deletedCount++
+
+			// Check if object is older than cutoff time
+			if object.LastModified != nil && object.LastModified.Before(cutoffTime) {
+				slog.Info("Deleting old backup file",
+					slog.String("key", key),
+					slog.Time("lastModified", *object.LastModified),
+					slog.Time("cutoffTime", cutoffTime))
+
+				_, err := c.s3Client.DeleteObject(ctx, &s3.DeleteObjectInput{
+					Bucket: aws.String(c.s3BackupBucketName),
+					Key:    aws.String(key),
+				})
+				if err != nil {
+					slog.Error("Failed to delete old backup",
+						slog.String("key", key),
+						slog.Any("error", err))
+					continue
+				}
+				deletedCount++
+			}
 		}
 	}
 
