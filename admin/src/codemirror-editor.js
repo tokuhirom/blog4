@@ -80,9 +80,5 @@ function insertAtCursor(editor, text) {
     editor.focus();
 }
 
-// Export to global scope for use in inline scripts
-window.CodeMirrorEditor = {
-    createEditor,
-    getContent,
-    insertAtCursor,
-};
+// Export functions
+export { createEditor, getContent, insertAtCursor };
