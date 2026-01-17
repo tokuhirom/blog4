@@ -1,3 +1,4 @@
 changelog:
   exclude:
-       - tagpr
+    labels:
+      - tagpr
