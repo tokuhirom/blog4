@@ -27,3 +27,7 @@ build-info.json
 /e2e/playwright-report/
 /e2e/node_modules/
 /e2e/package-lock.json
+
+# Admin frontend build
+/admin/node_modules/
+/admin/package-lock.json

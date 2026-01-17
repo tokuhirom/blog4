@@ -198,4 +198,4 @@ See `docker-compose.yml` for the complete list and default values.
 - use mockgen for db testing
 - before commit, run biome, go test.
 - after send pr, sleep a while, and check the ci state. if it's failed, resolve the issue and commit & push again.
-- run goimports before commit golang code.
+- **IMPORTANT**: Always run `goimports -w` on all modified Go files before commit. This fixes both imports and formatting (gofmt).

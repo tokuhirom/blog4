@@ -1,4 +1,4 @@
-.PHONY: sqlc-admin sqlc-public sqlc gen docker-build biome-check biome-fix db db-root e2e-install e2e-install-browsers e2e-test e2e-test-ui help
+.PHONY: sqlc-admin sqlc-public sqlc gen docker-build biome-check biome-fix db db-root e2e-install e2e-install-browsers e2e-test e2e-test-ui admin-install admin-build help
 
 # SQLC generation for admin database
 sqlc-admin:
@@ -50,6 +50,14 @@ e2e-test:
 e2e-test-ui:
 	cd e2e && npm run test:ui
 
+# Install admin frontend dependencies
+admin-install:
+	cd admin && npm install
+
+# Build admin frontend (CodeMirror bundle)
+admin-build:
+	cd admin && npm run build
+
 # Show available targets
 help:
 	@echo "Available targets:"
@@ -66,4 +74,6 @@ help:
 	@echo "  e2e-install-browsers   - Install Playwright browsers"
 	@echo "  e2e-test               - Run e2e tests"
 	@echo "  e2e-test-ui            - Run e2e tests in UI mode"
+	@echo "  admin-install          - Install admin frontend dependencies"
+	@echo "  admin-build            - Build admin frontend (CodeMirror)"
 	@echo "  help                   - Show this help message"
