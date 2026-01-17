@@ -94,10 +94,10 @@
 {{end}}
 
 {{define "extra-scripts"}}
-<script type="module">
-import { createEditor, getContent, insertAtCursor } from '/admin/static/codemirror-editor.js';
-
+<script type="module" src="/admin/static/codemirror-bundle.js"></script>
+<script>
 (function() {
+    const { createEditor, getContent, insertAtCursor } = window.CodeMirrorEditor;
     // Listen for updated_at changes from server (optimistic locking)
     document.body.addEventListener('updatedAtChanged', function(evt) {
         const newUpdatedAt = evt.detail.value;
