@@ -407,6 +407,30 @@ body {
         box-shadow: 0 0 0 3px rgba(25,118,210,0.1);
     }
 
+    /* CodeMirror Editor Container */
+    .editor-container {
+        width: 100%;
+        min-height: 600px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .editor-container:focus-within {
+        border-color: #1976d2;
+        box-shadow: 0 0 0 3px rgba(25,118,210,0.1);
+    }
+
+    .editor-container .cm-editor {
+        height: 100%;
+        min-height: 600px;
+    }
+
+    .editor-container .cm-scroller {
+        min-height: 600px;
+    }
+
     /* Sidebar */
     .edit-sidebar {
         display: flex;

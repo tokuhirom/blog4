@@ -30,18 +30,10 @@
                 />
             </div>
 
-            <!-- Body Editor -->
+            <!-- Body Editor (CodeMirror 6) -->
             <div class="body-section">
-                <textarea
-                    name="body"
-                    placeholder="Write your markdown here..."
-                    class="body-textarea"
-                    hx-post="/admin/entries/body?path={{.Path}}"
-                    hx-trigger="keyup changed delay:800ms"
-                    hx-target="#save-feedback"
-                    hx-swap="innerHTML"
-                    hx-include="#updated-at"
-                >{{.Body}}</textarea>
+                <div id="editor-container" class="editor-container"></div>
+                <textarea id="initial-body" style="display:none;">{{.Body}}</textarea>
             </div>
         </div>
 
@@ -102,7 +94,9 @@
 {{end}}
 
 {{define "extra-scripts"}}
-<script>
+<script type="module">
+import { createEditor, getContent, insertAtCursor } from '/admin/static/codemirror-bundle.7596f93c.js';
+
 (function() {
     // Listen for updated_at changes from server (optimistic locking)
     document.body.addEventListener('updatedAtChanged', function(evt) {
@@ -113,10 +107,28 @@
         }
     });
 
-    const textarea = document.querySelector('.body-textarea');
-    if (!textarea) return;
+    // Initialize CodeMirror editor
+    const container = document.getElementById('editor-container');
+    const initialBodyEl = document.getElementById('initial-body');
+    if (!container || !initialBodyEl) return;
 
-    textarea.addEventListener('paste', async (event) => {
+    const initialBody = initialBodyEl.value;
+
+    const editor = createEditor(container, initialBody, (content) => {
+        // Auto-save on content change
+        const updatedAt = document.getElementById('updated-at').value;
+        htmx.ajax('POST', '/admin/entries/body?path={{.Path}}', {
+            target: '#save-feedback',
+            swap: 'innerHTML',
+            values: { body: content, updated_at: updatedAt }
+        });
+    });
+
+    // Store editor reference globally for image paste
+    window.blog4Editor = editor;
+
+    // Handle image paste in CodeMirror
+    container.addEventListener('paste', async (event) => {
         const items = event.clipboardData?.items || [];
         const imageFiles = [];
 
@@ -131,11 +143,11 @@
         event.preventDefault();
 
         for (const file of imageFiles) {
-            await uploadAndInsertImage(textarea, file);
+            await uploadAndInsertImage(file);
         }
     });
 
-    async function uploadAndInsertImage(textarea, file) {
+    async function uploadAndInsertImage(file) {
         try {
             const formData = new FormData();
             formData.append('file', file);
@@ -160,25 +172,16 @@
                 throw new Error('No URL in response');
             }
 
-            // Markdownをカーソル位置に挿入
-            const cursorPos = textarea.selectionStart;
-            const before = textarea.value.substring(0, cursorPos);
-            const after = textarea.value.substring(cursorPos);
+            // Insert markdown image at cursor
             const markdownImage = `![image](${data.url})`;
+            insertAtCursor(editor, markdownImage);
 
-            textarea.value = before + markdownImage + after;
-
-            // カーソル移動
-            textarea.focus();
-            const newCursorPos = cursorPos + markdownImage.length;
-            textarea.setSelectionRange(newCursorPos, newCursorPos);
-
-            // HTMX経由で自動保存
+            // Trigger auto-save
             const updatedAt = document.getElementById('updated-at').value;
             htmx.ajax('POST', '/admin/entries/body?path={{.Path}}', {
                 target: '#save-feedback',
                 swap: 'innerHTML',
-                values: {body: textarea.value, updated_at: updatedAt}
+                values: { body: getContent(editor), updated_at: updatedAt }
             });
 
             showSuccess('Image uploaded successfully');
