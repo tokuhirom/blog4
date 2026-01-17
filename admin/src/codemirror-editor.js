@@ -11,8 +11,6 @@ import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import {
     bracketMatching,
     defaultHighlightStyle,
-    foldGutter,
-    foldKeymap,
     indentOnInput,
     syntaxHighlighting,
 } from '@codemirror/language';
@@ -30,11 +28,10 @@ import {
     rectangularSelection,
 } from '@codemirror/view';
 
-// Setup without line numbers (based on basicSetup)
-const setupWithoutLineNumbers = [
+// Setup without line numbers and fold gutter (based on basicSetup)
+const editorSetup = [
     highlightSpecialChars(),
     history(),
-    foldGutter(),
     drawSelection(),
     dropCursor(),
     EditorState.allowMultipleSelections.of(true),
@@ -52,7 +49,6 @@ const setupWithoutLineNumbers = [
         ...defaultKeymap,
         ...searchKeymap,
         ...historyKeymap,
-        ...foldKeymap,
         ...completionKeymap,
     ]),
 ];
@@ -81,7 +77,7 @@ function createEditor(container, initialValue, onUpdate) {
         state: EditorState.create({
             doc: initialValue,
             extensions: [
-                setupWithoutLineNumbers,
+                editorSetup,
                 markdown({
                     base: markdownLanguage,
                     codeLanguages: languages,
