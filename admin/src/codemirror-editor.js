@@ -1,7 +1,8 @@
 // CodeMirror 6 Editor for Blog4 Admin
 
 import { indentWithTab } from '@codemirror/commands';
-import { markdown } from '@codemirror/lang-markdown';
+import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
+import { languages } from '@codemirror/language-data';
 import { EditorState } from '@codemirror/state';
 import { EditorView, keymap } from '@codemirror/view';
 import { basicSetup } from 'codemirror';
@@ -31,7 +32,10 @@ function createEditor(container, initialValue, onUpdate) {
             doc: initialValue,
             extensions: [
                 basicSetup,
-                markdown(),
+                markdown({
+                    base: markdownLanguage,
+                    codeLanguages: languages,
+                }),
                 keymap.of([indentWithTab]),
                 updateListener,
                 EditorView.lineWrapping,
