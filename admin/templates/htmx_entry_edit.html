@@ -33,7 +33,7 @@
             <!-- Body Editor (CodeMirror 6) -->
             <div class="body-section">
                 <div id="editor-container" class="editor-container"></div>
-                <script id="initial-body" type="application/json">{{.Body | js}}</script>
+                <textarea id="initial-body" style="display:none;">{{.Body}}</textarea>
             </div>
         </div>
 
@@ -109,10 +109,10 @@ import { createEditor, getContent, insertAtCursor } from '/admin/static/codemirr
 
     // Initialize CodeMirror editor
     const container = document.getElementById('editor-container');
-    const initialBodyScript = document.getElementById('initial-body');
-    if (!container || !initialBodyScript) return;
+    const initialBodyEl = document.getElementById('initial-body');
+    if (!container || !initialBodyEl) return;
 
-    const initialBody = JSON.parse(initialBodyScript.textContent);
+    const initialBody = initialBodyEl.value;
 
     const editor = createEditor(container, initialBody, (content) => {
         // Auto-save on content change
