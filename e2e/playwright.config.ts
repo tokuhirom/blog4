@@ -20,6 +20,6 @@ export default defineConfig({
     webServer: {
         command: 'echo "Please start the server manually with: docker-compose up"',
         port: 8181,
-        reuseExistingServer: !process.env.CI,
+        reuseExistingServer: true,
     },
 });
