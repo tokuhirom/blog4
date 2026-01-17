@@ -393,16 +393,17 @@ func (q *Queries) InsertEntryLink(ctx context.Context, arg InsertEntryLinkParams
 const updateEntryBody = `-- name: UpdateEntryBody :execrows
 UPDATE entry
 SET body = ?, last_edited_at = NOW()
-WHERE path = ?
+WHERE path = ? AND updated_at = ?
 `
 
 type UpdateEntryBodyParams struct {
-	Body string
-	Path string
+	Body      string
+	Path      string
+	UpdatedAt sql.NullTime
 }
 
 func (q *Queries) UpdateEntryBody(ctx context.Context, arg UpdateEntryBodyParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, updateEntryBody, arg.Body, arg.Path)
+	result, err := q.db.ExecContext(ctx, updateEntryBody, arg.Body, arg.Path, arg.UpdatedAt)
 	if err != nil {
 		return 0, err
 	}
@@ -412,16 +413,17 @@ func (q *Queries) UpdateEntryBody(ctx context.Context, arg UpdateEntryBodyParams
 const updateEntryTitle = `-- name: UpdateEntryTitle :execrows
 UPDATE entry
 SET title = ?, last_edited_at = NOW()
-WHERE path = ?
+WHERE path = ? AND updated_at = ?
 `
 
 type UpdateEntryTitleParams struct {
-	Title string
-	Path  string
+	Title     string
+	Path      string
+	UpdatedAt sql.NullTime
 }
 
 func (q *Queries) UpdateEntryTitle(ctx context.Context, arg UpdateEntryTitleParams) (int64, error) {
-	result, err := q.db.ExecContext(ctx, updateEntryTitle, arg.Title, arg.Path)
+	result, err := q.db.ExecContext(ctx, updateEntryTitle, arg.Title, arg.Path, arg.UpdatedAt)
 	if err != nil {
 		return 0, err
 	}
