@@ -1,0 +1,8 @@
+[tagpr]
+	releaseBranch = main
+	vPrefix = true
+	changelog = true
+	release = true
+	commitPrefix = [tagpr]
+	majorLabels = major
+	minorLabels = minor
