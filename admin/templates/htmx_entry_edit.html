@@ -10,6 +10,9 @@
 
 {{define "content"}}
     <div class="edit-container">
+        <!-- Hidden input for optimistic locking -->
+        <input type="hidden" id="updated-at" name="updated_at" value="{{.UpdatedAt}}" />
+
         <div class="edit-main">
             <!-- Title Input -->
             <div class="title-section">
@@ -23,6 +26,7 @@
                     hx-trigger="keyup changed delay:500ms"
                     hx-target="#save-feedback"
                     hx-swap="innerHTML"
+                    hx-include="#updated-at"
                 />
             </div>
 
@@ -36,6 +40,7 @@
                     hx-trigger="keyup changed delay:800ms"
                     hx-target="#save-feedback"
                     hx-swap="innerHTML"
+                    hx-include="#updated-at"
                 >{{.Body}}</textarea>
             </div>
         </div>
@@ -99,6 +104,15 @@
 {{define "extra-scripts"}}
 <script>
 (function() {
+    // Listen for updated_at changes from server (optimistic locking)
+    document.body.addEventListener('updatedAtChanged', function(evt) {
+        const newUpdatedAt = evt.detail.value;
+        const hiddenInput = document.getElementById('updated-at');
+        if (hiddenInput && newUpdatedAt) {
+            hiddenInput.value = newUpdatedAt;
+        }
+    });
+
     const textarea = document.querySelector('.body-textarea');
     if (!textarea) return;
 
@@ -160,10 +174,11 @@
             textarea.setSelectionRange(newCursorPos, newCursorPos);
 
             // HTMX経由で自動保存
+            const updatedAt = document.getElementById('updated-at').value;
             htmx.ajax('POST', '/admin/entries/body?path={{.Path}}', {
                 target: '#save-feedback',
                 swap: 'innerHTML',
-                values: {body: textarea.value}
+                values: {body: textarea.value, updated_at: updatedAt}
             });
 
             showSuccess('Image uploaded successfully');

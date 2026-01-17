@@ -219,6 +219,7 @@ type EntryEditData struct {
 	Title      string
 	Body       string
 	Visibility string
+	UpdatedAt  string
 }
 
 // RenderEntryEditPage displays the entry edit page
@@ -237,6 +238,7 @@ func (h *HtmxHandler) RenderEntryEditPage(c *gin.Context) {
 		Title:      entry.Title,
 		Body:       entry.Body,
 		Visibility: string(entry.Visibility),
+		UpdatedAt:  entry.UpdatedAt.Time.Format(time.RFC3339Nano),
 	}
 
 	tmpl, err := template.ParseFiles(
@@ -257,22 +259,45 @@ func (h *HtmxHandler) RenderEntryEditPage(c *gin.Context) {
 func (h *HtmxHandler) UpdateEntryTitle(c *gin.Context) {
 	path := getEntryPath(c)
 	title := c.PostForm("title")
+	updatedAtStr := c.PostForm("updated_at")
 
 	if title == "" {
 		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Title cannot be empty</div>`))
 		return
 	}
 
+	updatedAt, err := time.Parse(time.RFC3339Nano, updatedAtStr)
+	if err != nil {
+		slog.Error("failed to parse updated_at", slog.String("updated_at", updatedAtStr), slog.Any("error", err))
+		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Invalid request</div>`))
+		return
+	}
+
 	rows, err := h.queries.UpdateEntryTitle(c.Request.Context(), admindb.UpdateEntryTitleParams{
-		Title: title,
-		Path:  path,
+		Title:     title,
+		Path:      path,
+		UpdatedAt: sql.NullTime{Time: updatedAt, Valid: true},
 	})
-	if err != nil || rows == 0 {
+	if err != nil {
 		slog.Error("failed to update title", slog.String("path", path), slog.Any("error", err))
 		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to update title</div>`))
 		return
 	}
+	if rows == 0 {
+		c.Data(409, "text/html; charset=utf-8", []byte(`<div class="feedback-error">他のタブで更新されています。<button onclick="location.reload()" class="btn-reload">リロード</button></div>`))
+		return
+	}
 
+	// Get the new updated_at value
+	entry, err := h.queries.AdminGetEntryByPath(c.Request.Context(), path)
+	if err != nil {
+		slog.Error("failed to get entry after update", slog.String("path", path), slog.Any("error", err))
+		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-success">Title updated!</div>`))
+		return
+	}
+
+	newUpdatedAt := entry.UpdatedAt.Time.Format(time.RFC3339Nano)
+	c.Header("HX-Trigger", fmt.Sprintf(`{"updatedAtChanged": "%s"}`, newUpdatedAt))
 	c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-success">Title updated!</div>`))
 }
 
@@ -280,22 +305,45 @@ func (h *HtmxHandler) UpdateEntryTitle(c *gin.Context) {
 func (h *HtmxHandler) UpdateEntryBody(c *gin.Context) {
 	path := getEntryPath(c)
 	body := c.PostForm("body")
+	updatedAtStr := c.PostForm("updated_at")
 
 	if body == "" {
 		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Body cannot be empty</div>`))
 		return
 	}
 
+	updatedAt, err := time.Parse(time.RFC3339Nano, updatedAtStr)
+	if err != nil {
+		slog.Error("failed to parse updated_at", slog.String("updated_at", updatedAtStr), slog.Any("error", err))
+		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Invalid request</div>`))
+		return
+	}
+
 	rows, err := h.queries.UpdateEntryBody(c.Request.Context(), admindb.UpdateEntryBodyParams{
-		Body: body,
-		Path: path,
+		Body:      body,
+		Path:      path,
+		UpdatedAt: sql.NullTime{Time: updatedAt, Valid: true},
 	})
-	if err != nil || rows == 0 {
+	if err != nil {
 		slog.Error("failed to update body", slog.String("path", path), slog.Any("error", err))
 		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to update body</div>`))
 		return
 	}
+	if rows == 0 {
+		c.Data(409, "text/html; charset=utf-8", []byte(`<div class="feedback-error">他のタブで更新されています。<button onclick="location.reload()" class="btn-reload">リロード</button></div>`))
+		return
+	}
 
+	// Get the new updated_at value
+	entry, err := h.queries.AdminGetEntryByPath(c.Request.Context(), path)
+	if err != nil {
+		slog.Error("failed to get entry after update", slog.String("path", path), slog.Any("error", err))
+		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-success">Body updated!</div>`))
+		return
+	}
+
+	newUpdatedAt := entry.UpdatedAt.Time.Format(time.RFC3339Nano)
+	c.Header("HX-Trigger", fmt.Sprintf(`{"updatedAtChanged": "%s"}`, newUpdatedAt))
 	c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-success">Body updated!</div>`))
 }
 

@@ -17,12 +17,12 @@ WHERE entry.path = ?;
 -- name: UpdateEntryTitle :execrows
 UPDATE entry
 SET title = ?, last_edited_at = NOW()
-WHERE path = ?;
+WHERE path = ? AND updated_at = ?;
 
 -- name: UpdateEntryBody :execrows
 UPDATE entry
 SET body = ?, last_edited_at = NOW()
-WHERE path = ?;
+WHERE path = ? AND updated_at = ?;
 
 -- name: DeleteEntryLinkByPath :execrows
 DELETE FROM entry_link WHERE src_path = ?;
