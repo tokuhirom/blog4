@@ -1,11 +1,11 @@
 // CodeMirror 6 Editor for Blog4 Admin
-// Uses esm.sh CDN for module loading
+// Uses Import Maps defined in layout.html for module resolution
 
-import { indentWithTab } from 'https://esm.sh/@codemirror/commands@6.8.0';
-import { markdown } from 'https://esm.sh/@codemirror/lang-markdown@6.3.2';
-import { EditorState } from 'https://esm.sh/@codemirror/state@6.5.2';
-import { keymap } from 'https://esm.sh/@codemirror/view@6.36.4';
-import { basicSetup, EditorView } from 'https://esm.sh/codemirror@6.0.1';
+import { indentWithTab } from '@codemirror/commands';
+import { markdown } from '@codemirror/lang-markdown';
+import { EditorState } from '@codemirror/state';
+import { keymap } from '@codemirror/view';
+import { basicSetup, EditorView } from 'codemirror';
 
 /**
  * Initialize CodeMirror editor

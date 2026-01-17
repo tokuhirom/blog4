@@ -17,6 +17,19 @@
 
     <link rel="stylesheet" href="/admin/static/admin.css">
     <script src="https://cdn.jsdelivr.net/npm/htmx.org@2.0.4/dist/htmx.min.js" integrity="sha384-HGfztofotfshcF7+8n44JQL2oJmowVChPTg48S+jvZoztPfvwD79OC/LTtG6dMp+" crossorigin="anonymous"></script>
+
+    <!-- Import Maps for CodeMirror 6 (share @codemirror/state instance) -->
+    <script type="importmap">
+    {
+        "imports": {
+            "codemirror": "https://esm.sh/codemirror@6.0.1",
+            "@codemirror/state": "https://esm.sh/@codemirror/state@6.5.2",
+            "@codemirror/view": "https://esm.sh/@codemirror/view@6.36.4?deps=@codemirror/state@6.5.2",
+            "@codemirror/commands": "https://esm.sh/@codemirror/commands@6.8.0?deps=@codemirror/state@6.5.2,@codemirror/view@6.36.4",
+            "@codemirror/lang-markdown": "https://esm.sh/@codemirror/lang-markdown@6.3.2?deps=@codemirror/state@6.5.2,@codemirror/view@6.36.4"
+        }
+    }
+    </script>
 </head>
 <body>
     <nav class="admin-nav">
