@@ -284,7 +284,7 @@ func (h *HtmxHandler) UpdateEntryTitle(c *gin.Context) {
 		return
 	}
 	if rows == 0 {
-		c.Data(409, "text/html; charset=utf-8", []byte(`<div class="feedback-error">他のタブで更新されています。<button onclick="location.reload()" class="btn-reload">リロード</button></div>`))
+		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">他のタブで更新されています。<button onclick="location.reload()" class="btn-reload">リロード</button></div>`))
 		return
 	}
 
@@ -330,7 +330,7 @@ func (h *HtmxHandler) UpdateEntryBody(c *gin.Context) {
 		return
 	}
 	if rows == 0 {
-		c.Data(409, "text/html; charset=utf-8", []byte(`<div class="feedback-error">他のタブで更新されています。<button onclick="location.reload()" class="btn-reload">リロード</button></div>`))
+		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">他のタブで更新されています。<button onclick="location.reload()" class="btn-reload">リロード</button></div>`))
 		return
 	}
 
