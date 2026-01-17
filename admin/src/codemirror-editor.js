@@ -2,10 +2,31 @@
 
 import { indentWithTab } from '@codemirror/commands';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
+import { HighlightStyle, syntaxHighlighting } from '@codemirror/language';
 import { languages } from '@codemirror/language-data';
 import { EditorState } from '@codemirror/state';
 import { EditorView, keymap } from '@codemirror/view';
+import { tags } from '@lezer/highlight';
 import { basicSetup } from 'codemirror';
+
+// Custom Markdown highlight style
+const markdownHighlightStyle = HighlightStyle.define([
+    { tag: tags.heading1, fontWeight: 'bold', fontSize: '1.4em', color: '#1a1a1a' },
+    { tag: tags.heading2, fontWeight: 'bold', fontSize: '1.3em', color: '#2a2a2a' },
+    { tag: tags.heading3, fontWeight: 'bold', fontSize: '1.2em', color: '#3a3a3a' },
+    { tag: tags.heading4, fontWeight: 'bold', fontSize: '1.1em', color: '#4a4a4a' },
+    { tag: tags.heading5, fontWeight: 'bold', color: '#5a5a5a' },
+    { tag: tags.heading6, fontWeight: 'bold', color: '#6a6a6a' },
+    { tag: tags.strong, fontWeight: 'bold' },
+    { tag: tags.emphasis, fontStyle: 'italic' },
+    { tag: tags.strikethrough, textDecoration: 'line-through' },
+    { tag: tags.link, color: '#1976d2', textDecoration: 'underline' },
+    { tag: tags.url, color: '#1976d2' },
+    { tag: tags.monospace, fontFamily: 'Monaco, Menlo, monospace', backgroundColor: '#f5f5f5' },
+    { tag: tags.quote, color: '#666', fontStyle: 'italic' },
+    { tag: tags.list, color: '#e65100' },
+    { tag: tags.processingInstruction, color: '#9c27b0' }, // code fence markers
+]);
 
 /**
  * Initialize CodeMirror editor
@@ -36,6 +57,7 @@ function createEditor(container, initialValue, onUpdate) {
                     base: markdownLanguage,
                     codeLanguages: languages,
                 }),
+                syntaxHighlighting(markdownHighlightStyle),
                 keymap.of([indentWithTab]),
                 updateListener,
                 EditorView.lineWrapping,
