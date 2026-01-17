@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "esbuild src/codemirror-editor.js --bundle --minify --outfile=static/codemirror-bundle.js --format=esm"
+    "build": "esbuild src/codemirror-editor.js --bundle --minify --outfile=static/codemirror-bundle.v2.js --format=esm"
   },
   "dependencies": {
     "@codemirror/commands": "^6.8.0",
