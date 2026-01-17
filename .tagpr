@@ -6,3 +6,4 @@
 	commitPrefix = [tagpr]
 	majorLabels = major
 	minorLabels = minor
+	versionFile = -
