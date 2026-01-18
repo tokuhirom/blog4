@@ -1,4 +1,4 @@
-FROM golang:1.25.5-trixie
+FROM golang:1.25.6-trixie
 
 # Install dependencies
 RUN apt-get update && apt-get install -y tzdata mariadb-client openssl ca-certificates && \
