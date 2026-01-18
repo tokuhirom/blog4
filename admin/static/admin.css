@@ -207,7 +207,29 @@ body {
     }
 
     /* Responsive breakpoints matching Material-UI */
-    @media (max-width: 599px) {
+    /* Very small screens (folded phones like Galaxy Z Fold) - 2 columns with smaller gap */
+    @media (max-width: 340px) {
+        .entry-grid {
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        .entry-card {
+            max-width: none;
+            height: 160px;
+        }
+        .entry-card-content {
+            padding: 8px;
+        }
+        .entry-title {
+            font-size: 0.8rem;
+        }
+        .entry-body {
+            font-size: 0.7rem;
+        }
+    }
+
+    /* Small screens - 1 column for better readability */
+    @media (min-width: 341px) and (max-width: 599px) {
         .entry-grid { grid-template-columns: repeat(1, 1fr); }
     }
 
@@ -229,7 +251,8 @@ body {
 
     /* Entry Card - Material-UI Card matching */
     .entry-card {
-        width: 170px;
+        width: 100%;
+        max-width: 170px;
         height: 170px;
         background: white;
         border-radius: 4px;
