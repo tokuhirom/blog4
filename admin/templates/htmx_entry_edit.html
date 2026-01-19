@@ -25,7 +25,7 @@
                     hx-post="/admin/entries/title?path={{.Path}}"
                     hx-trigger="keyup changed delay:500ms"
                     hx-target="#save-feedback"
-                    hx-swap="innerHTML"
+                    hx-swap="innerHTML swap:0s"
                     hx-include="#updated-at"
                 />
             </div>
@@ -53,6 +53,7 @@
                             {{if eq .Visibility "private"}}checked{{end}}
                             hx-post="/admin/entries/visibility?path={{.Path}}"
                             hx-target="#save-feedback"
+                            hx-swap="innerHTML swap:0s"
                             hx-confirm="Change visibility to private?"
                         />
                         <span>Private</span>
@@ -65,6 +66,7 @@
                             {{if eq .Visibility "public"}}checked{{end}}
                             hx-post="/admin/entries/visibility?path={{.Path}}"
                             hx-target="#save-feedback"
+                            hx-swap="innerHTML swap:0s"
                             hx-confirm="Change visibility to public?"
                         />
                         <span>Public</span>
@@ -85,7 +87,7 @@
                     class="btn btn-secondary"
                     hx-post="/admin/entries/image/regenerate?path={{.Path}}"
                     hx-target="#save-feedback"
-                    hx-swap="innerHTML">
+                    hx-swap="innerHTML swap:0s">
                     🔄 Regenerate Image
                 </button>
             </div>
@@ -119,7 +121,7 @@ import { createEditor, getContent, insertAtCursor } from '/admin/static/codemirr
         const updatedAt = document.getElementById('updated-at').value;
         htmx.ajax('POST', '/admin/entries/body?path={{.Path}}', {
             target: '#save-feedback',
-            swap: 'innerHTML',
+            swap: 'innerHTML swap:0s',
             values: { body: content, updated_at: updatedAt }
         });
     });
@@ -180,7 +182,7 @@ import { createEditor, getContent, insertAtCursor } from '/admin/static/codemirr
             const updatedAt = document.getElementById('updated-at').value;
             htmx.ajax('POST', '/admin/entries/body?path={{.Path}}', {
                 target: '#save-feedback',
-                swap: 'innerHTML',
+                swap: 'innerHTML swap:0s',
                 values: { body: getContent(editor), updated_at: updatedAt }
             });
 
