@@ -1,4 +1,6 @@
 .env
+.direnv/
+
 /db/mariadb/
 /.task/checksum/
 deploy.json
