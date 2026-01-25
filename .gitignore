@@ -1,5 +1,6 @@
 .env
 .direnv/
+.devbox/
 
 /db/mariadb/
 /.task/checksum/

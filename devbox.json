@@ -1,0 +1,21 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.16.0/.schema/devbox.schema.json",
+  "packages": [
+    "go@1.25",
+    "golangci-lint@latest",
+    "go-task@latest",
+    "postgresql_14@latest",
+    "nodejs@latest"
+  ],
+  "shell": {
+    "init_hook": [
+      "echo '🚀 blog4 development environment'",
+      "echo 'Go version: '$(go version)"
+    ],
+    "scripts": {
+      "test": [
+        "go test ./..."
+      ]
+    }
+  }
+}
