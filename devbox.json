@@ -5,7 +5,9 @@
     "golangci-lint@2.8.0",
     "go-task@3.45.5",
     "postgresql_14@14.20",
-    "nodejs@25.4.0"
+    "sqlc@1.30.0",
+    "nodejs@25.4.0",
+    "goimports@2021-01-13"
   ],
   "shell": {
     "init_hook": [

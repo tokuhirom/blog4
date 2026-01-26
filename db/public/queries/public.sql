@@ -7,9 +7,10 @@ ORDER BY published_at DESC
 LIMIT ? OFFSET ?;
 
 -- name: GetEntryByPath :one
-SELECT *
+SELECT entry.*, entry_image.url image_url
 FROM entry
-WHERE path = ? AND visibility = 'public';
+    LEFT JOIN entry_image ON (entry.path = entry_image.path)
+WHERE entry.path = ? AND visibility = 'public';
 
 -- name: GetEntryByTitle :one
 SELECT *

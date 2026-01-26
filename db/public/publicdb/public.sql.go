@@ -102,14 +102,28 @@ func (q *Queries) GetAsin(ctx context.Context, asin string) (AmazonCache, error)
 }
 
 const getEntryByPath = `-- name: GetEntryByPath :one
-SELECT path, title, body, visibility, format, published_at, last_edited_at, created_at, updated_at
+SELECT entry.path, entry.title, entry.body, entry.visibility, entry.format, entry.published_at, entry.last_edited_at, entry.created_at, entry.updated_at, entry_image.url image_url
 FROM entry
-WHERE path = ? AND visibility = 'public'
+    LEFT JOIN entry_image ON (entry.path = entry_image.path)
+WHERE entry.path = ? AND visibility = 'public'
 `
 
-func (q *Queries) GetEntryByPath(ctx context.Context, path string) (Entry, error) {
+type GetEntryByPathRow struct {
+	Path         string
+	Title        string
+	Body         string
+	Visibility   EntryVisibility
+	Format       EntryFormat
+	PublishedAt  sql.NullTime
+	LastEditedAt sql.NullTime
+	CreatedAt    sql.NullTime
+	UpdatedAt    sql.NullTime
+	ImageUrl     sql.NullString
+}
+
+func (q *Queries) GetEntryByPath(ctx context.Context, path string) (GetEntryByPathRow, error) {
 	row := q.db.QueryRowContext(ctx, getEntryByPath, path)
-	var i Entry
+	var i GetEntryByPathRow
 	err := row.Scan(
 		&i.Path,
 		&i.Title,
@@ -120,6 +134,7 @@ func (q *Queries) GetEntryByPath(ctx context.Context, path string) (Entry, error
 		&i.LastEditedAt,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.ImageUrl,
 	)
 	return i, err
 }

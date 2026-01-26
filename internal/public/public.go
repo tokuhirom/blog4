@@ -15,6 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/feeds"
 
+	"github.com/tokuhirom/blog4/internal"
 	"github.com/tokuhirom/blog4/internal/utils"
 
 	"github.com/tokuhirom/blog4/db/public/publicdb"
@@ -136,7 +137,7 @@ func RenderTopPage(c *gin.Context, queries *publicdb.Queries) {
 	}
 }
 
-func RenderEntryPage(c *gin.Context, queries *publicdb.Queries) {
+func RenderEntryPage(c *gin.Context, queries *publicdb.Queries, cfg *internal.Config) {
 	extractedPath := c.Param("filepath")
 	// Strip leading slash from wildcard parameter
 	extractedPath = strings.TrimPrefix(extractedPath, "/")
@@ -144,7 +145,7 @@ func RenderEntryPage(c *gin.Context, queries *publicdb.Queries) {
 	md := markdown.NewMarkdown(c.Request.Context(), queries)
 
 	slog.Info("rendering entry page", slog.String("path", extractedPath))
-	entry, err := queries.GetEntryByPath(c.Request.Context(), extractedPath)
+	entryRow, err := queries.GetEntryByPath(c.Request.Context(), extractedPath)
 	if err != nil {
 		slog.Error("failed to get entry by path", slog.String("path", extractedPath), slog.Any("error", err))
 		c.Status(http.StatusNotFound)
@@ -153,24 +154,32 @@ func RenderEntryPage(c *gin.Context, queries *publicdb.Queries) {
 
 	// Data to pass to the template
 	var formattedDate string
-	if entry.PublishedAt.Valid {
-		formattedDate = utils.FormatDateTime(entry.PublishedAt.Time)
+	var publishedAtISO string
+	if entryRow.PublishedAt.Valid {
+		formattedDate = utils.FormatDateTime(entryRow.PublishedAt.Time)
+		publishedAtISO = entryRow.PublishedAt.Time.Format(time.RFC3339)
 	} else {
-		slog.Error("published_at is invalid", slog.String("path", entry.Path), slog.Any("published_at", entry.PublishedAt))
+		slog.Error("published_at is invalid", slog.String("path", entryRow.Path), slog.Any("published_at", entryRow.PublishedAt))
 		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
-	body, err := md.Render(entry.Body)
+	body, err := md.Render(entryRow.Body)
 	if err != nil {
-		slog.Error("failed to render markdown", slog.String("path", entry.Path), slog.Any("error", err))
+		slog.Error("failed to render markdown", slog.String("path", entryRow.Path), slog.Any("error", err))
 		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
-	relatedEntries, err := getRelatedEntries(c.Request.Context(), queries, entry)
+	relatedEntries, err := getRelatedEntries(c.Request.Context(), queries, entryRow.Path, entryRow.Title)
 	if err != nil {
-		slog.Error("failed to get related entries", slog.String("path", entry.Path), slog.Any("error", err))
+		slog.Error("failed to get related entries", slog.String("path", entryRow.Path), slog.Any("error", err))
+	}
+
+	// Prepare OGP image URL
+	var imageUrl string
+	if entryRow.ImageUrl.Valid {
+		imageUrl = entryRow.ImageUrl.String
 	}
 
 	data := struct {
@@ -179,12 +188,22 @@ func RenderEntryPage(c *gin.Context, queries *publicdb.Queries) {
 		PublishedAt       string
 		HasRelatedEntries bool
 		RelatedEntries    []publicdb.Entry
+		Path              string
+		Description       string
+		ImageUrl          string
+		SiteBaseUrl       string
+		PublishedAtISO    string
 	}{
-		Title:             entry.Title,
+		Title:             entryRow.Title,
 		Body:              body,
 		PublishedAt:       formattedDate,
 		HasRelatedEntries: len(relatedEntries) > 0,
 		RelatedEntries:    relatedEntries,
+		Path:              entryRow.Path,
+		Description:       summarizeEntry(entryRow.Body, 200),
+		ImageUrl:          imageUrl,
+		SiteBaseUrl:       cfg.SiteBaseUrl,
+		PublishedAtISO:    publishedAtISO,
 	}
 
 	// Parse and execute the template
@@ -202,20 +221,20 @@ func RenderEntryPage(c *gin.Context, queries *publicdb.Queries) {
 	}
 }
 
-func getRelatedEntries(context context.Context, queries *publicdb.Queries, entry publicdb.Entry) ([]publicdb.Entry, error) {
+func getRelatedEntries(context context.Context, queries *publicdb.Queries, path string, title string) ([]publicdb.Entry, error) {
 	// 現在表示しているエントリがリンクしているページ
-	entries1, err := queries.GetRelatedEntries1(context, entry.Path)
+	entries1, err := queries.GetRelatedEntries1(context, path)
 	if err != nil {
-		return []publicdb.Entry{}, fmt.Errorf("failed to get related entries1 for path %s: %w", entry.Path, err)
+		return []publicdb.Entry{}, fmt.Errorf("failed to get related entries1 for path %s: %w", path, err)
 	}
 	// 現在表示しているページにリンクしているページ
-	entries2, err := queries.GetRelatedEntries2(context, entry.Title)
+	entries2, err := queries.GetRelatedEntries2(context, title)
 	if err != nil {
-		return []publicdb.Entry{}, fmt.Errorf("failed to get related entries2 for title %s: %w", entry.Title, err)
+		return []publicdb.Entry{}, fmt.Errorf("failed to get related entries2 for title %s: %w", title, err)
 	}
-	entries3, err := queries.GetRelatedEntries3(context, entry.Title)
+	entries3, err := queries.GetRelatedEntries3(context, title)
 	if err != nil {
-		return []publicdb.Entry{}, fmt.Errorf("failed to get related entries3 for title %s: %w", entry.Title, err)
+		return []publicdb.Entry{}, fmt.Errorf("failed to get related entries3 for title %s: %w", title, err)
 	}
 
 	// Use a map to track unique paths

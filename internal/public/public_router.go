@@ -4,9 +4,10 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/tokuhirom/blog4/db/public/publicdb"
+	"github.com/tokuhirom/blog4/internal"
 )
 
-func SetupPublicRoutes(r *gin.Engine, queries *publicdb.Queries) {
+func SetupPublicRoutes(r *gin.Engine, queries *publicdb.Queries, cfg *internal.Config) {
 	r.GET("/", func(c *gin.Context) {
 		RenderTopPage(c, queries)
 	})
@@ -14,7 +15,7 @@ func SetupPublicRoutes(r *gin.Engine, queries *publicdb.Queries) {
 		RenderFeed(c, queries)
 	})
 	r.GET("/entry/*filepath", func(c *gin.Context) {
-		RenderEntryPage(c, queries)
+		RenderEntryPage(c, queries, cfg)
 	})
 	r.GET("/search", func(c *gin.Context) {
 		RenderSearchPage(c, queries)

@@ -7,6 +7,27 @@
     <link rel="stylesheet" type="text/css" href="/static/main.css?3">
     <meta charset="UTF-8">
     <title>{{.Title}} - tokuhirom's blog</title>
+
+    <!-- Open Graph Protocol meta tags -->
+    <meta property="og:type" content="article">
+    <meta property="og:title" content="{{.Title}} - tokuhirom's blog">
+    <meta property="og:description" content="{{.Description}}">
+    <meta property="og:url" content="{{.SiteBaseUrl}}/entry/{{.Path}}">
+    {{if .ImageUrl}}
+    <meta property="og:image" content="{{.ImageUrl}}">
+    {{end}}
+    <meta property="og:site_name" content="tokuhirom's blog">
+    <meta property="article:published_time" content="{{.PublishedAtISO}}">
+    <meta property="article:author" content="tokuhirom">
+
+    <!-- Twitter Card meta tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{.Title}} - tokuhirom's blog">
+    <meta name="twitter:description" content="{{.Description}}">
+    {{if .ImageUrl}}
+    <meta name="twitter:image" content="{{.ImageUrl}}">
+    {{end}}
+
     <style>
         .share-buttons {
             display: flex;

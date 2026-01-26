@@ -33,6 +33,8 @@ type Config struct {
 	S3Endpoint              string `env:"S3_ENDPOINT" envDefault:"s3.isk01.sakurastorage.jp"`
 	S3AttachmentsBaseUrl    string `env:"S3_ATTACHMENTS_BASE_URL" envDefault:"https://blog-attachments.64p.org"`
 
+	SiteBaseUrl string `env:"SITE_BASE_URL" envDefault:"https://blog.64p.org"`
+
 	BackupEncryptionKey string `env:"BACKUP_ENCRYPTION_KEY"`
 
 	WebAccelGuard string `env:"WEBACCEL_GUARD"`
