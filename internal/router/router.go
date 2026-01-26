@@ -67,7 +67,7 @@ func BuildRouter(cfg internal.Config, sqlDB *sql.DB, sobsClient *sobs.SobsClient
 
 	// Setup public routes
 	publicQueries := publicdb.New(sqlDB)
-	public.SetupPublicRoutes(r, publicQueries)
+	public.SetupPublicRoutes(r, publicQueries, &cfg)
 
 	return r, nil
 }
