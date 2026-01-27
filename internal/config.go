@@ -44,7 +44,7 @@ type Config struct {
 
 	// OG image generation
 	OGImageEnabled  bool   `env:"OG_IMAGE_ENABLED" envDefault:"true"`
-	OGImageFontPath string `env:"OG_IMAGE_FONT_PATH" envDefault:"/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc"`
+	OGImageFontPath string `env:"OG_IMAGE_FONT_PATH" envDefault:"/usr/share/fonts/opentype/ipafont-gothic/ipagp.ttf"`
 }
 
 func (c *Config) GetHubUrls() []string {
