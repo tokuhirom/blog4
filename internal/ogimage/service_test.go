@@ -9,9 +9,10 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/mock/gomock"
+
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 	"github.com/tokuhirom/blog4/internal/ogimage/mocks"
-	"go.uber.org/mock/gomock"
 )
 
 func TestEnsureOGImage_ImageExists(t *testing.T) {
