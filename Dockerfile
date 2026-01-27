@@ -22,6 +22,8 @@ RUN apt-get update && apt-get install -y \
     openssl \
     ca-certificates \
     fonts-noto-cjk \
+    fonts-ipafont-gothic \
+    fonts-ipafont-mincho \
     && rm -rf /var/lib/apt/lists/*
 
 ARG GIT_HASH

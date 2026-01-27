@@ -251,13 +251,14 @@ func (g *Generator) loadFont() (*truetype.Font, error) {
 			slog.Warn("Failed to load primary font", slog.String("path", g.fontPath), slog.Any("error", err))
 		}
 
-		// Fallback to IPA fonts
+		// Fallback fonts: prioritize .ttf files over .ttc files
 		fallbackPaths := []string{
-			"/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc",
-			"/usr/share/fonts/truetype/noto/NotoSansCJK-Bold.ttc",
-			"/usr/share/fonts/opentype/ipafont-gothic/ipagp.ttf",
-			"/usr/share/fonts/truetype/ipafont/ipagp.ttf",
-			"/System/Library/Fonts/Hiragino Sans GB.ttc",
+			"/usr/share/fonts/opentype/ipafont-gothic/ipagp.ttf",  // IPA P Gothic (TTF)
+			"/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf",   // IPA Gothic (TTF)
+			"/usr/share/fonts/truetype/ipafont/ipagp.ttf",         // IPA P Gothic (alt path)
+			"/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc", // Noto CJK (TTC)
+			"/usr/share/fonts/truetype/noto/NotoSansCJK-Bold.ttc", // Noto CJK (alt path)
+			"/System/Library/Fonts/Hiragino Sans GB.ttc",          // macOS
 		}
 
 		for _, path := range fallbackPaths {
