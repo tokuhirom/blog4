@@ -24,6 +24,7 @@ type Querier interface {
 	GetAllEntryTitles(ctx context.Context) ([]string, error)
 	GetAmazonImageUrlByAsin(ctx context.Context, asin string) (sql.NullString, error)
 	GetEntriesByLinkedTitle(ctx context.Context, dstTitle string) ([]Entry, error)
+	GetEntryImageByPath(ctx context.Context, path string) (EntryImage, error)
 	GetEntryImageNotProcessedEntries(ctx context.Context) ([]Entry, error)
 	GetEntryVisibility(ctx context.Context, path string) (GetEntryVisibilityRow, error)
 	GetLatestEntries(ctx context.Context, arg GetLatestEntriesParams) ([]GetLatestEntriesRow, error)

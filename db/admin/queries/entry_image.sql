@@ -12,3 +12,8 @@ VALUES (?, ?);
 
 -- name: DeleteEntryImageByPath :execrows
 DELETE FROM entry_image WHERE path = ?;
+
+-- name: GetEntryImageByPath :one
+SELECT path, url, created_at
+FROM entry_image
+WHERE path = ?;

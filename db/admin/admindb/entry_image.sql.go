@@ -22,6 +22,19 @@ func (q *Queries) DeleteEntryImageByPath(ctx context.Context, path string) (int6
 	return result.RowsAffected()
 }
 
+const getEntryImageByPath = `-- name: GetEntryImageByPath :one
+SELECT path, url, created_at
+FROM entry_image
+WHERE path = ?
+`
+
+func (q *Queries) GetEntryImageByPath(ctx context.Context, path string) (EntryImage, error) {
+	row := q.db.QueryRowContext(ctx, getEntryImageByPath, path)
+	var i EntryImage
+	err := row.Scan(&i.Path, &i.Url, &i.CreatedAt)
+	return i, err
+}
+
 const getEntryImageNotProcessedEntries = `-- name: GetEntryImageNotProcessedEntries :many
 SELECT entry.path, entry.title, entry.body, entry.visibility, entry.format, entry.published_at, entry.last_edited_at, entry.created_at, entry.updated_at
 FROM entry

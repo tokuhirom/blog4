@@ -16,8 +16,13 @@ COPY --from=backend-builder /app/blog4 /app/
 COPY --from=backend-builder /app/build-info.json /app/
 COPY public /app/public
 COPY admin /app/admin
-RUN apt-get update && apt-get install -y tzdata mariadb-client openssl ca-certificates && \
-    rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install -y \
+    tzdata \
+    mariadb-client \
+    openssl \
+    ca-certificates \
+    fonts-noto-cjk \
+    && rm -rf /var/lib/apt/lists/*
 
 ARG GIT_HASH
 ENV GIT_HASH=$GIT_HASH
