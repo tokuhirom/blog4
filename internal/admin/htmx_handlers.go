@@ -435,16 +435,19 @@ func (h *HtmxHandler) UpdateEntryVisibility(c *gin.Context) {
 		return
 	}
 
-	// If changing from private to public and published_at is null, set it to now
-	if entry.Visibility == "private" && visibility == "public" && !entry.PublishedAt.Valid {
-		if err := h.queries.UpdatePublishedAt(c.Request.Context(), path); err != nil {
-			slog.Error("failed to update published_at", slog.String("path", path), slog.Any("error", err))
-			c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to update published_at</div>`))
-			return
+	// If changing from private to public, handle published_at and OG image
+	if entry.Visibility == "private" && visibility == "public" {
+		// Set published_at to now if it's null
+		if !entry.PublishedAt.Valid {
+			if err := h.queries.UpdatePublishedAt(c.Request.Context(), path); err != nil {
+				slog.Error("failed to update published_at", slog.String("path", path), slog.Any("error", err))
+				c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to update published_at</div>`))
+				return
+			}
+			slog.Info("updated published_at for newly public entry", slog.String("path", path))
 		}
-		slog.Info("updated published_at for newly public entry", slog.String("path", path))
 
-		// Generate OG image asynchronously if enabled
+		// Generate OG image asynchronously if enabled (always check when publishing)
 		if h.ogImageService != nil {
 			go func() {
 				ctx := context.Background()
