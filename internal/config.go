@@ -41,6 +41,10 @@ type Config struct {
 
 	// 9*60*60=32400 is JST
 	TimeZoneOffset int `env:"TIMEZONE_OFFSET" envDefault:"32400"`
+
+	// OG image generation
+	OGImageEnabled  bool   `env:"OG_IMAGE_ENABLED" envDefault:"true"`
+	OGImageFontPath string `env:"OG_IMAGE_FONT_PATH" envDefault:"/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc"`
 }
 
 func (c *Config) GetHubUrls() []string {

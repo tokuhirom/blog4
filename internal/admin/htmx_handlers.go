@@ -1,6 +1,7 @@
 package admin
 
 import (
+	"context"
 	"crypto/rand"
 	"crypto/subtle"
 	"database/sql"
@@ -19,6 +20,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/tokuhirom/blog4/internal"
+	"github.com/tokuhirom/blog4/internal/ogimage"
 	"github.com/tokuhirom/blog4/internal/sobs"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
@@ -32,10 +34,11 @@ type HtmxHandler struct {
 	adminPassword        string
 	isSecure             bool
 	s3AttachmentsBaseUrl string
+	ogImageService       *ogimage.Service
 }
 
 // NewHtmxHandler creates a new HtmxHandler
-func NewHtmxHandler(queries *admindb.Queries, sobsClient *sobs.SobsClient, adminUser, adminPassword string, isSecure bool, s3AttachmentsBaseUrl string) *HtmxHandler {
+func NewHtmxHandler(queries *admindb.Queries, sobsClient *sobs.SobsClient, adminUser, adminPassword string, isSecure bool, s3AttachmentsBaseUrl string, ogImageService *ogimage.Service) *HtmxHandler {
 	return &HtmxHandler{
 		queries:              queries,
 		sobsClient:           sobsClient,
@@ -43,6 +46,7 @@ func NewHtmxHandler(queries *admindb.Queries, sobsClient *sobs.SobsClient, admin
 		adminPassword:        adminPassword,
 		isSecure:             isSecure,
 		s3AttachmentsBaseUrl: s3AttachmentsBaseUrl,
+		ogImageService:       ogImageService,
 	}
 }
 
@@ -431,14 +435,28 @@ func (h *HtmxHandler) UpdateEntryVisibility(c *gin.Context) {
 		return
 	}
 
-	// If changing from private to public and published_at is null, set it to now
-	if entry.Visibility == "private" && visibility == "public" && !entry.PublishedAt.Valid {
-		if err := h.queries.UpdatePublishedAt(c.Request.Context(), path); err != nil {
-			slog.Error("failed to update published_at", slog.String("path", path), slog.Any("error", err))
-			c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to update published_at</div>`))
-			return
+	// If changing from private to public, handle published_at and OG image
+	if entry.Visibility == "private" && visibility == "public" {
+		// Set published_at to now if it's null
+		if !entry.PublishedAt.Valid {
+			if err := h.queries.UpdatePublishedAt(c.Request.Context(), path); err != nil {
+				slog.Error("failed to update published_at", slog.String("path", path), slog.Any("error", err))
+				c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to update published_at</div>`))
+				return
+			}
+			slog.Info("updated published_at for newly public entry", slog.String("path", path))
 		}
-		slog.Info("updated published_at for newly public entry", slog.String("path", path))
+
+		// Generate OG image asynchronously if enabled (always check when publishing)
+		if h.ogImageService != nil {
+			go func() {
+				ctx := context.Background()
+				if err := h.ogImageService.EnsureOGImage(ctx, path); err != nil {
+					slog.Error("failed to ensure OG image",
+						slog.String("path", path), slog.Any("error", err))
+				}
+			}()
+		}
 	}
 
 	c.Header("HX-Refresh", "true")

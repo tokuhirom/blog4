@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/tokuhirom/blog4/internal"
+	"github.com/tokuhirom/blog4/internal/ogimage"
 	"github.com/tokuhirom/blog4/internal/sobs"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
@@ -91,8 +92,16 @@ func GinSessionMiddleware(queries *admindb.Queries) gin.HandlerFunc {
 
 // SetupAdminRoutes configures admin routes on the given router group
 func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, sobsClient *sobs.SobsClient, cfg internal.Config) {
+	// Initialize OG image service
+	var ogImageService *ogimage.Service
+	if cfg.OGImageEnabled {
+		s3Adapter := ogimage.NewSobsAdapter(sobsClient)
+		ogGenerator := ogimage.NewGenerator(s3Adapter, cfg.S3AttachmentsBaseUrl, cfg.OGImageFontPath)
+		ogImageService = ogimage.NewService(ogGenerator, queries)
+	}
+
 	// Create handler
-	handler := NewHtmxHandler(queries, sobsClient, cfg.AdminUser, cfg.AdminPassword, !cfg.LocalDev, cfg.S3AttachmentsBaseUrl)
+	handler := NewHtmxHandler(queries, sobsClient, cfg.AdminUser, cfg.AdminPassword, !cfg.LocalDev, cfg.S3AttachmentsBaseUrl, ogImageService)
 
 	// Login page (no session middleware needed)
 	adminGroup.GET("/login", handler.RenderLoginPage)

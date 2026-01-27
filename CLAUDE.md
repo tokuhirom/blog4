@@ -198,4 +198,19 @@ See `docker-compose.yml` for the complete list and default values.
 - use mockgen for db testing
 - before commit, run biome, go test.
 - after send pr, sleep a while, and check the ci state. if it's failed, resolve the issue and commit & push again.
-- **IMPORTANT**: Always run `goimports -w` on all modified Go files before commit. This fixes both imports and formatting (gofmt).
+- **IMPORTANT**: Always run `goimports -local github.com/tokuhirom/blog4 -w` on all modified Go files before commit. The `-local` flag ensures imports are ordered correctly:
+  1. Standard library packages
+  2. External packages
+  3. Local packages (github.com/tokuhirom/blog4)
+
+  Example:
+  ```bash
+  # Format a specific file
+  goimports -local github.com/tokuhirom/blog4 -w internal/admin/htmx_handlers.go
+
+  # Format all Go files in a directory
+  goimports -local github.com/tokuhirom/blog4 -w internal/ogimage/*.go
+
+  # Format all modified Go files (from git root)
+  git diff --name-only --diff-filter=AM | grep '\.go$' | xargs -r goimports -local github.com/tokuhirom/blog4 -w
+  ```
