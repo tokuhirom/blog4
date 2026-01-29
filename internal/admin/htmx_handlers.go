@@ -5,6 +5,7 @@ import (
 	"crypto/rand"
 	"crypto/subtle"
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"log/slog"
@@ -224,6 +225,7 @@ type EntryEditData struct {
 	Body       string
 	Visibility string
 	UpdatedAt  string
+	InitJSON   template.JS
 }
 
 // RenderEntryEditPage displays the entry edit page
@@ -237,12 +239,28 @@ func (h *HtmxHandler) RenderEntryEditPage(c *gin.Context) {
 		return
 	}
 
+	// Build JSON data for Preact app
+	initData := map[string]string{
+		"path":       entry.Path,
+		"title":      entry.Title,
+		"body":       entry.Body,
+		"visibility": string(entry.Visibility),
+		"updated_at": entry.UpdatedAt.Time.Format(time.RFC3339Nano),
+	}
+	jsonBytes, err := json.Marshal(initData)
+	if err != nil {
+		slog.Error("failed to marshal entry data", slog.Any("error", err))
+		c.String(500, "Internal Server Error")
+		return
+	}
+
 	data := EntryEditData{
 		Path:       entry.Path,
 		Title:      entry.Title,
 		Body:       entry.Body,
 		Visibility: string(entry.Visibility),
 		UpdatedAt:  entry.UpdatedAt.Time.Format(time.RFC3339Nano),
+		InitJSON:   template.JS(jsonBytes),
 	}
 
 	tmpl, err := template.ParseFiles(
