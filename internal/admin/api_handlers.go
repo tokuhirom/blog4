@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"log/slog"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -271,5 +272,131 @@ func (h *HtmxHandler) APIRegenerateEntryImage(c *gin.Context) {
 	c.JSON(http.StatusOK, APIResponse{
 		OK:      true,
 		Message: "Image regeneration started!",
+	})
+}
+
+// APIEntryCard represents a single entry in the list API response
+type APIEntryCard struct {
+	Path        string `json:"path"`
+	Title       string `json:"title"`
+	BodyPreview string `json:"body_preview"`
+	Visibility  string `json:"visibility"`
+	ImageURL    string `json:"image_url"`
+}
+
+// APIListEntriesResponse is the JSON response for the entries list API
+type APIListEntriesResponse struct {
+	Entries    []APIEntryCard `json:"entries"`
+	HasMore    bool           `json:"has_more"`
+	LastCursor string         `json:"last_cursor"`
+}
+
+// APIListEntries returns entries as JSON for the Preact entry-list app
+func (h *HtmxHandler) APIListEntries(c *gin.Context) {
+	searchQuery := c.Query("q")
+	lastEditedAtStr := c.Query("last_last_edited_at")
+
+	var cards []APIEntryCard
+	var hasMore bool
+	var lastCursor string
+
+	if searchQuery != "" {
+		searchResults, err := h.queries.AdminFullTextSearchEntries(c.Request.Context(), admindb.AdminFullTextSearchEntriesParams{
+			Column1: searchQuery,
+			Column2: searchQuery,
+			Limit:   100,
+		})
+		if err != nil {
+			slog.Error("failed to search entries", slog.Any("error", err))
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to search entries"})
+			return
+		}
+
+		for _, e := range searchResults {
+			cards = append(cards, APIEntryCard{
+				Path:        e.Path,
+				Title:       e.Title,
+				BodyPreview: simplifyMarkdown(e.Body),
+				Visibility:  string(e.Visibility),
+				ImageURL:    e.ImageUrl.String,
+			})
+		}
+		hasMore = false
+	} else {
+		var lastEditedAt sql.NullTime
+		if lastEditedAtStr != "" {
+			if t, err := time.Parse(time.RFC3339, lastEditedAtStr); err == nil {
+				lastEditedAt = sql.NullTime{Time: t, Valid: true}
+			}
+		}
+
+		entries, err := h.queries.GetLatestEntries(c.Request.Context(), admindb.GetLatestEntriesParams{
+			Column1:      lastEditedAt,
+			LastEditedAt: lastEditedAt,
+			Limit:        100,
+		})
+		if err != nil {
+			slog.Error("failed to get latest entries", slog.Any("error", err))
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get entries"})
+			return
+		}
+
+		for _, e := range entries {
+			cards = append(cards, APIEntryCard{
+				Path:        e.Path,
+				Title:       e.Title,
+				BodyPreview: simplifyMarkdown(e.Body),
+				Visibility:  string(e.Visibility),
+				ImageURL:    e.ImageUrl.String,
+			})
+		}
+
+		hasMore = len(entries) >= 100
+		if hasMore && len(entries) > 0 {
+			lastCursor = entries[len(entries)-1].LastEditedAt.Time.Format(time.RFC3339)
+		}
+	}
+
+	c.JSON(http.StatusOK, APIListEntriesResponse{
+		Entries:    cards,
+		HasMore:    hasMore,
+		LastCursor: lastCursor,
+	})
+}
+
+// APICreateEntryRequest is the JSON request body for creating an entry
+type APICreateEntryRequest struct {
+	Title string `json:"title"`
+}
+
+// APICreateEntry creates a new entry and returns JSON with redirect URL
+func (h *HtmxHandler) APICreateEntry(c *gin.Context) {
+	var req APICreateEntryRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, APIResponse{Error: "Invalid request body"})
+		return
+	}
+
+	if req.Title == "" {
+		c.JSON(http.StatusBadRequest, APIResponse{Error: "Title is required"})
+		return
+	}
+
+	now := time.Now()
+	path := now.Format("2006/01/02/150405")
+
+	_, err := h.queries.CreateEmptyEntry(c.Request.Context(), admindb.CreateEmptyEntryParams{
+		Path:  path,
+		Title: req.Title,
+	})
+	if err != nil {
+		slog.Error("failed to create entry", slog.String("title", req.Title), slog.Any("error", err))
+		c.JSON(http.StatusInternalServerError, APIResponse{Error: "Failed to create entry"})
+		return
+	}
+
+	c.JSON(http.StatusOK, APIResponse{
+		OK:       true,
+		Redirect: "/admin/entries/edit?path=" + url.QueryEscape(path),
 	})
 }

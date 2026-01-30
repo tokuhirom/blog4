@@ -141,7 +141,9 @@ func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, sob
 	adminGroup.POST("/entries/upload", handler.UploadEntryImage)
 	adminGroup.DELETE("/entries/delete", handler.DeleteEntry)
 
-	// JSON API routes (used by Preact entry-edit app)
+	// JSON API routes (used by Preact apps)
+	adminGroup.GET("/api/entries", handler.APIListEntries)
+	adminGroup.POST("/api/entries/create", handler.APICreateEntry)
 	adminGroup.PUT("/api/entries/title", handler.APIUpdateTitle)
 	adminGroup.PUT("/api/entries/body", handler.APIUpdateBody)
 	adminGroup.PUT("/api/entries/visibility", handler.APIUpdateVisibility)

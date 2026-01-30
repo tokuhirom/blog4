@@ -62,6 +62,7 @@ type HtmxEntriesData struct {
 	Entries    []EntryCard
 	HasMore    bool
 	LastCursor string
+	InitJSON   template.JS
 }
 
 type EntryCard struct {
@@ -183,27 +184,40 @@ func (h *HtmxHandler) RenderEntriesPage(c *gin.Context) {
 		}
 	}
 
+	// Build JSON data for Preact app
+	apiCards := make([]APIEntryCard, 0, len(cards))
+	for _, card := range cards {
+		apiCards = append(apiCards, APIEntryCard{
+			Path:        card.Path,
+			Title:       card.Title,
+			BodyPreview: card.BodyPreview,
+			Visibility:  card.Visibility,
+			ImageURL:    card.ImageUrl,
+		})
+	}
+	initData := APIListEntriesResponse{
+		Entries:    apiCards,
+		HasMore:    hasMore,
+		LastCursor: lastCursor,
+	}
+	jsonBytes, err := json.Marshal(initData)
+	if err != nil {
+		slog.Error("failed to marshal entries data", slog.Any("error", err))
+		c.String(500, "Internal Server Error")
+		return
+	}
+
 	data := HtmxEntriesData{
 		Entries:    cards,
 		HasMore:    hasMore,
 		LastCursor: lastCursor,
+		InitJSON:   template.JS(jsonBytes),
 	}
 
-	// Check if this is an htmx request
-	isHtmxRequest := c.GetHeader("HX-Request") == "true"
-
-	// Parse templates
-	var tmpl *template.Template
-	var err error
-	if isHtmxRequest {
-		tmpl, err = template.ParseFiles("admin/templates/htmx_entry_cards.html")
-	} else {
-		tmpl, err = template.ParseFiles(
-			"admin/templates/layout.html",
-			"admin/templates/htmx_entries.html",
-			"admin/templates/htmx_entry_cards.html",
-		)
-	}
+	tmpl, err := template.ParseFiles(
+		"admin/templates/layout.html",
+		"admin/templates/htmx_entries.html",
+	)
 	if err != nil {
 		slog.Error("failed to parse template", slog.Any("error", err))
 		c.String(500, "Internal Server Error")
@@ -211,11 +225,7 @@ func (h *HtmxHandler) RenderEntriesPage(c *gin.Context) {
 	}
 
 	c.Header("Content-Type", "text/html; charset=utf-8")
-	if isHtmxRequest {
-		_ = tmpl.ExecuteTemplate(c.Writer, "entry-cards", data)
-	} else {
-		_ = tmpl.ExecuteTemplate(c.Writer, "layout", data)
-	}
+	_ = tmpl.ExecuteTemplate(c.Writer, "layout", data)
 }
 
 // EntryEditData holds data for the entry edit page
