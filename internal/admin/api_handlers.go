@@ -2,6 +2,7 @@ package admin
 
 import (
 	"context"
+	"crypto/subtle"
 	"database/sql"
 	"log/slog"
 	"net/http"
@@ -398,5 +399,69 @@ func (h *HtmxHandler) APICreateEntry(c *gin.Context) {
 	c.JSON(http.StatusOK, APIResponse{
 		OK:       true,
 		Redirect: "/admin/entries/edit?path=" + url.QueryEscape(path),
+	})
+}
+
+// APILoginRequest is the JSON request body for login
+type APILoginRequest struct {
+	Username   string `json:"username"`
+	Password   string `json:"password"`
+	RememberMe bool   `json:"remember_me"`
+}
+
+// APILogin handles JSON-based login and returns JSON response
+func (h *HtmxHandler) APILogin(c *gin.Context) {
+	var req APILoginRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, APIResponse{Error: "Invalid request body"})
+		return
+	}
+
+	usernameMatch := subtle.ConstantTimeCompare([]byte(req.Username), []byte(h.adminUser)) == 1
+	passwordMatch := subtle.ConstantTimeCompare([]byte(req.Password), []byte(h.adminPassword)) == 1
+
+	if !usernameMatch || !passwordMatch {
+		c.JSON(http.StatusUnauthorized, APIResponse{Error: "Invalid username or password"})
+		return
+	}
+
+	sessionID, err := generateSessionID()
+	if err != nil {
+		slog.Error("failed to generate session ID", slog.Any("error", err))
+		c.JSON(http.StatusInternalServerError, APIResponse{Error: "Failed to create session"})
+		return
+	}
+
+	sessionTimeout := defaultSessionTimeout
+	if req.RememberMe {
+		sessionTimeout = extendedSessionTimeout
+	}
+	expires := time.Now().Add(sessionTimeout)
+
+	err = h.queries.CreateSession(c.Request.Context(), admindb.CreateSessionParams{
+		SessionID: sessionID,
+		Username:  req.Username,
+		ExpiresAt: expires,
+	})
+	if err != nil {
+		slog.Error("failed to create session", slog.Any("error", err))
+		c.JSON(http.StatusInternalServerError, APIResponse{Error: "Failed to create session"})
+		return
+	}
+
+	http.SetCookie(c.Writer, &http.Cookie{
+		Name:     sessionCookieName,
+		Value:    sessionID,
+		Path:     "/admin",
+		HttpOnly: true,
+		Secure:   h.isSecure,
+		SameSite: http.SameSiteStrictMode,
+		Expires:  expires,
+		MaxAge:   int(time.Until(expires).Seconds()),
+	})
+
+	c.JSON(http.StatusOK, APIResponse{
+		OK:       true,
+		Redirect: "/admin/entries/search",
 	})
 }
