@@ -106,6 +106,7 @@ func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, sob
 	// Login page (no session middleware needed)
 	adminGroup.GET("/login", handler.RenderLoginPage)
 	adminGroup.POST("/login", handler.HandleLogin)
+	adminGroup.POST("/api/login", handler.APILogin)
 
 	// PWA files (served before session middleware for accessibility)
 	adminGroup.StaticFile("/manifest.webmanifest", "admin/manifest.webmanifest")

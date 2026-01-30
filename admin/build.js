@@ -26,6 +26,13 @@ const bundles = [
         jsx: true,
         templatePath: 'templates/htmx_entries.html',
     },
+    {
+        entryPoint: 'src/login/index.jsx',
+        prefix: 'login-app',
+        format: 'esm',
+        jsx: true,
+        templatePath: 'templates/htmx_login.html',
+    },
 ];
 
 for (const bundle of bundles) {

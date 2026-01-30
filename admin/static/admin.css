@@ -1,4 +1,4 @@
-/* Common admin styles shared across all htmx pages */
+/* Common admin styles shared across all admin pages */
 
 * {
     box-sizing: border-box;
@@ -101,30 +101,6 @@ body {
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 
-/* htmx request indicators */
-.htmx-request {
-    opacity: 0.6;
-    cursor: wait;
-}
-
-.htmx-swapping {
-    opacity: 0;
-    transition: opacity 0.2s;
-}
-
-.htmx-settling {
-    opacity: 1;
-    transition: opacity 0.2s;
-}
-
-/* Loading states */
-.htmx-indicator {
-    display: none;
-}
-
-.htmx-request .htmx-indicator {
-    display: inline;
-}
 
 /* ---------------------------------------------------- */
 /* Entry list page specific styles                      */
@@ -631,19 +607,8 @@ body {
     }
 
     /* Loading state */
-    .htmx-request .btn-login {
+    .btn-login:disabled {
         opacity: 0.7;
         cursor: wait;
-    }
-
-    .htmx-request .btn-login::after {
-        content: '...';
-        animation: dots 1.5s steps(3, end) infinite;
-    }
-
-    @keyframes dots {
-        0%, 20% { content: '.'; }
-        40% { content: '..'; }
-        60%, 100% { content: '...'; }
     }
 }
