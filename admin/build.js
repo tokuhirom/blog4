@@ -2,7 +2,6 @@ import * as esbuild from 'esbuild';
 import * as fs from 'fs';
 import * as crypto from 'crypto';
 
-const TEMPLATE_PATH = 'templates/htmx_entry_edit.html';
 const STATIC_DIR = 'static';
 
 const bundles = [
@@ -11,12 +10,21 @@ const bundles = [
         prefix: 'codemirror-bundle',
         format: 'esm',
         jsx: false,
+        templatePath: 'templates/htmx_entry_edit.html',
     },
     {
         entryPoint: 'src/entry-edit/index.jsx',
         prefix: 'entry-edit-app',
         format: 'esm',
         jsx: true,
+        templatePath: 'templates/htmx_entry_edit.html',
+    },
+    {
+        entryPoint: 'src/entry-list/index.jsx',
+        prefix: 'entry-list-app',
+        format: 'esm',
+        jsx: true,
+        templatePath: 'templates/htmx_entries.html',
     },
 ];
 
@@ -56,9 +64,10 @@ for (const bundle of bundles) {
     console.log(`Built: ${STATIC_DIR}/${bundleName} (${(content.length / 1024).toFixed(1)}kb)`);
 
     // Update template with new hash
-    let template = fs.readFileSync(TEMPLATE_PATH, 'utf8');
+    const templatePath = bundle.templatePath;
+    let template = fs.readFileSync(templatePath, 'utf8');
     const regex = new RegExp(`${bundle.prefix}\\.[a-zA-Z0-9]+\\.js`, 'g');
     template = template.replace(regex, bundleName);
-    fs.writeFileSync(TEMPLATE_PATH, template);
-    console.log(`Updated: ${TEMPLATE_PATH} with ${bundleName}`);
+    fs.writeFileSync(templatePath, template);
+    console.log(`Updated: ${templatePath} with ${bundleName}`);
 }
