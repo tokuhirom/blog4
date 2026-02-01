@@ -39,6 +39,15 @@ export async function regenerateImage(path) {
     return res.json();
 }
 
+export async function previewMarkdown(body) {
+    const res = await fetch('/admin/api/entries/preview', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ body }),
+    });
+    return res.json();
+}
+
 export async function uploadImage(file) {
     const formData = new FormData();
     formData.append('file', file);

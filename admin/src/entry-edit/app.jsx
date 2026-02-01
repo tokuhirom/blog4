@@ -130,6 +130,7 @@ export function App({ initData }) {
                 <TitleInput value={state.title} onChange={handleTitleChange} />
                 <BodyEditor
                     initialBody={initData.body}
+                    currentBody={state.body}
                     onBodyChange={handleBodyChange}
                     onFeedback={showFeedback}
                 />

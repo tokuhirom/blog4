@@ -1,10 +1,13 @@
-import { useRef, useEffect } from 'preact/hooks';
+import { useRef, useEffect, useState, useCallback } from 'preact/hooks';
 import { createEditor, getContent, insertAtCursor } from '../../codemirror-editor.js';
-import { uploadImage } from '../api.js';
+import { uploadImage, previewMarkdown } from '../api.js';
 
-export function BodyEditor({ initialBody, onBodyChange, onFeedback }) {
+export function BodyEditor({ initialBody, currentBody, onBodyChange, onFeedback }) {
     const containerRef = useRef(null);
     const editorRef = useRef(null);
+    const [activeTab, setActiveTab] = useState('edit');
+    const [previewHtml, setPreviewHtml] = useState('');
+    const [previewLoading, setPreviewLoading] = useState(false);
 
     useEffect(() => {
         if (!containerRef.current || editorRef.current) return;
@@ -48,9 +51,58 @@ export function BodyEditor({ initialBody, onBodyChange, onFeedback }) {
         });
     }, []);
 
+    const handlePreviewClick = useCallback(async () => {
+        setActiveTab('preview');
+        setPreviewLoading(true);
+        try {
+            const body = editorRef.current ? getContent(editorRef.current) : (currentBody || '');
+            const data = await previewMarkdown(body);
+            if (data.error) {
+                onFeedback({ type: 'error', message: data.error });
+                setPreviewHtml('<p>Failed to load preview.</p>');
+            } else {
+                setPreviewHtml(data.html);
+            }
+        } catch (err) {
+            onFeedback({ type: 'error', message: `Failed to load preview: ${err.message}` });
+            setPreviewHtml('<p>Failed to load preview.</p>');
+        } finally {
+            setPreviewLoading(false);
+        }
+    }, [currentBody, onFeedback]);
+
+    const handleEditClick = useCallback(() => {
+        setActiveTab('edit');
+    }, []);
+
     return (
         <div class="body-section">
-            <div ref={containerRef} class="editor-container" />
+            <div class="editor-tabs">
+                <button
+                    type="button"
+                    class={`editor-tab ${activeTab === 'edit' ? 'editor-tab-active' : ''}`}
+                    onClick={handleEditClick}
+                >
+                    Edit
+                </button>
+                <button
+                    type="button"
+                    class={`editor-tab ${activeTab === 'preview' ? 'editor-tab-active' : ''}`}
+                    onClick={handlePreviewClick}
+                >
+                    Preview
+                </button>
+            </div>
+            <div ref={containerRef} class="editor-container" style={{ display: activeTab === 'edit' ? '' : 'none' }} />
+            {activeTab === 'preview' && (
+                <div class="preview-container">
+                    {previewLoading ? (
+                        <div class="preview-loading">Loading preview...</div>
+                    ) : (
+                        <div class="preview-content" dangerouslySetInnerHTML={{ __html: previewHtml }} />
+                    )}
+                </div>
+            )}
         </div>
     );
 }

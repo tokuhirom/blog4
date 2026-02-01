@@ -150,6 +150,7 @@ func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, sob
 	adminGroup.PUT("/api/entries/visibility", handler.APIUpdateVisibility)
 	adminGroup.DELETE("/api/entries/delete", handler.APIDeleteEntry)
 	adminGroup.POST("/api/entries/image/regenerate", handler.APIRegenerateEntryImage)
+	adminGroup.POST("/api/entries/preview", handler.APIPreviewMarkdown)
 
 	// Static files
 	adminGroup.Static("/static", "admin/static/")
