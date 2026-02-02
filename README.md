@@ -65,7 +65,7 @@ blog4/
 │   ├── admin/       # Admin database (write operations)
 │   └── public/      # Public database (read operations)
 ├── internal/
-│   ├── admin/       # Admin handlers and routes (HTMX-based)
+│   ├── admin/       # Admin handlers and routes (Preact-based)
 │   ├── public/      # Public handlers
 │   └── middleware/  # HTTP middleware
 ├── admin/
@@ -81,7 +81,7 @@ For detailed development instructions, see [CLAUDE.md](./CLAUDE.md).
 
 Key points:
 - Database queries: Add SQL to `/db/*/queries/`, then run `make sqlc-admin` or `make sqlc-public`
-- Admin interface: HTML templates in `/admin/templates/` using HTMX
+- Admin interface: HTML templates in `/admin/templates/` with Preact apps
 - Static assets: CSS, JavaScript, icons in `/admin/static/`
 - Handlers: Go handlers in `/internal/admin/` and `/internal/public/`
 - PWA: Manifest and Service Worker for Web Share Target support

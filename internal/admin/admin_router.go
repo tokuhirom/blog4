@@ -101,11 +101,10 @@ func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, sob
 	}
 
 	// Create handler
-	handler := NewHtmxHandler(queries, sobsClient, cfg.AdminUser, cfg.AdminPassword, !cfg.LocalDev, cfg.S3AttachmentsBaseUrl, ogImageService)
+	handler := NewAdminHandler(queries, sobsClient, cfg.AdminUser, cfg.AdminPassword, !cfg.LocalDev, cfg.S3AttachmentsBaseUrl, ogImageService)
 
 	// Login page (no session middleware needed)
 	adminGroup.GET("/login", handler.RenderLoginPage)
-	adminGroup.POST("/login", handler.HandleLogin)
 	adminGroup.POST("/api/login", handler.APILogin)
 
 	// PWA files (served before session middleware for accessibility)
@@ -130,17 +129,10 @@ func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, sob
 		c.Redirect(http.StatusFound, "/admin/entries/search")
 	})
 	adminGroup.GET("/entries/search", handler.RenderEntriesPage)
-	adminGroup.POST("/entries/create", handler.CreateEntry)
 
 	// Entry routes with query parameter (supports both slug and date-based paths)
 	// Examples: /entries/edit?path=getting-started, /entries/edit?path=2024/01/01/120000
 	adminGroup.GET("/entries/edit", handler.RenderEntryEditPage)
-	adminGroup.POST("/entries/title", handler.UpdateEntryTitle)
-	adminGroup.POST("/entries/body", handler.UpdateEntryBody)
-	adminGroup.POST("/entries/visibility", handler.UpdateEntryVisibility)
-	adminGroup.POST("/entries/image/regenerate", handler.RegenerateEntryImage)
-	adminGroup.POST("/entries/upload", handler.UploadEntryImage)
-	adminGroup.DELETE("/entries/delete", handler.DeleteEntry)
 
 	// JSON API routes (used by Preact apps)
 	adminGroup.GET("/api/entries", handler.APIListEntries)
@@ -151,6 +143,7 @@ func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, sob
 	adminGroup.DELETE("/api/entries/delete", handler.APIDeleteEntry)
 	adminGroup.POST("/api/entries/image/regenerate", handler.APIRegenerateEntryImage)
 	adminGroup.POST("/api/entries/preview", handler.APIPreviewMarkdown)
+	adminGroup.POST("/api/entries/upload", handler.UploadEntryImage)
 
 	// Static files
 	adminGroup.Static("/static", "admin/static/")

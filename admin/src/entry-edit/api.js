@@ -51,7 +51,7 @@ export async function previewMarkdown(body) {
 export async function uploadImage(file) {
     const formData = new FormData();
     formData.append('file', file);
-    const res = await fetch('/admin/entries/upload', {
+    const res = await fetch('/admin/api/entries/upload', {
         method: 'POST',
         body: formData,
     });

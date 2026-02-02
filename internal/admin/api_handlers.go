@@ -44,7 +44,7 @@ type APIResponse struct {
 }
 
 // APIUpdateTitle updates the entry title and returns JSON
-func (h *HtmxHandler) APIUpdateTitle(c *gin.Context) {
+func (h *AdminHandler) APIUpdateTitle(c *gin.Context) {
 	path := getEntryPath(c)
 
 	var req APIUpdateTitleRequest
@@ -95,7 +95,7 @@ func (h *HtmxHandler) APIUpdateTitle(c *gin.Context) {
 }
 
 // APIUpdateBody updates the entry body and returns JSON
-func (h *HtmxHandler) APIUpdateBody(c *gin.Context) {
+func (h *AdminHandler) APIUpdateBody(c *gin.Context) {
 	path := getEntryPath(c)
 
 	var req APIUpdateBodyRequest
@@ -146,7 +146,7 @@ func (h *HtmxHandler) APIUpdateBody(c *gin.Context) {
 }
 
 // APIUpdateVisibility updates the entry visibility and returns JSON
-func (h *HtmxHandler) APIUpdateVisibility(c *gin.Context) {
+func (h *AdminHandler) APIUpdateVisibility(c *gin.Context) {
 	path := getEntryPath(c)
 
 	var req APIUpdateVisibilityRequest
@@ -209,7 +209,7 @@ func (h *HtmxHandler) APIUpdateVisibility(c *gin.Context) {
 }
 
 // APIDeleteEntry deletes an entry and returns JSON
-func (h *HtmxHandler) APIDeleteEntry(c *gin.Context) {
+func (h *AdminHandler) APIDeleteEntry(c *gin.Context) {
 	path := getEntryPath(c)
 
 	rows, err := h.queries.DeleteEntry(c.Request.Context(), path)
@@ -230,7 +230,7 @@ func (h *HtmxHandler) APIDeleteEntry(c *gin.Context) {
 }
 
 // APIRegenerateEntryImage triggers image regeneration and returns JSON
-func (h *HtmxHandler) APIRegenerateEntryImage(c *gin.Context) {
+func (h *AdminHandler) APIRegenerateEntryImage(c *gin.Context) {
 	path := getEntryPath(c)
 
 	_, err := h.queries.DeleteEntryImageByPath(c.Request.Context(), path)
@@ -288,7 +288,7 @@ type APIPreviewMarkdownResponse struct {
 }
 
 // APIPreviewMarkdown renders markdown and returns the HTML
-func (h *HtmxHandler) APIPreviewMarkdown(c *gin.Context) {
+func (h *AdminHandler) APIPreviewMarkdown(c *gin.Context) {
 	var req APIPreviewMarkdownRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, APIResponse{Error: "Invalid request body"})
@@ -323,7 +323,7 @@ type APIListEntriesResponse struct {
 }
 
 // APIListEntries returns entries as JSON for the Preact entry-list app
-func (h *HtmxHandler) APIListEntries(c *gin.Context) {
+func (h *AdminHandler) APIListEntries(c *gin.Context) {
 	searchQuery := c.Query("q")
 	lastEditedAtStr := c.Query("last_last_edited_at")
 
@@ -401,7 +401,7 @@ type APICreateEntryRequest struct {
 }
 
 // APICreateEntry creates a new entry and returns JSON with redirect URL
-func (h *HtmxHandler) APICreateEntry(c *gin.Context) {
+func (h *AdminHandler) APICreateEntry(c *gin.Context) {
 	var req APICreateEntryRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, APIResponse{Error: "Invalid request body"})
@@ -440,7 +440,7 @@ type APILoginRequest struct {
 }
 
 // APILogin handles JSON-based login and returns JSON response
-func (h *HtmxHandler) APILogin(c *gin.Context) {
+func (h *AdminHandler) APILogin(c *gin.Context) {
 	var req APILoginRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, APIResponse{Error: "Invalid request body"})
