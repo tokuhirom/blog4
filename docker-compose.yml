@@ -68,7 +68,7 @@ services:
     command: air
 
   localstack:
-    image: localstack/localstack:latest
+    image: localstack/localstack:4.13.0
     container_name: blog4-localstack
     restart: unless-stopped
     ports:
