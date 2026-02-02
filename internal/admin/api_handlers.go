@@ -12,6 +12,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/tokuhirom/blog4/internal"
+	"github.com/tokuhirom/blog4/internal/markdown"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 )
@@ -274,6 +275,35 @@ func (h *HtmxHandler) APIRegenerateEntryImage(c *gin.Context) {
 		OK:      true,
 		Message: "Image regeneration started!",
 	})
+}
+
+// APIPreviewMarkdownRequest is the JSON request body for markdown preview
+type APIPreviewMarkdownRequest struct {
+	Body string `json:"body"`
+}
+
+// APIPreviewMarkdownResponse is the JSON response for markdown preview
+type APIPreviewMarkdownResponse struct {
+	HTML string `json:"html"`
+}
+
+// APIPreviewMarkdown renders markdown and returns the HTML
+func (h *HtmxHandler) APIPreviewMarkdown(c *gin.Context) {
+	var req APIPreviewMarkdownRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, APIResponse{Error: "Invalid request body"})
+		return
+	}
+
+	md := markdown.NewPreviewMarkdown(c.Request.Context())
+	html, err := md.Render(req.Body)
+	if err != nil {
+		slog.Error("failed to render markdown preview", slog.Any("error", err))
+		c.JSON(http.StatusInternalServerError, APIResponse{Error: "Failed to render markdown"})
+		return
+	}
+
+	c.JSON(http.StatusOK, APIPreviewMarkdownResponse{HTML: string(html)})
 }
 
 // APIEntryCard represents a single entry in the list API response

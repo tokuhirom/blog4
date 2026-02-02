@@ -125,6 +125,17 @@ func (r *AsinRenderer) Render(writer util.BufWriter, source []byte, node ast.Nod
 	return ast.WalkContinue, nil
 }
 func (r *AsinRenderer) enter(w util.BufWriter, n *AsinNode, src []byte) (ast.WalkStatus, error) {
+	if r.Queries == nil {
+		var buf bytes.Buffer
+		buf.WriteString("[asin:")
+		buf.Write(n.Target)
+		buf.WriteString(":detail]")
+		if _, err := w.Write(buf.Bytes()); err != nil {
+			return 0, fmt.Errorf("failed to write ASIN fallback text: %w", err)
+		}
+		return ast.WalkSkipChildren, nil
+	}
+
 	asin, err := r.Queries.GetAsin(r.Context, string(n.Target))
 	if err != nil {
 		// If ASIN not found, render a placeholder or the raw ASIN link

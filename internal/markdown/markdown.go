@@ -21,6 +21,33 @@ type Markdown struct {
 type WikiLinkResolver struct {
 }
 
+// NewPreviewMarkdown creates a Markdown renderer for preview purposes.
+// It does not require database queries - ASIN links render as fallback text.
+func NewPreviewMarkdown(ctx context.Context) *Markdown {
+	md := goldmark.New(
+		goldmark.WithExtensions(
+			extension.GFM,
+			extension.Linkify,
+			highlighting.NewHighlighting(
+				highlighting.WithStyle("monokai"),
+			),
+			&AsinLink{
+				Context: ctx,
+				Queries: nil,
+			},
+			&WikiLink{
+				Context: ctx,
+			},
+		),
+		goldmark.WithRendererOptions(
+			html.WithXHTML(),
+			html.WithUnsafe(),
+		),
+	)
+
+	return &Markdown{md}
+}
+
 func NewMarkdown(ctx context.Context, queries *publicdb.Queries) *Markdown {
 	md := goldmark.New(
 		goldmark.WithExtensions(
