@@ -1,0 +1,676 @@
+# Changelog
+
+## [v0.0.1](https://github.com/tokuhirom/blog4/commits/v0.0.1) - 2026-02-03
+- Configure Renovate by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/11
+- Update dependency svelte to v5.19.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/12
+- Update dependency vitest to v3.0.5 [SECURITY] by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/20
+- Update module github.com/go-chi/chi/v5 to v5.2.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/19
+- Update dependency eslint to v9.20.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/22
+- Update dependency svelte to v5.19.10 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/17
+- Update dependency typescript-eslint to v8.24.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/18
+- Update dependency prettier to v3.5.0 - autoclosed by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/23
+- Update dependency vite to v6.1.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/21
+- Update dependency @eslint/compat to v1.2.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/14
+- Update dependency @codemirror/state to v6.5.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/15
+- Update dependency @codemirror/lang-javascript to v6.2.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/24
+- Update module github.com/go-sql-driver/mysql to v1.9.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/29
+- Update module github.com/zeebo/assert to v1.3.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/31
+- Update dependency svelte to v5.20.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/27
+- Update dependency globals to v15.15.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/26
+- Update dependency vite to v6.1.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/34
+- Update dependency globals to v16 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/35
+- Update dependency vitest to v3.0.7 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/33
+- Update dependency vite to v6.2.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/36
+- Update dependency svelte to v5.20.4 - autoclosed by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/32
+- Update dependency @codemirror/view to v6.36.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/30
+- Update actions/setup-node action to v4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/41
+- Update actions/setup-go action to v5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/40
+- Update mysql Docker tag to v8.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/38
+- Update Node.js to v22 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/37
+- Update actions/checkout action to v4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/39
+- Ci by @tokuhirom in https://github.com/tokuhirom/blog4/pull/42
+- Update actions/checkout action to v4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/43
+- Update docker/setup-buildx-action action to v3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/44
+- use docker/login-action to login the docker by @tokuhirom in https://github.com/tokuhirom/blog4/pull/45
+- add /healthz endpoint to check the healtiness by @tokuhirom in https://github.com/tokuhirom/blog4/pull/48
+- add deploy script by @tokuhirom in https://github.com/tokuhirom/blog4/pull/49
+- Update dependency svelte to v5.20.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/47
+- use git_hash by @tokuhirom in https://github.com/tokuhirom/blog4/pull/50
+- add GIT_HASH into the Docker image by @tokuhirom in https://github.com/tokuhirom/blog4/pull/51
+- don't sleep! by @tokuhirom in https://github.com/tokuhirom/blog4/pull/52
+- Deploy by @tokuhirom in https://github.com/tokuhirom/blog4/pull/53
+- Remove logging middleware by @tokuhirom in https://github.com/tokuhirom/blog4/pull/54
+- don't check host header on healthz endpoint by @tokuhirom in https://github.com/tokuhirom/blog4/pull/55
+- add web-accelarator-guard by @tokuhirom in https://github.com/tokuhirom/blog4/pull/56
+- regenerate-entry-image by @tokuhirom in https://github.com/tokuhirom/blog4/pull/57
+- use typespec by @tokuhirom in https://github.com/tokuhirom/blog4/pull/58
+- Tsp by @tokuhirom in https://github.com/tokuhirom/blog4/pull/59
+- Update dependency typescript to v5.8.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/61
+- Update dependency @openapitools/openapi-generator-cli to v2.17.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/60
+- Use build push action by @tokuhirom in https://github.com/tokuhirom/blog4/pull/62
+- enable automerge on renovate by @tokuhirom in https://github.com/tokuhirom/blog4/pull/63
+- use deploy.sh as action by @tokuhirom in https://github.com/tokuhirom/blog4/pull/64
+- design-fix by @tokuhirom in https://github.com/tokuhirom/blog4/pull/65
+- Update dependency @codemirror/view to v6.36.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/66
+- Update dependency svelte to v5.21.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/67
+- header by @tokuhirom in https://github.com/tokuhirom/blog4/pull/68
+- refactor frontend build process and enhance entry loading logic by @tokuhirom in https://github.com/tokuhirom/blog4/pull/69
+- Update dependency @typespec/compiler to ^0.66.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/70
+- Update dependency @typespec/http to ^0.66.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/71
+- Update dependency @typespec/openapi3 to ^0.66.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/72
+- Update dependency @typespec/rest to ^0.66.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/73
+- Update dependency svelte to v5.22.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/74
+- Update opentelemetry-go monorepo to v1.35.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/75
+- Update dependency svelte-check to v4.1.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/76
+- Update dependency vitest to v3.0.8 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/77
+- Update dependency vite to v6.2.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/78
+- Update dependency svelte to v5.22.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/79
+- Update dependency autoprefixer to v10.4.21 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/80
+- Update module github.com/minio/minio-go/v7 to v7.0.88 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/81
+- fix upload image function by @tokuhirom in https://github.com/tokuhirom/blog4/pull/83
+- highlight links by @tokuhirom in https://github.com/tokuhirom/blog4/pull/82
+- Update dependency svelte to v5.23.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/84
+- Update dependency node to v22 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/85
+- Update dependency lint-staged to v15.5.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/87
+- Update module github.com/ogen-go/ogen to v1.10.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/86
+- Update dependency vite to v6.2.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/88
+- Update dependency @openapitools/openapi-generator-cli to v2.18.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/89
+- Update dependency @openapitools/openapi-generator-cli to v2.18.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/90
+- Update dependency @openapitools/openapi-generator-cli to v2.18.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/91
+- Update dependency @openapitools/openapi-generator-cli to v2.18.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/92
+- Update dependency svelte to v5.23.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/93
+- Update dependency vitest to v3.0.9 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/94
+- Update dependency svelte to v5.23.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/95
+- Update dependency @typespec/compiler to ^0.67.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/96
+- Update module github.com/go-sql-driver/mysql to v1.9.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/97
+- Update dependency @typespec/http to ^0.67.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/98
+- Update dependency @typespec/rest to ^0.67.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/100
+- Update dependency @typespec/openapi3 to ^0.67.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/99
+- Update dependency svelte to v5.25.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/101
+- Update dependency svelte to v5.25.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/102
+- Update dependency vite to v6.2.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/103
+- Update dependency @typespec/compiler to v0.67.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/104
+- Update module github.com/minio/minio-go/v7 to v7.0.89 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/105
+- Update dependency @codemirror/view to v6.36.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/106
+- Update dependency @codemirror/commands to v6.8.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/107
+- Update dependency vitest to v3.1.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/109
+- Update dependency vite to v6.2.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/108
+- Update dependency svelte to v5.25.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/110
+- Update dependency svelte to v5.25.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/111
+- Update dependency svelte to v5.25.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/113
+- Update dependency go to v1.24.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/112
+- fix published_at format by @tokuhirom in https://github.com/tokuhirom/blog4/pull/114
+- Update dependency @typespec/rest to ^0.68.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/115
+- Update dependency vite to v6.2.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/116
+- Update dependency typescript to v5.8.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/117
+- Update dependency svelte to v5.25.7 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/118
+- Update module github.com/go-sql-driver/mysql to v1.9.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/119
+- Update dependency svelte to v5.25.8 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/120
+- Update module github.com/go-task/task/v3 to v3.42.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/121
+- Update module github.com/minio/minio-go/v7 to v7.0.90 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/122
+- Update dependency svelte to v5.25.9 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/123
+- Update dependency svelte to v5.25.10 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/124
+- Update dependency vite to v6.2.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/125
+- Update dependency svelte to v5.25.11 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/126
+- Update dependency svelte to v5.25.12 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/127
+- Update dependency lint-staged to v15.5.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/128
+- Update dependency svelte to v5.26.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/129
+- Update dependency svelte to v5.26.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/130
+- Update dependency svelte-check to v4.1.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/131
+- Update dependency svelte to v5.26.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/132
+- Update module github.com/yuin/goldmark to v1.7.9 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/133
+- Update dependency svelte to v5.27.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/134
+- Update module github.com/yuin/goldmark to v1.7.10 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/135
+- Update dependency vite to v6.3.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/136
+- Update dependency @openapitools/openapi-generator-cli to v2.19.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/137
+- Update dependency vite to v6.3.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/138
+- Update dependency @openapitools/openapi-generator-cli to v2.19.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/139
+- Update module github.com/sqlc-dev/sqlc to v1.29.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/140
+- Update dependency svelte to v5.27.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/141
+- Update dependency svelte to v5.27.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/142
+- Update dependency svelte to v5.27.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/143
+- Update dependency vite to v6.3.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/144
+- Update module github.com/ogen-go/ogen to v1.11.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/145
+- Update dependency svelte to v5.28.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/146
+- Update module github.com/ogen-go/ogen to v1.12.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/147
+- Update dependency vitest to v3.1.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/148
+- Update module github.com/go-task/task/v3 to v3.43.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/149
+- Update module github.com/go-task/task/v3 to v3.43.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/150
+- Update dependency svelte to v5.28.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/151
+- Update module github.com/minio/minio-go/v7 to v7.0.91 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/152
+- Update dependency @typespec/rest to ^0.69.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/153
+- Update dependency @codemirror/view to v6.36.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/154
+- Update dependency vite to v6.3.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/155
+- Update module github.com/yuin/goldmark to v1.7.11 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/156
+- Update dependency @openapitools/openapi-generator-cli to v2.20.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/157
+- Update module github.com/go-task/task/v3 to v3.43.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/158
+- Update dependency vite to v6.3.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/159
+- Update dependency @codemirror/view to v6.36.7 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/160
+- Update dependency svelte-check to v4.1.7 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/161
+- Update dependency vite to v6.3.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/162
+- Update dependency vitest to v3.1.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/163
+- Update dependency lint-staged to v15.5.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/164
+- Update dependency go to v1.24.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/165
+- Update dependency @typespec/rest to ^0.70.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/166
+- Update dependency globals to v16.1.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/167
+- Update dependency @typespec/http to v1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/169
+- Update dependency @typespec/compiler to v1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/168
+- Update dependency @typespec/rest to v0.70.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/170
+- Update dependency @typespec/openapi3 to v1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/171
+- Update dependency lint-staged to v16 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/172
+- Update dependency @codemirror/view to v6.36.8 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/173
+- Update dependency svelte to v5.28.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/174
+- Update dependency svelte to v5.28.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/175
+- Update dependency @codemirror/lang-javascript to v6.2.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/176
+- Update dependency svelte-check to v4.2.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/177
+- Update dependency svelte to v5.30.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/178
+- Update dependency svelte to v5.30.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/179
+- Update dependency svelte-check to v4.2.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/180
+- Update dependency svelte to v5.30.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/181
+- Update module github.com/yuin/goldmark to v1.7.12 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/182
+- Update module github.com/minio/minio-go/v7 to v7.0.92 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/183
+- Update dependency @openapitools/openapi-generator-cli to v2.20.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/184
+- Update dependency vitest to v3.1.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/185
+- Update dependency svelte to v5.31.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/186
+- Update module github.com/ogen-go/ogen to v1.13.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/187
+- Update dependency svelte to v5.32.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/188
+- Update dependency svelte to v5.32.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/189
+- Update opentelemetry-go monorepo to v1.36.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/190
+- Update dependency svelte to v5.33.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/191
+- Update dependency svelte to v5.33.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/192
+- Update dependency globals to v16.2.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/193
+- Update dependency svelte to v5.33.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/194
+- Update dependency svelte to v5.33.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/195
+- Update dependency lint-staged to v16.1.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/197
+- Update dependency svelte to v5.33.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/196
+- Update dependency svelte to v5.33.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/198
+- Update dependency @codemirror/view to v6.37.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/200
+- Update dependency svelte to v5.33.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/199
+- Update dependency svelte to v5.33.7 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/201
+- Update dependency svelte to v5.33.9 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/202
+- Update dependency svelte to v5.33.10 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/203
+- Update dependency @codemirror/view to v6.37.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/204
+- Update dependency svelte to v5.33.11 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/205
+- Update dependency svelte to v5.33.12 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/206
+- Update dependency svelte to v5.33.13 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/207
+- Update module github.com/ogen-go/ogen to v1.14.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/208
+- Update dependency vitest to v3.2.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/209
+- Update dependency svelte to v5.33.14 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/210
+- Update dependency @sveltejs/vite-plugin-svelte to v5.1.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/211
+- Update dependency vitest to v3.2.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/212
+- Update README.md by @tokuhirom in https://github.com/tokuhirom/blog4/pull/213
+- Update dependency vitest to v3.2.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/214
+- Update dependency go to v1.24.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/215
+- Update dependency svelte to v5.33.15 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/216
+- Update dependency svelte to v5.33.16 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/217
+- Update dependency svelte to v5.33.17 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/218
+- Update dependency svelte to v5.33.18 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/219
+- Update module github.com/go-task/task/v3 to v3.44.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/220
+- Update dependency vitest to v3.2.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/221
+- Update dependency svelte to v5.33.19 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/222
+- Update dependency @typespec/compiler to v1.1.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/223
+- Update dependency @typespec/http to v1.1.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/224
+- Update dependency @typespec/openapi3 to v1.1.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/225
+- Update dependency @typespec/rest to ^0.71.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/226
+- Update module github.com/minio/minio-go/v7 to v7.0.93 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/227
+- Update dependency svelte to v5.34.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/228
+- Update dependency @codemirror/view to v6.37.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/230
+- Update dependency @codemirror/lang-markdown to v6.3.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/231
+- Update module github.com/go-sql-driver/mysql to v1.9.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/232
+- Update dependency lint-staged to v16.1.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/233
+- Update dependency svelte to v5.34.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/234
+- Update dependency svelte to v5.34.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/235
+- Update dependency lint-staged to v16.1.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/236
+- fix: remove watch mode from task gen for one-time execution by @tokuhirom in https://github.com/tokuhirom/blog4/pull/237
+- Bump brace-expansion from 2.0.1 to 2.0.2 by @dependabot[bot] in https://github.com/tokuhirom/blog4/pull/229
+- fix: update TypeSpec syntax for @service and @info decorators by @tokuhirom in https://github.com/tokuhirom/blog4/pull/239
+- docs: add CLAUDE.md for AI assistance by @tokuhirom in https://github.com/tokuhirom/blog4/pull/240
+- docs: add CLAUDE.md with PR workflow instructions by @tokuhirom in https://github.com/tokuhirom/blog4/pull/241
+- docs: update README with comprehensive development guide by @tokuhirom in https://github.com/tokuhirom/blog4/pull/242
+- docs: add server running and debugging instructions by @tokuhirom in https://github.com/tokuhirom/blog4/pull/243
+- chore: update SQLC generated files by @tokuhirom in https://github.com/tokuhirom/blog4/pull/244
+- refactor: migrate from log.Printf to slog and improve error handling by @tokuhirom in https://github.com/tokuhirom/blog4/pull/245
+- refactor: complete slog migration for remaining files by @tokuhirom in https://github.com/tokuhirom/blog4/pull/246
+- oops by @tokuhirom in https://github.com/tokuhirom/blog4/pull/247
+- refactor: remove os.Exit from library code by @tokuhirom in https://github.com/tokuhirom/blog4/pull/248
+- chore: remove binary from git and add to .gitignore by @tokuhirom in https://github.com/tokuhirom/blog4/pull/249
+- fix: handle missing ASINs gracefully in markdown rendering by @tokuhirom in https://github.com/tokuhirom/blog4/pull/250
+- Add golangci-lint to CI workflow by @tokuhirom in https://github.com/tokuhirom/blog4/pull/251
+- Fix: Add error logging for admin API endpoints by @tokuhirom in https://github.com/tokuhirom/blog4/pull/252
+- docs: add ISSUES.md documenting Go project structure improvements by @tokuhirom in https://github.com/tokuhirom/blog4/pull/253
+- Enhance Biome integration for frontend code formatting by @tokuhirom in https://github.com/tokuhirom/blog4/pull/254
+- fix(deps): update module github.com/minio/minio-go/v7 to v7.0.94 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/255
+- chore(deps): update dependency svelte to v5.34.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/257
+- chore(deps): update dependency vitest to v3.2.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/258
+- migrate to orval by @tokuhirom in https://github.com/tokuhirom/blog4/pull/259
+- chore: update @biomejs/biome to 2.0.0 by @tokuhirom in https://github.com/tokuhirom/blog4/pull/260
+- chore(deps): update dependency svelte to v5.34.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/261
+- feat: Migrate frontend from Svelte to React by @tokuhirom in https://github.com/tokuhirom/blog4/pull/262
+- refactor: Migrate inline styles to CSS Modules by @tokuhirom in https://github.com/tokuhirom/blog4/pull/263
+- refactor: remove os.Exit from library code by @tokuhirom in https://github.com/tokuhirom/blog4/pull/264
+- refactor: move main.go to cmd/blog4 directory by @tokuhirom in https://github.com/tokuhirom/blog4/pull/265
+- docs: mark package naming issue as resolved in ISSUES.md by @tokuhirom in https://github.com/tokuhirom/blog4/pull/266
+- refactor: create internal/ directory and move private packages by @tokuhirom in https://github.com/tokuhirom/blog4/pull/267
+- test: add basic tests and document hard-to-test parts by @tokuhirom in https://github.com/tokuhirom/blog4/pull/268
+- refactor: relocate frontend code to web/ directory by @tokuhirom in https://github.com/tokuhirom/blog4/pull/269
+- fix(deps): update dependency @codemirror/theme-one-dark to v6.1.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/270
+- fix(deps): update module github.com/go-chi/chi/v5 to v5.2.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/272
+- fix: prevent focus loss in entry editor by @tokuhirom in https://github.com/tokuhirom/blog4/pull/273
+- feat: change frontend dev server port to 6173 by @tokuhirom in https://github.com/tokuhirom/blog4/pull/274
+- feat: modernize public site design with improved aesthetics and UX by @tokuhirom in https://github.com/tokuhirom/blog4/pull/277
+- feat: migrate admin site to Material-UI by @tokuhirom in https://github.com/tokuhirom/blog4/pull/276
+- feat: make entire card clickable on homepage by @tokuhirom in https://github.com/tokuhirom/blog4/pull/279
+- refactor: make EntryImageService testable with mockgen by @tokuhirom in https://github.com/tokuhirom/blog4/pull/280
+- chore(deps): update dependency @biomejs/biome to v2.0.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/271
+- feat: add Docker Compose development setup by @tokuhirom in https://github.com/tokuhirom/blog4/pull/282
+- fix: add table borders and styling for better readability by @tokuhirom in https://github.com/tokuhirom/blog4/pull/284
+- chore(deps): update node.js to v22 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/285
+- fix: prevent CodeMirror editor from overlapping with control buttons by @tokuhirom in https://github.com/tokuhirom/blog4/pull/286
+- fix: show title and body preview for two-hop links by @tokuhirom in https://github.com/tokuhirom/blog4/pull/287
+- feat: implement form-based authentication with MariaDB session storage by @tokuhirom in https://github.com/tokuhirom/blog4/pull/288
+- fix: update golangci-lint to v2.1.6 in CI workflow by @tokuhirom in https://github.com/tokuhirom/blog4/pull/293
+- feat: add CI check for auto-generated files by @tokuhirom in https://github.com/tokuhirom/blog4/pull/294
+- feat: add MIT license by @tokuhirom in https://github.com/tokuhirom/blog4/pull/296
+- feat: switch from npm to pnpm for faster dependency installation by @tokuhirom in https://github.com/tokuhirom/blog4/pull/297
+- chore(deps): update pnpm/action-setup action to v4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/298
+- chore(deps): update dependency @vitejs/plugin-react to v4.6.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/301
+- chore(deps): update dependency @biomejs/biome to v2.0.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/302
+- chore(deps): update dependency vite to v7 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/305
+- fix: correct API parameter passing and path extraction in admin frontend by @tokuhirom in https://github.com/tokuhirom/blog4/pull/303
+- chore(deps): update pnpm to v10.12.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/300
+- feat: add build info display to admin site by @tokuhirom in https://github.com/tokuhirom/blog4/pull/307
+- feat: add GitHub Actions workflow for API documentation by @tokuhirom in https://github.com/tokuhirom/blog4/pull/308
+- fix: correct path parsing for entry detail pages by @tokuhirom in https://github.com/tokuhirom/blog4/pull/309
+- chore: remove version from pnpm/action-setup for Renovate by @tokuhirom in https://github.com/tokuhirom/blog4/pull/310
+- chore(deps): update pnpm to v10.12.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/306
+- fix(deps): update opentelemetry-go monorepo to v1.37.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/313
+- refactor: CORS設定をLocalDevから分離 by @tokuhirom in https://github.com/tokuhirom/blog4/pull/315
+- fix: remove duplicate /api prefix from build-info route by @tokuhirom in https://github.com/tokuhirom/blog4/pull/311
+- fix: correct path handling in AdminEntryCardItem by @tokuhirom in https://github.com/tokuhirom/blog4/pull/316
+- fix: correct entry visibility route to use plural form by @tokuhirom in https://github.com/tokuhirom/blog4/pull/312
+- fix: correct property name in visibility update response by @tokuhirom in https://github.com/tokuhirom/blog4/pull/318
+- chore(deps): update pnpm to v10.12.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/320
+- fix: update Renovate config to properly handle pnpm lockfiles by @tokuhirom in https://github.com/tokuhirom/blog4/pull/321
+- chore(deps): update dependency @biomejs/biome to ^2.0.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/322
+- chore(deps): update dependency @redocly/cli to ^1.34.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/323
+- fix(deps): update dependency @emotion/styled to ^11.14.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/319
+- chore(deps): update dependency @typespec/compiler to ^1.1.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/324
+- chore(deps): update dependency @vitejs/plugin-react to ^4.6.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/325
+- chore(deps): update dependency autoprefixer to ^10.4.21 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/326
+- chore(deps): update dependency globals to ^16.2.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/327
+- chore(deps): update dependency lint-staged to ^16.1.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/328
+- chore(deps): update dependency typescript to ^5.8.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/329
+- chore(deps): update dependency @biomejs/biome to ^2.0.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/331
+- chore(deps): update dependency vitest to ^3.2.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/332
+- fix(deps): update codemirror by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/333
+- fix(deps): update dependency @typespec/http to ^1.1.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/334
+- fix(deps): update codemirror by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/335
+- fix(deps): update dependency @typespec/openapi to ^1.1.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/336
+- we're using pnpm. no longer required package-lock.json by @tokuhirom in https://github.com/tokuhirom/blog4/pull/337
+- fix(deps): update dependency @typespec/openapi3 to ^1.1.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/338
+- fix(deps): update dependency react-router-dom to ^7.6.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/339
+- chore(deps): update dependency @redocly/cli to ^1.34.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/340
+- fix: correct navigation path in AdminHeader after entry creation by @tokuhirom in https://github.com/tokuhirom/blog4/pull/341
+- fix: improve authentication handling in useAuth hook by @tokuhirom in https://github.com/tokuhirom/blog4/pull/342
+- fix: correct navigation path and property case in TopPage by @tokuhirom in https://github.com/tokuhirom/blog4/pull/343
+- fix: update default admin password in docker-compose by @tokuhirom in https://github.com/tokuhirom/blog4/pull/344
+- feat: add Playwright E2E tests for admin interface by @tokuhirom in https://github.com/tokuhirom/blog4/pull/345
+- chore(deps): update dependency node to v22 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/346
+- chore: remove unnecessary example.spec.ts file by @tokuhirom in https://github.com/tokuhirom/blog4/pull/347
+- feat: add Claude MCP configuration for Playwright by @tokuhirom in https://github.com/tokuhirom/blog4/pull/348
+- fix: exclude Claude local settings from repository by @tokuhirom in https://github.com/tokuhirom/blog4/pull/349
+- fix: playwright component tests setup and Footer component by @tokuhirom in https://github.com/tokuhirom/blog4/pull/350
+- feat: update documentation and Taskfile for Docker Compose workflow by @tokuhirom in https://github.com/tokuhirom/blog4/pull/351
+- feat: remove dotenv dependencies and .env files by @tokuhirom in https://github.com/tokuhirom/blog4/pull/352
+- feat: implement remember me functionality for extended sessions by @tokuhirom in https://github.com/tokuhirom/blog4/pull/353
+- test: add unit tests for remember me functionality by @tokuhirom in https://github.com/tokuhirom/blog4/pull/354
+- fix: set VITE_API_BASE_URL in Dockerfile for production build by @tokuhirom in https://github.com/tokuhirom/blog4/pull/356
+- test: add e2e test for issue #330 - verify 'c' key in search form by @tokuhirom in https://github.com/tokuhirom/blog4/pull/357
+- fix: remove invalid 'command' field from MinIO service in e2e workflow by @tokuhirom in https://github.com/tokuhirom/blog4/pull/360
+- feat: optimize CI pipeline by splitting Docker build by @tokuhirom in https://github.com/tokuhirom/blog4/pull/358
+- chore(deps): lock file maintenance by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/361
+- fix(deps): update material-ui monorepo to ^7.2.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/362
+- chore(deps): update playwright monorepo to ^1.53.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/363
+- chore(deps): update dependency globals to ^16.3.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/364
+- fix(deps): update module github.com/go-chi/cors to v1.2.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/365
+- chore(deps): update dependency vite to ^7.0.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/367
+- chore(deps): update dependency vite to ^7.0.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/368
+- chore(deps): lock file maintenance by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/369
+- chore(deps): update dependency vite to ^7.0.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/370
+- chore(deps): update dependency @biomejs/biome to ^2.1.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/371
+- chore(deps): update dependency @biomejs/biome to ^2.1.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/372
+- chore(deps): update dependency go to v1.24.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/373
+- chore(deps): update pnpm to v10.13.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/374
+- chore(deps): update dependency vite to ^7.0.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/375
+- chore(deps): update playwright monorepo to ^1.54.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/376
+- chore(deps): update playwright monorepo to ^1.54.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/377
+- fix(deps): update module golang.org/x/tools to v0.35.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/378
+- chore(deps): lock file maintenance by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/379
+- fix(deps): update dependency @codemirror/view to ^6.38.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/380
+- chore(deps): update dependency @typespec/compiler to ^1.2.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/381
+- fix(deps): update dependency @typespec/http to ^1.2.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/382
+- fix(deps): update dependency @typespec/openapi to ^1.2.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/383
+- fix(deps): update dependency @typespec/rest to ^0.72.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/385
+- fix(deps): update dependency @typespec/openapi3 to ^1.2.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/384
+- fix(deps): update dependency react-router-dom to ^7.7.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/386
+- chore(deps): update dependency vite to ^7.0.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/387
+- chore(deps): update dependency @biomejs/biome to ^2.1.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/388
+- chore(deps): update dependency @vitejs/plugin-react to ^4.7.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/389
+- chore(deps): lock file maintenance by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/390
+- fix(deps): update module github.com/minio/minio-go/v7 to v7.0.95 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/391
+- chore(deps): update dependency @redocly/cli to ^1.34.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/392
+- fix(deps): update module github.com/yuin/goldmark to v1.7.13 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/393
+- chore(deps): update dependency vite to ^7.0.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/395
+- fix(deps): update dependency react-router-dom to ^7.7.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/396
+- chore(deps): update dependency @redocly/cli to v2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/397
+- chore(deps): update dependency @redocly/cli to ^2.0.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/398
+- chore(deps): lock file maintenance by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/399
+- fix(deps): update react monorepo to ^19.1.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/400
+- chore(deps): update dependency @redocly/cli to ^2.0.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/401
+- chore(deps): update react monorepo by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/403
+- chore(deps): update dependency @biomejs/biome to ^2.1.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/402
+- chore(deps): update pnpm to v10.14.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/404
+- chore(deps): update dependency typescript to ^5.9.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/406
+- chore(deps): update playwright monorepo to ^1.54.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/407
+- fix(deps): update dependency @codemirror/lang-markdown to ^6.3.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/408
+- chore(deps): update dependency lint-staged to ^16.1.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/409
+- fix(deps): update material-ui monorepo to ^7.3.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/411
+- fix(deps): update material-ui monorepo to ^7.3.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/412
+- chore(deps): update dependency go to v1.24.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/413
+- chore(deps): update dependency @typespec/compiler to ^1.3.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/414
+- chore(deps): update dependency vite to ^7.1.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/415
+- fix(deps): update dependency @typespec/openapi to ^1.3.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/417
+- fix(deps): update dependency @typespec/http to ^1.3.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/416
+- chore(deps): update dependency @biomejs/biome to ^2.1.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/418
+- fix(deps): update dependency @typespec/openapi3 to ^1.3.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/419
+- chore(deps): lock file maintenance by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/410
+- fix(deps): update dependency react-router-dom to ^7.8.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/421
+- fix(deps): update module golang.org/x/tools to v0.36.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/422
+- fix(deps): update dependency @typespec/rest to ^0.73.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/420
+- chore(deps): update dependency @vitejs/plugin-react to v5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/423
+- chore(deps): update dependency vite to ^7.1.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/424
+- chore(deps): update dependency lint-staged to ^16.1.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/425
+- chore: upgrade Biome to 2.0.2 by @tokuhirom in https://github.com/tokuhirom/blog4/pull/275
+- chore(deps): update dependency orval to ^7.11.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/405
+- chore(deps): lock file maintenance by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/426
+- chore(deps): update actions/checkout action to v5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/427
+- chore(deps): update dependency @types/react to ^19.1.10 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/429
+- chore(deps): update dependency @redocly/cli to ^2.0.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/428
+- chore(deps): update dependency vite to ^7.1.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/431
+- chore(deps): update dependency @redocly/cli to ^2.0.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/432
+- chore(deps): update mariadb docker tag to v10.11.14 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/433
+- chore(deps): update dependency @redocly/cli to ^2.0.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/436
+- chore(deps): update golang docker tag to v1.25 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/437
+- chore(deps): update dependency @biomejs/biome to ^2.2.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/438
+- fix(deps): update dependency @codemirror/language to ^6.11.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/439
+- fix(deps): update dependency react-router-dom to ^7.8.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/440
+- chore(deps): lock file maintenance by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/441
+- fix(deps): update module go.uber.org/mock to v0.6.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/442
+- chore(deps): update dependency @vitejs/plugin-react to ^5.0.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/443
+- chore(deps): update dependency @redocly/cli to ^2.0.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/444
+- chore(deps): update dependency vite to ^7.1.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/445
+- chore(deps): update pnpm to v10.15.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/446
+- chore(deps): update playwright monorepo to ^1.55.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/447
+- chore(deps): update dependency @redocly/cli to ^2.0.7 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/448
+- chore(deps): update dependency @types/react to ^19.1.11 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/449
+- fix(deps): update dependency react-router-dom to ^7.8.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/450
+- chore(deps): update actions/upload-pages-artifact action to v4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/451
+- chore(deps): update dependency @biomejs/biome to ^2.2.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/452
+- chore(deps): lock file maintenance by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/453
+- chore(deps): update dependency @redocly/cli to ^2.0.8 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/456
+- chore(deps): update react monorepo by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/454
+- fix(deps): update module github.com/go-chi/chi/v5 to v5.2.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/455
+- chore(deps): update dependency @vitejs/plugin-react to ^5.0.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/457
+- chore(deps): update dependency @types/react-dom to ^19.1.9 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/458
+- fix(deps): update opentelemetry-go monorepo to v1.38.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/460
+- chore(deps): update dependency @biomejs/biome to ^2.2.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/461
+- chore(deps): update dependency lint-staged to ^16.1.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/462
+- chore(deps): update dependency vite to ^7.1.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/463
+- chore(deps): update pnpm to v10.15.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/464
+- fix(deps): update dependency @codemirror/view to ^6.38.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/465
+- fix(deps): update material-ui monorepo to ^7.3.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/466
+- chore(deps): update actions/setup-go action to v6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/468
+- chore(deps): lock file maintenance by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/470
+- chore(deps): update dependency vite to ^7.1.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/471
+- chore(deps): update dependency globals to ^16.4.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/472
+- chore(deps): update dependency @typespec/compiler to ^1.4.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/473
+- fix(deps): update dependency @typespec/openapi to ^1.4.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/475
+- chore(deps): update dependency @biomejs/biome to ^2.2.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/477
+- chore(deps): update dependency @redocly/cli to ^2.1.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/478
+- fix(deps): update dependency @typespec/http to ^1.4.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/474
+- fix(deps): update dependency @typespec/rest to ^0.74.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/479
+- fix(deps): update module golang.org/x/tools to v0.37.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/480
+- fix(deps): update dependency @typespec/openapi3 to ^1.4.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/476
+- chore(deps): update dependency @redocly/cli to ^2.1.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/481
+- chore(deps): update dependency @types/react to ^19.1.13 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/482
+- chore(deps): update dependency @redocly/cli to ^2.1.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/483
+- chore(deps): update pnpm to v10.16.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/484
+- fix(deps): update dependency react-router-dom to ^7.9.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/485
+- chore(deps): lock file maintenance by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/486
+- chore(deps): update dependency @vitejs/plugin-react to ^5.0.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/488
+- chore(deps): update dependency @redocly/cli to ^2.1.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/487
+- chore(deps): update dependency @redocly/cli to ^2.1.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/489
+- chore(deps): update pnpm to v10.17.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/490
+- use go-1.25.0 for local development by @tokuhirom in https://github.com/tokuhirom/blog4/pull/491
+- pnpm update by @tokuhirom in https://github.com/tokuhirom/blog4/pull/492
+- chore(deps): update dependency vite to ^7.1.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/493
+- chore(deps): update module github.com/sqlc-dev/sqlc to v1.30.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/467
+- chore(deps): update dependency @redocly/cli to ^2.1.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/494
+- chore(deps): lock file maintenance by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/495
+- chore(deps): update dependency vite to ^7.1.7 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/496
+- fix(deps): update dependency @codemirror/view to ^6.38.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/497
+- chore(deps): update pnpm to v10.17.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/498
+- chore(deps): update dependency lint-staged to ^16.2.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/499
+- chore(deps): update dependency @playwright/test to ^1.55.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/500
+- chore(deps): update dependency @playwright/experimental-ct-react to ^1.55.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/501
+- chore(deps): update dependency @redocly/cli to ^2.2.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/502
+- fix(deps): update dependency react-router-dom to ^7.9.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/503
+- use `pnpm install --frozen-lockfile` by @tokuhirom in https://github.com/tokuhirom/blog4/pull/510
+- pin actions by @tokuhirom in https://github.com/tokuhirom/blog4/pull/511
+- show diff for changed files by @tokuhirom in https://github.com/tokuhirom/blog4/pull/512
+- set cooldown time for renovate.json by @tokuhirom in https://github.com/tokuhirom/blog4/pull/513
+- use `--frozen-lockfile` on Taskfile by @tokuhirom in https://github.com/tokuhirom/blog4/pull/514
+- Chore/install go task by action by @tokuhirom in https://github.com/tokuhirom/blog4/pull/515
+- use go-tool for sqlc by @tokuhirom in https://github.com/tokuhirom/blog4/pull/516
+- Add frozen lockfile by @tokuhirom in https://github.com/tokuhirom/blog4/pull/517
+- ogen by @tokuhirom in https://github.com/tokuhirom/blog4/pull/518
+- Update module github.com/ogen-go/ogen to v1.15.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/504
+- Update dependency @types/react to ^19.1.14 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/507
+- Update dependency lint-staged to ^16.2.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/506
+- Update dependency @redocly/cli to ^2.2.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/505
+- Update dependency react-router-dom to ^7.9.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/508
+- Update docker/login-action digest to 5e57cd1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/521
+- Update module github.com/ogen-go/ogen to v1.15.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/522
+- Update dependency @vitejs/plugin-react to ^5.0.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/523
+- Update dependency @types/react to ^19.1.15 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/525
+- Update dependency @codemirror/view to ^6.38.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/524
+- Update dependency lint-staged to ^16.2.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/526
+- ogen by @tokuhirom in https://github.com/tokuhirom/blog4/pull/537
+- Update dependency typescript to ^5.9.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/529
+- Update dependency vite to v7.1.11 [SECURITY] by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/534
+- Update actions/checkout digest to 93cb6ef by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/536
+- Update material-ui monorepo to ^7.3.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/530
+- Update pnpm/action-setup digest to 41ff726 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/532
+- Update actions/setup-go digest to 4dc6199 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/538
+- Update react monorepo by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/528
+- Update dependency autoprefixer to ^10.4.22 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/539
+- Update dependency lint-staged to ^16.2.7 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/540
+- Update mariadb Docker tag to v10.11.15 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/541
+- Update module github.com/minio/minio-go/v7 to v7.0.97 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/542
+- Update CodeMirror by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/543
+- Update dependency @biomejs/biome to ^2.3.8 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/544
+- Update dependency @redocly/cli to ^2.12.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/545
+- Update dependency @typespec/compiler to ^1.6.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/546
+- Update dependency @typespec/openapi to ^1.6.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/548
+- Update dependency @typespec/http to ^1.6.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/547
+- Update dependency @codemirror/view to ^6.39.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/552
+- Update dependency @redocly/cli to ^2.12.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/550
+- Update dependency @vitejs/plugin-react to ^5.1.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/553
+- Update dependency @typespec/rest to ^0.76.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/551
+- Update dependency @typespec/openapi3 to ^1.6.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/549
+- Update dependency globals to ^16.5.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/554
+- Update dependency react-router-dom to ^7.10.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/555
+- Update dependency vite to ^7.2.7 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/556
+- Update module github.com/go-faster/jx to v1.2.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/557
+- Update module github.com/ogen-go/ogen to v1.18.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/559
+- Bump golang.org/x/crypto from 0.42.0 to 0.45.0 by @dependabot[bot] in https://github.com/tokuhirom/blog4/pull/535
+- Update dependency @redocly/cli to ^2.12.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/561
+- Update dependency @codemirror/view to ^6.39.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/560
+- Update dependency @codemirror/view to ^6.39.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/562
+- Update module golang.org/x/tools to v0.40.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/563
+- Update playwright monorepo to ^1.57.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/565
+- Update opentelemetry-go monorepo to v1.39.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/564
+- Update dependency @typespec/compiler to ^1.7.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/566
+- Update dependency @typespec/http to ^1.7.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/567
+- Update dependency @typespec/openapi to ^1.7.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/568
+- Update dependency @typespec/openapi3 to ^1.7.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/569
+- Update pnpm to v10.25.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/571
+- Update dependency @typespec/rest to ^0.77.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/570
+- Update actions/checkout action to v6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/572
+- Update dependency @redocly/cli to ^2.12.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/574
+- Update actions/setup-node action to v6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/573
+- Update actions/upload-artifact action to v5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/575
+- Update golangci/golangci-lint-action action to v9 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/578
+- Update dependency node to v24 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/576
+- Update dependency vitest to v4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/577
+- Update dependency @codemirror/view to ^6.39.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/580
+- Update react monorepo to ^19.2.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/581
+- Update react monorepo to ^19.2.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/582
+- Update dependency @codemirror/view to ^6.39.4 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/583
+- Update actions/upload-artifact action to v6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/584
+- Update dependency autoprefixer to ^10.4.23 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/585
+- Update dependency vite to ^7.3.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/586
+- Update pnpm to v10.26.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/587
+- Update dependency @biomejs/biome to ^2.3.9 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/588
+- Update dependency @typespec/compiler to ^1.7.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/590
+- Update dependency @redocly/cli to ^2.12.7 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/589
+- Update docker/setup-buildx-action digest to 8d2750c by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/591
+- Update dependency vitest to ^4.0.16 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/592
+- Update dependency @codemirror/commands to ^6.10.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/593
+- Update dependency @biomejs/biome to ^2.3.10 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/594
+- Update dependency react-router-dom to ^7.11.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/595
+- Update dependency @redocly/cli to ^2.13.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/596
+- Update pnpm to v10.26.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/597
+- Update dependency @redocly/cli to ^2.14.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/598
+- Update CodeMirror by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/599
+- Update CodeMirror by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/600
+- upgrade orval by @tokuhirom in https://github.com/tokuhirom/blog4/pull/601
+- upgrade golangci-lint v2.1.6 to v2.7.2 by @tokuhirom in https://github.com/tokuhirom/blog4/pull/602
+- Update dependency go to v1.25.5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/434
+- Lock file maintenance by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/520
+- Update module github.com/goark/pa-api to v0.15.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/558
+- Add pnpm workspace configuration by @tokuhirom in https://github.com/tokuhirom/blog4/pull/604
+- refactor: migrate public server from chi to gin by @tokuhirom in https://github.com/tokuhirom/blog4/pull/605
+- Bump github.com/quic-go/quic-go from 0.54.0 to 0.57.0 by @dependabot[bot] in https://github.com/tokuhirom/blog4/pull/606
+- refactor: remove go:embed and read static files from filesystem by @tokuhirom in https://github.com/tokuhirom/blog4/pull/607
+- fix(deps): update dependency @codemirror/view to ^6.39.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/608
+- chore(deps): update pnpm to v10.26.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/610
+- feat: implement htmx-based admin interface with idiomatic patterns by @tokuhirom in https://github.com/tokuhirom/blog4/pull/611
+- refactor: convert htmx handlers from chi to gin by @tokuhirom in https://github.com/tokuhirom/blog4/pull/612
+- feat: add htmx login page by @tokuhirom in https://github.com/tokuhirom/blog4/pull/613
+- fix: redirect to login page instead of returning 401 for htmx routes by @tokuhirom in https://github.com/tokuhirom/blog4/pull/615
+- refactor: move htmx admin to /admin/ and remove React routes by @tokuhirom in https://github.com/tokuhirom/blog4/pull/616
+- fix: add root path redirect to entries page by @tokuhirom in https://github.com/tokuhirom/blog4/pull/617
+- fix: mount public router last to prevent route shadowing by @tokuhirom in https://github.com/tokuhirom/blog4/pull/618
+- fix: use query parameters for admin entry routes by @tokuhirom in https://github.com/tokuhirom/blog4/pull/619
+- chore: remove orval and unused OpenAPI client generation by @tokuhirom in https://github.com/tokuhirom/blog4/pull/620
+- chore: remove web/admin directory and all React/biome dependencies by @tokuhirom in https://github.com/tokuhirom/blog4/pull/622
+- chore/remove web admin by @tokuhirom in https://github.com/tokuhirom/blog4/pull/623
+- chore: remove ogen and TypeSpec code generation by @tokuhirom in https://github.com/tokuhirom/blog4/pull/624
+- refactor: migrate from chi to gin router by @tokuhirom in https://github.com/tokuhirom/blog4/pull/625
+- cleanup by @tokuhirom in https://github.com/tokuhirom/blog4/pull/626
+- feat: add image paste upload functionality by @tokuhirom in https://github.com/tokuhirom/blog4/pull/628
+- chore: remove React admin references by @tokuhirom in https://github.com/tokuhirom/blog4/pull/629
+- chore: migrate from Taskfile to Makefile by @tokuhirom in https://github.com/tokuhirom/blog4/pull/630
+- chore: migrate from MinIO to LocalStack for local S3 emulation by @tokuhirom in https://github.com/tokuhirom/blog4/pull/631
+- chore: remove keepalive functionality by @tokuhirom in https://github.com/tokuhirom/blog4/pull/632
+- cleanup by @tokuhirom in https://github.com/tokuhirom/blog4/pull/633
+- fix error handling by @tokuhirom in https://github.com/tokuhirom/blog4/pull/635
+- suppress warnings by @tokuhirom in https://github.com/tokuhirom/blog4/pull/636
+- fix/css issue by @tokuhirom in https://github.com/tokuhirom/blog4/pull/637
+- refactor web accelarator middleware by @tokuhirom in https://github.com/tokuhirom/blog4/pull/634
+- copy by @tokuhirom in https://github.com/tokuhirom/blog4/pull/638
+- restructure template file path by @tokuhirom in https://github.com/tokuhirom/blog4/pull/639
+- Update design to pop and cute style for 2026 by @tokuhirom in https://github.com/tokuhirom/blog4/pull/640
+- fix login css by @tokuhirom in https://github.com/tokuhirom/blog4/pull/641
+- needs block is not required anymore by @tokuhirom in https://github.com/tokuhirom/blog4/pull/642
+- fix css cache by @tokuhirom in https://github.com/tokuhirom/blog4/pull/643
+- mysql service is not required, maybe. by @tokuhirom in https://github.com/tokuhirom/blog4/pull/644
+- show build-info.json by @tokuhirom in https://github.com/tokuhirom/blog4/pull/645
+- Add full-text search feature to public site by @tokuhirom in https://github.com/tokuhirom/blog4/pull/647
+- Add X and Hatena Bookmark share buttons to entry page by @tokuhirom in https://github.com/tokuhirom/blog4/pull/648
+- refactor packages by @tokuhirom in https://github.com/tokuhirom/blog4/pull/646
+- Add comprehensive error logging to public handlers by @tokuhirom in https://github.com/tokuhirom/blog4/pull/649
+- fix missing 'search' endpoint by @tokuhirom in https://github.com/tokuhirom/blog4/pull/650
+- Add prominent new entry button to admin entries page by @tokuhirom in https://github.com/tokuhirom/blog4/pull/651
+- Fix regressions in UpdateEntryVisibility and RegenerateEntryImage by @tokuhirom in https://github.com/tokuhirom/blog4/pull/652
+- feat: Add Web Share Target API for Android sharing by @tokuhirom in https://github.com/tokuhirom/blog4/pull/653
+- feat: Add Biome for JavaScript linting by @tokuhirom in https://github.com/tokuhirom/blog4/pull/654
+- fix: Update /admin/entries links to /admin/entries/search by @tokuhirom in https://github.com/tokuhirom/blog4/pull/655
+- fix: URL-encode path parameter in entry creation redirects by @tokuhirom in https://github.com/tokuhirom/blog4/pull/656
+- fix: prevent service worker from caching admin API responses by @tokuhirom in https://github.com/tokuhirom/blog4/pull/658
+- fix: improve error handling in DeleteEntry handler by @tokuhirom in https://github.com/tokuhirom/blog4/pull/659
+- feat: add Makefile targets for MariaDB console access by @tokuhirom in https://github.com/tokuhirom/blog4/pull/660
+- fix: use JST instead of UTC for build time by @tokuhirom in https://github.com/tokuhirom/blog4/pull/661
+- docs: update CLAUDE.md and README.md to reflect current architecture by @tokuhirom in https://github.com/tokuhirom/blog4/pull/662
+- refactor: unify Dockerfiles to Debian base and use MariaDB tools by @tokuhirom in https://github.com/tokuhirom/blog4/pull/664
+- feat: automatically delete backup files older than 7 days by @tokuhirom in https://github.com/tokuhirom/blog4/pull/663
+- add AGENTS.md by @tokuhirom in https://github.com/tokuhirom/blog4/pull/665
+- fix: implement admin search functionality by @tokuhirom in https://github.com/tokuhirom/blog4/pull/667
+- chore(deps): update dependency @playwright/test to ^1.57.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/668
+- fix(deps): update module github.com/yuin/goldmark to v1.7.14 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/670
+- fix(deps): update module github.com/yuin/goldmark to v1.7.15 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/671
+- fix(deps): update module github.com/yuin/goldmark to v1.7.16 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/672
+- chore(deps): update dependency golangci-lint to v2.8.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/673
+- chore(deps): update actions/setup-go digest to 7a3fe6c by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/674
+- fix(deps): update module github.com/minio/minio-go/v7 to v7.0.98 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/675
+- fix(deps): update module golang.org/x/tools to v0.41.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/676
+- refactor: migrate S3 client from minio-go to aws-sdk-go-v2 by @tokuhirom in https://github.com/tokuhirom/blog4/pull/677
+- fix(deps): update module github.com/yuin/goldmark to v1.7.16 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/678
+- fix(deps): update module golang.org/x/tools to v0.41.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/679
+- feat: add optimistic locking for entry editing by @tokuhirom in https://github.com/tokuhirom/blog4/pull/680
+- feat: replace textarea with CodeMirror 6 editor by @tokuhirom in https://github.com/tokuhirom/blog4/pull/681
+- fix(deps): update dependency codemirror to ^6.0.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/682
+- chore(deps): update dependency esbuild to ^0.27.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/683
+- fix(deps): update codemirror by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/684
+- feat: add e2e test job to CI workflow by @tokuhirom in https://github.com/tokuhirom/blog4/pull/669
+- chore(deps): update actions/checkout action to v6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/686
+- chore(deps): update actions/setup-node digest to 49933ea by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/685
+- fix: use docker compose instead of docker-compose in CI by @tokuhirom in https://github.com/tokuhirom/blog4/pull/687
+- fix release.yml by @tokuhirom in https://github.com/tokuhirom/blog4/pull/688
+- fix: add -buildvcs=false to air build command for CI by @tokuhirom in https://github.com/tokuhirom/blog4/pull/689
+- fix release.yml by @tokuhirom in https://github.com/tokuhirom/blog4/pull/690
+- fix: always reuse existing server in playwright config by @tokuhirom in https://github.com/tokuhirom/blog4/pull/691
+- chore(deps): update actions/setup-node action to v5 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/692
+- chore(deps): update actions/upload-artifact action to v6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/693
+- chore(deps): update dependency node to v24 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/694
+- chore(deps): update dependency go to v1.25.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/695
+- chore(deps): update actions/setup-node action to v6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/696
+- fix: improve admin entry list layout for folded phones by @tokuhirom in https://github.com/tokuhirom/blog4/pull/697
+- fix: remove persist-credentials from tagpr workflow by @tokuhirom in https://github.com/tokuhirom/blog4/pull/698
+- chore(deps): update golang docker tag to v1.25.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/700
+- chore(deps): update dependency go to v1.25.6 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/699
+- fix: remove flash animation on entry update by @tokuhirom in https://github.com/tokuhirom/blog4/pull/702
+- feat: migrate from mise/nix flake to devbox by @tokuhirom in https://github.com/tokuhirom/blog4/pull/703
+- chore(deps): lock file maintenance by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/704
+- feat: add OGP and Twitter Card meta tags to entry pages by @tokuhirom in https://github.com/tokuhirom/blog4/pull/705
+- chore(deps): update dependency @playwright/test to ^1.58.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/706
+- feat: automatic OG image generation with Japanese support by @tokuhirom in https://github.com/tokuhirom/blog4/pull/707
+- fix: Japanese font rendering in OG images (use IPA .ttf instead of Noto .ttc) by @tokuhirom in https://github.com/tokuhirom/blog4/pull/708
+- chore(deps): update docker/login-action digest to c94ce9f by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/709
+- feat: migrate entry edit page from HTMX to Preact + CodeMirror 6 by @tokuhirom in https://github.com/tokuhirom/blog4/pull/710
+- fix(deps): update dependency preact to ^10.28.2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/711
+- feat: migrate entry list page from HTMX to Preact by @tokuhirom in https://github.com/tokuhirom/blog4/pull/712
+- feat: migrate login page from HTMX to Preact and remove HTMX dependency by @tokuhirom in https://github.com/tokuhirom/blog4/pull/713
+- fix(deps): update module github.com/aws/aws-sdk-go-v2/service/s3 to v1.96.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/714
+- chore(deps): update dependency nodejs to v25.5.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/715
+- feat: add markdown preview tab to entry edit page by @tokuhirom in https://github.com/tokuhirom/blog4/pull/716
+- chore(deps): lock file maintenance by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/717
+- fix(deps): update dependency @codemirror/view to ^6.39.12 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/719
+- chore: pin localstack image version by @tokuhirom in https://github.com/tokuhirom/blog4/pull/722
+- chore(deps): update dependency @playwright/test to ^1.58.1 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/720
+- feat: migrate development environment from devbox to mise by @tokuhirom in https://github.com/tokuhirom/blog4/pull/718
+- chore(deps): update dependency aqua:go-task/task to v3.48.0 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/723
+- fix(deps): update dependency preact to ^10.28.3 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/724
+- refactor: remove htmx admin endpoints by @tokuhirom in https://github.com/tokuhirom/blog4/pull/721
+- chore(deps): update actions/checkout digest to de0fac2 by @renovate[bot] in https://github.com/tokuhirom/blog4/pull/725
