@@ -14,15 +14,15 @@ test('admin search functionality', async ({ page }) => {
     await expect(page).toHaveTitle(/Admin - Entry List/);
 
     // Test search functionality with an existing entry keyword
-    const searchInput = page.locator('input[name="q"]');
+    const searchInput = page.locator('input[placeholder="Search entries..."]');
     await searchInput.fill('Docker');
 
-    // Wait for HTMX to trigger the search (500ms delay + processing time)
+    // Wait for the Preact debounce + network
     await page.waitForTimeout(1000);
 
     // Check that search results are displayed
-    const entryList = page.locator('#entry-list');
-    await expect(entryList).toBeVisible();
+    const entryGrid = page.locator('.entry-grid');
+    await expect(entryGrid).toBeVisible();
 
     // Verify that at least one entry card is shown (Docker Setup Guide should match)
     const entryCards = page.locator('.entry-card');

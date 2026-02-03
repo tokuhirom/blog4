@@ -1,9 +1,7 @@
 package admin
 
 import (
-	"context"
 	"crypto/rand"
-	"crypto/subtle"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -20,15 +18,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/tokuhirom/blog4/internal"
 	"github.com/tokuhirom/blog4/internal/ogimage"
 	"github.com/tokuhirom/blog4/internal/sobs"
 
 	"github.com/tokuhirom/blog4/db/admin/admindb"
 )
 
-// HtmxHandler handles htmx-based admin pages
-type HtmxHandler struct {
+// AdminHandler handles admin pages and JSON APIs
+type AdminHandler struct {
 	queries              *admindb.Queries
 	sobsClient           *sobs.SobsClient
 	adminUser            string
@@ -38,9 +35,9 @@ type HtmxHandler struct {
 	ogImageService       *ogimage.Service
 }
 
-// NewHtmxHandler creates a new HtmxHandler
-func NewHtmxHandler(queries *admindb.Queries, sobsClient *sobs.SobsClient, adminUser, adminPassword string, isSecure bool, s3AttachmentsBaseUrl string, ogImageService *ogimage.Service) *HtmxHandler {
-	return &HtmxHandler{
+// NewAdminHandler creates a new AdminHandler
+func NewAdminHandler(queries *admindb.Queries, sobsClient *sobs.SobsClient, adminUser, adminPassword string, isSecure bool, s3AttachmentsBaseUrl string, ogImageService *ogimage.Service) *AdminHandler {
+	return &AdminHandler{
 		queries:              queries,
 		sobsClient:           sobsClient,
 		adminUser:            adminUser,
@@ -58,7 +55,7 @@ func getEntryPath(c *gin.Context) string {
 	return c.Query("path")
 }
 
-type HtmxEntriesData struct {
+type EntriesPageData struct {
 	Entries    []EntryCard
 	HasMore    bool
 	LastCursor string
@@ -111,7 +108,7 @@ func simplifyMarkdown(text string) string {
 }
 
 // RenderEntriesPage displays the entries list page
-func (h *HtmxHandler) RenderEntriesPage(c *gin.Context) {
+func (h *AdminHandler) RenderEntriesPage(c *gin.Context) {
 	// Get query parameters
 	searchQuery := c.Query("q")
 	lastEditedAtStr := c.Query("last_last_edited_at")
@@ -207,7 +204,7 @@ func (h *HtmxHandler) RenderEntriesPage(c *gin.Context) {
 		return
 	}
 
-	data := HtmxEntriesData{
+	data := EntriesPageData{
 		Entries:    cards,
 		HasMore:    hasMore,
 		LastCursor: lastCursor,
@@ -216,7 +213,7 @@ func (h *HtmxHandler) RenderEntriesPage(c *gin.Context) {
 
 	tmpl, err := template.ParseFiles(
 		"admin/templates/layout.html",
-		"admin/templates/htmx_entries.html",
+		"admin/templates/entries.html",
 	)
 	if err != nil {
 		slog.Error("failed to parse template", slog.Any("error", err))
@@ -239,7 +236,7 @@ type EntryEditData struct {
 }
 
 // RenderEntryEditPage displays the entry edit page
-func (h *HtmxHandler) RenderEntryEditPage(c *gin.Context) {
+func (h *AdminHandler) RenderEntryEditPage(c *gin.Context) {
 	path := getEntryPath(c)
 
 	entry, err := h.queries.AdminGetEntryByPath(c.Request.Context(), path)
@@ -275,7 +272,7 @@ func (h *HtmxHandler) RenderEntryEditPage(c *gin.Context) {
 
 	tmpl, err := template.ParseFiles(
 		"admin/templates/layout.html",
-		"admin/templates/htmx_entry_edit.html",
+		"admin/templates/entry_edit.html",
 	)
 	if err != nil {
 		slog.Error("failed to parse template", slog.Any("error", err))
@@ -287,239 +284,8 @@ func (h *HtmxHandler) RenderEntryEditPage(c *gin.Context) {
 	_ = tmpl.ExecuteTemplate(c.Writer, "layout", data)
 }
 
-// UpdateEntryTitle updates the entry title and returns feedback HTML
-func (h *HtmxHandler) UpdateEntryTitle(c *gin.Context) {
-	path := getEntryPath(c)
-	title := c.PostForm("title")
-	updatedAtStr := c.PostForm("updated_at")
-
-	if title == "" {
-		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Title cannot be empty</div>`))
-		return
-	}
-
-	updatedAt, err := time.Parse(time.RFC3339Nano, updatedAtStr)
-	if err != nil {
-		slog.Error("failed to parse updated_at", slog.String("updated_at", updatedAtStr), slog.Any("error", err))
-		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Invalid request</div>`))
-		return
-	}
-
-	rows, err := h.queries.UpdateEntryTitle(c.Request.Context(), admindb.UpdateEntryTitleParams{
-		Title:     title,
-		Path:      path,
-		UpdatedAt: sql.NullTime{Time: updatedAt, Valid: true},
-	})
-	if err != nil {
-		slog.Error("failed to update title", slog.String("path", path), slog.Any("error", err))
-		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to update title</div>`))
-		return
-	}
-	if rows == 0 {
-		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">他のタブで更新されています。<button onclick="location.reload()" class="btn-reload">リロード</button></div>`))
-		return
-	}
-
-	// Get the new updated_at value
-	entry, err := h.queries.AdminGetEntryByPath(c.Request.Context(), path)
-	if err != nil {
-		slog.Error("failed to get entry after update", slog.String("path", path), slog.Any("error", err))
-		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-success">Title updated!</div>`))
-		return
-	}
-
-	newUpdatedAt := entry.UpdatedAt.Time.Format(time.RFC3339Nano)
-	c.Header("HX-Trigger", fmt.Sprintf(`{"updatedAtChanged": "%s"}`, newUpdatedAt))
-	c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-success">Title updated!</div>`))
-}
-
-// UpdateEntryBody updates the entry body and returns feedback HTML
-func (h *HtmxHandler) UpdateEntryBody(c *gin.Context) {
-	path := getEntryPath(c)
-	body := c.PostForm("body")
-	updatedAtStr := c.PostForm("updated_at")
-
-	if body == "" {
-		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Body cannot be empty</div>`))
-		return
-	}
-
-	updatedAt, err := time.Parse(time.RFC3339Nano, updatedAtStr)
-	if err != nil {
-		slog.Error("failed to parse updated_at", slog.String("updated_at", updatedAtStr), slog.Any("error", err))
-		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Invalid request</div>`))
-		return
-	}
-
-	rows, err := h.queries.UpdateEntryBody(c.Request.Context(), admindb.UpdateEntryBodyParams{
-		Body:      body,
-		Path:      path,
-		UpdatedAt: sql.NullTime{Time: updatedAt, Valid: true},
-	})
-	if err != nil {
-		slog.Error("failed to update body", slog.String("path", path), slog.Any("error", err))
-		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to update body</div>`))
-		return
-	}
-	if rows == 0 {
-		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">他のタブで更新されています。<button onclick="location.reload()" class="btn-reload">リロード</button></div>`))
-		return
-	}
-
-	// Get the new updated_at value
-	entry, err := h.queries.AdminGetEntryByPath(c.Request.Context(), path)
-	if err != nil {
-		slog.Error("failed to get entry after update", slog.String("path", path), slog.Any("error", err))
-		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-success">Body updated!</div>`))
-		return
-	}
-
-	newUpdatedAt := entry.UpdatedAt.Time.Format(time.RFC3339Nano)
-	c.Header("HX-Trigger", fmt.Sprintf(`{"updatedAtChanged": "%s"}`, newUpdatedAt))
-	c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-success">Body updated!</div>`))
-}
-
-// RegenerateEntryImage triggers image regeneration and returns feedback HTML
-func (h *HtmxHandler) RegenerateEntryImage(c *gin.Context) {
-	path := getEntryPath(c)
-
-	// Delete existing entry image
-	_, err := h.queries.DeleteEntryImageByPath(c.Request.Context(), path)
-	if err != nil {
-		slog.Error("failed to delete entry image", slog.String("path", path), slog.Any("error", err))
-		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to delete entry image</div>`))
-		return
-	}
-
-	// Process entry image in background
-	go func() {
-		ctx := c.Request.Context()
-		service := internal.NewEntryImageService(h.queries)
-
-		// Get the entry
-		entryRow, err := h.queries.AdminGetEntryByPath(ctx, path)
-		if err != nil {
-			slog.Error("failed to get entry for image regeneration", slog.String("path", path), slog.Any("error", err))
-			return
-		}
-
-		// Convert to Entry type
-		entry := admindb.Entry{
-			Path:         entryRow.Path,
-			Title:        entryRow.Title,
-			Body:         entryRow.Body,
-			Visibility:   entryRow.Visibility,
-			Format:       entryRow.Format,
-			PublishedAt:  entryRow.PublishedAt,
-			LastEditedAt: entryRow.LastEditedAt,
-			CreatedAt:    entryRow.CreatedAt,
-			UpdatedAt:    entryRow.UpdatedAt,
-		}
-
-		// Process the entry
-		err = service.ProcessEntry(ctx, entry)
-		if err != nil {
-			slog.Error("failed to process entry image", slog.String("path", path), slog.Any("error", err))
-			return
-		}
-
-		slog.Info("successfully regenerated entry image", slog.String("path", path))
-	}()
-
-	c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-success">Image regeneration started!</div>`))
-}
-
-// UpdateEntryVisibility updates the entry visibility
-func (h *HtmxHandler) UpdateEntryVisibility(c *gin.Context) {
-	path := getEntryPath(c)
-	visibility := c.PostForm("visibility")
-
-	if visibility == "" {
-		c.String(400, "Visibility is required")
-		return
-	}
-
-	// Get current visibility and published_at
-	entry, err := h.queries.GetEntryVisibility(c.Request.Context(), path)
-	if err != nil {
-		if err == sql.ErrNoRows {
-			slog.Error("entry not found", slog.String("path", path))
-			c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Entry not found</div>`))
-			return
-		}
-		slog.Error("failed to get entry visibility", slog.String("path", path), slog.Any("error", err))
-		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to get entry visibility</div>`))
-		return
-	}
-
-	// Update visibility
-	err = h.queries.UpdateVisibility(c.Request.Context(), admindb.UpdateVisibilityParams{
-		Visibility: admindb.EntryVisibility(visibility),
-		Path:       path,
-	})
-	if err != nil {
-		slog.Error("failed to update visibility", slog.String("path", path), slog.Any("error", err))
-		c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to update visibility</div>`))
-		return
-	}
-
-	// If changing from private to public, handle published_at and OG image
-	if entry.Visibility == "private" && visibility == "public" {
-		// Set published_at to now if it's null
-		if !entry.PublishedAt.Valid {
-			if err := h.queries.UpdatePublishedAt(c.Request.Context(), path); err != nil {
-				slog.Error("failed to update published_at", slog.String("path", path), slog.Any("error", err))
-				c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-error">Failed to update published_at</div>`))
-				return
-			}
-			slog.Info("updated published_at for newly public entry", slog.String("path", path))
-		}
-
-		// Generate OG image asynchronously if enabled (always check when publishing)
-		if h.ogImageService != nil {
-			go func() {
-				ctx := context.Background()
-				if err := h.ogImageService.EnsureOGImage(ctx, path); err != nil {
-					slog.Error("failed to ensure OG image",
-						slog.String("path", path), slog.Any("error", err))
-				}
-			}()
-		}
-	}
-
-	c.Header("HX-Refresh", "true")
-	c.Data(200, "text/html; charset=utf-8", []byte(`<div class="feedback-success">Visibility updated!</div>`))
-}
-
-// CreateEntry creates a new entry and redirects to edit page
-func (h *HtmxHandler) CreateEntry(c *gin.Context) {
-	title := c.PostForm("title")
-	if title == "" {
-		c.String(400, "Title is required")
-		return
-	}
-
-	// Generate path based on current time
-	now := time.Now()
-	path := now.Format("2006/01/02/150405")
-
-	_, err := h.queries.CreateEmptyEntry(c.Request.Context(), admindb.CreateEmptyEntryParams{
-		Path:  path,
-		Title: title,
-	})
-	if err != nil {
-		slog.Error("failed to create entry", slog.String("title", title), slog.Any("error", err))
-		c.String(500, "Failed to create entry")
-		return
-	}
-
-	// URL-encode the path to handle slashes correctly
-	c.Header("HX-Redirect", "/admin/entries/edit?path="+url.QueryEscape(path))
-	c.Status(200)
-}
-
 // HandleShareTarget handles Web Share Target API requests from Android
-func (h *HtmxHandler) HandleShareTarget(c *gin.Context) {
+func (h *AdminHandler) HandleShareTarget(c *gin.Context) {
 	ctx := c.Request.Context()
 	now := time.Now()
 
@@ -592,32 +358,9 @@ func (h *HtmxHandler) HandleShareTarget(c *gin.Context) {
 	c.Redirect(http.StatusSeeOther, "/admin/entries/edit?path="+url.QueryEscape(path))
 }
 
-// DeleteEntry deletes an entry
-func (h *HtmxHandler) DeleteEntry(c *gin.Context) {
-	path := getEntryPath(c)
-
-	rows, err := h.queries.DeleteEntry(c.Request.Context(), path)
-	if err != nil {
-		slog.Error("failed to delete entry",
-			slog.String("path", path),
-			slog.Any("error", err))
-		c.String(500, "Failed to delete entry")
-		return
-	}
-	if rows == 0 {
-		slog.Warn("entry to delete not found",
-			slog.String("path", path))
-		c.String(404, "Entry not found")
-		return
-	}
-
-	c.Header("HX-Redirect", "/admin/entries/search")
-	c.Status(200)
-}
-
 // RenderLoginPage displays the login page
-func (h *HtmxHandler) RenderLoginPage(c *gin.Context) {
-	tmpl, err := template.ParseFiles("admin/templates/htmx_login.html")
+func (h *AdminHandler) RenderLoginPage(c *gin.Context) {
+	tmpl, err := template.ParseFiles("admin/templates/login.html")
 	if err != nil {
 		slog.Error("failed to parse login template", slog.Any("error", err))
 		c.String(500, "Internal Server Error")
@@ -633,67 +376,8 @@ func (h *HtmxHandler) RenderLoginPage(c *gin.Context) {
 	}
 }
 
-// HandleLogin processes the login form submission
-func (h *HtmxHandler) HandleLogin(c *gin.Context) {
-	username := c.PostForm("username")
-	password := c.PostForm("password")
-	rememberMe := c.PostForm("remember_me") == "true"
-
-	// Validate credentials using constant-time comparison
-	usernameMatch := subtle.ConstantTimeCompare([]byte(username), []byte(h.adminUser)) == 1
-	passwordMatch := subtle.ConstantTimeCompare([]byte(password), []byte(h.adminPassword)) == 1
-
-	if !usernameMatch || !passwordMatch {
-		c.Data(200, "text/html; charset=utf-8", []byte(`Invalid username or password`))
-		return
-	}
-
-	// Generate session ID
-	sessionID, err := generateSessionID()
-	if err != nil {
-		slog.Error("failed to generate session ID", slog.Any("error", err))
-		c.Data(200, "text/html; charset=utf-8", []byte(`Failed to create session`))
-		return
-	}
-
-	// Calculate session expiry based on remember_me option
-	sessionTimeout := defaultSessionTimeout
-	if rememberMe {
-		sessionTimeout = extendedSessionTimeout
-	}
-	expires := time.Now().Add(sessionTimeout)
-
-	// Create session in database
-	err = h.queries.CreateSession(c.Request.Context(), admindb.CreateSessionParams{
-		SessionID: sessionID,
-		Username:  username,
-		ExpiresAt: expires,
-	})
-	if err != nil {
-		slog.Error("failed to create session", slog.Any("error", err))
-		c.Data(200, "text/html; charset=utf-8", []byte(`Failed to create session`))
-		return
-	}
-
-	// Set cookie
-	http.SetCookie(c.Writer, &http.Cookie{
-		Name:     sessionCookieName,
-		Value:    sessionID,
-		Path:     "/admin",
-		HttpOnly: true,
-		Secure:   h.isSecure,
-		SameSite: http.SameSiteStrictMode,
-		Expires:  expires,
-		MaxAge:   int(time.Until(expires).Seconds()),
-	})
-
-	// Redirect to entries page using HX-Redirect header
-	c.Header("HX-Redirect", "/admin/entries/search")
-	c.Status(200)
-}
-
 // UploadEntryImage handles image uploads from paste/drag-drop
-func (h *HtmxHandler) UploadEntryImage(c *gin.Context) {
+func (h *AdminHandler) UploadEntryImage(c *gin.Context) {
 	// Get uploaded file
 	file, err := c.FormFile("file")
 	if err != nil {

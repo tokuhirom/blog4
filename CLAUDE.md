@@ -30,7 +30,7 @@ gh pr create --title "fix: description" --body "..."
 
 ## Project Overview
 
-Blog4 is a full-stack blog application with an HTMX-based admin interface, built with Go backend and HTML templates. It features wiki-style linking, Amazon product integration, automated image generation, and PWA support with Web Share Target API for sharing content from Android devices.
+Blog4 is a full-stack blog application with a Preact-based admin interface, built with a Go backend and HTML templates. It features wiki-style linking, Amazon product integration, automated image generation, and PWA support with Web Share Target API for sharing content from Android devices.
 
 ## Development Setup
 
@@ -105,25 +105,28 @@ make db-root  # Access MariaDB console as root
 - Uses n-gram parser for Japanese full-text search
 
 ### Admin Interface
-HTMX-based admin interface with server-side rendering:
+Preact-based admin interface with server-side rendering and JSON APIs:
 
-**Key Routes** (`/internal/admin/htmx_router.go`):
+**Key Routes** (`/internal/admin/admin_router.go`):
 - `/admin/entries/search` - Entry list page (GET)
 - `/admin/entries/edit?path=...` - Entry edit page (GET)
-- `/admin/entries/create` - Create new entry (POST)
-- `/admin/entries/title` - Update entry title (POST, HTMX)
-- `/admin/entries/body` - Update entry body (POST, HTMX)
-- `/admin/entries/visibility` - Update visibility (POST, HTMX)
-- `/admin/entries/delete` - Delete entry (DELETE, HTMX)
+- `/admin/api/entries` - Entry list data (GET)
+- `/admin/api/entries/create` - Create new entry (POST)
+- `/admin/api/entries/title` - Update entry title (PUT)
+- `/admin/api/entries/body` - Update entry body (PUT)
+- `/admin/api/entries/visibility` - Update visibility (PUT)
+- `/admin/api/entries/delete` - Delete entry (DELETE)
+- `/admin/api/entries/image/regenerate` - Regenerate OG image (POST)
+- `/admin/api/entries/upload` - Upload image (POST)
 - `/admin/share-target` - Web Share Target endpoint (POST)
 
 **Templates** (`/admin/templates/`):
 - `layout.html` - Base layout with PWA meta tags
-- `htmx_entries.html` - Entry list page
-- `htmx_entry_edit.html` - Entry edit page with auto-save
-- `htmx_login.html` - Login page
+- `entries.html` - Entry list page
+- `entry_edit.html` - Entry edit page with auto-save
+- `login.html` - Login page
 
-**Middleware** (`/internal/admin/htmx_router.go`):
+**Middleware** (`/internal/admin/admin_router.go`):
 - `NoCacheMiddleware` - Prevents caching of dynamic admin pages
 - `GinSessionMiddleware` - Session authentication
 
@@ -206,7 +209,7 @@ See `docker-compose.yml` for the complete list and default values.
   Example:
   ```bash
   # Format a specific file
-  goimports -local github.com/tokuhirom/blog4 -w internal/admin/htmx_handlers.go
+  goimports -local github.com/tokuhirom/blog4 -w internal/admin/admin_handlers.go
 
   # Format all Go files in a directory
   goimports -local github.com/tokuhirom/blog4 -w internal/ogimage/*.go

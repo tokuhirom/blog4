@@ -10,28 +10,28 @@ const bundles = [
         prefix: 'codemirror-bundle',
         format: 'esm',
         jsx: false,
-        templatePath: 'templates/htmx_entry_edit.html',
+        templatePath: 'templates/entry_edit.html',
     },
     {
         entryPoint: 'src/entry-edit/index.jsx',
         prefix: 'entry-edit-app',
         format: 'esm',
         jsx: true,
-        templatePath: 'templates/htmx_entry_edit.html',
+        templatePath: 'templates/entry_edit.html',
     },
     {
         entryPoint: 'src/entry-list/index.jsx',
         prefix: 'entry-list-app',
         format: 'esm',
         jsx: true,
-        templatePath: 'templates/htmx_entries.html',
+        templatePath: 'templates/entries.html',
     },
     {
         entryPoint: 'src/login/index.jsx',
         prefix: 'login-app',
         format: 'esm',
         jsx: true,
-        templatePath: 'templates/htmx_login.html',
+        templatePath: 'templates/login.html',
     },
 ];
 
