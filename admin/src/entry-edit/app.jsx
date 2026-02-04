@@ -45,6 +45,16 @@ export function App({ initData }) {
         }, delay);
     }, []);
 
+    const reportFeedback = useCallback((feedback) => {
+        if (feedback.type === 'error') {
+            showFeedback(feedback);
+            return;
+        }
+        if (feedback.message) {
+            console.log(feedback.message);
+        }
+    }, [showFeedback]);
+
     const handleApiResponse = useCallback((data) => {
         if (data.error) {
             showFeedback({ type: 'error', message: data.error });
@@ -55,7 +65,7 @@ export function App({ initData }) {
             dispatch({ type: 'SET_UPDATED_AT', value: data.updated_at });
         }
         if (data.message) {
-            showFeedback({ type: 'success', message: data.message });
+            console.log(data.message);
         }
         return true;
     }, [showFeedback]);
@@ -132,7 +142,7 @@ export function App({ initData }) {
                     initialBody={initData.body}
                     currentBody={state.body}
                     onBodyChange={handleBodyChange}
-                    onFeedback={showFeedback}
+                    onFeedback={reportFeedback}
                 />
             </div>
             <Sidebar
