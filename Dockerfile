@@ -1,5 +1,5 @@
 # Stage 1: Build the Go backend
-FROM golang:1.25 AS backend-builder
+FROM golang:1.26 AS backend-builder
 RUN apt-get update && apt-get install -y git
 WORKDIR /app
 COPY go.mod go.sum ./
