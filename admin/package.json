@@ -14,7 +14,7 @@
     "@codemirror/view": "^6.39.14",
     "@lezer/highlight": "^1.2.3",
     "codemirror": "^6.0.2",
-    "preact": "^10.28.3"
+    "preact": "^10.28.4"
   },
   "devDependencies": {
     "esbuild": "^0.27.3"
