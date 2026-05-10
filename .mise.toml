@@ -1,5 +1,5 @@
 [tools]
-go = "1.26.2"
+go = "1.26.3"
 node = "25"
 "aqua:golangci/golangci-lint" = "2.12.2"
 "aqua:go-task/task" = "3.50.0"
