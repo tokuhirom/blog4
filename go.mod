@@ -18,7 +18,7 @@ require (
 	github.com/yuin/goldmark v1.8.2
 	github.com/yuin/goldmark-highlighting/v2 v2.0.0-20230729083705-37449abec8cc
 	go.uber.org/mock v0.6.0
-	golang.org/x/image v0.39.0
+	golang.org/x/image v0.40.0
 	golang.org/x/tools v0.45.0
 )
 
