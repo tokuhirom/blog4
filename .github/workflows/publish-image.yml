@@ -19,7 +19,7 @@ jobs:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4
         with:
-          registry: tokuhirom.sakuracr.jp
+          registry: ${{ vars.SAKURA_REGISTRY_DOMAIN }}
           username: ${{ vars.SAKURA_REGISTRY_USERNAME }}
           password: ${{ secrets.SAKURA_REGISTRY_PASSWORD }}
 
@@ -32,7 +32,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: tokuhirom.sakuracr.jp/blog4:${{ env.GIT_HASH }}
+          tags: ${{ vars.SAKURA_REGISTRY_DOMAIN }}/blog4:${{ env.GIT_HASH }}
           build-args: |
             GIT_HASH=${{ env.GIT_HASH }}
 
@@ -42,4 +42,4 @@ jobs:
           token_id: ${{ secrets.SACLOUD_API_TOKEN_ID }}
           token_secret: ${{ secrets.SAKURA_API_TOKEN_SECRET }}
           app_id: ${{ vars.APPRUN_APP_ID }}
-          image: tokuhirom.sakuracr.jp/blog4:${{ env.GIT_HASH }}
+          image: ${{ vars.SAKURA_REGISTRY_DOMAIN }}/blog4:${{ env.GIT_HASH }}
