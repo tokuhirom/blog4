@@ -18,8 +18,12 @@ func SetupPublicRoutes(r *gin.Engine, queries *publicdb.Queries, cfg *internal.C
 		RenderEntryPage(c, queries, cfg)
 	})
 	r.GET("/search", func(c *gin.Context) {
-		RenderSearchPage(c, queries)
+		RenderSearchPage(c)
+	})
+	r.GET("/search-index.json", func(c *gin.Context) {
+		RenderSearchIndex(c, queries)
 	})
 	r.StaticFile("/static/main.css", "public/static/main.css")
+	r.StaticFile("/static/search.js", "public/static/search.js")
 	r.StaticFile("/build-info.json", "build-info.json")
 }

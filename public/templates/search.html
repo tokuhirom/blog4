@@ -78,52 +78,11 @@
     </form>
 </div>
 <div class="wrapper">
-    {{if .Entries}}
-    <ul class="card-container">
-        {{range $path, $entry := .Entries}}
-        <li class="card">
-            <a href="/entry/{{$entry.Path}}" class="card-link">
-                <div class="entry-head">
-                    <span class="entry-title">{{$entry.Title}}</span>
-                </div>
-                {{if $entry.ImageUrl}}
-                <div>
-                    <img src="{{$entry.ImageUrl}}" class="entry-image" alt="{{$entry.Title}}">
-                </div>
-                {{else}}
-                <div class="entry-text-preview">{{$entry.TextPreview}}</div>
-                {{end}}
-                <span class="published-date">{{$entry.PublishedAt}}</span>
-            </a>
-        </li>
-        {{end}}
-    </ul>
-    <div class="pager">
-        <div class="prev">
-            {{if .HasPrev}}
-            <a href="/search?q={{.Query}}&page={{.Prev}}">Prev</a>
-            {{else}}
-            Prev
-            {{end}}
-        </div>
-        <div class="next">
-            {{if .HasNext}}
-            <a href="/search?q={{.Query}}&page={{.Next}}">Next</a>
-            {{else}}
-            Next
-            {{end}}
-        </div>
+    <div id="search-results">
+        <div class="search-result-info">Loading...</div>
     </div>
-    {{else}}
-    <div class="search-result-info">
-        {{if .Query}}
-        No results found. Try different keywords.
-        {{else}}
-        Enter keywords to search entries.
-        {{end}}
-    </div>
-    {{end}}
 </div>
+<script src="/static/search.js?1"></script>
 <footer>
     &copy; tokuhirom
 </footer>

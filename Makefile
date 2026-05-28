@@ -20,11 +20,11 @@ docker-build:
 
 # Run biome check (lint and format check) via Docker
 biome-check:
-	docker run --rm -v $(PWD):/app -w /app ghcr.io/biomejs/biome:latest check admin/static/sw.js
+	docker run --rm -v $(PWD):/app -w /app ghcr.io/biomejs/biome:latest check admin/static/sw.js public/static/search.js
 
 # Run biome fix (lint and format fix) via Docker
 biome-fix:
-	docker run --rm -v $(PWD):/app -w /app ghcr.io/biomejs/biome:latest check --write admin/static/sw.js
+	docker run --rm -v $(PWD):/app -w /app ghcr.io/biomejs/biome:latest check --write admin/static/sw.js public/static/search.js
 
 # Access MariaDB console as blog4user
 db:

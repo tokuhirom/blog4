@@ -316,8 +316,7 @@ func RenderFeed(c *gin.Context, queries *publicdb.Queries) {
 	c.String(http.StatusOK, rss)
 }
 
-func RenderSearchPage(c *gin.Context, queries *publicdb.Queries) {
-	// Parse and execute the template
+func RenderSearchPage(c *gin.Context) {
 	tmpl, err := template.ParseFiles("public/templates/search.html")
 	if err != nil {
 		slog.Error("failed to parse template", slog.String("template", "search.html"), slog.Any("error", err))
@@ -325,93 +324,47 @@ func RenderSearchPage(c *gin.Context, queries *publicdb.Queries) {
 		return
 	}
 
-	// Get search query parameter
-	query := c.Query("q")
-	if query == "" {
-		// No query provided, show empty search page
-		c.Status(http.StatusOK)
-		err = tmpl.Execute(c.Writer, TopPageData{
-			Page:    1,
-			Entries: []EntryViewData{},
-			HasPrev: false,
-			HasNext: false,
-			Query:   "",
-		})
-		if err != nil {
-			slog.Error("failed to execute template", slog.String("template", "search.html"), slog.String("query", ""), slog.Any("error", err))
-			c.String(http.StatusInternalServerError, "Internal Server Error")
-		}
-		return
+	// 検索はクライアント側 (search.js) が /search-index.json を使って行う。
+	// サーバはクエリ初期値を渡す静的シェルを返すだけ。
+	c.Status(http.StatusOK)
+	if err := tmpl.Execute(c.Writer, struct{ Query string }{Query: c.Query("q")}); err != nil {
+		slog.Error("failed to execute template", slog.String("template", "search.html"), slog.Any("error", err))
+		c.String(http.StatusInternalServerError, "Internal Server Error")
 	}
+}
 
-	// Get page number
-	page := 1
-	if pageStr := c.Query("page"); pageStr != "" {
-		page, err = strconv.Atoi(pageStr)
-		if err != nil {
-			slog.Error("failed to parse page number", slog.String("page", pageStr), slog.Any("error", err))
-			c.String(http.StatusInternalServerError, "Internal Server Error")
-			return
-		}
-	}
+// SearchIndexEntry は /search-index.json で配信する 1 エントリ分のデータ。
+type SearchIndexEntry struct {
+	Path        string `json:"path"`
+	Title       string `json:"title"`
+	Body        string `json:"body"`
+	PublishedAt string `json:"published_at"`
+	ImageURL    string `json:"image_url"`
+}
 
-	entriesPerPage := 60
-	offset := (page - 1) * entriesPerPage
-
-	// Perform full-text search
-	entries, err := queries.FullTextSearchEntries(c.Request.Context(), publicdb.FullTextSearchEntriesParams{
-		Column1: query,
-		Column2: query,
-		Limit:   int32(entriesPerPage + 1),
-		Offset:  int32(offset),
-	})
+// RenderSearchIndex は公開エントリ全件を JSON で返す。クライアント側の全文検索が使う。
+func RenderSearchIndex(c *gin.Context, queries *publicdb.Queries) {
+	entries, err := queries.ListAllPublicEntries(c.Request.Context())
 	if err != nil {
-		slog.Error("failed to search entries", slog.String("query", query), slog.Int("page", page), slog.Any("error", err))
+		slog.Error("failed to list public entries", slog.Any("error", err))
 		c.String(http.StatusInternalServerError, "Internal Server Error")
 		return
 	}
 
-	// Remove last entry if there are more entries
-	var hasNext = false
-	if len(entries) > entriesPerPage {
-		entries = entries[:entriesPerPage]
-		hasNext = true
-	}
-
-	// Prepare data for the template
-	var viewData []EntryViewData
+	index := make([]SearchIndexEntry, 0, len(entries))
 	for _, entry := range entries {
-		// Format the PublishedAt date
-		var formattedDate string
+		var publishedAt string
 		if entry.PublishedAt.Valid {
-			formattedDate = entry.PublishedAt.Time.Format("2006-01-02(Mon)")
-		} else {
-			slog.Error("published_at is invalid", slog.String("path", entry.Path), slog.Any("published_at", entry.PublishedAt))
-			c.String(http.StatusInternalServerError, "Internal Server Error")
-			return
+			publishedAt = entry.PublishedAt.Time.Format("2006-01-02(Mon)")
 		}
-
-		viewData = append(viewData, EntryViewData{
+		index = append(index, SearchIndexEntry{
 			Path:        entry.Path,
 			Title:       entry.Title,
-			PublishedAt: formattedDate,
-			TextPreview: summarizeEntry(entry.Body, 100),
-			ImageUrl:    entry.ImageUrl.String,
+			Body:        entry.Body,
+			PublishedAt: publishedAt,
+			ImageURL:    entry.ImageUrl.String,
 		})
 	}
 
-	c.Status(http.StatusOK)
-	err = tmpl.Execute(c.Writer, TopPageData{
-		Page:    page,
-		Prev:    page - 1,
-		Next:    page + 1,
-		HasPrev: page > 1,
-		HasNext: hasNext,
-		Entries: viewData,
-		Query:   query,
-	})
-	if err != nil {
-		slog.Error("failed to execute template", slog.String("template", "search.html"), slog.String("query", query), slog.Int("page", page), slog.Any("error", err))
-		c.String(http.StatusInternalServerError, "Internal Server Error")
-	}
+	c.JSON(http.StatusOK, index)
 }
