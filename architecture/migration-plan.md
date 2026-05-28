@@ -121,20 +121,14 @@ DB 移行の前提。複数 PR に分ける。
 
 ## 既知の注意点 / 未確認事項
 
-1. ~~AppRun 共用型のカスタムドメイン~~ **(解決済み)**
-   v3 `sakura_apprun_shared` にカスタムドメイン / TLS 属性は無いが、
-   **`blog.64p.org` の入口と TLS 終端は前段の WebAccel が担う**ため問題なし。
-   WebAccel は `sakura_webaccel` + `sakura_webaccel_certificate` で IaC 化でき、
-   AppRun はオリジン (`public_url`) のままでよい。オリジン直アクセスは
-   `X-WebAccel-Guard` (`WEBACCEL_GUARD`) で防止する既存の仕組みを維持する。
-   - 残課題: WebAccel の TLS 証明書が Let's Encrypt 自動か持込か、現状の設定を確認
-2. **TiDB のバージョンと FK の GA 状況** — EDB TiDB が v8.5 以上かで FK の
+1. **TiDB のバージョンと FK の GA 状況** — EDB TiDB が v8.5 以上かで FK の
    挙動が変わる。要確認。
-3. **AppRun 共用型の送信元 IP が不定** → `allowed_networks` での IP 制限が
+2. **AppRun 共用型の送信元 IP が不定** → `allowed_networks` での IP 制限が
    使いづらい。`0.0.0.0/0` + TLS + 強パスワードになる可能性。コネクション数
    上限 (`max_connections`) と合わせて要確認。
-4. **Object Storage バケットの IaC** — provider にバケット作成リソースが
+3. **Object Storage バケットの IaC** — provider にバケット作成リソースが
    あるか要確認。無ければ S3 互換 API or コンパネで管理し Terraform 外に。
+4. **WebAccel の TLS 証明書** — Let's Encrypt 自動か持込か、現状の設定を確認。
 5. **tfstate 置き場** — Sakura Object Storage 専用バケットは月 500 円。
    コスト懸念あり。ローカル + バックアップ / 既存バケット同居 等も含め再検討。
 
@@ -142,4 +136,3 @@ DB 移行の前提。複数 PR に分ける。
 
 - フロント検索の実装方式 (全文 JSON のサイズ・キャッシュ戦略、初回ロード)
 - tfstate 置き場の最終決定
-- カスタムドメイン紐付けの扱い (上記注意点 1)
