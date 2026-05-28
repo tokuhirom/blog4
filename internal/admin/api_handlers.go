@@ -310,89 +310,35 @@ func (h *AdminHandler) APIPreviewMarkdown(c *gin.Context) {
 type APIEntryCard struct {
 	Path        string `json:"path"`
 	Title       string `json:"title"`
+	Body        string `json:"body"`
 	BodyPreview string `json:"body_preview"`
 	Visibility  string `json:"visibility"`
 	ImageURL    string `json:"image_url"`
 }
 
-// APIListEntriesResponse is the JSON response for the entries list API
-type APIListEntriesResponse struct {
-	Entries    []APIEntryCard `json:"entries"`
-	HasMore    bool           `json:"has_more"`
-	LastCursor string         `json:"last_cursor"`
-}
-
-// APIListEntries returns entries as JSON for the Preact entry-list app
+// APIListEntries は全エントリ (private 含む、検索用に body 全文も) を JSON で返す。
+// 絞り込み・検索は Preact 側 (クライアント) が担う。
 func (h *AdminHandler) APIListEntries(c *gin.Context) {
-	searchQuery := c.Query("q")
-	lastEditedAtStr := c.Query("last_last_edited_at")
-
-	var cards []APIEntryCard
-	var hasMore bool
-	var lastCursor string
-
-	if searchQuery != "" {
-		searchResults, err := h.queries.AdminFullTextSearchEntries(c.Request.Context(), admindb.AdminFullTextSearchEntriesParams{
-			Column1: searchQuery,
-			Column2: searchQuery,
-			Limit:   100,
-		})
-		if err != nil {
-			slog.Error("failed to search entries", slog.Any("error", err))
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to search entries"})
-			return
-		}
-
-		for _, e := range searchResults {
-			cards = append(cards, APIEntryCard{
-				Path:        e.Path,
-				Title:       e.Title,
-				BodyPreview: simplifyMarkdown(e.Body),
-				Visibility:  string(e.Visibility),
-				ImageURL:    e.ImageUrl.String,
-			})
-		}
-		hasMore = false
-	} else {
-		var lastEditedAt sql.NullTime
-		if lastEditedAtStr != "" {
-			if t, err := time.Parse(time.RFC3339, lastEditedAtStr); err == nil {
-				lastEditedAt = sql.NullTime{Time: t, Valid: true}
-			}
-		}
-
-		entries, err := h.queries.GetLatestEntries(c.Request.Context(), admindb.GetLatestEntriesParams{
-			Column1:      lastEditedAt,
-			LastEditedAt: lastEditedAt,
-			Limit:        100,
-		})
-		if err != nil {
-			slog.Error("failed to get latest entries", slog.Any("error", err))
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get entries"})
-			return
-		}
-
-		for _, e := range entries {
-			cards = append(cards, APIEntryCard{
-				Path:        e.Path,
-				Title:       e.Title,
-				BodyPreview: simplifyMarkdown(e.Body),
-				Visibility:  string(e.Visibility),
-				ImageURL:    e.ImageUrl.String,
-			})
-		}
-
-		hasMore = len(entries) >= 100
-		if hasMore && len(entries) > 0 {
-			lastCursor = entries[len(entries)-1].LastEditedAt.Time.Format(time.RFC3339)
-		}
+	entries, err := h.queries.AdminListAllEntries(c.Request.Context())
+	if err != nil {
+		slog.Error("failed to list entries", slog.Any("error", err))
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get entries"})
+		return
 	}
 
-	c.JSON(http.StatusOK, APIListEntriesResponse{
-		Entries:    cards,
-		HasMore:    hasMore,
-		LastCursor: lastCursor,
-	})
+	cards := make([]APIEntryCard, 0, len(entries))
+	for _, e := range entries {
+		cards = append(cards, APIEntryCard{
+			Path:        e.Path,
+			Title:       e.Title,
+			Body:        e.Body,
+			BodyPreview: simplifyMarkdown(e.Body),
+			Visibility:  string(e.Visibility),
+			ImageURL:    e.ImageUrl.String,
+		})
+	}
+
+	c.JSON(http.StatusOK, cards)
 }
 
 // APICreateEntryRequest is the JSON request body for creating an entry
