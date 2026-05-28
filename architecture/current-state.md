@@ -11,13 +11,18 @@
                                  ▼
                        ┌────────────────────┐
                        │ Route 53 (AWS)     │ ← blog.64p.org の権威 DNS
-                       │ "64p.org" zone     │
+                       │ "64p.org" zone     │   (WebAccel エンドポイントへ CNAME)
                        └─────────┬──────────┘
-                                 │
                                  ▼
                        ┌────────────────────┐
-                       │ AppRun 共用型       │ ← アプリ実行環境
-                       │ (Sakura Cloud)     │
+                       │ WebAccel (CDN)     │ ← TLS 終端 / キャッシュ
+                       │ (Sakura Cloud)     │   X-WebAccel-Guard を付与
+                       └─────────┬──────────┘
+                                 │ origin (X-WebAccel-Guard 必須)
+                                 ▼
+                       ┌────────────────────┐
+                       │ AppRun 共用型       │ ← アプリ実行環境 (origin)
+                       │ (Sakura Cloud)     │   /healthz は guard 免除
                        └──┬─────────────┬───┘
                           │             │
                   ┌───────▼──┐   ┌──────▼───────────────┐
@@ -48,13 +53,23 @@
 
 | 役割 | サービス | 識別子 / 設定 | 備考 |
 |---|---|---|---|
-| アプリ実行 | さくらのクラウド AppRun (共用型) | `vars.APPRUN_APP_ID` | リッスンポート 8181 / `/healthz` |
+| CDN / TLS 終端 | さくらのウェブアクセラレータ (WebAccel) | オリジン = AppRun の公開 URL | **公開ドメイン `blog.64p.org` の入口**。TLS はここで終端 |
+| アプリ実行 | さくらのクラウド AppRun (共用型) | `vars.APPRUN_APP_ID` | リッスンポート 8181 / `/healthz`。WebAccel の origin |
 | データベース | さくらのクラウド エンハンスドDB (EDB) MariaDB (Lab版) | (環境変数で接続) | **★ 廃止予告あり、後述** |
 | 添付ファイル ストレージ | さくらのオブジェクトストレージ | bucket `blog4-attachments` @ `s3.isk01.sakurastorage.jp` (jp-north-1) | 公開、CDN 配信用 |
 | バックアップ ストレージ | さくらのオブジェクトストレージ | bucket `blog4-backup` @ `s3.isk01.sakurastorage.jp` (jp-north-1) | 非公開、アプリの `BACKUP_*` で利用 |
 | コンテナレジストリ | さくらのクラウド コンテナレジストリ | `vars.SAKURA_REGISTRY_DOMAIN` (`*.sakuracr.jp`) | tag は git short hash |
-| DNS | AWS Route 53 | zone `64p.org` | `blog` レコードは AppRun のドメインへ |
-| TLS | (AppRun 共用型の機能で取得) | Let's Encrypt 想定 | 詳細未調査 |
+| DNS | AWS Route 53 | zone `64p.org` | `blog` レコードは **WebAccel エンドポイント**へ |
+| TLS | WebAccel で終端 | Let's Encrypt 自動 or 証明書持込 (現状どちらか要確認) | 証明書の出所は未確認 |
+
+### オリジン保護 (WebAccel Guard)
+
+公開トラフィックは必ず WebAccel を経由する。AppRun (origin) は
+`internal/middleware/web_accel_guard.go` の `CheckWebAccelGuard` で
+リクエストヘッダ `X-WebAccel-Guard` を検証し、環境変数 `WEBACCEL_GUARD` と
+一致しないものを 400 で弾く = **オリジンへの直アクセスを防止**する。
+ただし `/healthz` だけは guard を免除 (AppRun のヘルスチェックが WebAccel を
+経由せず直接叩くため)。
 
 ## デプロイフロー
 
