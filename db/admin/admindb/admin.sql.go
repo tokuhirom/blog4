@@ -10,71 +10,6 @@ import (
 	"database/sql"
 )
 
-const adminFullTextSearchEntries = `-- name: AdminFullTextSearchEntries :many
-SELECT entry.path, entry.title, entry.body, entry.visibility, entry.format, entry.published_at, entry.last_edited_at, entry.created_at, entry.updated_at, entry_image.url AS image_url,
-       MATCH(entry.title, entry.body) AGAINST(? IN NATURAL LANGUAGE MODE) AS relevance
-FROM entry
-    LEFT JOIN entry_image ON (entry.path = entry_image.path)
-WHERE MATCH(entry.title, entry.body) AGAINST(? IN NATURAL LANGUAGE MODE)
-ORDER BY relevance DESC
-LIMIT ?
-`
-
-type AdminFullTextSearchEntriesParams struct {
-	Column1 string
-	Column2 string
-	Limit   int32
-}
-
-type AdminFullTextSearchEntriesRow struct {
-	Path         string
-	Title        string
-	Body         string
-	Visibility   EntryVisibility
-	Format       EntryFormat
-	PublishedAt  sql.NullTime
-	LastEditedAt sql.NullTime
-	CreatedAt    sql.NullTime
-	UpdatedAt    sql.NullTime
-	ImageUrl     sql.NullString
-	Relevance    interface{}
-}
-
-func (q *Queries) AdminFullTextSearchEntries(ctx context.Context, arg AdminFullTextSearchEntriesParams) ([]AdminFullTextSearchEntriesRow, error) {
-	rows, err := q.db.QueryContext(ctx, adminFullTextSearchEntries, arg.Column1, arg.Column2, arg.Limit)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []AdminFullTextSearchEntriesRow
-	for rows.Next() {
-		var i AdminFullTextSearchEntriesRow
-		if err := rows.Scan(
-			&i.Path,
-			&i.Title,
-			&i.Body,
-			&i.Visibility,
-			&i.Format,
-			&i.PublishedAt,
-			&i.LastEditedAt,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.ImageUrl,
-			&i.Relevance,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
 const adminGetEntryByPath = `-- name: AdminGetEntryByPath :one
 SELECT entry.path, entry.title, entry.body, entry.visibility, entry.format, entry.published_at, entry.last_edited_at, entry.created_at, entry.updated_at, entry_image.url AS image_url
 FROM entry
@@ -111,6 +46,62 @@ func (q *Queries) AdminGetEntryByPath(ctx context.Context, path string) (AdminGe
 		&i.ImageUrl,
 	)
 	return i, err
+}
+
+const adminListAllEntries = `-- name: AdminListAllEntries :many
+SELECT entry.path, entry.title, entry.body, entry.visibility, entry.format, entry.published_at, entry.last_edited_at, entry.created_at, entry.updated_at, entry_image.url AS image_url
+FROM entry
+    LEFT JOIN entry_image ON (entry.path = entry_image.path)
+ORDER BY
+    last_edited_at DESC
+    , path DESC
+`
+
+type AdminListAllEntriesRow struct {
+	Path         string
+	Title        string
+	Body         string
+	Visibility   EntryVisibility
+	Format       EntryFormat
+	PublishedAt  sql.NullTime
+	LastEditedAt sql.NullTime
+	CreatedAt    sql.NullTime
+	UpdatedAt    sql.NullTime
+	ImageUrl     sql.NullString
+}
+
+func (q *Queries) AdminListAllEntries(ctx context.Context) ([]AdminListAllEntriesRow, error) {
+	rows, err := q.db.QueryContext(ctx, adminListAllEntries)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []AdminListAllEntriesRow
+	for rows.Next() {
+		var i AdminListAllEntriesRow
+		if err := rows.Scan(
+			&i.Path,
+			&i.Title,
+			&i.Body,
+			&i.Visibility,
+			&i.Format,
+			&i.PublishedAt,
+			&i.LastEditedAt,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ImageUrl,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const createEmptyEntry = `-- name: CreateEmptyEntry :execrows
@@ -231,70 +222,6 @@ func (q *Queries) GetEntriesByLinkedTitle(ctx context.Context, dstTitle string) 
 			&i.LastEditedAt,
 			&i.CreatedAt,
 			&i.UpdatedAt,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
-}
-
-const getLatestEntries = `-- name: GetLatestEntries :many
-SELECT entry.path, entry.title, entry.body, entry.visibility, entry.format, entry.published_at, entry.last_edited_at, entry.created_at, entry.updated_at, entry_image.url AS image_url
-FROM entry
-    LEFT JOIN entry_image ON (entry.path = entry_image.path)
-WHERE (? IS NULL OR last_edited_at <= ?)
-ORDER BY
-    last_edited_at DESC
-    , path DESC
-LIMIT ?
-`
-
-type GetLatestEntriesParams struct {
-	Column1      interface{}
-	LastEditedAt sql.NullTime
-	Limit        int32
-}
-
-type GetLatestEntriesRow struct {
-	Path         string
-	Title        string
-	Body         string
-	Visibility   EntryVisibility
-	Format       EntryFormat
-	PublishedAt  sql.NullTime
-	LastEditedAt sql.NullTime
-	CreatedAt    sql.NullTime
-	UpdatedAt    sql.NullTime
-	ImageUrl     sql.NullString
-}
-
-func (q *Queries) GetLatestEntries(ctx context.Context, arg GetLatestEntriesParams) ([]GetLatestEntriesRow, error) {
-	rows, err := q.db.QueryContext(ctx, getLatestEntries, arg.Column1, arg.LastEditedAt, arg.Limit)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetLatestEntriesRow
-	for rows.Next() {
-		var i GetLatestEntriesRow
-		if err := rows.Scan(
-			&i.Path,
-			&i.Title,
-			&i.Body,
-			&i.Visibility,
-			&i.Format,
-			&i.PublishedAt,
-			&i.LastEditedAt,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.ImageUrl,
 		); err != nil {
 			return nil, err
 		}

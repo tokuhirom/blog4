@@ -1,33 +1,38 @@
 import { test, expect } from '@playwright/test';
 
-test('admin search functionality', async ({ page }) => {
-    // Login to admin
+async function login(page) {
     await page.goto('/admin/login');
     await page.fill('input[name="username"]', 'admin');
     await page.fill('input[name="password"]', 'password');
     await page.click('button[type="submit"]');
-
-    // Wait for redirect to entries page
     await page.waitForURL('/admin/entries/search');
+}
 
-    // Check that we're on the entries page
+// admin の一覧・検索は全件を /admin/api/entries から取得し、クライアント側で絞り込む。
+
+test('admin search: client-side filtering by keyword', async ({ page }) => {
+    await login(page);
     await expect(page).toHaveTitle(/Admin - Entry List/);
+    // 全件ロード完了 (グリッド表示) を待つ
+    await expect(page.locator('.entry-grid')).toBeVisible();
 
-    // Test search functionality with an existing entry keyword
-    const searchInput = page.locator('input[placeholder="Search entries..."]');
-    await searchInput.fill('Docker');
-
-    // Wait for the Preact debounce + network
-    await page.waitForTimeout(1000);
-
-    // Check that search results are displayed
-    const entryGrid = page.locator('.entry-grid');
-    await expect(entryGrid).toBeVisible();
-
-    // Verify that at least one entry card is shown (Docker Setup Guide should match)
-    const entryCards = page.locator('.entry-card');
-    await expect(entryCards.first()).toBeVisible();
-
-    // Verify that the Docker Setup Guide entry is in the results
+    await page.locator('input[placeholder="Search entries..."]').fill('Docker');
     await expect(page.locator('.entry-card:has-text("Docker Setup Guide")')).toBeVisible();
+});
+
+test('admin search: includes private entries', async ({ page }) => {
+    await login(page);
+    await expect(page.locator('.entry-grid')).toBeVisible();
+
+    // public 検索と異なり、admin は private エントリも対象になる
+    await page.locator('input[placeholder="Search entries..."]').fill('Private Draft');
+    await expect(page.locator('.entry-card:has-text("Private Draft Example")')).toBeVisible();
+});
+
+test('admin search: Japanese keyword', async ({ page }) => {
+    await login(page);
+    await expect(page.locator('.entry-grid')).toBeVisible();
+
+    await page.locator('input[placeholder="Search entries..."]').fill('日本語');
+    await expect(page.locator('.entry-card:has-text("日本語コンテンツのサンプル")')).toBeVisible();
 });

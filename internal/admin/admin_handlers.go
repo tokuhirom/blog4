@@ -2,7 +2,6 @@ package admin
 
 import (
 	"crypto/rand"
-	"database/sql"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -55,21 +54,6 @@ func getEntryPath(c *gin.Context) string {
 	return c.Query("path")
 }
 
-type EntriesPageData struct {
-	Entries    []EntryCard
-	HasMore    bool
-	LastCursor string
-	InitJSON   template.JS
-}
-
-type EntryCard struct {
-	Path        string
-	Title       string
-	BodyPreview string
-	Visibility  string
-	ImageUrl    string
-}
-
 func simplifyMarkdown(text string) string {
 	// Remove newlines
 	text = strings.ReplaceAll(text, "\n", " ")
@@ -107,110 +91,9 @@ func simplifyMarkdown(text string) string {
 	return text
 }
 
-// RenderEntriesPage displays the entries list page
+// RenderEntriesPage はエントリ一覧ページのシェルを返す。
+// 一覧データの取得・検索は Preact 側が /admin/api/entries (全件) を使って行う。
 func (h *AdminHandler) RenderEntriesPage(c *gin.Context) {
-	// Get query parameters
-	searchQuery := c.Query("q")
-	lastEditedAtStr := c.Query("last_last_edited_at")
-
-	var cards []EntryCard
-	var hasMore bool
-	var lastCursor string
-
-	if searchQuery != "" {
-		// Use full-text search
-		searchResults, err := h.queries.AdminFullTextSearchEntries(c.Request.Context(), admindb.AdminFullTextSearchEntriesParams{
-			Column1: searchQuery,
-			Column2: searchQuery,
-			Limit:   100,
-		})
-		if err != nil {
-			slog.Error("failed to search entries", slog.Any("error", err))
-			c.String(500, "Internal Server Error")
-			return
-		}
-
-		// Convert to EntryCard
-		for _, e := range searchResults {
-			cards = append(cards, EntryCard{
-				Path:        e.Path,
-				Title:       e.Title,
-				BodyPreview: simplifyMarkdown(e.Body),
-				Visibility:  string(e.Visibility),
-				ImageUrl:    e.ImageUrl.String,
-			})
-		}
-
-		// Search results don't support pagination for now
-		hasMore = false
-	} else {
-		// Get latest entries
-		var lastEditedAt sql.NullTime
-		if lastEditedAtStr != "" {
-			if t, err := time.Parse(time.RFC3339, lastEditedAtStr); err == nil {
-				lastEditedAt = sql.NullTime{Time: t, Valid: true}
-			}
-		}
-
-		entries, err := h.queries.GetLatestEntries(c.Request.Context(), admindb.GetLatestEntriesParams{
-			Column1:      lastEditedAt,
-			LastEditedAt: lastEditedAt,
-			Limit:        100,
-		})
-		if err != nil {
-			slog.Error("failed to get latest entries", slog.Any("error", err))
-			c.String(500, "Internal Server Error")
-			return
-		}
-
-		// Convert to EntryCard
-		for _, e := range entries {
-			cards = append(cards, EntryCard{
-				Path:        e.Path,
-				Title:       e.Title,
-				BodyPreview: simplifyMarkdown(e.Body),
-				Visibility:  string(e.Visibility),
-				ImageUrl:    e.ImageUrl.String,
-			})
-		}
-
-		// Determine if there are more entries
-		hasMore = len(entries) >= 100
-		if hasMore && len(entries) > 0 {
-			lastCursor = entries[len(entries)-1].LastEditedAt.Time.Format(time.RFC3339)
-		}
-	}
-
-	// Build JSON data for Preact app
-	apiCards := make([]APIEntryCard, 0, len(cards))
-	for _, card := range cards {
-		apiCards = append(apiCards, APIEntryCard{
-			Path:        card.Path,
-			Title:       card.Title,
-			BodyPreview: card.BodyPreview,
-			Visibility:  card.Visibility,
-			ImageURL:    card.ImageUrl,
-		})
-	}
-	initData := APIListEntriesResponse{
-		Entries:    apiCards,
-		HasMore:    hasMore,
-		LastCursor: lastCursor,
-	}
-	jsonBytes, err := json.Marshal(initData)
-	if err != nil {
-		slog.Error("failed to marshal entries data", slog.Any("error", err))
-		c.String(500, "Internal Server Error")
-		return
-	}
-
-	data := EntriesPageData{
-		Entries:    cards,
-		HasMore:    hasMore,
-		LastCursor: lastCursor,
-		InitJSON:   template.JS(jsonBytes),
-	}
-
 	tmpl, err := template.ParseFiles(
 		"admin/templates/layout.html",
 		"admin/templates/entries.html",
@@ -222,7 +105,7 @@ func (h *AdminHandler) RenderEntriesPage(c *gin.Context) {
 	}
 
 	c.Header("Content-Type", "text/html; charset=utf-8")
-	_ = tmpl.ExecuteTemplate(c.Writer, "layout", data)
+	_ = tmpl.ExecuteTemplate(c.Writer, "layout", nil)
 }
 
 // EntryEditData holds data for the entry edit page

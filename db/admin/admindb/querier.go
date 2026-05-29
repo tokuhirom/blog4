@@ -10,8 +10,8 @@ import (
 )
 
 type Querier interface {
-	AdminFullTextSearchEntries(ctx context.Context, arg AdminFullTextSearchEntriesParams) ([]AdminFullTextSearchEntriesRow, error)
 	AdminGetEntryByPath(ctx context.Context, path string) (AdminGetEntryByPathRow, error)
+	AdminListAllEntries(ctx context.Context) ([]AdminListAllEntriesRow, error)
 	CountAmazonCacheByAsin(ctx context.Context, asin string) (int64, error)
 	CreateEmptyEntry(ctx context.Context, arg CreateEmptyEntryParams) (int64, error)
 	CreateEntryWithBody(ctx context.Context, arg CreateEntryWithBodyParams) (int64, error)
@@ -27,7 +27,6 @@ type Querier interface {
 	GetEntryImageByPath(ctx context.Context, path string) (EntryImage, error)
 	GetEntryImageNotProcessedEntries(ctx context.Context) ([]Entry, error)
 	GetEntryVisibility(ctx context.Context, path string) (GetEntryVisibilityRow, error)
-	GetLatestEntries(ctx context.Context, arg GetLatestEntriesParams) ([]GetLatestEntriesRow, error)
 	GetLinkedEntries(ctx context.Context, srcPath string) ([]GetLinkedEntriesRow, error)
 	GetSession(ctx context.Context, sessionID string) (AdminSession, error)
 	InsertAmazonProductDetail(ctx context.Context, arg InsertAmazonProductDetailParams) (int64, error)

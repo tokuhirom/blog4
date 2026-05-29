@@ -56,6 +56,21 @@ func (mr *MockQuerierMockRecorder) AdminGetEntryByPath(ctx, path any) *gomock.Ca
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AdminGetEntryByPath", reflect.TypeOf((*MockQuerier)(nil).AdminGetEntryByPath), ctx, path)
 }
 
+// AdminListAllEntries mocks base method.
+func (m *MockQuerier) AdminListAllEntries(ctx context.Context) ([]AdminListAllEntriesRow, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "AdminListAllEntries", ctx)
+	ret0, _ := ret[0].([]AdminListAllEntriesRow)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// AdminListAllEntries indicates an expected call of AdminListAllEntries.
+func (mr *MockQuerierMockRecorder) AdminListAllEntries(ctx any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "AdminListAllEntries", reflect.TypeOf((*MockQuerier)(nil).AdminListAllEntries), ctx)
+}
+
 // CountAmazonCacheByAsin mocks base method.
 func (m *MockQuerier) CountAmazonCacheByAsin(ctx context.Context, asin string) (int64, error) {
 	m.ctrl.T.Helper()
@@ -84,6 +99,21 @@ func (m *MockQuerier) CreateEmptyEntry(ctx context.Context, arg CreateEmptyEntry
 func (mr *MockQuerierMockRecorder) CreateEmptyEntry(ctx, arg any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEmptyEntry", reflect.TypeOf((*MockQuerier)(nil).CreateEmptyEntry), ctx, arg)
+}
+
+// CreateEntryWithBody mocks base method.
+func (m *MockQuerier) CreateEntryWithBody(ctx context.Context, arg CreateEntryWithBodyParams) (int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "CreateEntryWithBody", ctx, arg)
+	ret0, _ := ret[0].(int64)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// CreateEntryWithBody indicates an expected call of CreateEntryWithBody.
+func (mr *MockQuerierMockRecorder) CreateEntryWithBody(ctx, arg any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "CreateEntryWithBody", reflect.TypeOf((*MockQuerier)(nil).CreateEntryWithBody), ctx, arg)
 }
 
 // CreateSession mocks base method.
@@ -218,6 +248,21 @@ func (mr *MockQuerierMockRecorder) GetEntriesByLinkedTitle(ctx, dstTitle any) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEntriesByLinkedTitle", reflect.TypeOf((*MockQuerier)(nil).GetEntriesByLinkedTitle), ctx, dstTitle)
 }
 
+// GetEntryImageByPath mocks base method.
+func (m *MockQuerier) GetEntryImageByPath(ctx context.Context, path string) (EntryImage, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetEntryImageByPath", ctx, path)
+	ret0, _ := ret[0].(EntryImage)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetEntryImageByPath indicates an expected call of GetEntryImageByPath.
+func (mr *MockQuerierMockRecorder) GetEntryImageByPath(ctx, path any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEntryImageByPath", reflect.TypeOf((*MockQuerier)(nil).GetEntryImageByPath), ctx, path)
+}
+
 // GetEntryImageNotProcessedEntries mocks base method.
 func (m *MockQuerier) GetEntryImageNotProcessedEntries(ctx context.Context) ([]Entry, error) {
 	m.ctrl.T.Helper()
@@ -246,21 +291,6 @@ func (m *MockQuerier) GetEntryVisibility(ctx context.Context, path string) (GetE
 func (mr *MockQuerierMockRecorder) GetEntryVisibility(ctx, path any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetEntryVisibility", reflect.TypeOf((*MockQuerier)(nil).GetEntryVisibility), ctx, path)
-}
-
-// GetLatestEntries mocks base method.
-func (m *MockQuerier) GetLatestEntries(ctx context.Context, arg GetLatestEntriesParams) ([]GetLatestEntriesRow, error) {
-	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetLatestEntries", ctx, arg)
-	ret0, _ := ret[0].([]GetLatestEntriesRow)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
-}
-
-// GetLatestEntries indicates an expected call of GetLatestEntries.
-func (mr *MockQuerierMockRecorder) GetLatestEntries(ctx, arg any) *gomock.Call {
-	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetLatestEntries", reflect.TypeOf((*MockQuerier)(nil).GetLatestEntries), ctx, arg)
 }
 
 // GetLinkedEntries mocks base method.
