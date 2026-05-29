@@ -47,12 +47,9 @@ WHERE entry_link.src_path IN (SELECT src_entry.title
                               WHERE entry_link.dst_title = ?)
     AND dst_entry.visibility = 'public';
 
--- name: FullTextSearchEntries :many
-SELECT entry.*, entry_image.url image_url,
-       MATCH(entry.title, entry.body) AGAINST(? IN NATURAL LANGUAGE MODE) AS relevance
+-- name: ListAllPublicEntries :many
+SELECT entry.*, entry_image.url image_url
 FROM entry
     LEFT JOIN entry_image ON (entry.path = entry_image.path)
 WHERE visibility = 'public'
-  AND MATCH(entry.title, entry.body) AGAINST(? IN NATURAL LANGUAGE MODE)
-ORDER BY relevance DESC
-LIMIT ? OFFSET ?;
+ORDER BY published_at DESC;
