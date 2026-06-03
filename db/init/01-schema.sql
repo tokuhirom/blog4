@@ -14,10 +14,8 @@ CREATE TABLE entry
     KEY created_at (created_at),
     KEY updated_at (updated_at),
     KEY published_at (published_at),
-    KEY last_edited_at (last_edited_at),
-    FULLTEXT KEY idx_bigram (title, body)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4;
+    KEY last_edited_at (last_edited_at)
+) DEFAULT CHARSET = utf8mb4;
 
 create table entry_image
 (
@@ -27,8 +25,7 @@ create table entry_image
     PRIMARY KEY (path),
     KEY created_at (created_at),
     FOREIGN KEY (path) REFERENCES entry (path) ON DELETE CASCADE
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4;
+) DEFAULT CHARSET = utf8mb4;
 
 create table entry_link
 (
@@ -37,8 +34,7 @@ create table entry_link
     PRIMARY KEY (src_path, dst_title),
     FOREIGN KEY (src_path) REFERENCES entry (path) ON DELETE CASCADE,
     INDEX (dst_title)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4;
+) DEFAULT CHARSET = utf8mb4;
 
 create table amazon_cache
 (
@@ -48,8 +44,7 @@ create table amazon_cache
     link             varchar(5000) not null,
     created_at       datetime      DEFAULT CURRENT_TIMESTAMP,
     KEY created_at (created_at)
-) engine = innodb
-  default charset = utf8mb4;
+) default charset = utf8mb4;
 
 CREATE TABLE admin_session
 (
@@ -59,4 +54,4 @@ CREATE TABLE admin_session
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     last_accessed_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     KEY idx_expires_at (expires_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) DEFAULT CHARSET=utf8mb4;
