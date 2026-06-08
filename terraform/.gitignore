@@ -10,3 +10,7 @@ override.tf
 override.tf.json
 *_override.tf
 *_override.tf.json
+
+# .env はリポジトリルートの .gitignore で無視されるが、ここの .env は
+# op:// 参照のみのテンプレ (実値を入れない) なので明示的に追跡する。
+!.env
