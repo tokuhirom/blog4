@@ -12,3 +12,8 @@ output "tidb_max_connections" {
   description = "Max connections allowed by the TiDB CR instance."
   value       = sakura_ondemand_db.blog4.max_connections
 }
+
+output "apprun_public_url" {
+  description = "AppRun アプリの公開 URL (WebAccel の origin)."
+  value       = sakura_apprun_shared.blog4.public_url
+}
