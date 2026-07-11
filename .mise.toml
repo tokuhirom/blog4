@@ -1,5 +1,5 @@
 [tools]
-go = "1.26.4"
+go = "1.26.5"
 node = "25"
 terraform = "1.15.7"
 awscli = "2.35.16"
