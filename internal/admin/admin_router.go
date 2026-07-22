@@ -96,7 +96,13 @@ func SetupAdminRoutes(adminGroup *gin.RouterGroup, queries *admindb.Queries, sob
 	var ogImageService *ogimage.Service
 	if cfg.OGImageEnabled {
 		s3Adapter := ogimage.NewSobsAdapter(sobsClient)
-		ogGenerator := ogimage.NewGenerator(s3Adapter, cfg.S3AttachmentsBaseUrl, cfg.OGImageFontPath)
+		ogGenerator := ogimage.NewGenerator(ogimage.Config{
+			S3Client:  s3Adapter,
+			S3BaseURL: cfg.S3AttachmentsBaseUrl,
+			FontPath:  cfg.OGImageFontPath,
+			SiteName:  cfg.SiteName,
+			SiteURL:   cfg.SiteBaseUrl,
+		})
 		ogImageService = ogimage.NewService(ogGenerator, queries)
 	}
 

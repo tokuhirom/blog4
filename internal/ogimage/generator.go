@@ -7,29 +7,48 @@ import (
 	"image/color"
 	"io"
 	"log/slog"
+	"net/url"
 	"os"
 	"strings"
 	"sync"
 	"time"
-	"unicode/utf8"
+	"unicode"
 
 	"github.com/fogleman/gg"
-	"github.com/golang/freetype/truetype"
-	"golang.org/x/image/font"
+	xfont "golang.org/x/image/font"
 	"golang.org/x/image/font/gofont/goregular"
+	"golang.org/x/image/font/opentype"
+	"golang.org/x/image/font/sfnt"
 )
 
 const (
-	imageWidth    = 1200
-	imageHeight   = 630
-	padding       = 60.0
-	logoSize      = 120.0
-	brandFontSize = 36.0
-	titleFontSize = 48.0
-	dateFontSize  = 24.0
-	titleMaxWidth = 900.0
-	titleMaxLines = 3
-	lineHeight    = 1.3
+	imageWidth  = 1200
+	imageHeight = 630
+
+	marginX = 80.0 // left/right content margin
+	barW    = 12.0 // left accent bar width
+
+	siteFontSize  = 30.0
+	titleFontSize = 60.0
+	metaFontSize  = 26.0
+
+	titleLineHeight = 82.0 // baseline-to-baseline for the title
+	titleMaxLines   = 3
+
+	siteY      = 100.0               // baseline of the site name
+	headerZone = 130.0               // bottom of the header area
+	footerZone = imageHeight - 100.0 // top of the footer area
+	footerY    = imageHeight - 60.0  // baseline of the footer text
+	dpi        = 72.0
+)
+
+// Palette (Tailwind-ish slate/sky).
+var (
+	bgTop     = color.RGBA{0x0f, 0x17, 0x2a, 0xff} // slate-900
+	bgBottom  = color.RGBA{0x1e, 0x29, 0x3b, 0xff} // slate-800
+	accentBar = color.RGBA{0x38, 0xbd, 0xf8, 0xff} // sky-400
+	siteColor = color.RGBA{0x94, 0xa3, 0xb8, 0xff} // slate-400
+	metaColor = color.RGBA{0x64, 0x74, 0x8b, 0xff} // slate-500
 )
 
 // S3Uploader defines the interface for uploading files to S3
@@ -44,21 +63,50 @@ type EntryInfo struct {
 	PublishedAt time.Time
 }
 
+// Config configures a Generator.
+type Config struct {
+	S3Client  S3Uploader
+	S3BaseURL string
+	// FontPath is an optional explicit font override (used as a fallback if the
+	// bundled Noto Sans CJK fonts are unavailable).
+	FontPath string
+	// SiteName is shown as the header label (e.g. "tokuhirom's blog").
+	SiteName string
+	// SiteURL is used to derive the domain label shown in the footer.
+	SiteURL string
+}
+
 // Generator generates OG images
 type Generator struct {
 	s3Client  S3Uploader
 	s3BaseURL string
 	fontPath  string
-	fontCache *truetype.Font
-	fontOnce  sync.Once
+	siteName  string
+	siteHost  string
+
+	fontOnce    sync.Once
+	fontErr     error
+	boldFont    *sfnt.Font
+	mediumFont  *sfnt.Font
+	regularFont *sfnt.Font
 }
 
 // NewGenerator creates a new Generator
-func NewGenerator(s3Client S3Uploader, s3BaseURL string, fontPath string) *Generator {
+func NewGenerator(cfg Config) *Generator {
+	siteName := cfg.SiteName
+	if siteName == "" {
+		siteName = "blog"
+	}
+	host := cfg.SiteURL
+	if u, err := url.Parse(cfg.SiteURL); err == nil && u.Host != "" {
+		host = u.Host
+	}
 	return &Generator{
-		s3Client:  s3Client,
-		s3BaseURL: s3BaseURL,
-		fontPath:  fontPath,
+		s3Client:  cfg.S3Client,
+		s3BaseURL: cfg.S3BaseURL,
+		fontPath:  cfg.FontPath,
+		siteName:  siteName,
+		siteHost:  host,
 	}
 }
 
@@ -92,219 +140,226 @@ func (g *Generator) GenerateOGImage(ctx context.Context, entry EntryInfo) (strin
 	return url, nil
 }
 
-// renderImage creates a 1200x630px PNG image
+// renderImage creates a 1200x630px PNG image (design "A": navy, left-aligned).
 func (g *Generator) renderImage(title string, publishedAt time.Time) (*bytes.Buffer, error) {
-	// Create canvas
+	if err := g.loadFonts(); err != nil {
+		return nil, fmt.Errorf("failed to load fonts: %w", err)
+	}
+
 	dc := gg.NewContext(imageWidth, imageHeight)
 
-	// Draw gradient background (#1976d2 -> #1565c0)
-	gradient := gg.NewLinearGradient(0, 0, 0, imageHeight)
-	gradient.AddColorStop(0, color.RGBA{R: 0x19, G: 0x76, B: 0xd2, A: 0xff})
-	gradient.AddColorStop(1, color.RGBA{R: 0x15, G: 0x65, B: 0xc0, A: 0xff})
-	dc.SetFillStyle(gradient)
+	// Background: subtle vertical gradient.
+	grad := gg.NewLinearGradient(0, 0, 0, imageHeight)
+	grad.AddColorStop(0, bgTop)
+	grad.AddColorStop(1, bgBottom)
+	dc.SetFillStyle(grad)
 	dc.DrawRectangle(0, 0, imageWidth, imageHeight)
 	dc.Fill()
 
-	// Load font
-	fnt, err := g.loadFont()
-	if err != nil {
-		return nil, fmt.Errorf("failed to load font: %w", err)
-	}
+	// Left accent bar.
+	dc.SetColor(accentBar)
+	dc.DrawRectangle(0, 0, barW, imageHeight)
+	dc.Fill()
 
-	// Draw logo "B4"
-	logoFace := truetype.NewFace(fnt, &truetype.Options{Size: logoSize})
-	dc.SetFontFace(logoFace)
+	// Header: site name.
+	dc.SetFontFace(g.face(g.mediumFont, siteFontSize))
+	dc.SetColor(siteColor)
+	dc.DrawString(g.siteName, marginX, siteY)
+
+	// Title: bold, left-aligned, vertically centered in the content zone.
+	dc.SetFontFace(g.face(g.boldFont, titleFontSize))
+	lines := wrapText(dc, sanitizeTitle(title), imageWidth-marginX*2, titleMaxLines)
+	blockH := float64(len(lines)) * titleLineHeight
+	// Center the block between header and footer, then offset to the first baseline.
+	startY := headerZone + (footerZone-headerZone-blockH)/2 + titleFontSize
 	dc.SetColor(color.White)
-	dc.DrawString("B4", padding, padding+logoSize)
-
-	// Draw brand name "Blog4"
-	brandFace := truetype.NewFace(fnt, &truetype.Options{Size: brandFontSize})
-	dc.SetFontFace(brandFace)
-	dc.DrawString("Blog4", padding+logoSize+20, padding+logoSize-20)
-
-	// Sanitize and wrap title
-	sanitizedTitle := sanitizeTitle(title)
-	titleFace := truetype.NewFace(fnt, &truetype.Options{Size: titleFontSize, Hinting: font.HintingFull})
-	dc.SetFontFace(titleFace)
-	lines := g.wrapText(dc, sanitizedTitle, titleMaxWidth, titleMaxLines)
-
-	// Calculate title Y position (center vertically)
-	titleHeight := float64(len(lines)) * titleFontSize * lineHeight
-	titleY := (imageHeight - titleHeight) / 2
-
-	// Draw title lines (centered horizontally)
-	for i, line := range lines {
-		lineY := titleY + float64(i)*titleFontSize*lineHeight
-		w, _ := dc.MeasureString(line)
-		x := (imageWidth - w) / 2
-		dc.DrawString(line, x, lineY)
+	for i, ln := range lines {
+		dc.DrawString(ln, marginX, startY+float64(i)*titleLineHeight)
 	}
 
-	// Draw date (bottom right)
-	dateFace := truetype.NewFace(fnt, &truetype.Options{Size: dateFontSize})
-	dc.SetFontFace(dateFace)
-	dateStr := fmt.Sprintf("Published: %s", publishedAt.Format("2006-01-02"))
-	dateW, _ := dc.MeasureString(dateStr)
-	dc.DrawString(dateStr, imageWidth-dateW-padding, imageHeight-padding)
+	// Footer: domain (left) and date (right).
+	dc.SetFontFace(g.face(g.regularFont, metaFontSize))
+	dc.SetColor(metaColor)
+	dc.DrawString(g.siteHost, marginX, footerY)
+	dateStr := publishedAt.Format("2006-01-02")
+	dw, _ := dc.MeasureString(dateStr)
+	dc.DrawString(dateStr, imageWidth-marginX-dw, footerY)
 
-	// Encode to PNG
 	var buf bytes.Buffer
-	err = dc.EncodePNG(&buf)
-	if err != nil {
+	if err := dc.EncodePNG(&buf); err != nil {
 		return nil, fmt.Errorf("failed to encode PNG: %w", err)
 	}
-
 	return &buf, nil
 }
 
-// wrapText wraps text to fit within maxWidth, returning at most maxLines lines
-func (g *Generator) wrapText(dc *gg.Context, text string, maxWidth float64, maxLines int) []string {
-	words := strings.Fields(text)
-	if len(words) == 0 {
+// face builds a font.Face at the given size from a parsed sfnt.Font.
+func (g *Generator) face(f *sfnt.Font, size float64) xfont.Face {
+	face, err := opentype.NewFace(f, &opentype.FaceOptions{
+		Size:    size,
+		DPI:     dpi,
+		Hinting: xfont.HintingFull,
+	})
+	if err != nil {
+		// Should not happen for an already-parsed font; fall back to a basic face.
+		slog.Warn("failed to build font face", slog.Any("error", err))
+	}
+	return face
+}
+
+// wrapText wraps text to fit within maxWidth, returning at most maxLines lines.
+// It tokenizes into CJK single characters and runs of non-CJK (word-like)
+// characters so both Japanese and English wrap reasonably.
+func wrapText(dc *gg.Context, text string, maxWidth float64, maxLines int) []string {
+	tokens := tokenize(text)
+	if len(tokens) == 0 {
 		return []string{""}
 	}
 
 	var lines []string
-	var currentLine string
-
-	for _, word := range words {
-		testLine := currentLine
-		if testLine != "" {
-			testLine += " " + word
-		} else {
-			testLine = word
-		}
-
-		w, _ := dc.MeasureString(testLine)
-		if w > maxWidth {
-			// Current line is too long
-			if currentLine == "" {
-				// Single word is too long, need to break it
-				lines = append(lines, g.breakWord(dc, word, maxWidth))
-				if len(lines) >= maxLines {
-					break
-				}
-			} else {
-				// Save current line and start new one with current word
-				lines = append(lines, currentLine)
-				if len(lines) >= maxLines {
-					break
-				}
-				currentLine = word
+	var cur string
+	truncated := false
+	for _, tok := range tokens {
+		candidate := cur + tok
+		w, _ := dc.MeasureString(candidate)
+		if w > maxWidth && cur != "" {
+			lines = append(lines, cur)
+			if len(lines) == maxLines {
+				// Ran out of lines but tokens remain: mark for ellipsis.
+				truncated = true
+				break
 			}
+			cur = strings.TrimLeft(tok, " ")
 		} else {
-			currentLine = testLine
+			cur = candidate
 		}
 	}
-
-	// Add remaining line
-	if currentLine != "" && len(lines) < maxLines {
-		lines = append(lines, currentLine)
+	if !truncated && cur != "" && len(lines) < maxLines {
+		lines = append(lines, cur)
 	}
 
-	// Truncate last line with ellipsis if we hit maxLines
-	if len(lines) == maxLines {
-		lastLine := lines[maxLines-1]
-		w, _ := dc.MeasureString(lastLine + "...")
-		if w > maxWidth {
-			// Need to shorten the last line
-			for utf8.RuneCountInString(lastLine) > 0 {
-				runes := []rune(lastLine)
-				lastLine = string(runes[:len(runes)-1])
-				w, _ := dc.MeasureString(lastLine + "...")
-				if w <= maxWidth {
-					break
-				}
+	// If content remains (we hit maxLines), ellipsize the last line.
+	if truncated && len(lines) == maxLines {
+		last := []rune(strings.TrimRight(lines[maxLines-1], " "))
+		for len(last) > 0 {
+			w, _ := dc.MeasureString(string(last) + "…")
+			if w <= maxWidth {
+				break
 			}
+			last = last[:len(last)-1]
 		}
-		lines[maxLines-1] = lastLine + "..."
+		lines[maxLines-1] = string(last) + "…"
 	}
 
 	return lines
 }
 
-// breakWord breaks a single word that's too long to fit on one line
-func (g *Generator) breakWord(dc *gg.Context, word string, maxWidth float64) string {
-	runes := []rune(word)
-	for i := len(runes); i > 0; i-- {
-		substr := string(runes[:i])
-		w, _ := dc.MeasureString(substr + "...")
-		if w <= maxWidth {
-			return substr + "..."
+// tokenize splits text into wrap units: each CJK/space-adjacent rune becomes its
+// own token, while consecutive non-CJK non-space runes (Latin words) stay together.
+func tokenize(text string) []string {
+	var tokens []string
+	var word strings.Builder
+	flush := func() {
+		if word.Len() > 0 {
+			tokens = append(tokens, word.String())
+			word.Reset()
 		}
 	}
-	return "..."
+	for _, r := range text {
+		if isWordRune(r) {
+			word.WriteRune(r)
+			continue
+		}
+		flush()
+		tokens = append(tokens, string(r))
+	}
+	flush()
+	return tokens
 }
 
-// loadFont loads the Japanese font with fallback options
-func (g *Generator) loadFont() (*truetype.Font, error) {
-	var loadErr error
+// isWordRune reports whether r should stick to adjacent runes (kept as one word).
+func isWordRune(r rune) bool {
+	if unicode.IsSpace(r) {
+		return false
+	}
+	if r > 0x2E7F && (unicode.Is(unicode.Han, r) ||
+		unicode.Is(unicode.Hiragana, r) ||
+		unicode.Is(unicode.Katakana, r) ||
+		unicode.Is(unicode.Hangul, r)) {
+		return false
+	}
+	return true
+}
+
+// loadFonts loads the bold/medium/regular weights, caching the result.
+func (g *Generator) loadFonts() error {
 	g.fontOnce.Do(func() {
-		// Try primary font path (Noto Sans CJK)
-		if g.fontPath != "" {
-			fnt, err := loadFontFromFile(g.fontPath)
-			if err == nil {
-				g.fontCache = fnt
-				slog.Info("Loaded font", slog.String("path", g.fontPath))
-				return
-			}
-			slog.Warn("Failed to load primary font", slog.String("path", g.fontPath), slog.Any("error", err))
+		notoDirs := []string{
+			"/usr/share/fonts/opentype/noto",
+			"/usr/share/fonts/truetype/noto",
 		}
+		g.boldFont = loadWeight("Bold", notoDirs, g.fontPath)
+		g.mediumFont = loadWeight("Medium", notoDirs, g.fontPath)
+		g.regularFont = loadWeight("Regular", notoDirs, g.fontPath)
 
-		// Fallback fonts: prioritize .ttf files over .ttc files
-		fallbackPaths := []string{
-			"/usr/share/fonts/opentype/ipafont-gothic/ipagp.ttf",  // IPA P Gothic (TTF)
-			"/usr/share/fonts/opentype/ipafont-gothic/ipag.ttf",   // IPA Gothic (TTF)
-			"/usr/share/fonts/truetype/ipafont/ipagp.ttf",         // IPA P Gothic (alt path)
-			"/usr/share/fonts/opentype/noto/NotoSansCJK-Bold.ttc", // Noto CJK (TTC)
-			"/usr/share/fonts/truetype/noto/NotoSansCJK-Bold.ttc", // Noto CJK (alt path)
-			"/System/Library/Fonts/Hiragino Sans GB.ttc",          // macOS
+		if g.boldFont == nil || g.mediumFont == nil || g.regularFont == nil {
+			g.fontErr = fmt.Errorf("failed to load required fonts")
 		}
-
-		for _, path := range fallbackPaths {
-			fnt, err := loadFontFromFile(path)
-			if err == nil {
-				g.fontCache = fnt
-				slog.Info("Loaded fallback font", slog.String("path", path))
-				return
-			}
-		}
-
-		// Final fallback: embedded Go font (no Japanese support, but better than nothing)
-		fnt, err := truetype.Parse(goregular.TTF)
-		if err == nil {
-			g.fontCache = fnt
-			slog.Warn("Using embedded font (no Japanese support)")
-			return
-		}
-
-		loadErr = fmt.Errorf("failed to load any font")
 	})
-
-	if loadErr != nil {
-		return nil, loadErr
-	}
-
-	if g.fontCache == nil {
-		return nil, fmt.Errorf("font cache is nil")
-	}
-
-	return g.fontCache, nil
+	return g.fontErr
 }
 
-// loadFontFromFile loads a TrueType font from a file
-func loadFontFromFile(path string) (*truetype.Font, error) {
-	fontBytes, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
+// loadWeight loads a Noto Sans CJK weight, falling back to the explicit override
+// path and finally to the embedded Go font.
+func loadWeight(weight string, notoDirs []string, overridePath string) *sfnt.Font {
+	for _, dir := range notoDirs {
+		path := fmt.Sprintf("%s/NotoSansCJK-%s.ttc", dir, weight)
+		if f := loadFontFile(path); f != nil {
+			slog.Info("Loaded OG font", slog.String("weight", weight), slog.String("path", path))
+			return f
+		}
 	}
-
-	fnt, err := truetype.Parse(fontBytes)
-	if err != nil {
-		return nil, err
+	if overridePath != "" {
+		if f := loadFontFile(overridePath); f != nil {
+			slog.Info("Loaded OG font (override)", slog.String("weight", weight), slog.String("path", overridePath))
+			return f
+		}
 	}
+	// Last resort: embedded Go font (no Japanese glyphs).
+	if f, err := sfnt.Parse(goregular.TTF); err == nil {
+		slog.Warn("Using embedded OG font (no Japanese support)", slog.String("weight", weight))
+		return f
+	}
+	return nil
+}
 
-	return fnt, nil
+// loadFontFile parses a .ttf/.otf/.ttc file, preferring the JP variant for
+// collections, and returns nil on any failure.
+func loadFontFile(path string) *sfnt.Font {
+	b, err := os.ReadFile(path)
+	if err != nil {
+		return nil
+	}
+	coll, err := opentype.ParseCollection(b)
+	if err != nil {
+		return nil
+	}
+	idx := 0
+	for i := 0; i < coll.NumFonts(); i++ {
+		f, err := coll.Font(i)
+		if err != nil {
+			continue
+		}
+		name, err := f.Name(nil, sfnt.NameIDFamily)
+		if err == nil && strings.Contains(name, "JP") {
+			idx = i
+			break
+		}
+	}
+	f, err := coll.Font(idx)
+	if err != nil {
+		return nil
+	}
+	return f
 }
 
 // sanitizeTitle removes control characters and limits length
@@ -314,7 +369,7 @@ func sanitizeTitle(title string) string {
 	for _, r := range title {
 		if r == '\n' || r == '\r' || r == '\t' {
 			cleaned.WriteRune(' ')
-		} else if r >= 32 || r == '\t' {
+		} else if r >= 32 {
 			cleaned.WriteRune(r)
 		}
 	}

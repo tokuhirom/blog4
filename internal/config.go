@@ -34,6 +34,7 @@ type Config struct {
 	S3AttachmentsBaseUrl    string `env:"S3_ATTACHMENTS_BASE_URL" envDefault:"https://blog-attachments.64p.org"`
 
 	SiteBaseUrl string `env:"SITE_BASE_URL" envDefault:"https://blog.64p.org"`
+	SiteName    string `env:"SITE_NAME" envDefault:"tokuhirom's blog"`
 
 	BackupEncryptionKey string `env:"BACKUP_ENCRYPTION_KEY"`
 

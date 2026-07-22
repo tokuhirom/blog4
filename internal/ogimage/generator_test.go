@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/fogleman/gg"
-	"github.com/golang/freetype/truetype"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -47,7 +46,7 @@ func TestRenderImage(t *testing.T) {
 		{"long_english", "This is a very long title that should wrap across multiple lines automatically. We expect it to display up to three lines maximum."},
 	}
 
-	generator := NewGenerator(nil, "https://example.com", "")
+	generator := NewGenerator(Config{S3BaseURL: "https://example.com"})
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -70,7 +69,7 @@ func TestRenderImage(t *testing.T) {
 
 func TestGenerateOGImage(t *testing.T) {
 	mockS3 := &mockS3Uploader{}
-	generator := NewGenerator(mockS3, "https://example.com", "")
+	generator := NewGenerator(Config{S3Client: mockS3, S3BaseURL: "https://example.com"})
 
 	entry := EntryInfo{
 		Path:        "2026/01/test-entry",
@@ -124,14 +123,13 @@ func TestSanitizeTitle(t *testing.T) {
 }
 
 func TestWrapText(t *testing.T) {
-	generator := NewGenerator(nil, "https://example.com", "")
+	generator := NewGenerator(Config{S3BaseURL: "https://example.com"})
 
-	// Load font for testing
-	fnt, err := generator.loadFont()
-	require.NoError(t, err)
+	// Load fonts for testing
+	require.NoError(t, generator.loadFonts())
 
 	// Create a context for measuring
-	dc := newTestContext(fnt)
+	dc := newTestContext(generator)
 
 	tests := []struct {
 		name           string
@@ -148,19 +146,18 @@ func TestWrapText(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			lines := generator.wrapText(dc, tt.text, titleMaxWidth, tt.maxLines)
+			lines := wrapText(dc, tt.text, imageWidth-marginX*2, tt.maxLines)
 			assert.LessOrEqual(t, len(lines), tt.expectMaxLines)
 			if tt.expectEllipsis {
-				assert.Contains(t, lines[len(lines)-1], "...")
+				assert.Contains(t, lines[len(lines)-1], "…")
 			}
 		})
 	}
 }
 
 // newTestContext creates a gg context for testing text wrapping
-func newTestContext(fnt *truetype.Font) *gg.Context {
+func newTestContext(g *Generator) *gg.Context {
 	dc := gg.NewContext(imageWidth, imageHeight)
-	titleFace := truetype.NewFace(fnt, &truetype.Options{Size: titleFontSize})
-	dc.SetFontFace(titleFace)
+	dc.SetFontFace(g.face(g.boldFont, titleFontSize))
 	return dc
 }
