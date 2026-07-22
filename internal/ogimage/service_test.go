@@ -20,7 +20,7 @@ func TestEnsureOGImage_ImageExists(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockStore := mocks.NewMockEntryImageStore(ctrl)
-	generator := NewGenerator(&mockS3Uploader{}, "https://example.com", "")
+	generator := NewGenerator(Config{S3Client: &mockS3Uploader{}, S3BaseURL: "https://example.com"})
 	service := NewService(generator, mockStore)
 
 	// Mock: image already exists
@@ -41,7 +41,7 @@ func TestEnsureOGImage_GeneratesImage(t *testing.T) {
 
 	mockStore := mocks.NewMockEntryImageStore(ctrl)
 	mockS3 := &mockS3Uploader{}
-	generator := NewGenerator(mockS3, "https://example.com", "")
+	generator := NewGenerator(Config{S3Client: mockS3, S3BaseURL: "https://example.com"})
 	service := NewService(generator, mockStore)
 
 	// Mock: no image exists
@@ -76,7 +76,7 @@ func TestEnsureOGImage_EntryNotFound(t *testing.T) {
 	defer ctrl.Finish()
 
 	mockStore := mocks.NewMockEntryImageStore(ctrl)
-	generator := NewGenerator(&mockS3Uploader{}, "https://example.com", "")
+	generator := NewGenerator(Config{S3Client: &mockS3Uploader{}, S3BaseURL: "https://example.com"})
 	service := NewService(generator, mockStore)
 
 	// Mock: no image exists
@@ -100,7 +100,7 @@ func TestEnsureOGImage_InsertError(t *testing.T) {
 
 	mockStore := mocks.NewMockEntryImageStore(ctrl)
 	mockS3 := &mockS3Uploader{}
-	generator := NewGenerator(mockS3, "https://example.com", "")
+	generator := NewGenerator(Config{S3Client: mockS3, S3BaseURL: "https://example.com"})
 	service := NewService(generator, mockStore)
 
 	// Mock: no image exists
