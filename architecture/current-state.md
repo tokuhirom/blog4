@@ -104,7 +104,7 @@
 | 区分 | env 名 | デフォルト | メモ |
 |---|---|---|---|
 | アプリ | `BLOG_PORT` | `9191` (docker は 8181 override) | リッスンポート |
-| DB | `DATABASE_USER` / `DATABASE_PASSWORD` / `DATABASE_HOST` / `DATABASE_PORT` / `DATABASE_DB` | DB=`blog3` | エンハンスドDB を参照 |
+| DB | `DATABASE_USER` / `DATABASE_PASSWORD` / `DATABASE_HOST` / `DATABASE_PORT` / `DATABASE_NAME` | DB=`blog3` | エンハンスドDB を参照。`LOCAL_DEV` でなければ TLS で接続する |
 | 管理 UI | `ADMIN_USER` / `ADMIN_PW` | user=`admin` | Basic 認証相当 |
 | CORS | `ALLOWED_ORIGINS` | (empty) | カンマ区切り |
 | 公開 URL | `SITE_BASE_URL` | `https://blog.64p.org` | |

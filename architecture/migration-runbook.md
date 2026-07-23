@@ -30,16 +30,18 @@ TiDB の接続先は 2026-07-23 に疎通確認済み:
 
 ## 移行前に片付ける必要があるアプリ側の課題
 
-データを移す前に、以下が未解決だとカットオーバーで確実に失敗する。
+対応済み:
 
-1. **アプリが TLS で DB に接続できない** — `cmd/blog4/main.go:35` の `mysql.Config` に
-   `TLSConfig` が無い。TiDB CR は TLS 必須なので `TLSConfig: "true"` 相当が要る。
-2. **DB 名の環境変数名が terraform とアプリでずれている** — `terraform/apprun.tf:17` は
-   `DATABASE_NAME` を送るが、アプリが読むのは `DATABASE_DB` (`internal/config.go:16`、
-   デフォルト `blog3`)。このままだと TiDB の `blog5` ではなく `blog3` に繋ぎにいく。
-3. **アプリ内の日次バックアップが `mariadb-dump`** — `internal/backup.go:43`。TiDB 相手に
+- **TLS 接続** — `cmd/blog4/main.go` で `LOCAL_DEV` 以外は `mysql.Config.TLSConfig` を
+  有効にした。TiDB CR は TLS 必須、ローカルの docker-compose MariaDB は TLS 非対応なので分岐する
+- **DB 名の環境変数名** — アプリ (`internal/config.go`) / `docker-compose.yml` /
+  `terraform/apprun.tf` を `DATABASE_NAME` に統一した。旧名は `DATABASE_DB`
+
+未対応:
+
+1. **アプリ内の日次バックアップが `mariadb-dump`** — `internal/backup.go:43`。TiDB 相手に
    動くか確認が要る (認証プラグインと TLS)。動かないなら `mysqldump` に替える。
-4. **FOREIGN KEY の対応状況** — `db/init/01-schema.sql` は `entry_image` / `entry_link` に
+2. **FOREIGN KEY の対応状況** — `db/init/01-schema.sql` は `entry_image` / `entry_link` に
    FK を張っている。TiDB の FK は v8.5 で GA。手順4 (スキーマ作成) が通れば対応済みと判断でき、
    落ちるならスキーマから FK を外し、削除時の CASCADE をアプリ側で持つ。
 
@@ -146,6 +148,10 @@ op run --env-file=terraform/.env -- ./scripts/db-count.sh both
    op run --env-file=.env -- terraform plan    # env 以外に差分が出ていないことを確認
    op run --env-file=.env -- terraform apply
    ```
+
+   アプリが読む DB 名の env は `DATABASE_NAME`。AppRun 側に旧名の `DATABASE_DB` しか
+   入っていない状態でデプロイすると、env が無視されてデフォルトの `blog3` に繋ぎにいく。
+   apply 後に AppRun の env に `DATABASE_NAME` が入っていることを確認する。
 
 4. 動作確認: `/healthz`、トップページ、管理画面のログインと記事の保存
 5. 直前にもう一度 `db-count.sh both` を回し、切り替え後に記事数が減っていないか見る

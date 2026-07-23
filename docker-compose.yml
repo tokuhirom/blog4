@@ -34,7 +34,7 @@ services:
       DATABASE_PASSWORD: ${MYSQL_PASSWORD:-blog4password}
       DATABASE_HOST: mariadb
       DATABASE_PORT: 3306
-      DATABASE_DB: ${MYSQL_DATABASE:-blog4}
+      DATABASE_NAME: ${MYSQL_DATABASE:-blog4}
       
       # Application configuration
       BLOG_PORT: 8181
