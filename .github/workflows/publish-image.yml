@@ -5,6 +5,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
@@ -19,9 +23,9 @@ jobs:
       - name: Login to GitHub Container Registry
         uses: docker/login-action@af1e73f918a031802d376d3c8bbc3fe56130a9b0 # v4
         with:
-          registry: ${{ vars.SAKURA_REGISTRY_DOMAIN }}
-          username: ${{ vars.SAKURA_REGISTRY_USERNAME }}
-          password: ${{ secrets.SAKURA_REGISTRY_PASSWORD }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Extract GIT_HASH
         id: vars
@@ -32,7 +36,7 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ vars.SAKURA_REGISTRY_DOMAIN }}/blog4:${{ env.GIT_HASH }}
+          tags: ghcr.io/${{ github.repository_owner }}/blog4:${{ env.GIT_HASH }}
           build-args: |
             GIT_HASH=${{ env.GIT_HASH }}
 
@@ -42,4 +46,4 @@ jobs:
           token_id: ${{ secrets.SACLOUD_API_TOKEN_ID }}
           token_secret: ${{ secrets.SAKURA_API_TOKEN_SECRET }}
           app_id: ${{ vars.APPRUN_APP_ID }}
-          image: ${{ vars.SAKURA_REGISTRY_DOMAIN }}/blog4:${{ env.GIT_HASH }}
+          image: ghcr.io/${{ github.repository_owner }}/blog4:${{ env.GIT_HASH }}
