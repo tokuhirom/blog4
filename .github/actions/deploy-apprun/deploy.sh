@@ -28,7 +28,9 @@ jq --arg image "$image" '
   | .components[0].deploy_source.container_registry.image = "\($image)"
 ' app.json > deploy.json
 
-curl -f --no-progress-meter -u "$access_token_id:$access_token_secret" -X PATCH -d '@deploy.json' -o /dev/null \
+# PATCH が 400 等で失敗したときにレスポンスボディ(エラー原因)を確認できるよう、
+# --fail-with-body を使い、ボディは /dev/null に捨てずに標準出力へ出す
+curl --fail-with-body --no-progress-meter -u "$access_token_id:$access_token_secret" -X PATCH -d '@deploy.json' \
   "https://secure.sakura.ad.jp/cloud/api/apprun/1.0/apprun/api/applications/$apprun_app_id"
 
 curl -f --no-progress-meter -u "$access_token_id:$access_token_secret" \
