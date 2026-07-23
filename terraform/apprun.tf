@@ -6,6 +6,11 @@
 #
 # image は CI (.github/actions/deploy-apprun/deploy.sh) が毎デプロイで PATCH
 # するため lifecycle.ignore_changes で管理外にする。traffics も CI 側。
+#
+# component name はイメージタグ入りの名前で、CI 側では変えていないが
+# 過去のデプロイ経緯で実態とずれうる。name は forces replacement 属性なので、
+# ずれたまま apply するとアプリごと作り直され public_url が変わる
+# (= WebAccel の origin が切れて blog.64p.org が落ちる)。ここも管理外にする。
 locals {
   # AppRun に流し込む環境変数。実値は 1Password 由来 (TF_VAR_* / op run)。
   apprun_env = {
@@ -34,16 +39,18 @@ resource "sakura_apprun_shared" "blog4" {
 
   components = [
     {
-      # CI は image しか PATCH しないため component name は安定 (タグ込みだが固定)。
-      name       = "blog4:75e6b60"
+      # name / image は ignore_changes 対象 (実値は CI とデプロイ履歴が決める)。
+      # ゼロから作り直すときの初期値として、現行の実態に合わせておく。
+      name       = "blog4:3bfb434"
       max_cpu    = "0.5"
       max_memory = "1Gi"
 
       deploy_source = {
         container_registry = {
-          image    = "tokuhirom-private.sakuracr.jp/blog4:75e6b60"
-          server   = "tokuhirom-private.sakuracr.jp"
-          username = "pull"
+          # ghcr.io の public パッケージなので pull に認証は要らない。
+          # server / username は optional かつ computed なので、指定しない
+          # (CI も PATCH で username/password を削除している)。
+          image = "ghcr.io/tokuhirom/blog4:3bfb434"
         }
       }
 
@@ -53,6 +60,7 @@ resource "sakura_apprun_shared" "blog4" {
 
   lifecycle {
     ignore_changes = [
+      components[0].name,
       components[0].deploy_source.container_registry.image,
       traffics,
     ]
