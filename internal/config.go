@@ -13,7 +13,7 @@ type Config struct {
 	DBPassword string `env:"DATABASE_PASSWORD"`
 	DBHostname string `env:"DATABASE_HOST"`
 	DBPort     int    `env:"DATABASE_PORT" envDefault:"3306"`
-	DBName     string `env:"DATABASE_DB"   envDefault:"blog3"`
+	DBName     string `env:"DATABASE_NAME" envDefault:"blog3"`
 
 	AdminUser     string `env:"ADMIN_USER"   envDefault:"admin"`
 	AdminPassword string `env:"ADMIN_PW"`

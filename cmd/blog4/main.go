@@ -42,6 +42,11 @@ func DoMain() error {
 		ParseTime:            true,
 		Loc:                  time.FixedZone("Asia/Tokyo", cfg.TimeZoneOffset), // Set time zone to JST
 	}
+	// TiDB CR is only reachable over TLS. The local development MariaDB does not
+	// serve TLS, so keep it disabled there (same switch as the S3 client below).
+	if !cfg.LocalDev {
+		mysqlConfig.TLSConfig = "true"
+	}
 	sqlDB, err := sql.Open("mysql", mysqlConfig.FormatDSN())
 	if err != nil {
 		return fmt.Errorf("failed to open DB connection: %w", err)
