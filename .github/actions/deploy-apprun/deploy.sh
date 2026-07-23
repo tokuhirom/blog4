@@ -20,10 +20,12 @@ curl -f --no-progress-meter -u "$access_token_id:$access_token_secret" -o 'app.j
   "https://secure.sakura.ad.jp/cloud/api/apprun/1.0/apprun/api/applications/$apprun_app_id"
 
 # app.json から deploy.json を生成
-# - container_registry.server と container_registry.username を削除(こうしないとエラーになる)
+# - container_registry.server を ghcr.io に設定
+# - public パッケージなので username / password は不要(削除する)
 # - all_traffic_available を true に設定
 jq --arg image "$image" '
-  del(.components[0].deploy_source.container_registry.server, .components[0].deploy_source.container_registry.username)
+  .components[0].deploy_source.container_registry.server = "ghcr.io"
+  | del(.components[0].deploy_source.container_registry.username, .components[0].deploy_source.container_registry.password)
   | .all_traffic_available = true
   | .components[0].deploy_source.container_registry.image = "\($image)"
 ' app.json > deploy.json
