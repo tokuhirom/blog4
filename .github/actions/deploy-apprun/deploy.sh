@@ -20,12 +20,16 @@ curl -f --no-progress-meter -u "$access_token_id:$access_token_secret" -o 'app.j
   "https://secure.sakura.ad.jp/cloud/api/apprun/1.0/apprun/api/applications/$apprun_app_id"
 
 # app.json から deploy.json を生成
-# - container_registry.server を ghcr.io に設定
-# - public パッケージなので username / password は不要(削除する)
+# - container_registry の認証系フィールド (server / username / password) を削除する。
+#   ghcr.io の public パッケージなので pull に認証は要らない。server だけを送ると
+#   AppRun API が Username と Password も必須と判定して 400 を返す:
+#     "Authentication to Container Registry requires Server, Username, and Password."
+#   どこから引くかは image のフルパス (ghcr.io/...) で決まるので server は不要。
 # - all_traffic_available を true に設定
 jq --arg image "$image" '
-  .components[0].deploy_source.container_registry.server = "ghcr.io"
-  | del(.components[0].deploy_source.container_registry.username, .components[0].deploy_source.container_registry.password)
+  del(.components[0].deploy_source.container_registry.server,
+      .components[0].deploy_source.container_registry.username,
+      .components[0].deploy_source.container_registry.password)
   | .all_traffic_available = true
   | .components[0].deploy_source.container_registry.image = "\($image)"
 ' app.json > deploy.json
