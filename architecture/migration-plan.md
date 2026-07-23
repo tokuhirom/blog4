@@ -113,6 +113,10 @@ DB 移行の前提。複数 PR に分ける。
 5. `terraform plan` で既存リソースとの差分を確認しながら import を進める
 
 ### フェーズ 3: データ移行 & カットオーバー
+
+実作業の手順とコマンドは [migration-runbook.md](./migration-runbook.md) に切り出した
+(`scripts/db-count.sh` / `db-dump.sh` / `db-restore.sh` を使う)。
+
 6. MariaDB から論理ダンプ (`mysqldump --no-tablespaces` 等) を取得
 7. TiDB へリストア (FULLTEXT 行は schema から除外済みのものを使う)
 8. ステージング的に新 DB を指す AppRun バージョンを用意し検証
