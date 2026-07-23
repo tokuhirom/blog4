@@ -31,7 +31,7 @@
                   │ AppRun 共用型       │  sakura_apprun_shared
                   │ (Sakura Cloud)     │  image = container registry
                   └──┬─────────────┬───┘
-                     │ TLS+4000     │ HTTPS (S3 API)
+                     │ TLS+3306     │ HTTPS (S3 API)
             ┌────────▼───────┐  ┌──▼──────────────┐
             │ オンデマンドDB  │  │ Object Storage  │
             │ TiDB (CR/無償) │  │ attachments     │
@@ -64,7 +64,8 @@
 - Required: `name`, `database_name`, `database_type = "tidb"`, `region` (`is1`/`tk1`), `password_wo` (write-only, TF 1.11+)
 - Optional: `allowed_networks` (CIDR の IP 制限), `password_wo_version`
 - Read-Only: `hostname` (`<database_name>.tidb-is1.db.sakurausercontent.com`), `max_connections`
-- **`port` 属性なし** → TiDB の **4000 番**をアプリの `DATABASE_PORT` に明示
+- **`port` 属性なし** → アプリの `DATABASE_PORT` には **3306** を明示する。
+  TiDB 標準の 4000 ではない (2026-07-23 に疎通確認。4000 は接続できない)
 
 ### `sakura_apprun_shared`
 - Required: `name`, `components`, `min_scale`, `max_scale`, `port`, `timeout_seconds`
@@ -78,7 +79,7 @@
 
 | | 内容 |
 |---|---|
-| 変わる (DB) | 接続先が TiDB の public ホスト名 + TLS + 4000 番に。`DATABASE_*` を更新 |
+| 変わる (DB) | 接続先が TiDB の public ホスト名 + TLS に。`DATABASE_*` を更新 (ポートは 3306 のまま) |
 | 変わる (検索) | `MATCH/AGAINST` 撤廃。全文検索はフロントエンドで実施 |
 | 変わる (スキーマ) | `FULLTEXT KEY idx_bigram` 削除、`ENGINE=InnoDB` 句削除 |
 | 変わる (運用) | 構成が Terraform 管理に。手動コンパネ操作を廃する |
@@ -100,7 +101,7 @@ DB 移行の前提。複数 PR に分ける。
    - `FOREIGN KEY ... ON DELETE CASCADE` の挙動を TiDB で検証
      (EDB TiDB の FK は v8.5 で GA。バージョン次第。最悪アプリ側で CASCADE 相当)
    - `SELECT ... FOR UPDATE` (visibility.sql) の悲観ロック挙動を検証
-3. **接続設定**: `DATABASE_PORT=4000`、TLS 必須化、接続文字列の TLS パラメータ
+3. **接続設定**: `DATABASE_PORT=3306`、TLS 必須化、接続文字列の TLS パラメータ
 
 ### フェーズ 2: Terraform 化
 4. `terraform/` を作り直す (前回 stash した雛形が流用可。AppRun 専有系は捨てる)

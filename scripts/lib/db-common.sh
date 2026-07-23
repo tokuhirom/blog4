@@ -40,11 +40,12 @@ db_config() {
 
 	case "$target" in
 	tidb)
-		# TiDB CR (さくらのオンデマンドデータベース)。ポートは 4000 固定、TLS 必須。
+		# TiDB CR (さくらのオンデマンドデータベース)。TLS 必須。
+		# ポートは TiDB 標準の 4000 ではなく 3306 (2026-07-23 に疎通確認。4000 は閉じている)。
 		# ユーザ名はデータベース名と同じ (EDB/オンデマンドDB の仕様)。違う場合は TIDB_USER で上書き。
 		DB_NAME="${TIDB_DATABASE:-${TF_VAR_tidb_database_name:-blog4}}"
 		DB_HOST="${TIDB_HOST:-$(tidb_hostname_from_terraform)}"
-		DB_PORT="${TIDB_PORT:-4000}"
+		DB_PORT="${TIDB_PORT:-3306}"
 		DB_USER="${TIDB_USER:-$DB_NAME}"
 		DB_PASSWORD="${TIDB_PASSWORD:-${TF_VAR_tidb_password:-}}"
 		DB_IMAGE="$TIDB_CLIENT_IMAGE"

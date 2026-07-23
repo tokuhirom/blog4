@@ -1,5 +1,5 @@
 output "tidb_hostname" {
-  description = "Hostname to connect to the TiDB CR instance (port 4000)."
+  description = "Hostname to connect to the TiDB CR instance (port 3306)."
   value       = sakura_ondemand_db.blog4.hostname
 }
 
