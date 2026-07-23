@@ -9,6 +9,8 @@
 - パスワード等の機微情報: `password_wo` (write-only argument, Terraform 1.11+) と `TF_VAR_*` 環境変数で渡す。state に平文では入らない
 - tfstate: さくらのオブジェクトストレージ (S3 互換) backend。`backend.tf` 参照。state ロックは S3 ネイティブの `use_lockfile`
 - 移行方針の全体像: [../architecture/migration-plan.md](../architecture/migration-plan.md)
+- DB 移行の実作業手順: [../architecture/migration-runbook.md](../architecture/migration-runbook.md)
+  (件数確認・ダンプ・リストアは `scripts/db-count.sh` / `db-dump.sh` / `db-restore.sh`)
 
 ## このディレクトリで定義しているリソース
 
