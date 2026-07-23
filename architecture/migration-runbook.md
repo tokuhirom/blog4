@@ -21,8 +21,12 @@
 - TiDB のホスト名は `terraform output tidb_hostname` から取る。terraform を通したくないときは
   `TIDB_HOST=... TIDB_USER=...` を環境変数で明示すれば terraform なしで動く
 
-TiDB のユーザ名は **データベース名と同じ** (`blog5`) と仮定している。認証エラーになる場合は
-`TIDB_USER=...` で上書きし、判明した正しい値をこの文書に反映すること。
+TiDB の接続先は 2026-07-23 に疎通確認済み:
+
+- ユーザ名は **データベース名と同じ** (`blog5`)
+- ポートは **3306**。TiDB 標準の 4000 は閉じている (さくら側が 3306 で待ち受けている)
+- TLS 必須 (`ssl-mode=REQUIRED` で接続できる)
+- 送信元ネットワーク制限 (`allowed_networks`) は未設定 = 制限なし。手元から素で繋がる
 
 ## 移行前に片付ける必要があるアプリ側の課題
 
@@ -130,7 +134,7 @@ op run --env-file=terraform/.env -- ./scripts/db-count.sh both
    | field | 新しい値 |
    |---|---|
    | `host` | `terraform output tidb_hostname` の値 (`blog5.tidb-is1.db.sakurausercontent.com`) |
-   | `port` | `4000` |
+   | `port` | `3306` (TiDB 標準の 4000 ではない) |
    | `name` | `blog5` |
    | `user` | `blog5` (= データベース名) |
    | `password` | `blog4-tidb` の `root-password` と同じ値 |
