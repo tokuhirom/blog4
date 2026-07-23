@@ -1,5 +1,16 @@
 # blog4 DB 移行 runbook (EDB MariaDB → TiDB CR)
 
+> **2026-07-24 にカットオーバー完了。** 本番は TiDB (`blog5`) を見ている。
+> 移した件数は entry 2072 (public 1792 / private 280) / entry_image 220 /
+> entry_link 353 / amazon_cache 57。`admin_session` は意図的に移していないので
+> 管理画面は再ログインが必要だった。旧 EDB MariaDB は切り戻し用に当面残す。
+>
+> 以降の記述は「やり直すとき / 切り戻すとき」のための手順として残している。
+> ただし **1Password の `blog4-app-db` は既に TiDB を指している** ため、
+> `scripts/db-*.sh` の `mariadb` ターゲットは今や TiDB に繋がる。旧 MariaDB を
+> 相手にするときは `TF_VAR_database_*` を旧値 (1Password のアイテム履歴にある)
+> で明示的に上書きすること。
+
 [migration-plan.md](./migration-plan.md) のフェーズ3 (データ移行 & カットオーバー) の実作業手順。
 想定する流れは **両方カウント → 両方バックアップ → MariaDB から TiDB へ移す → 両方カウント**。
 
@@ -30,20 +41,28 @@ TiDB の接続先は 2026-07-23 に疎通確認済み:
 
 ## 移行前に片付ける必要があるアプリ側の課題
 
-対応済み:
+**2026-07-24 のカットオーバー時点で、以下はすべて解決済み。** やり直すときの
+チェックリストとして残す。
 
-- **TLS 接続** — `cmd/blog4/main.go` で `LOCAL_DEV` 以外は `mysql.Config.TLSConfig` を
-  有効にした。TiDB CR は TLS 必須、ローカルの docker-compose MariaDB は TLS 非対応なので分岐する
-- **DB 名の環境変数名** — アプリ (`internal/config.go`) / `docker-compose.yml` /
+- **TLS 接続** (#966) — `cmd/blog4/main.go` で `LOCAL_DEV` 以外は
+  `mysql.Config.TLSConfig` を有効にした。ローカルの docker-compose MariaDB は
+  TLS 非対応なので分岐する
+- **DB 名の環境変数名** (#966) — アプリ (`internal/config.go`) / `docker-compose.yml` /
   `terraform/apprun.tf` を `DATABASE_NAME` に統一した。旧名は `DATABASE_DB`
-
-未対応:
-
-1. **アプリ内の日次バックアップが `mariadb-dump`** — `internal/backup.go:43`。TiDB 相手に
-   動くか確認が要る (認証プラグインと TLS)。動かないなら `mysqldump` に替える。
-2. **FOREIGN KEY の対応状況** — `db/init/01-schema.sql` は `entry_image` / `entry_link` に
-   FK を張っている。TiDB の FK は v8.5 で GA。手順4 (スキーマ作成) が通れば対応済みと判断でき、
-   落ちるならスキーマから FK を外し、削除時の CASCADE をアプリ側で持つ。
+- **アプリ内の日次バックアップの `mariadb-dump`** (`internal/backup.go`) —
+  **改修不要だった**。mariadb-dump 10.11 クライアントから TiDB へ、TLS オプション
+  指定なし・デフォルトオプションのまま 3MB のダンプが警告なしで取れることを確認した
+- **FOREIGN KEY** — **そのまま使える**。TiDB は v8.5.0 で FK が GA。
+  `db/init/01-schema.sql` をそのまま流して `entry_image` / `entry_link` の
+  `ON DELETE CASCADE` 付き FK が作られた
+- **デプロイパイプライン** (#969) — カットオーバー直前に、AppRun への
+  デプロイが 2026-07-21 からずっと失敗していたことが判明した。`deploy.sh` が
+  `container_registry.server` だけを送っていて API に 400 で弾かれていた
+  (`Authentication to Container Registry requires Server, Username, and Password.`)。
+  **DB を切り替える前に、アプリ側の修正が本番に届いていることを必ず確認する**
+  (`gh run list --workflow="Publish Docker Image"` が success か、
+  AppRun API の `components[0].deploy_source.container_registry.image` が
+  最新のコミットハッシュか)
 
 ## 手順
 
@@ -149,12 +168,32 @@ op run --env-file=terraform/.env -- ./scripts/db-count.sh both
    op run --env-file=.env -- terraform apply
    ```
 
-   アプリが読む DB 名の env は `DATABASE_NAME`。AppRun 側に旧名の `DATABASE_DB` しか
-   入っていない状態でデプロイすると、env が無視されてデフォルトの `blog3` に繋ぎにいく。
-   apply 後に AppRun の env に `DATABASE_NAME` が入っていることを確認する。
+   `Plan: 0 to add, 1 to change, 0 to destroy` (in-place update) になっていること。
+   **replace になっていたら止める。** アプリが作り直されて `public_url` が変わり、
+   WebAccel の origin が切れて blog.64p.org が落ちる。
 
-4. 動作確認: `/healthz`、トップページ、管理画面のログインと記事の保存
-5. 直前にもう一度 `db-count.sh both` を回し、切り替え後に記事数が減っていないか見る
+   AppRun の env は API から値まで読めるので、apply の前後で直接確認できる:
+
+   ```bash
+   op run --env-file=terraform/.env -- bash -c 'curl -s \
+     -u "$SAKURACLOUD_ACCESS_TOKEN:$SAKURACLOUD_ACCESS_TOKEN_SECRET" \
+     "https://secure.sakura.ad.jp/cloud/api/apprun/1.0/apprun/api/applications/<app-id>"' \
+     | jq -r '.components[0].env[] | select(.key|startswith("DATABASE_")) | "\(.key)=\(.value)"'
+   ```
+
+4. 動作確認:
+   - `/healthz` と トップページ (`?cb=<乱数>` を付けて WebAccel のキャッシュを外す)
+   - 個別記事ページ (DB から本文を引けているか)
+   - 管理画面 — `admin_session` を移していないので **302 でログインへ飛べば
+     TiDB を見ている証拠**。ログインして記事を保存できるところまで見る
+   - アプリからの接続が TiDB に来ているかは cluster 全体の processlist で分かる
+     (`information_schema.processlist` は自ノード分しか見えないので使わない):
+
+     ```sql
+     SELECT user, instance, host, db, command FROM information_schema.cluster_processlist;
+     ```
+
+5. 直前にもう一度 `db-count.sh` を回し、切り替え後に記事数が減っていないか見る
 
 ### 8. 切り戻し
 
