@@ -113,29 +113,39 @@ DB 移行の前提。複数 PR に分ける。
    - tfstate 置き場は別途決定 (前回は専用バケット。コスト要相談)
 5. `terraform plan` で既存リソースとの差分を確認しながら import を進める
 
-### フェーズ 3: データ移行 & カットオーバー
+### フェーズ 3: データ移行 & カットオーバー — **2026-07-24 完了**
 
 実作業の手順とコマンドは [migration-runbook.md](./migration-runbook.md) に切り出した
 (`scripts/db-count.sh` / `db-dump.sh` / `db-restore.sh` を使う)。
 
-6. MariaDB から論理ダンプ (`mysqldump --no-tablespaces` 等) を取得
-7. TiDB へリストア (FULLTEXT 行は schema から除外済みのものを使う)
-8. ステージング的に新 DB を指す AppRun バージョンを用意し検証
-9. `traffics` を新バージョンへ切替 (AppRun 共用型のトラフィック比率)
-10. 旧 EDB を廃止
+6. MariaDB から論理ダンプ (`mysqldump --no-tablespaces` 等) を取得 — 済
+7. TiDB へリストア (FULLTEXT 行は schema から除外済みのものを使う) — 済
+8. 1Password の `blog4-app-db` を TiDB の値に更新し `terraform apply` で
+   AppRun の env を差し替える — 済 (in-place update。`traffics` を使った
+   段階切替はしていない。共用型は min/max scale = 1 で、旧 EDB を残しておけば
+   1Password を戻して apply するだけで切り戻せるため)
+9. 旧 EDB を廃止 — **未実施**。数日運用して問題がなければ廃止する
 
 ## 既知の注意点 / 未確認事項
 
-1. **TiDB のバージョンと FK の GA 状況** — EDB TiDB が v8.5 以上かで FK の
-   挙動が変わる。要確認。
-2. **AppRun 共用型の送信元 IP が不定** → `allowed_networks` での IP 制限が
-   使いづらい。`0.0.0.0/0` + TLS + 強パスワードになる可能性。コネクション数
-   上限 (`max_connections`) と合わせて要確認。
-3. **Object Storage バケットの IaC** — provider にバケット作成リソースが
+解決済み (2026-07-23〜24 の移行作業で確認):
+
+1. **TiDB のバージョンと FK の GA 状況** — さくらの TiDB CR は **v8.5.0**。
+   FK は GA で、`ON DELETE CASCADE` 付きの FK をそのまま作成できた。
+2. **AppRun 共用型の送信元 IP が不定** — 問題にならなかった。TiDB CR の
+   `allowed_networks` は未設定 = 制限なしで、送信元を絞る必要がない。
+   `max_connections` は 50 で、アプリのプール + 手元の作業クライアントでも余裕がある。
+3. **WebAccel の TLS 証明書** — Let's Encrypt 自動運用。証明書リソースは管理しない
+   (`terraform/webaccel.tf` 参照)。
+
+残っているもの:
+
+4. **Object Storage バケットの IaC** — provider にバケット作成リソースが
    あるか要確認。無ければ S3 互換 API or コンパネで管理し Terraform 外に。
-4. **WebAccel の TLS 証明書** — Let's Encrypt 自動か持込か、現状の設定を確認。
-5. **tfstate 置き場** — Sakura Object Storage 専用バケットは月 500 円。
-   コスト懸念あり。ローカル + バックアップ / 既存バケット同居 等も含め再検討。
+   なお WebAccel サイト (バケット origin 含む) は v3.12.2 以降 import できるようになり、
+   `blog-attachments.64p.org` も Terraform 管理下に入れた。
+5. **tfstate 置き場** — Sakura Object Storage 専用バケット (`blog4-tfstate`) で運用中。
+   月 500 円のコスト懸念は残るが、当面はこのまま。
 
 ## 未決事項 (この計画の先で決める)
 
