@@ -1,6 +1,8 @@
 package public
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/tokuhirom/blog4/db/public/publicdb"
@@ -14,9 +16,9 @@ func SetupPublicRoutes(r *gin.Engine, queries *publicdb.Queries, cfg *internal.C
 	r.GET("/feed", func(c *gin.Context) {
 		RenderFeed(c, queries)
 	})
-	// index.rss is a legacy path kept for backward compatibility with the old system.
+	// index.rss was the feed path in the old system; redirect readers to the new one.
 	r.GET("/index.rss", func(c *gin.Context) {
-		RenderFeed(c, queries)
+		c.Redirect(http.StatusMovedPermanently, "/feed")
 	})
 	r.GET("/entry/*filepath", func(c *gin.Context) {
 		RenderEntryPage(c, queries, cfg)
