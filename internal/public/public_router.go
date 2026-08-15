@@ -14,6 +14,10 @@ func SetupPublicRoutes(r *gin.Engine, queries *publicdb.Queries, cfg *internal.C
 	r.GET("/feed", func(c *gin.Context) {
 		RenderFeed(c, queries)
 	})
+	// index.rss is a legacy path kept for backward compatibility with the old system.
+	r.GET("/index.rss", func(c *gin.Context) {
+		RenderFeed(c, queries)
+	})
 	r.GET("/entry/*filepath", func(c *gin.Context) {
 		RenderEntryPage(c, queries, cfg)
 	})
