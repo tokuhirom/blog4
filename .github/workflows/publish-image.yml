@@ -41,11 +41,3 @@ jobs:
             ghcr.io/${{ github.repository_owner }}/blog4:latest
           build-args: |
             GIT_HASH=${{ env.GIT_HASH }}
-
-      - name: Deploy
-        uses: ./.github/actions/deploy-apprun
-        with:
-          token_id: ${{ secrets.SACLOUD_API_TOKEN_ID }}
-          token_secret: ${{ secrets.SAKURA_API_TOKEN_SECRET }}
-          app_id: ${{ vars.APPRUN_APP_ID }}
-          image: ghcr.io/${{ github.repository_owner }}/blog4:${{ env.GIT_HASH }}
