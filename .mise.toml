@@ -2,7 +2,7 @@
 go = "1.27.0"
 node = "25"
 terraform = "1.15.9"
-awscli = "2.36.30"
+awscli = "2.36.31"
 "1password-cli" = "2.34.0"
 "aqua:golangci/golangci-lint" = "2.13.1"
 "aqua:go-task/task" = "3.53.1"
