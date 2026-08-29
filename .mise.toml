@@ -1,7 +1,7 @@
 [tools]
 go = "1.27.0"
 node = "25"
-terraform = "1.15.9"
+terraform = "1.16.0"
 awscli = "2.36.31"
 "1password-cli" = "2.34.0"
 "aqua:golangci/golangci-lint" = "2.13.1"
