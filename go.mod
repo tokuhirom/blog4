@@ -14,7 +14,7 @@ require (
 	github.com/go-sql-driver/mysql v1.10.0
 	github.com/gorilla/feeds v1.2.0
 	github.com/stretchr/testify v1.12.1
-	github.com/yuin/goldmark v1.4.15
+	github.com/yuin/goldmark/v2 v2.0.0
 	github.com/yuin/goldmark-highlighting/v2 v2.0.0-20230729083705-37449abec8cc
 	github.com/yuin/goldmark/v2 v2.0.0
 	go.uber.org/mock v0.6.0
